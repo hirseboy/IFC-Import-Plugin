@@ -10,6 +10,7 @@
 #include <IBK_StopWatch.h>
 
 #include <IBKMK_Vector3D.h>
+#include <IBKMK_Polygon3D.h>
 
 
 int main(int argc, char * argv[]) {
@@ -22,10 +23,18 @@ int main(int argc, char * argv[]) {
 	try {
 		// a stopwatch to measure time needed for solver initialization
 		IBK::StopWatch initWatch;
-		
+
+		IBKMK::Vector3D v(0,1,2);
+		IBKMK::Polygon3D poly;
+		poly.addVertex(v); // just to test linker
+		IBK::IBK_Message(poly.isValid() ? "valid" : "invalid",
+						 IBK::MSG_PROGRESS, FUNC_ID, IBK::VL_STANDARD);
+
+
 		// bla
-		
-		IBK::IBK_Message(IBK::FormatString("Time elapsed = %1 s.\”").arg(initWatch.elapsed()/1000.0), IBK::MSG_PROGRESS, FUNC_ID, IBK::VL_STANDARD);
+
+		IBK::IBK_Message(IBK::FormatString("Time elapsed = %1 s.\n").arg(initWatch.difference()/1000.0),
+						 IBK::MSG_PROGRESS, FUNC_ID, IBK::VL_STANDARD);
 	}
 	catch (IBK::Exception & ex) {
 		ex.writeMsgStackToError();
