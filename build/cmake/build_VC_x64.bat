@@ -1,7 +1,10 @@
 @echo off
 
+set QTDIR=C:\Qt\Qt5.11.3\5.15.2\msvc2019_64
+set PATH=C:\Qt\Qt5.11.3\5.15.2\msvc2019_64\bin;%PATH%
+
 :: setup VC environment variables
-set VCVARSALL_PATH="c:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\vcvarsall.bat" x64
+set VCVARSALL_PATH="C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Auxiliary\Build\vcvarsall.bat" x64
 call %VCVARSALL_PATH%
 
 :: For different Qt installations, please set the environment variables JOM_PATH and CMAKE_PREFIX_PATH
@@ -35,13 +38,15 @@ popd
 
 :: copy executable to bin/release dir
 xcopy /Y .\bb_VC_x64\IFC2BESTest\IFC2BESTest.exe ..\..\bin\release_x64
+xcopy /Y .\bb_VC_x64\ifcplusplus\ifcplusplus.dll ..\..\bin\release_x64
 
-
+pause
 
 exit /b 0
 
 
 :fail
+pause
 echo ** Build Failed **
 exit /b 1
 

@@ -14,6 +14,8 @@ include_directories(
 	${PROJECT_SOURCE_DIR}/../../src
 	${PROJECT_SOURCE_DIR}/../../../externals/IBK/src
 	${PROJECT_SOURCE_DIR}/../../../externals/IBKMK/src
+	${PROJECT_SOURCE_DIR}/../../../externals/ifcplusplus/src/IfcPlusPlus/src/ifcpp/reader
+	${PROJECT_SOURCE_DIR}/../../../externals/ifcplusplus/src/IfcPlusPlus/src
 )
 
 # gather all cpp files in IFC2BESTest directory
@@ -23,6 +25,7 @@ file( GLOB IFC2BESTest_SRCS ${PROJECT_SOURCE_DIR}/../../src/*.cpp )
 set( LINK_LIBS
 	IBKMK
 	IBK
+  ifcplusplus
 )
 
 # now build the IFC2BESTest executable - this only requires compiling the main.cpp
