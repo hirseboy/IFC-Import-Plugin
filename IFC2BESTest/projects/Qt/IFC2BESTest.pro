@@ -15,7 +15,7 @@ QT -= core gui
 CONFIG += console
 CONFIG -= app_bundle
 
-DEFINES += IFCQUERY_STATIC_LIB
+#DEFINES += IFCQUERY_STATIC_LIB
 
 LIBS += \
 	-lIBKMK \

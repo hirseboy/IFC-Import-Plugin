@@ -7,13 +7,14 @@ CONFIG -= qt
 TARGET = ifcplusplus
 TEMPLATE = lib
 
-CONFIG += staticlib
-
 CONFIG += c++11
 
 # this pri must be sourced from all our libraries,
 # it contains all functions defined for casual libraries
 include( ../../../IBK/projects/Qt/IBK.pri )
+
+CONFIG -= static
+CONFIG += shared
 
 # finally we setup our custom library specfic things
 # like version number etc., we also may reset all
@@ -24,7 +25,8 @@ win32-msvc* {
 	QMAKE_CFLAGS += /bigobj
 }
 
-DEFINES += IFCQUERY_STATIC_LIB
+#DEFINES += IFCQUERY_STATIC_LIB
+DEFINES += IFCQUERY_LIB
 
 INCLUDEPATH += ../../src/IfcPlusPlus/src
 
