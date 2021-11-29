@@ -28,7 +28,9 @@ win32-msvc* {
 #DEFINES += IFCQUERY_STATIC_LIB
 DEFINES += IFCQUERY_LIB
 
-INCLUDEPATH += ../../src/IfcPlusPlus/src
+INCLUDEPATH += ../../src/IfcPlusPlus/src \
+				../../src/external/Carve/src/include /carve
+				../../src/external/Carve/src/common
 
 SOURCES += \
 	../../src/IfcPlusPlus/src/ifcpp/IFC4/EntityFactory.cpp \
@@ -2451,6 +2453,28 @@ HEADERS += \
 	../../src/IfcPlusPlus/src/ifcpp/IFC4/include/IfcWorkTime.h \
 	../../src/IfcPlusPlus/src/ifcpp/IFC4/include/IfcZShapeProfileDef.h \
 	../../src/IfcPlusPlus/src/ifcpp/IFC4/include/IfcZone.h \
+	../../src/IfcPlusPlus/src/ifcpp/geometry/AppearanceData.h \
+	../../src/IfcPlusPlus/src/ifcpp/geometry/Carve/CSG_Adapter.h \
+	../../src/IfcPlusPlus/src/ifcpp/geometry/Carve/CurveConverter.h \
+	../../src/IfcPlusPlus/src/ifcpp/geometry/Carve/FaceConverter.h \
+	../../src/IfcPlusPlus/src/ifcpp/geometry/Carve/GeomDebugDump.h \
+	../../src/IfcPlusPlus/src/ifcpp/geometry/Carve/GeomUtils.h \
+	../../src/IfcPlusPlus/src/ifcpp/geometry/Carve/GeometryConverter.h \
+	../../src/IfcPlusPlus/src/ifcpp/geometry/Carve/GeometryInputData.h \
+	../../src/IfcPlusPlus/src/ifcpp/geometry/Carve/IncludeCarveHeaders.h \
+	../../src/IfcPlusPlus/src/ifcpp/geometry/Carve/PlacementConverter.h \
+	../../src/IfcPlusPlus/src/ifcpp/geometry/Carve/PointConverter.h \
+	../../src/IfcPlusPlus/src/ifcpp/geometry/Carve/ProfileCache.h \
+	../../src/IfcPlusPlus/src/ifcpp/geometry/Carve/ProfileConverter.h \
+	../../src/IfcPlusPlus/src/ifcpp/geometry/Carve/RepresentationConverter.h \
+	../../src/IfcPlusPlus/src/ifcpp/geometry/Carve/SolidModelConverter.h \
+	../../src/IfcPlusPlus/src/ifcpp/geometry/Carve/SplineConverter.h \
+	../../src/IfcPlusPlus/src/ifcpp/geometry/Carve/Sweeper.h \
+	../../src/IfcPlusPlus/src/ifcpp/geometry/Carve/TessellatedItemConverter.h \
+	../../src/IfcPlusPlus/src/ifcpp/geometry/GeometryException.h \
+	../../src/IfcPlusPlus/src/ifcpp/geometry/GeometrySettings.h \
+	../../src/IfcPlusPlus/src/ifcpp/geometry/SceneGraphUtils.h \
+	../../src/IfcPlusPlus/src/ifcpp/geometry/StylesConverter.h \
 	../../src/IfcPlusPlus/src/ifcpp/model/AttributeObject.h \
 	../../src/IfcPlusPlus/src/ifcpp/model/BasicTypes.h \
 	../../src/IfcPlusPlus/src/ifcpp/model/BuildingGuid.h \
