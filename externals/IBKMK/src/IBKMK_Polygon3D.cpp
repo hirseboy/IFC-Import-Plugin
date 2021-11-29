@@ -236,8 +236,6 @@ void Polygon3D::updateLocalCoordinateSystem() {
 	m_localY.normalize();
 }
 
-
-
 void Polygon3D::update2DPolyline() {
 	IBK_ASSERT(m_vertexes.size() >= 3);
 
@@ -245,16 +243,12 @@ void Polygon3D::update2DPolyline() {
 	poly.reserve(m_vertexes.size());
 
 	// first point is v0 = origin
-	poly.push_back( IBKMK::Vector2D(0,0) );
+	poly.emplace_back( IBKMK::Vector2D(0,0) );
 
 	// now process all other points
 	for (unsigned int i=1; i<m_vertexes.size(); ++i) {
 		const IBKMK::Vector3D & v = m_vertexes[i];
 		double x,y;
-		/// TODO: Dirk, improve this - by simply calling planeCoordinates we
-		///       redo the same stuff several times for the same plane.
-		///       We should use a function that passes vX, vY, offset and then
-		///       a vector with v,x,y to process.
 		if (IBKMK::planeCoordinates(m_vertexes[0], m_localX, m_localY, v, x, y)) {
 			poly.push_back( IBKMK::Vector2D(x,y) );
 		}
