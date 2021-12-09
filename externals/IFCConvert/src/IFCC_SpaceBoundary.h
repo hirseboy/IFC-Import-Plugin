@@ -23,6 +23,7 @@ public:
 		CT_Unknown
 	};
 
+
 	explicit SpaceBoundary(int id);
 
 	bool set(std::shared_ptr<IfcRelSpaceBoundary> ifcSpaceBoundary);
