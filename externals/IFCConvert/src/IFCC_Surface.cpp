@@ -119,6 +119,24 @@ double Surface::distanceToParallelPlane(const PlaneNormal& other) const {
 	}
 
 	double dist = std::fabs(other.m_distance - (m_planeNormal.m_distance * negFact));
+
+	return dist;
+}
+
+double Surface::distanceToParallelPlane(const Surface& other) const {
+	double negFact = 1.0;
+	if(!nearEqual(m_planeNormal.m_lz, other.m_planeNormal.m_lz)) {
+		if(!nearEqual(m_planeNormal.m_lz*-1,other.m_planeNormal.m_lz))
+			return std::numeric_limits<double>::max();
+		else
+			negFact = -1.0;
+	}
+
+	double dist = std::fabs(other.m_planeNormal.m_distance - (m_planeNormal.m_distance * negFact));
+
+	IBKMK::Vector3D t = m_polyVect[0] - other.m_polyVect[0];
+	double dist2 = t.scalarProduct(PlaneHesseNormal(m_polyVect).m_n0);
+
 	return dist;
 }
 
@@ -268,12 +286,23 @@ std::vector<std::pair<size_t,size_t>> Surface::samePoints(const Surface& other) 
 	const std::vector<IBKMK::Vector3D>& otherPoly = other.polygon();
 	for(size_t i=0; i<m_polyVect.size(); ++i) {
 		for(size_t j=0; j<otherPoly.size(); ++j) {
-			if(m_polyVect[i] == otherPoly[j])
+			if(nearEqual(m_polyVect[i], otherPoly[j]))
 				equalPoints.push_back(std::make_pair(i,j));
 		}
 	}
 	return equalPoints;
 }
+
+bool Surface::isSame(const Surface& other) const {
+	if(m_polyVect.size() != other.polygon().size())
+		return false;
+
+	std::vector<std::pair<size_t,size_t>> sps = samePoints(other);
+	if(sps.size() == m_polyVect.size())
+		return true;
+	return false;
+}
+
 
 //static bool compare(const polygon3D_t& left, const polygon3D_t& right) {
 //	if(left.size() != right.size())
@@ -295,7 +324,7 @@ bool Surface::isIntersected(const Surface& other) const {
 //	return intersects(m_polyVectOrg, other.polygon());
 }
 
-Surface Surface::intersect(const Surface& other) {
+Surface Surface::intersect(const Surface& other) const {
 	polygon3D_t result = intersectPolygons(m_polyVect, other.polygon(), m_planeNormal);
 	if(result.empty() || areaPolygon(result) < 1e-4)
 		return Surface();
@@ -303,7 +332,7 @@ Surface Surface::intersect(const Surface& other) {
 	return Surface(result);
 }
 
-Surface::IntersectionResult Surface::intersect2(const Surface& other) {
+Surface::IntersectionResult Surface::intersect2(const Surface& other) const {
 	IFCC::IntersectionResult tmp = intersectPolygons2(m_polyVect, other.polygon(), m_planeNormal);
 	Surface::IntersectionResult result;
 	for(const polygon3D_t& poly : tmp.m_intersections) {
@@ -413,10 +442,11 @@ double Surface::area() const {
 }
 
 Surface::MatchResult Surface::findFirstSurfaceMatchIndex(const std::vector<Surface>& wallSurfaces, const std::vector<Surface>& spaceSurfaces, double minDist) {
+	const double EPS = 1e-3;
 	for(size_t wi=0; wi<wallSurfaces.size(); ++wi) {
 		for(size_t si=0; si<spaceSurfaces.size(); ++si) {
 			double dist = spaceSurfaces[si].distanceToParallelPlane(wallSurfaces[wi].planeNormal());
-			if(dist < minDist) {
+			if(dist < minDist * (1+EPS)) {
 				if(wallSurfaces[wi].isIntersected(spaceSurfaces[si]))
 					return MatchResult(wi,si);
 			}

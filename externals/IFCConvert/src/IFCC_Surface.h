@@ -65,6 +65,8 @@ public:
 
 	double distanceToParallelPlane(const PlaneNormal& other) const;
 
+	double distanceToParallelPlane(const Surface& other) const;
+
 	bool isParallelTo(const Surface& other) const;
 
 	bool equalNormals(const Surface& other)  const;
@@ -83,18 +85,20 @@ public:
 	/*! Return the intersection area of the given surface to the original one.
 		The returned surface is not valid in case of no intersection.
 	*/
-	Surface intersect(const Surface& other);
+	Surface intersect(const Surface& other) const;
 
 	/*! Intersects the original surface with the given one.
 		The result contains the intersection surfaces in first and the difference surfaces (original - other) in second.
 	*/
-	Surface::IntersectionResult intersect2(const Surface& other);
+	Surface::IntersectionResult intersect2(const Surface& other) const;
 
 	bool merge(const Surface& subsurface);
 
 	bool addSubSurface(const Surface& subsurface);
 
 	std::vector<std::pair<size_t,size_t>> samePoints(const Surface& other) const;
+
+	bool isSame(const Surface& other) const;
 
 	bool check();
 
