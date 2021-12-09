@@ -560,13 +560,13 @@ bool PlaneHesseNormal::getPlane(const std::vector<IBKMK::Vector3D>& polygon) {
 	}
 
 	IBKMK::Vector3D C;
-	IBKMK::Vector3D n; //move to here //vc++ optimize bug
 	for(const IBKMK::Vector3D& vert : polygon) {
 		C += vert;
 	}
 	C = C * (1.0/polygon.size());
 
 
+	IBKMK::Vector3D n;
 	if (polygon.size() == 3) {
 		n = (polygon[1] - polygon[0]).crossProduct(polygon[2] - polygon[0]);
 	}
