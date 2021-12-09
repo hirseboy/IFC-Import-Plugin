@@ -272,6 +272,10 @@ bool IFCReader::convertToSimVicus() {
 			}
 		}
 
+		for(BuildingElement& openingElement : m_openingElemnts) {
+			openingElement.fillOpeningProperties(m_constructionElemnts, m_openings);
+		}
+
 
 		m_database.collectData(m_constructionElemnts);
 		m_database.collectData(m_openingElemnts);
