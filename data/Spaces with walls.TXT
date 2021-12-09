@@ -1,0 +1,70 @@
+
+Space 7
+  Wand-Ext-OG-1
+    OG-Fenster-2
+  Wand-Ext-OG-3
+    OG-Fenster-1
+  Wand-Ext-OG-2
+  Wand-Ext-OG-4
+  Dach-1
+  Dach-2
+  
+  
+Space 6   Kueche
+  Wand-Int-ERDG-5
+  Wand-Ext-ERDG-4
+    EG-Fenster-4
+  Wand-Ext-ERDG-1
+    EG-Fenster-7
+
+
+Space 1   Flur
+  Wand-Int-ERDG-5
+  Wand-Int-ERDG-3
+    Innentuer-2
+    Innentuer-3
+  Wand-Ext-ERDG-1
+    Haustuer
+  Wand-Int-ERDG-2
+    Innentuer-1
+  
+
+
+Space 5
+  Wand-Ext-ERDG-3
+    EG-Fenster-9
+  Wand-Ext-ERDG-4
+    EG-Fenster-5
+  Wand-Int-ERDG-4
+  
+
+
+Space 4
+  Wand-Ext-ERDG-3
+    EG-Fenster-8
+  Wand-Ext-ERDG-2
+    EG-Fenster-3
+  Wand-Int-ERDG-2
+    Innentuer-1
+  Wand-Int-ERDG-4
+
+
+Space 2   Buero
+  Wand-Ext-ERDG-2
+    EG-Fenster-1
+  Wand-Int-ERDG-3
+    Innentuer-3
+  Wand-Ext-ERDG-1
+    EG-Fenster-6
+  Wand-Int-ERDG-1
+
+
+Space 3
+  Wand-Ext-ERDG-2
+    EG-Fenster-2
+  Wand-Int-ERDG-3
+    Innentuer-2
+  Wand-Int-ERDG-2
+  Wand-Int-ERDG-1
+
+
