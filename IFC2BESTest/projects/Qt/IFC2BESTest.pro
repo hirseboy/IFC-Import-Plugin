@@ -10,26 +10,45 @@ TEMPLATE = app
 # it contains all functions defined for casual libraries
 include( ../../../externals/IBK/projects/Qt/IBK.pri )
 
-QT -= core gui
+QT       += core gui
 
-CONFIG += console
-CONFIG -= app_bundle
+greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
-#DEFINES += IFCQUERY_STATIC_LIB
+CONFIG += c++11
+
+# You can make your code fail to compile if it uses deprecated APIs.
+# In order to do so, uncomment the following line.
+#DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
 LIBS += \
 	-lIBKMK \
 	-lIBK \
-	-lIFCPlusPlus
+	-lTiCPP \
+	-lclipper \
+	-lIFCPlusPlus \
+	-lIFCConvert \
+	-lCarve
 
 INCLUDEPATH = \
 	../../src \
 	../../../externals/IBK/src \
 	../../../externals/IBKMK/src \
+	../../../externals/TiCPP/src \
+	../../../externals/IFCConvert/src \
 	../../../externals/ifcplusplus/src/IfcPlusPlus/src/ifcpp/reader \
-	../../../externals/ifcplusplus/src/IfcPlusPlus/src
+	../../../externals/ifcplusplus/src/IfcPlusPlus/src \
+	../../../externals/ifcplusplus/src/external/Carve/src/include \
+	../../../externals/ifcplusplus/src/external
 
 DEPENDPATH = $${INCLUDEPATH}
 
 SOURCES += \
-	../../src/main.cpp
+	../../src/main.cpp \
+	../../src/mainwindow.cpp
+
+HEADERS += \
+	../../src/mainwindow.h
+
+FORMS += \
+	../../src/mainwindow.ui
+
