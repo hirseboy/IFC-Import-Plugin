@@ -128,28 +128,55 @@ void Space::fetchGeometry(std::shared_ptr<ProductShapeData> productShape) {
 	}
 }
 
+static void divideSurface(const Surface::IntersectionResult& intRes, std::vector<Surface>& spaceSurfaces, int ssIndex, std::vector<Surface>& subsurfaces) {
+	// construction element covers complete space surface
+	if(intRes.m_diffBaseMinusClip.empty()) {
+		spaceSurfaces.erase(spaceSurfaces.begin() + ssIndex);
+	}
+	// we have a rest of the space surface without matching construction element
+	else {
+		// we have only one resulting space surface - change original surface to it
+		if(intRes.m_diffBaseMinusClip.size() == 1) {
+			// we have no holes
+			spaceSurfaces[ssIndex] = intRes.m_diffBaseMinusClip.front();
+			// we have some holes - add these to subsurface list
+			if(!intRes.m_holesBaseMinusClip.front().empty()) {
+				for(const Surface& subsurf : intRes.m_holesBaseMinusClip.front())
+					subsurfaces.push_back(subsurf);
+			}
+		}
+		// we have mor than one resulting space surface - set first one to original and add the others
+		else {
+			spaceSurfaces[ssIndex] = intRes.m_diffBaseMinusClip.front();
+			for(const Surface& subsurf : intRes.m_holesBaseMinusClip.front())
+				subsurfaces.push_back(subsurf);
+			for(size_t i=1; i<intRes.m_diffBaseMinusClip.size(); ++i) {
+				spaceSurfaces.push_back(intRes.m_diffBaseMinusClip[i]);
+				for(const Surface& subsurf : intRes.m_holesBaseMinusClip[i])
+					subsurfaces.push_back(subsurf);
+			}
+		}
+	}
+}
+
 void Space::createSpaceBoundaries(std::vector<Surface>& surfaces, std::vector<SpaceBoundary>& spaceBoundaries,
-								  const std::vector<BuildingElement>& elements,
-								  const std::vector<Opening>& openings) {
+								  const std::vector<BuildingElement>& elements) {
 	for(const auto& construction : elements) {
 		double dist = construction.thickness();
 		double maxConstructionDist = 0;
-		if(construction.m_subSurfaceComponent) {
-			int constructionIDCount = construction.m_openingProperties.m_usedInConstructionIds.size();
-			for(int i=0; i<constructionIDCount; ++i) {
-				int constId = construction.m_openingProperties.m_usedInConstructionIds[i];
-				auto fit = std::find_if(elements.begin(), elements.end(),
-										[constId](const auto& constr) {return constr.m_id == constId; });
-				if(fit != elements.end()) {
-					maxConstructionDist = std::max(maxConstructionDist,fit->thickness());
-				}
-			}
+		if(construction.m_subSurfaceComponent && !construction.m_openingProperties.m_constructionThicknesses.empty()) {
+			maxConstructionDist = *std::max_element(construction.m_openingProperties.m_constructionThicknesses.begin(),
+												   construction.m_openingProperties.m_constructionThicknesses.end());
 		}
 		if(dist < 1.0e-4) {
 			if(maxConstructionDist > 1.0e-4)
 				dist = maxConstructionDist;
 			else
 				dist = 1.0e-4;
+		}
+		int wId = -1;
+		if(construction.m_name == "Dach-2" && m_name == "7") {
+			wId = construction.m_id;
 		}
 
 		Surface::MatchResult indices = Surface::findFirstSurfaceMatchIndex(construction.m_surfaces, surfaces, dist);
@@ -163,36 +190,13 @@ void Space::createSpaceBoundaries(std::vector<Surface>& surfaces, std::vector<Sp
 					std::string name = m_name + ":" + construction.m_name + " - " +
 									   std::to_string(indices.m_spaceSurfaceIndex) + " : " + std::to_string(indices.m_wallSurfaceIndex);
 					if(sb.set(name, construction)) {
-						sb.fetchGeometry(surf);
 						sb.m_elementEntityId = construction.m_id;
+						sb.fetchGeometry(surf);
 						spaceBoundaries.push_back(sb);
 					}
 				}
-				// construction element covers complete space surface
-				if(intersectionResult.m_diffBaseMinusClip.empty()) {
-					surfaces.erase(surfaces.begin() + indices.m_spaceSurfaceIndex);
-				}
-				// we have a rest of the space surface without matching construction element
-				else {
-					// we have only one resulting space surface - change original surface to it
-					if(intersectionResult.m_diffBaseMinusClip.size() == 1) {
-						// we have no holes
-						if(intersectionResult.m_holesBaseMinusClip[0].empty()) {
-							surfaces[indices.m_spaceSurfaceIndex] = intersectionResult.m_diffBaseMinusClip.front();
-						}
-						// we have some holes - add these to subsurface list
-						else {
-
-						}
-					}
-					// we have mor than one resulting space surface - set first one to original and add the others
-					else {
-						surfaces[indices.m_spaceSurfaceIndex] = intersectionResult.m_diffBaseMinusClip.front();
-						for(size_t i=1; i<intersectionResult.m_diffBaseMinusClip.size(); ++i) {
-							surfaces.push_back(intersectionResult.m_diffBaseMinusClip[i]);
-						}
-					}
-				}
+				std::vector<Surface> subsurfaces;
+				divideSurface(intersectionResult, surfaces, indices.m_spaceSurfaceIndex, subsurfaces);
 
 				indices = Surface::findFirstSurfaceMatchIndex(construction.m_surfaces, surfaces, dist);
 
@@ -203,6 +207,218 @@ void Space::createSpaceBoundaries(std::vector<Surface>& surfaces, std::vector<Sp
 		}
 	}
 }
+
+static Space::SpaceBoundariesMatching findFirstSurfaceSBMatchIndex(const BuildingElement& construction,
+														 const std::vector<SpaceBoundary>& spaceBoundaries, double minDist) {
+	const auto uidBegin = construction.m_openingProperties.m_usedInConstructionIds.begin();
+	const auto uidEnd = construction.m_openingProperties.m_usedInConstructionIds.end();
+	std::vector<std::pair<Space::SpaceBoundariesMatching,double>> distVect;
+	Space::SpaceBoundariesMatching result;
+	for(size_t wi=0; wi<construction.m_surfaces.size(); ++wi) {
+		for(size_t si=0; si<spaceBoundaries.size(); ++si) {
+			if(std::find(uidBegin, uidEnd, spaceBoundaries[si].m_elementEntityId) != uidEnd) {
+				double constrThickness = construction.thickness();
+				if(constrThickness > minDist) {
+					minDist = constrThickness;
+				}
+
+				for(size_t sbsi=0; sbsi<spaceBoundaries[si].surfaces().size(); ++sbsi) {
+					const Surface& currentSpaceSurf = spaceBoundaries[si].surfaces()[sbsi];
+					double dist = currentSpaceSurf.distanceToParallelPlane(construction.m_surfaces[wi].planeNormal());
+					if(dist < 1e30)
+						distVect.push_back(std::make_pair(Space::SpaceBoundariesMatching(wi,si,sbsi),dist));
+					if(dist < minDist) {
+						if(currentSpaceSurf.isIntersected(construction.m_surfaces[wi])) {
+							if(!result.isValid())
+								result = Space::SpaceBoundariesMatching(wi,si,sbsi);
+						}
+					}
+				}
+			}
+		}
+	}
+	return result;
+}
+
+static std::vector<Space::SpaceBoundariesMatching> findAllSurfaceSBMatchIndex(const BuildingElement& construction,
+														 const std::vector<SpaceBoundary>& spaceBoundaries, double minDist) {
+	std::vector<Space::SpaceBoundariesMatching> result;
+	std::vector<std::pair<Space::SpaceBoundariesMatching,double>> distVect;
+	const auto uidBegin = construction.m_openingProperties.m_usedInConstructionIds.begin();
+	const auto uidEnd = construction.m_openingProperties.m_usedInConstructionIds.end();
+	for(size_t wi=0; wi<construction.m_surfaces.size(); ++wi) {
+		for(size_t si=0; si<spaceBoundaries.size(); ++si) {
+			if(std::find(uidBegin, uidEnd, spaceBoundaries[si].m_elementEntityId) != uidEnd) {
+				double constrThickness = construction.thickness();
+				if(constrThickness > minDist) {
+					minDist = constrThickness;
+				}
+
+				for(size_t sbsi=0; sbsi<spaceBoundaries[si].surfaces().size(); ++sbsi) {
+					const Surface& currentSpaceSurf = spaceBoundaries[si].surfaces()[sbsi];
+					double dist = currentSpaceSurf.distanceToParallelPlane(construction.m_surfaces[wi]);
+					if(dist < 1e30)
+						distVect.push_back(std::make_pair(Space::SpaceBoundariesMatching(wi,si,sbsi),dist));
+					if(dist < minDist) {
+						if(currentSpaceSurf.isIntersected(construction.m_surfaces[wi]))
+							result.emplace_back(Space::SpaceBoundariesMatching(wi,si,sbsi));
+					}
+				}
+			}
+		}
+	}
+	return result;
+}
+
+static Space::SpaceBoundariesMatching findBestSurfaceSBMatchIndex(const BuildingElement& construction,
+														 const std::vector<SpaceBoundary>& spaceBoundaries, double minDist) {
+	const auto uidBegin = construction.m_openingProperties.m_usedInConstructionIds.begin();
+	const auto uidEnd = construction.m_openingProperties.m_usedInConstructionIds.end();
+	Space::SpaceBoundariesMatching result;
+	double lastDistance = 1e30;
+	for(size_t wi=0; wi<construction.m_surfaces.size(); ++wi) {
+		for(size_t si=0; si<spaceBoundaries.size(); ++si) {
+			if(std::find(uidBegin, uidEnd, spaceBoundaries[si].m_elementEntityId) != uidEnd) {
+				double constrThickness = construction.thickness();
+				if(constrThickness > minDist) {
+					minDist = constrThickness;
+				}
+
+				for(size_t sbsi=0; sbsi<spaceBoundaries[si].surfaces().size(); ++sbsi) {
+					const Surface& currentSpaceSurf = spaceBoundaries[si].surfaces()[sbsi];
+					double dist = currentSpaceSurf.distanceToParallelPlane(construction.m_surfaces[wi].planeNormal());
+					if(dist < minDist) {
+						if(currentSpaceSurf.isIntersected(construction.m_surfaces[wi])) {
+							if(!result.isValid() || dist < lastDistance) {
+								result = Space::SpaceBoundariesMatching(wi,si,sbsi);
+								lastDistance = dist;
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+	return result;
+}
+
+static Space::SpaceBoundariesMatching findBestSurfaceOpeningMatchIndex(const BuildingElement& openingConstruction,
+														 const std::vector<Opening>& openings, double minDist) {
+	const auto uidBegin = openingConstruction.m_usedFromOpenings.begin();
+	const auto uidEnd = openingConstruction.m_usedFromOpenings.end();
+	Space::SpaceBoundariesMatching result;
+	double lastDistance = 1e30;
+	for(size_t wi=0; wi<openingConstruction.m_surfaces.size(); ++wi) {
+		for(size_t oi=0; oi<openings.size(); ++oi) {
+			if(std::find(uidBegin, uidEnd, openings[oi].m_id) != uidEnd) {
+				double constrThickness = openingConstruction.thickness();
+				if(constrThickness > minDist) {
+					minDist = constrThickness;
+				}
+
+				for(size_t sbsi=0; sbsi<openings[oi].surfaces().size(); ++sbsi) {
+					const Surface& currentSpaceSurf = openings[oi].surfaces()[sbsi];
+					double dist = currentSpaceSurf.distanceToParallelPlane(openingConstruction.m_surfaces[wi].planeNormal());
+					if(dist < minDist) {
+						if(currentSpaceSurf.isIntersected(openingConstruction.m_surfaces[wi])) {
+							if(!result.isValid() || dist < lastDistance) {
+								result = Space::SpaceBoundariesMatching(wi,oi,sbsi);
+								lastDistance = dist;
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+	return result;
+}
+
+
+void Space::createSpaceBoundariesForOpeningsFromOpenings(std::vector<SpaceBoundary>& spaceBoundaries,
+											 const std::vector<BuildingElement>& openingElements,
+											 const std::vector<Opening>& openings) {
+	if(openings.empty())
+		return;
+
+	for(const auto& construction : openingElements) {
+		if(!construction.m_subSurfaceComponent)
+			continue;
+
+		double maxConstructionThickness = 0;
+		if(construction.m_subSurfaceComponent && !construction.m_openingProperties.m_constructionThicknesses.empty()) {
+			maxConstructionThickness = *std::max_element(construction.m_openingProperties.m_constructionThicknesses.begin(),
+												   construction.m_openingProperties.m_constructionThicknesses.end());
+			Space::SpaceBoundariesMatching match = findBestSurfaceOpeningMatchIndex(construction, openings, maxConstructionThickness);
+			if(match.isValid()) {
+				const Surface& openingSurface = openings[match.m_spaceBoundaryIndex].surfaces()[match.m_spaceBoundarySurfaceIndex];
+				const Surface& constrSurface = construction.m_surfaces[match.m_constructionSurfaceIndex];
+				Surface intersectionResult = openingSurface.intersect(constrSurface);
+				if(intersectionResult.m_valid) {
+					double dist2 = intersectionResult.distanceToParallelPlane(constrSurface);
+					SpaceBoundary sb(GUID_maker::instance().guid());
+					std::string name = m_name + ":" + construction.m_name + " - " +
+									   std::to_string(match.m_spaceBoundaryIndex) + " : " +
+									   std::to_string(match.m_spaceBoundarySurfaceIndex) + " : " +
+									   std::to_string(match.m_constructionSurfaceIndex);
+					if(sb.set(name, construction)) {
+						sb.m_elementEntityId = construction.m_id;
+						sb.fetchGeometry(intersectionResult);
+						spaceBoundaries.push_back(sb);
+					}
+				}
+			}
+		}
+	}
+}
+
+void Space::createSpaceBoundariesForOpeningsFromSpaceBoundaries(std::vector<SpaceBoundary> &spaceBoundaries,
+																const std::vector<BuildingElement> &openingElements,
+																const std::vector<Opening> &openings) {
+	if(spaceBoundaries.empty())
+		return;
+
+	std::vector<SpaceBoundary> constructionSpaceBoundaries(spaceBoundaries);
+
+	for(const auto& construction : openingElements) {
+		if(!construction.m_subSurfaceComponent)
+			continue;
+
+		int wId = -1;
+		if(construction.m_name == "EG-Fenster-7" && m_name == "6") {
+			wId = construction.m_id;
+		}
+		double maxConstructionThickness = 0;
+		if(construction.m_subSurfaceComponent && !construction.m_openingProperties.m_constructionThicknesses.empty()) {
+			maxConstructionThickness = *std::max_element(construction.m_openingProperties.m_constructionThicknesses.begin(),
+												   construction.m_openingProperties.m_constructionThicknesses.end());
+			Space::SpaceBoundariesMatching match = findBestSurfaceSBMatchIndex(construction, constructionSpaceBoundaries, maxConstructionThickness);
+//			std::vector<Space::SpaceBoundariesMatching> ivect = findAllSurfaceSBMatchIndex(construction, constructionSpaceBoundaries, maxConstructionThickness);
+			if(wId > -1) {
+				double minDist = 1e30;
+			}
+			if(match.isValid()) {
+				const Surface& sbSurface = constructionSpaceBoundaries[match.m_spaceBoundaryIndex].surfaces()[match.m_spaceBoundarySurfaceIndex];
+				const Surface& constrSurface = construction.m_surfaces[match.m_constructionSurfaceIndex];
+				Surface intersectionResult = sbSurface.intersect(constrSurface);
+				if(intersectionResult.m_valid) {
+					double dist2 = intersectionResult.distanceToParallelPlane(constrSurface);
+					SpaceBoundary sb(GUID_maker::instance().guid());
+					std::string name = m_name + ":" + construction.m_name + " - " +
+									   std::to_string(match.m_spaceBoundaryIndex) + " : " +
+									   std::to_string(match.m_spaceBoundarySurfaceIndex) + " : " +
+									   std::to_string(match.m_constructionSurfaceIndex);
+					if(sb.set(name, construction)) {
+						sb.m_elementEntityId = construction.m_id;
+						sb.fetchGeometry(intersectionResult);
+						spaceBoundaries.push_back(sb);
+					}
+				}
+			}
+		}
+	}
+}
+
 
 void Space::updateSpaceBoundaries(const std::map<ObjectTypes,std::vector<shared_ptr<ProductShapeData>>>& shapes,
 								  shared_ptr<UnitConverter>& unit_converter,
@@ -261,8 +477,27 @@ void Space::updateSpaceBoundaries(const std::map<ObjectTypes,std::vector<shared_
 		std::vector<Surface> surfaceCopy(m_surfacesOrg);
 		std::vector<SpaceBoundary> newSpaceBoundaries;
 
-		createSpaceBoundaries(surfaceCopy, newSpaceBoundaries, constructionElements, openings);
-		createSpaceBoundaries(surfaceCopy, newSpaceBoundaries, openingElements, openings);
+		createSpaceBoundaries(surfaceCopy, newSpaceBoundaries, constructionElements);
+		double maxArea = 0;
+		double totalArea = 0;
+		for(const Surface& surf : surfaceCopy) {
+			double ta = surf.area();
+			maxArea = std::max(maxArea, ta);
+			totalArea += ta;
+		}
+		double totalOpeningArea = 0;
+		for(const BuildingElement& elem : openingElements) {
+			totalOpeningArea += elem.openingArea();
+		}
+		createSpaceBoundariesForOpeningsFromOpenings(newSpaceBoundaries, openingElements, openings);
+//		if(totalOpeningArea > totalArea) {
+//			std::vector<Surface> surfaceCopyOp(m_surfacesOrg);
+//			createSpaceBoundaries(surfaceCopyOp, newSpaceBoundaries, openingElements);
+//		}
+//		else {
+//			createSpaceBoundaries(surfaceCopy, newSpaceBoundaries, openingElements, openings);
+//		}
+
 		m_spaceBoundaries = newSpaceBoundaries;
 	}
 }
@@ -314,10 +549,10 @@ void Space::updateSurfaces(const std::vector<BuildingElement>& elems) {
 					// then check if the distance of the subsurface to the surface is smaller than the thickness of the bulding element
 					// if this is the case the window or door can be inside of the wall
 					if(parallel && thickness > 0) {
-						double dist = m_surfaces[i].distanceToParallelPlane(sub.planeNormal());
-						// distance is smalle than thickness - check if we have an intersection
-						if(m_surfaces[i].isIntersected(sub)) {
-							if(dist < thickness) {
+						double dist = m_surfaces[i].distanceToParallelPlane(sub);
+						// distance is smaller than thickness - check if we have an intersection
+						if(dist < thickness) {
+							if(m_surfaces[i].isIntersected(sub)) {
 								subSurfaceMatch.emplace_back(OpeningMatching(OMT_WallThicknessIntersection, i,j));
 							}
 						}

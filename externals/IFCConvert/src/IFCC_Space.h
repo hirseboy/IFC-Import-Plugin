@@ -39,6 +39,36 @@ public:
 		size_t				m_subSurfaceIndex;
 	};
 
+
+	struct SpaceBoundariesMatching {
+		SpaceBoundariesMatching() :
+			m_constructionSurfaceIndex(-1),
+			m_spaceBoundaryIndex(-1),
+			m_spaceBoundarySurfaceIndex(-1)
+		{}
+
+		SpaceBoundariesMatching(int constructionSurfaceIndex, int spaceBoundaryIndex, int spaceBoundarySurfaceIndex) :
+			m_constructionSurfaceIndex(constructionSurfaceIndex),
+			m_spaceBoundaryIndex(spaceBoundaryIndex),
+			m_spaceBoundarySurfaceIndex(spaceBoundarySurfaceIndex)
+		{}
+
+		bool isValid() const {
+			if(m_constructionSurfaceIndex < 0)
+				return false;
+			if(m_spaceBoundaryIndex < 0)
+				return false;
+			if(m_spaceBoundarySurfaceIndex < 0)
+				return false;
+			return true;
+		}
+
+		int m_constructionSurfaceIndex;
+		int m_spaceBoundaryIndex;
+		int m_spaceBoundarySurfaceIndex;
+	};
+
+
 	explicit Space(int id);
 
 	bool set(std::shared_ptr<IfcSpace> ifcSpace);
@@ -77,9 +107,19 @@ private:
 
 	void fetchGeometry(std::shared_ptr<ProductShapeData> productShape);
 
+	/*! Try to find space boundaries for construction elements.*/
 	void createSpaceBoundaries(std::vector<Surface>& surfaces, std::vector<SpaceBoundary>& spaceBoundaries,
-							   const std::vector<BuildingElement>& elements,
-							   const std::vector<Opening>& openings);
+							   const std::vector<BuildingElement>& constructionElements);
+
+	/*! Try to find space boundaries for opening elements based on existing space boundaries.*/
+	void createSpaceBoundariesForOpeningsFromSpaceBoundaries(std::vector<SpaceBoundary>& spaceBoundaries,
+															 const std::vector<BuildingElement>& openingElements,
+															 const std::vector<Opening>& openings);
+
+	/*! Try to find space boundaries for opening elements based on openings.*/
+	void createSpaceBoundariesForOpeningsFromOpenings(std::vector<SpaceBoundary>& spaceBoundaries,
+													  const std::vector<BuildingElement>& openingElements,
+													  const std::vector<Opening>& openings);
 
 	meshVector_t								m_meshSetClosedFinal;
 	meshVector_t								m_meshSetOpenFinal;
