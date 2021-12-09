@@ -12,7 +12,7 @@
 #include <ifcpp/IFC4/include/IfcWindowStyle.h>
 #include <ifcpp/IFC4/include/IfcWindowStyleOperationEnum.h>
 #include <ifcpp/IFC4/include/IfcWindowType.h>
-#include <ifcpp/IFC4/include/IfcDoor.h>
+#include <ifcpp/IFC4/include/IfcDoorStyle.h>
 
 #include <ifcpp/IFC4/include/IfcRelAssignsToProduct.h>
 #include <ifcpp/IFC4/include/IfcRelFillsElement.h>
@@ -115,6 +115,19 @@ bool BuildingElement::set(std::shared_ptr<IfcElement> ifcElement, ObjectTypes ty
 			if(door != nullptr) {
 				m_openingProperties.m_isWindow = false;
 				m_openingProperties.m_isDoor = true;
+				if(door->m_PredefinedType != nullptr)
+					m_openingProperties.m_doorType = door->m_PredefinedType->m_enum;
+				if(door->m_OverallHeight != nullptr)
+					m_openingProperties.m_doorHeight = door->m_OverallHeight->m_value;
+				if(door->m_OverallWidth != nullptr)
+					m_openingProperties.m_doorWidth = door->m_OverallWidth->m_value;
+				for(const auto& reltypes : ifcElement->m_IsTypedBy_inverse) {
+					shared_ptr<IfcRelDefinesByType> rel_types(reltypes);
+					shared_ptr<IfcDoorStyle> doorStyle = dynamic_pointer_cast<IfcDoorStyle>(rel_types->m_RelatingType);
+					if(doorStyle != nullptr) {
+
+					}
+				}
 			}
 		}
 	}
@@ -234,7 +247,8 @@ void BuildingElement::fetchOpenings(std::vector<Opening>& openings) {
 
 	for(const auto& opOrg : m_isUsedFromOpeningsOriginal) {
 		for(auto& op : openings) {
-			if(op.m_guid == guidFromObject(opOrg.get())) {
+			std::string guid = guidFromObject(opOrg.get());
+			if(op.m_guid == guid) {
 				m_usedFromOpenings.push_back(op.m_id);
 				op.m_openingElementIds.push_back(m_id);
 				break;
@@ -244,24 +258,11 @@ void BuildingElement::fetchOpenings(std::vector<Opening>& openings) {
 
 	for(const auto& opOrg : m_containedOpeningsOriginal) {
 		for(auto& op : openings) {
-			if(op.m_guid == guidFromObject(opOrg.get())) {
+			std::string guid = guidFromObject(opOrg.get());
+			if(op.m_guid == guid) {
 				m_containedOpenings.push_back(op.m_id);
 				op.m_containedInElementIds.push_back(m_id);
 				break;
-			}
-		}
-	}
-
-	if(m_subSurfaceComponent) {
-		m_openingProperties.m_usedInConstructionIds.clear();
-		for(const auto& opId : m_usedFromOpenings) {
-			auto fit = std::find_if(openings.begin(), openings.end(),
-									[opId](const auto& op) {return op.m_id == opId; });
-			if(fit != openings.end()) {
-				int elemCount = fit->m_containedInElementIds.size();
-				m_openingProperties.m_usedInConstructionIds.insert(m_openingProperties.m_usedInConstructionIds.end(),
-																   fit->m_containedInElementIds.begin(),
-																   fit->m_containedInElementIds.end());
 			}
 		}
 	}
@@ -328,5 +329,47 @@ double	BuildingElement::thickness() const {
 	return res;
 }
 
+double BuildingElement::openingArea() const {
+	if(!m_subSurfaceComponent)
+		return 0;
+
+	if(m_openingProperties.m_isWindow) {
+		return m_openingProperties.m_windowHeight * m_openingProperties.m_windowWidth;
+	}
+	if(m_openingProperties.m_isDoor) {
+		return m_openingProperties.m_doorHeight * m_openingProperties.m_doorWidth;
+	}
+
+	return 0;
+}
+
+
+void BuildingElement::fillOpeningProperties(const std::vector<BuildingElement>& elements, const std::vector<Opening>& openings) {
+	if(!m_subSurfaceComponent)
+		return;
+
+	m_openingProperties.m_usedInConstructionIds.clear();
+	for(const auto& opId : m_usedFromOpenings) {
+		auto fit = std::find_if(openings.begin(), openings.end(),
+								[opId](const auto& op) {return op.m_id == opId; });
+		if(fit != openings.end()) {
+			int elemCount = fit->m_containedInElementIds.size();
+			if(elemCount > 0) {
+				m_openingProperties.m_usedInConstructionIds.insert(m_openingProperties.m_usedInConstructionIds.end(),
+																   fit->m_containedInElementIds.begin(),
+																   fit->m_containedInElementIds.end());
+			}
+		}
+	}
+	int constructionIDCount = m_openingProperties.m_usedInConstructionIds.size();
+	for(int i=0; i<constructionIDCount; ++i) {
+		int constId = m_openingProperties.m_usedInConstructionIds[i];
+		auto fit = std::find_if(elements.begin(), elements.end(),
+								[constId](const auto& constr) {return constr.m_id == constId; });
+		if(fit != elements.end()) {
+			m_openingProperties.m_constructionThicknesses.push_back(fit->thickness());
+		}
+	}
+}
 
 } // namespace IFCC
