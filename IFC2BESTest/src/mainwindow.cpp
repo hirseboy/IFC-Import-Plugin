@@ -36,11 +36,11 @@ QStringList MainWindow::statistic() const {
 	text << tr("%1 buildings.").arg(m_reader->m_site.m_buildings.size());
 	for(const auto& building : m_reader->m_site.m_buildings) {
 		text << tr("Building %1 with %2 storeys.").arg(QString::fromStdString(building.m_name))
-				.arg(building.m_storeys.size());
-		for(const auto& storey : building.m_storeys) {
+				.arg(building.storeys().size());
+		for(const auto& storey : building.storeys()) {
 			text << tr("\tStorey %1 with %2 spaces.").arg(QString::fromStdString(storey.m_name))
-					.arg(storey.m_spaces.size());
-			for(const auto& space : storey.m_spaces) {
+					.arg(storey.spaces().size());
+			for(const auto& space : storey.spaces()) {
 				text << tr("\tSpace %1 with %2 space boundaries.").arg(QString::fromStdString(space.m_name+" - "+space.m_longName))
 						.arg(space.m_spaceBoundaries.size());
 			}
