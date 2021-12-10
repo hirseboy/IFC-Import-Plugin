@@ -37,8 +37,8 @@ int Instances::collectComponentInstances(std::vector<BuildingElement>& elements,
 	std::vector<int> failedSubSurfaces;
 
 	for(const auto& building : site.m_buildings) {
-		for(const auto& storey : building.m_storeys) {
-			for(const auto& space : storey.m_spaces) {
+		for(const auto& storey : building.storeys()) {
+			for(const auto& space : storey.spaces()) {
 				for(const auto& surf : space.m_surfaces) {
 					auto fitElem = std::find_if(
 								   elements.begin(),

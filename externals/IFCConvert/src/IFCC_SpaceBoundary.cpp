@@ -52,7 +52,7 @@ bool SpaceBoundary::set(std::shared_ptr<IfcRelSpaceBoundary> ifcSpaceBoundary) {
 
 bool SpaceBoundary::set(const std::string& name, const BuildingElement& elem) {
 	m_name = name;
-	setRelatingElementType(elem.m_type);
+	setRelatingElementType(elem.type());
 	m_physicalOrVirtual = IfcPhysicalOrVirtualEnum::ENUM_PHYSICAL;
 	m_guidRelatedElement = elem.m_guid;
 	m_nameRelatedElement = elem.m_name;

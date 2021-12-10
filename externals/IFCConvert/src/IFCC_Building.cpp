@@ -18,11 +18,12 @@ bool Building::set(std::shared_ptr<IfcSpatialStructureElement> ifcElement) {
 		return false;
 
 	const std::vector<weak_ptr<IfcRelAggregates> >& vec_decomposedBy = ifcElement->m_IsDecomposedBy_inverse;
-	for(const auto& contEleme : vec_decomposedBy) {
-		if( contEleme.expired() ) {
+	for(const auto& contentElement : vec_decomposedBy) {
+		// weak pointer contentElement valid?
+		if( contentElement.expired() ) {
 			continue;
 		}
-		shared_ptr<IfcRelAggregates> rel_aggregates( contEleme );
+		shared_ptr<IfcRelAggregates> rel_aggregates( contentElement );
 		if( rel_aggregates ) {
 			const std::vector<shared_ptr<IfcObjectDefinition> >& vec_related_objects = rel_aggregates->m_RelatedObjects;
 			for(const auto& contObj : vec_related_objects) {
@@ -41,8 +42,7 @@ bool Building::set(std::shared_ptr<IfcSpatialStructureElement> ifcElement) {
 void Building::fetchStoreys(const std::map<std::string,shared_ptr<ProductShapeData>>& storeys) {
 	for(const auto& shape : storeys) {
 		for(const auto& opOrg : m_storeysOriginal) {
-			std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> converterX;
-			std::string guid = converterX.to_bytes(opOrg->m_GlobalId->m_value);
+			std::string guid = guidFromObject(opOrg.get());
 			if(shape.first == guid) {
 				BuildingStorey storey(GUID_maker::instance().guid());
 				if(storey.set(opOrg)) {
@@ -53,6 +53,20 @@ void Building::fetchStoreys(const std::map<std::string,shared_ptr<ProductShapeDa
 		}
 	}
 }
+
+void Building::updateStoreys(const objectShapeTypeVector_t& elementShapes,
+				   const objectShapeGUIDMap_t& spaceShapes,
+				  shared_ptr<UnitConverter>& unit_converter,
+				  const std::vector<BuildingElement>& constructionElemnts,
+				  const std::vector<BuildingElement>& openingElements,
+							 const std::vector<Opening>& openings) {
+
+	for(auto& storey : m_storeys) {
+		storey.fetchSpaces(spaceShapes, unit_converter);
+		storey.updateSpaces(elementShapes, unit_converter, constructionElemnts, openingElements, openings);
+	}
+}
+
 
 TiXmlElement * Building::writeXML(TiXmlElement * parent) const {
 	if (m_id == -1)

@@ -75,13 +75,11 @@ public:
 
 	void update(std::shared_ptr<ProductShapeData> productShape);
 
-	void updateSpaceBoundaries(const std::map<ObjectTypes,std::vector<shared_ptr<ProductShapeData>>>& shapes,
+	void updateSpaceBoundaries(const objectShapeTypeVector_t& shapes,
 							   shared_ptr<UnitConverter>& unit_converter,
 							   const std::vector<BuildingElement>& constructionElemnts,
 							   const std::vector<BuildingElement>& openingElemnts,
 							   const std::vector<Opening>& openings);
-
-	void updateSurfaces(const std::vector<BuildingElement>& elems);
 
 	const meshVector_t& meshVector() const;
 
@@ -120,6 +118,8 @@ private:
 	void createSpaceBoundariesForOpeningsFromOpenings(std::vector<SpaceBoundary>& spaceBoundaries,
 													  const std::vector<BuildingElement>& openingElements,
 													  const std::vector<Opening>& openings);
+
+	void updateSurfaces(const std::vector<BuildingElement>& elems);
 
 	meshVector_t								m_meshSetClosedFinal;
 	meshVector_t								m_meshSetOpenFinal;

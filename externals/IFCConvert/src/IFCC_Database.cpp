@@ -77,13 +77,13 @@ void Database::collectData(std::vector<BuildingElement>& elements) {
 
 void Database::collectComponents(std::vector<BuildingElement>& elements) {
 	for(auto& elem : elements) {
-		if(elem.m_surfaceComponent) {
+		if(elem.isSurfaceComponent()) {
 			Component comp;
-			if(elem.m_type == OT_Wall)
+			if(elem.type() == OT_Wall)
 				comp.m_type = Component::CT_OutsideWall;
-			else if(elem.m_type == OT_Roof)
+			else if(elem.type() == OT_Roof)
 				comp.m_type = Component::CT_SlopedRoof;
-			else if(elem.m_type == OT_Slab)
+			else if(elem.type() == OT_Slab)
 				comp.m_type = Component::CT_FloorToAir;
 			else
 				comp.m_type = Component::CT_Miscellaneous;
@@ -93,13 +93,13 @@ void Database::collectComponents(std::vector<BuildingElement>& elements) {
 			comp.m_guid = elem.m_guid;
 			m_components[comp.m_id] = comp;
 		}
-		else if(elem.m_subSurfaceComponent) {
+		else if(elem.isSubSurfaceComponent()) {
 			SubSurfaceComponent comp;
-			if(elem.m_type == OT_Window) {
+			if(elem.type() == OT_Window) {
 				comp.m_type = SubSurfaceComponent::CT_Window;
 				comp.m_windowId = elem.m_openingProperties.m_id;
 			}
-			else if(elem.m_type == OT_Door) {
+			else if(elem.type() == OT_Door) {
 				comp.m_type = SubSurfaceComponent::CT_Door;
 				comp.m_constructionId = elem.m_constructionId;
 			}

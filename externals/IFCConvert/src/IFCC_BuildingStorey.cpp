@@ -53,6 +53,18 @@ void BuildingStorey::fetchSpaces(const std::map<std::string,shared_ptr<ProductSh
 	}
 }
 
+void BuildingStorey::updateSpaces(const objectShapeTypeVector_t& shapes,
+				  shared_ptr<UnitConverter>& unit_converter,
+				  const std::vector<BuildingElement>& constructionElemnts,
+				  const std::vector<BuildingElement>& openingElemnts,
+								  const std::vector<Opening>& openings) {
+
+	for(auto& space : m_spaces) {
+		space.updateSpaceBoundaries(shapes, unit_converter,	constructionElemnts, openingElemnts, openings);
+	}
+}
+
+
 TiXmlElement * BuildingStorey::writeXML(TiXmlElement * parent) const {
 	if (m_id == -1)
 		return nullptr;

@@ -45,7 +45,7 @@ bool BuildingElement::set(std::shared_ptr<IfcElement> ifcElement, ObjectTypes ty
 	}
 	if(m_type == OT_Roof || m_type == OT_Slab || m_type == OT_Wall)
 		m_surfaceComponent = true;
-	if(m_type == OT_Window || m_type == OT_Door)
+	else if(m_type == OT_Window || m_type == OT_Door)
 		m_subSurfaceComponent = true;
 
 	if(m_type == OT_Window || m_type == OT_Door) {
@@ -67,11 +67,11 @@ bool BuildingElement::set(std::shared_ptr<IfcElement> ifcElement, ObjectTypes ty
 					m_openingProperties.m_windowPartitionType = window->m_PartitioningType->m_enum;
 				m_openingProperties.m_windowUserDefinedPartitionType = label2s(window->m_UserDefinedPartitioningType);
 				switch(m_openingProperties.m_windowType) {
-					case IfcWindowTypeEnum::ENUM_WINDOW: m_openingProperties.m_name = "Window"; break;
-					case IfcWindowTypeEnum::ENUM_SKYLIGHT: m_openingProperties.m_name = "Skylight"; break;
-					case IfcWindowTypeEnum::ENUM_LIGHTDOME: m_openingProperties.m_name = "LightDome"; break;
-					case IfcWindowTypeEnum::ENUM_USERDEFINED: m_openingProperties.m_name = "UserDefined"; break;
-					case IfcWindowTypeEnum::ENUM_NOTDEFINED: m_openingProperties.m_name = "Not defined"; break;
+					case IfcWindowTypeEnum::ENUM_WINDOW: m_openingProperties.m_typeName = "Window"; break;
+					case IfcWindowTypeEnum::ENUM_SKYLIGHT: m_openingProperties.m_typeName = "Skylight"; break;
+					case IfcWindowTypeEnum::ENUM_LIGHTDOME: m_openingProperties.m_typeName = "LightDome"; break;
+					case IfcWindowTypeEnum::ENUM_USERDEFINED: m_openingProperties.m_typeName = "UserDefined"; break;
+					case IfcWindowTypeEnum::ENUM_NOTDEFINED: m_openingProperties.m_typeName = "Not defined"; break;
 				}
 			}
 			for(const auto& reltypes : ifcElement->m_IsTypedBy_inverse) {
@@ -166,9 +166,9 @@ void BuildingElement::transform(std::shared_ptr<ProductShapeData> productShape) 
 	if(productShape == nullptr)
 		return;
 
-	m_transformMatrix = productShape->getTransform();
-	if(m_transformMatrix != carve::math::Matrix::IDENT()) {
-		productShape->applyTransformToProduct(m_transformMatrix);
+	carve::math::Matrix transformMatrix = productShape->getTransform();
+	if(transformMatrix != carve::math::Matrix::IDENT()) {
+		productShape->applyTransformToProduct(transformMatrix);
 	}
 }
 
@@ -183,26 +183,30 @@ void BuildingElement::fetchGeometry(std::shared_ptr<ProductShapeData> productSha
 		if(currentRep->m_representation_identifier == L"Body")
 			break;
 	}
+
+	meshVector_t meshSetClosedFinal;
+	meshVector_t meshSetOpenFinal;
 	if(repCount > 0) {
 		int itemDataCount = currentRep->m_vec_item_data.size();
 		if(itemDataCount > 0) {
-			m_meshSetClosedFinal = currentRep->m_vec_item_data.front()->m_meshsets;
-			m_meshSetOpenFinal = currentRep->m_vec_item_data.front()->m_meshsets_open;
+			meshSetClosedFinal = currentRep->m_vec_item_data.front()->m_meshsets;
+			meshSetOpenFinal = currentRep->m_vec_item_data.front()->m_meshsets_open;
 		}
 	}
 
 	// try to simplify meshes by merging all coplanar faces
-	meshVector_t& currentMeshSets =  m_meshSetClosedFinal.empty() ? m_meshSetOpenFinal : m_meshSetClosedFinal;
+	meshVector_t& currentMeshSets =  meshSetClosedFinal.empty() ? meshSetOpenFinal : meshSetClosedFinal;
 	if(!currentMeshSets.empty()) {
 		simplifyMesh(currentMeshSets, false);
 	}
 
-	if(!m_meshSetClosedFinal.empty()) {
-		int msCount = m_meshSetClosedFinal.size();
+	if(!meshSetClosedFinal.empty()) {
+		polyVector_t polyvectClosedFinal;
+		int msCount = meshSetClosedFinal.size();
 		for(int i=0; i<msCount; ++i) {
-			m_polyvectClosedFinal.push_back(std::vector<std::vector<std::vector<IBKMK::Vector3D>>>());
-			const carve::mesh::MeshSet<3>& currMeshSet = *m_meshSetClosedFinal[i];
-			convert(currMeshSet, m_polyvectClosedFinal.back());
+			polyvectClosedFinal.push_back(std::vector<std::vector<std::vector<IBKMK::Vector3D>>>());
+			const carve::mesh::MeshSet<3>& currMeshSet = *meshSetClosedFinal[i];
+			convert(currMeshSet, polyvectClosedFinal.back());
 			// get surfaces
 			for(size_t mi=0; mi<currMeshSet.meshes.size(); ++mi) {
 				for(size_t fi =0; fi<currMeshSet.meshes[mi]->faces.size(); ++fi) {
@@ -212,12 +216,13 @@ void BuildingElement::fetchGeometry(std::shared_ptr<ProductShapeData> productSha
 			}
 		}
 	}
-	if(!m_meshSetOpenFinal.empty()) {
-		int msCount = m_meshSetOpenFinal.size();
+	if(!meshSetOpenFinal.empty()) {
+		polyVector_t polyvectOpenFinal;
+		int msCount = meshSetOpenFinal.size();
 		for(int i=0; i<msCount; ++i) {
-			m_polyvectOpenFinal.push_back(std::vector<std::vector<std::vector<IBKMK::Vector3D>>>());
-			const carve::mesh::MeshSet<3>& currMeshSet = *m_meshSetOpenFinal[i];
-			convert(currMeshSet, m_polyvectOpenFinal.back());
+			polyvectOpenFinal.push_back(std::vector<std::vector<std::vector<IBKMK::Vector3D>>>());
+			const carve::mesh::MeshSet<3>& currMeshSet = *meshSetOpenFinal[i];
+			convert(currMeshSet, polyvectOpenFinal.back());
 			// get surfaces
 			for(size_t mi=0; mi<currMeshSet.meshes.size(); ++mi) {
 				for(size_t fi =0; fi<currMeshSet.meshes[mi]->faces.size(); ++fi) {
@@ -268,42 +273,8 @@ void BuildingElement::fetchOpenings(std::vector<Opening>& openings) {
 	}
 }
 
-
-const meshVector_t& BuildingElement::meshVector() const {
-	if(!m_meshSetClosedFinal.empty() && !m_meshSetOpenFinal.empty()) {
-		throw IBK::Exception("Mesh includes open and closed meshset.", "Space::meshVector");
-	}
-
-	if(!m_meshSetClosedFinal.empty())
-		return m_meshSetClosedFinal;
-
-	return m_meshSetOpenFinal;
-}
-
-const polyVector_t& BuildingElement::polyVector() const {
-	if(!m_polyvectClosedFinal.empty() && !m_polyvectOpenFinal.empty()) {
-		throw IBK::Exception("Mesh includes open and closed meshset.", "Space::meshVector");
-	}
-
-	if(!m_polyvectClosedFinal.empty())
-		return m_polyvectClosedFinal;
-
-	return m_polyvectOpenFinal;
-}
-
 const std::vector<Surface>& BuildingElement::surfaces() const {
 	return m_surfaces;
-}
-
-carve::mesh::Face<3>* BuildingElement::face(FaceIndex findex) const {
-	if(!m_meshSetClosedFinal.empty() && !m_meshSetOpenFinal.empty()) {
-		return nullptr;
-	}
-
-	if(!m_meshSetClosedFinal.empty())
-		return faceFromMeshset(m_meshSetClosedFinal, findex);
-
-	return faceFromMeshset(m_meshSetOpenFinal, findex);
 }
 
 double	BuildingElement::thickness() const {
@@ -330,7 +301,7 @@ double	BuildingElement::thickness() const {
 }
 
 double BuildingElement::openingArea() const {
-	if(!m_subSurfaceComponent)
+	if(!isSubSurfaceComponent())
 		return 0;
 
 	if(m_openingProperties.m_isWindow) {
@@ -345,7 +316,7 @@ double BuildingElement::openingArea() const {
 
 
 void BuildingElement::fillOpeningProperties(const std::vector<BuildingElement>& elements, const std::vector<Opening>& openings) {
-	if(!m_subSurfaceComponent)
+	if(!isSubSurfaceComponent())
 		return;
 
 	m_openingProperties.m_usedInConstructionIds.clear();

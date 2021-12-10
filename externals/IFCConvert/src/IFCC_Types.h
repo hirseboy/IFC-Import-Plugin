@@ -8,6 +8,8 @@
 
 #include <carve/mesh.hpp>
 
+#include <ifcpp/geometry/Carve/GeometryInputData.h>
+
 namespace IFCC {
 
 
@@ -44,12 +46,14 @@ enum ObjectTypes {
 	OT_All
 };
 
-using  polyVector_t = std::vector<std::vector<std::vector<std::vector<IBKMK::Vector3D>>>>;
-using  meshVector_t = std::vector<std::shared_ptr<carve::mesh::MeshSet<3> > >;
+using polyVector_t = std::vector<std::vector<std::vector<std::vector<IBKMK::Vector3D>>>>;
+using meshVector_t = std::vector<std::shared_ptr<carve::mesh::MeshSet<3> > >;
 using polygon3D_t = std::vector<IBKMK::Vector3D>;
 using polygon2D_t = std::vector<IBKMK::Vector2D>;
 using conversionVectors2D_t = std::pair<std::vector<IBKMK::Vector2D>,std::vector<IBKMK::Vector2D>>;
 
+using objectShapeTypeVector_t = std::map<ObjectTypes,std::vector<shared_ptr<ProductShapeData>>>;
+using objectShapeGUIDMap_t = std::map<std::string,shared_ptr<ProductShapeData>>;
 
 } // end namespace
 

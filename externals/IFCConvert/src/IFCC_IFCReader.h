@@ -46,24 +46,20 @@ public:
 	std::string						m_warningText;
 	std::string						m_progressText;
 
-	std::map<ObjectTypes,std::vector<shared_ptr<ProductShapeData>>> m_elementEntitesShape;
-	std::map<std::string,shared_ptr<ProductShapeData>>	m_spatialEntitesShape;
-	std::map<std::string,shared_ptr<ProductShapeData>>	m_spaceEntitesShape;
-	std::map<std::string,shared_ptr<ProductShapeData>>	m_unknownEntitesShape;
-	std::map<std::string,shared_ptr<ProductShapeData>>	m_buildingsShape;
-	std::map<std::string,shared_ptr<ProductShapeData>>	m_storeysShape;
-	std::map<std::string,shared_ptr<ProductShapeData>>	m_openingsShape;
-	std::map<std::string,shared_ptr<ProductShapeData>>	m_externalSpatialShapes;
-	std::map<std::string,shared_ptr<ProductShapeData>>	m_spatialZoneShapes;
-	shared_ptr<ProductShapeData>						m_siteShape;
-
-//	std::vector<BuildingElement>						m_buildingElements;
-//	std::vector<BuildingElement>						m_walls;
-//	std::vector<BuildingElement>						m_windows;
+	objectShapeTypeVector_t			m_elementEntitesShape;
+	objectShapeGUIDMap_t			m_spatialEntitesShape;
+	objectShapeGUIDMap_t			m_spaceEntitesShape;
+	objectShapeGUIDMap_t			m_unknownEntitesShape;
+	objectShapeGUIDMap_t			m_buildingsShape;
+	objectShapeGUIDMap_t			m_storeysShape;
+	objectShapeGUIDMap_t			m_openingsShape;
+	objectShapeGUIDMap_t			m_externalSpatialShapes;
+	objectShapeGUIDMap_t			m_spatialZoneShapes;
+	shared_ptr<ProductShapeData>	m_siteShape;
 
 	// all building elemnts which are part of the construction and can contain openings
 	// can be: Wall, Roof, Slab
-	std::vector<BuildingElement>						m_constructionElemnts;
+	std::vector<BuildingElement>						m_constructionElements;
 	// all building elemnts which can be a opening
 	// Window, Door
 	std::vector<BuildingElement>						m_openingElemnts;

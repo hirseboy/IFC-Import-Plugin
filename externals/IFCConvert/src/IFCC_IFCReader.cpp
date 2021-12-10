@@ -143,9 +143,8 @@ void IFCReader::splitShapeData() {
 					std::string guid = guidFromObject(od.get());
 					m_openingsShape[guid] = data;
 				}
-				else {
-					m_elementEntitesShape[OT_FeatureElement].push_back(data);
-				}
+
+				m_elementEntitesShape[OT_FeatureElement].push_back(data);
 			}
 			else if(dynamic_pointer_cast<IfcCivilElement>(od) != nullptr) {
 				m_elementEntitesShape[OT_CivilElement].push_back(data);
@@ -243,7 +242,7 @@ bool IFCReader::convertToSimVicus() {
 			}
 		}
 
-		m_constructionElemnts.clear();
+		m_constructionElements.clear();
 		m_openingElemnts.clear();
 		m_otherElemnts.clear();
 		for(auto& elems : m_elementEntitesShape) {
@@ -255,8 +254,8 @@ bool IFCReader::convertToSimVicus() {
 				BuildingElement bElem(GUID_maker::instance().guid());
 				if(bElem.set(e, elems.first)) {
 					if(elems.first == OT_Wall || elems.first == OT_Roof || elems.first == OT_Slab) {
-						m_constructionElemnts.push_back(bElem);
-						m_constructionElemnts.back().update(elem, m_openings);
+						m_constructionElements.push_back(bElem);
+						m_constructionElements.back().update(elem, m_openings);
 					}
 					else if(elems.first == OT_Window || elems.first == OT_Door) {
 						m_openingElemnts.push_back(bElem);
@@ -273,11 +272,11 @@ bool IFCReader::convertToSimVicus() {
 		}
 
 		for(BuildingElement& openingElement : m_openingElemnts) {
-			openingElement.fillOpeningProperties(m_constructionElemnts, m_openings);
+			openingElement.fillOpeningProperties(m_constructionElements, m_openings);
 		}
 
 
-		m_database.collectData(m_constructionElemnts);
+		m_database.collectData(m_constructionElements);
 		m_database.collectData(m_openingElemnts);
 		m_database.collectData(m_otherElemnts);
 
@@ -286,19 +285,13 @@ bool IFCReader::convertToSimVicus() {
 			m_site.set(se, m_siteShape, m_buildingsShape);
 			for(auto& building : m_site.m_buildings) {
 				building.fetchStoreys(m_storeysShape);
-				for(auto& storey : building.m_storeys) {
-					storey.fetchSpaces(m_spaceEntitesShape, m_geometryConverter.getBuildingModel()->getUnitConverter());
-					for(auto& space : storey.m_spaces) {
-						space.updateSpaceBoundaries(m_elementEntitesShape, m_geometryConverter.getBuildingModel()->getUnitConverter(),
-													m_constructionElemnts, m_openingElemnts, m_openings);
-						space.updateSurfaces(m_constructionElemnts);
-					}
-				}
+				building.updateStoreys(m_elementEntitesShape, m_spaceEntitesShape, m_geometryConverter.getBuildingModel()->getUnitConverter(),
+									   m_constructionElements, m_openingElemnts, m_openings);
 			}
 		}
 
 		int failures = 0;
-		failures += m_instances.collectComponentInstances(m_constructionElemnts, m_database, m_site);
+		failures += m_instances.collectComponentInstances(m_constructionElements, m_database, m_site);
 		failures += m_instances.collectComponentInstances(m_openingElemnts, m_database, m_site);
 //		failures += m_instances.collectComponentInstances(m_otherElemnts, m_database, m_site);
 		if(failures > 0) {
@@ -307,8 +300,6 @@ bool IFCReader::convertToSimVicus() {
 			return false;
 		}
 
-		// write in textfile
-//		res = writeSpaceSection(m_spaces, IBK::Path("g:/temp/vicus_surfaces.xml"));
 		return res;
 
 	}
