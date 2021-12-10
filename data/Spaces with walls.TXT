@@ -8,6 +8,8 @@ Space 7
   Wand-Ext-OG-4
   Dach-1
   Dach-2
+  Slab-033
+    Slab Opening
   
   
 Space 6   Kueche
