@@ -188,24 +188,24 @@ std::pair<ClipperLib::Path,ClipperLib::Path> createPathFrom3D(const polygon3D_t&
 	return result;
 }
 
-IBKMK::Vector3D conversion2DPoint( const IBKMK::Vector2D& point, const IBKMK::Vector3D& translate, IBKMK::Vector3D local_z, IBKMK::Vector3D local_x) {
-	IBKMK::Vector3D  local_y(  0.0, 1.0, 0.0 );
+//IBKMK::Vector3D conversion2DPoint( const IBKMK::Vector2D& point, const IBKMK::Vector3D& translate, IBKMK::Vector3D local_z, IBKMK::Vector3D local_x) {
+//	IBKMK::Vector3D  local_y(  0.0, 1.0, 0.0 );
 
-	local_y = local_z.crossProduct(local_x );
-	// local_x can be just in the x-z-plane, not perpendicular to y and z. so re-compute local x
-	local_x = local_y.crossProduct( local_z );
+//	local_y = local_z.crossProduct(local_x );
+//	// local_x can be just in the x-z-plane, not perpendicular to y and z. so re-compute local x
+//	local_x = local_y.crossProduct( local_z );
 
-	local_x.normalize();
-	local_y.normalize();
-	local_z.normalize();
+//	local_x.normalize();
+//	local_y.normalize();
+//	local_z.normalize();
 
-	double x = local_x.m_x * point.m_x + local_y.m_x * point.m_y + translate.m_x;
-	double y = local_x.m_y * point.m_x + local_y.m_y * point.m_y + translate.m_y;
-	double z = local_x.m_z * point.m_x + local_y.m_z * point.m_y + translate.m_z;
+//	double x = local_x.m_x * point.m_x + local_y.m_x * point.m_y + translate.m_x;
+//	double y = local_x.m_y * point.m_x + local_y.m_y * point.m_y + translate.m_y;
+//	double z = local_x.m_z * point.m_x + local_y.m_z * point.m_y + translate.m_z;
 
-	IBKMK::Vector3D res = IBKMK::Vector3D(x, y, z);
-	return res;
-}
+//	IBKMK::Vector3D res = IBKMK::Vector3D(x, y, z);
+//	return res;
+//}
 
 polygon3D_t create3DFrom2D(const polygon2D_t& poly2, const PlaneNormal& plane) {
 	polygon3D_t res;
@@ -216,23 +216,23 @@ polygon3D_t create3DFrom2D(const polygon2D_t& poly2, const PlaneNormal& plane) {
 }
 
 
-IBKMK::Vector3D conversion3DPoint( const IBKMK::Vector3D& point, const IBKMK::Vector3D& translate, IBKMK::Vector3D local_z,
-								   IBKMK::Vector3D local_x) {
-	IBKMK::Vector3D  local_y = local_z.crossProduct(local_x );
-	// local_x can be just in the x-z-plane, not perpendicular to y and z. so re-compute local x
-	local_x = local_y.crossProduct( local_z );
+//IBKMK::Vector3D conversion3DPoint( const IBKMK::Vector3D& point, const IBKMK::Vector3D& translate, IBKMK::Vector3D local_z,
+//								   IBKMK::Vector3D local_x) {
+//	IBKMK::Vector3D  local_y = local_z.crossProduct(local_x );
+//	// local_x can be just in the x-z-plane, not perpendicular to y and z. so re-compute local x
+//	local_x = local_y.crossProduct( local_z );
 
-	local_x.normalize();
-	local_y.normalize();
-	local_z.normalize();
+//	local_x.normalize();
+//	local_y.normalize();
+//	local_z.normalize();
 
-	double x = local_x.m_x * point.m_x + local_y.m_x * point.m_y + local_z.m_x * point.m_z + translate.m_x;
-	double y = local_x.m_y * point.m_x + local_y.m_y * point.m_y + local_z.m_y * point.m_z + translate.m_y;
-	double z = local_x.m_z * point.m_x + local_y.m_z * point.m_y + local_z.m_z * point.m_z + translate.m_z;
+//	double x = local_x.m_x * point.m_x + local_y.m_x * point.m_y + local_z.m_x * point.m_z + translate.m_x;
+//	double y = local_x.m_y * point.m_x + local_y.m_y * point.m_y + local_z.m_y * point.m_z + translate.m_y;
+//	double z = local_x.m_z * point.m_x + local_y.m_z * point.m_y + local_z.m_z * point.m_z + translate.m_z;
 
-	IBKMK::Vector3D res = IBKMK::Vector3D(x, y, z);
-	return res;
-}
+//	IBKMK::Vector3D res = IBKMK::Vector3D(x, y, z);
+//	return res;
+//}
 
 polygon3D_t mergePolygons(const polygon3D_t& base, const polygon3D_t& to_merge, const PlaneNormal& plane) {
 	std::pair<ClipperLib::Path,ClipperLib::Path> clipPolys = createPathFrom3D(base, to_merge, plane);
