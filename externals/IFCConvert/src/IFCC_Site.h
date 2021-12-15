@@ -1,10 +1,6 @@
 #ifndef IFCC_SiteH
 #define IFCC_SiteH
 
-#include <IBKMK_Vector3D.h>
-
-#include <carve/mesh.hpp>
-#include <carve/matrix.hpp>
 
 #include <ifcpp/IFC4/include/IfcSpatialStructureElement.h>
 #include <ifcpp/geometry/Carve/GeometryInputData.h>
@@ -19,45 +15,63 @@
 
 namespace IFCC {
 
+/*! Class represents a building site. It can contain geometric objects of the surrounding.
+	It contains also all buildings with their content (storeys, spaces etc.).
+*/
 class Site : public EntityBase
 {
 public:
+	/*! Standard constructor.
+		\param id Unique id for using in project.
+	*/
 	explicit Site(int id);
 
-	bool set(std::shared_ptr<IfcSpatialStructureElement> ifcElement);
-
+	/*! Initialise site from a IFC site object.
+		It set a name and fills the original building vector. Then geometry will be transformed and converted into surfaces.
+		Also the building vector is filled from the original building vector. All building objects are not fully initalized.
+		Call Building::update() on all objects.
+		It calls transform, fetchGeometry and fetchBuildings.
+		\param ifcElement IFC object for a site. It uses the base class of IfcBuildingStorey.
+		\param productShape Shape data of site
+		\param buildings Shape data of buildings
+	*/
 	bool set(std::shared_ptr<IfcSpatialStructureElement> ifcElement, std::shared_ptr<ProductShapeData> productShape,
 			 const std::map<std::string,shared_ptr<ProductShapeData>>& buildings);
 
-	const meshVector_t& meshVector() const;
-
-	const polyVector_t& polyVector() const;
-
+	/*! Return the internal surface vector.*/
 	const std::vector<Surface>& surfaces() const;
 
-	carve::mesh::Face<3>* face(FaceIndex findex) const;
-
+	/*! Write the site in vicus xml format including buildings.*/
 	TiXmlElement * writeXML(TiXmlElement * parent) const;
 
-	ObjectTypes				m_type;
 	std::vector<Building>	m_buildings;
 
 private:
 
+	/*! Initialise site from a IFC site object.
+		It set a name and fills the original building vector.
+		\param ifcElement IFC object for a site. It uses the base class of IfcBuildingStorey.
+	*/
+	bool set(std::shared_ptr<IfcSpatialStructureElement> ifcElement);
+
+	/*! Transforms the site geometry by using transformation matrix from productShape.
+		It transforms all coordinates from local system into global system.
+	*/
 	void transform(std::shared_ptr<ProductShapeData> productShape);
 
+	/*! Get the geometry from the product shape.
+		It fills the surface vector m_surfaces.
+	*/
 	void fetchGeometry(std::shared_ptr<ProductShapeData> productShape);
 
+	/*! Fill the buildings vector from original buildings vector and given building shapes.
+		\param buildings Shapes for all buildings in project.
+	*/
 	void fetchBuildings(const std::map<std::string,shared_ptr<ProductShapeData>>& buildings);
 
-	meshVector_t			m_meshSetClosedFinal;
-	meshVector_t			m_meshSetOpenFinal;
-	polyVector_t			m_polyvectClosedFinal;
-	polyVector_t			m_polyvectOpenFinal;
-	carve::math::Matrix		m_transformMatrix;
-	std::vector<Surface>	m_surfaces;
+	std::vector<Surface>						m_surfaces;				///< Vector of all surfaces
 
-	std::vector<std::shared_ptr<IfcBuilding>>	m_buildingsOriginal;
+	std::vector<std::shared_ptr<IfcBuilding>>	m_buildingsOriginal;	///< Vector of original IFC building objects
 };
 
 } // namespace IFCC

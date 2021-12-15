@@ -30,6 +30,7 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OU
 
 namespace IFCC {
 
+/*! Class for converting all types of geometrical representation into shape data.*/
 class RepresentationConverter : public StatusCallback
 {
 public:

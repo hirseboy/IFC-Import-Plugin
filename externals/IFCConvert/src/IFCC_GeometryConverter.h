@@ -27,6 +27,7 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OU
 
 namespace IFCC {
 
+/*! Class for IFC objects into global geometry. Create shape data for all building objects.*/
 class GeometryConverter : public StatusCallback {
 public:
 	GeometryConverter( shared_ptr<BuildingModel>& ifc_model );
@@ -72,15 +73,15 @@ public:
 	virtual void messageTarget( void* ptr, shared_ptr<StatusCallback::Message> m );
 
 protected:
-	shared_ptr<BuildingModel>				m_ifc_model;
-	shared_ptr<GeometrySettings>			m_geom_settings;
-	shared_ptr<RepresentationConverter>		m_representation_converter;
+	shared_ptr<BuildingModel>											m_ifc_model;
+	shared_ptr<GeometrySettings>										m_geom_settings;
+	shared_ptr<RepresentationConverter>									m_representation_converter;
 
-	std::map<std::string, shared_ptr<ProductShapeData> >	m_product_shape_data;
-	std::map<std::string, shared_ptr<BuildingObject> >		m_map_outside_spatial_structure;
+	std::map<std::string, shared_ptr<ProductShapeData> >				m_product_shape_data;
+	std::map<std::string, shared_ptr<BuildingObject> >					m_map_outside_spatial_structure;
 	double m_recent_progress = 0;
 	double m_csg_eps = 1.5e-05;
-	std::map<int, std::vector<shared_ptr<StatusCallback::Message> > > m_messages;
+	std::map<int, std::vector<shared_ptr<StatusCallback::Message> > >	m_messages;
 #ifdef ENABLE_OPENMP
 	Mutex m_writelock_messages;
 #endif

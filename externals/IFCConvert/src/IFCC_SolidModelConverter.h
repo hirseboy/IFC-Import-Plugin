@@ -38,6 +38,7 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OU
 
 namespace IFCC {
 
+/*! Contains geometry converters for solid geometries.*/
 class SolidModelConverter : public StatusCallback
 {
 public:

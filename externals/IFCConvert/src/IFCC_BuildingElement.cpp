@@ -1,5 +1,10 @@
 #include "IFCC_BuildingElement.h"
 
+#include <IBKMK_Vector3D.h>
+
+#include <carve/mesh.hpp>
+#include <carve/matrix.hpp>
+
 #include <ifcpp/IFC4/include/IfcRelVoidsElement.h>
 #include <ifcpp/IFC4/include/IfcGloballyUniqueId.h>
 #include <ifcpp/IFC4/include/IfcObjectTypeEnum.h>
@@ -253,9 +258,9 @@ void BuildingElement::fetchOpenings(std::vector<Opening>& openings) {
 	for(const auto& opOrg : m_isUsedFromOpeningsOriginal) {
 		for(auto& op : openings) {
 			std::string guid = guidFromObject(opOrg.get());
-			if(op.m_guid == guid) {
+			if(op.guid() == guid) {
 				m_usedFromOpenings.push_back(op.m_id);
-				op.m_openingElementIds.push_back(m_id);
+				op.addOpeningElementId(m_id);
 				break;
 			}
 		}
@@ -264,9 +269,9 @@ void BuildingElement::fetchOpenings(std::vector<Opening>& openings) {
 	for(const auto& opOrg : m_containedOpeningsOriginal) {
 		for(auto& op : openings) {
 			std::string guid = guidFromObject(opOrg.get());
-			if(op.m_guid == guid) {
+			if(op.guid() == guid) {
 				m_containedOpenings.push_back(op.m_id);
-				op.m_containedInElementIds.push_back(m_id);
+				op.addContainingElementId(m_id);
 				break;
 			}
 		}
@@ -324,12 +329,7 @@ void BuildingElement::fillOpeningProperties(const std::vector<BuildingElement>& 
 		auto fit = std::find_if(openings.begin(), openings.end(),
 								[opId](const auto& op) {return op.m_id == opId; });
 		if(fit != openings.end()) {
-			int elemCount = fit->m_containedInElementIds.size();
-			if(elemCount > 0) {
-				m_openingProperties.m_usedInConstructionIds.insert(m_openingProperties.m_usedInConstructionIds.end(),
-																   fit->m_containedInElementIds.begin(),
-																   fit->m_containedInElementIds.end());
-			}
+			fit->insertContainingElementId(m_openingProperties.m_usedInConstructionIds);
 		}
 	}
 	int constructionIDCount = m_openingProperties.m_usedInConstructionIds.size();

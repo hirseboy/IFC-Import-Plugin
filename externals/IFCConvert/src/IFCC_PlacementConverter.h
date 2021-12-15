@@ -33,6 +33,7 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OU
 
 namespace IFCC {
 
+/*! Class for converting axis placements from local to global system.*/
 class PlacementConverter : public StatusCallback
 {
 public:
@@ -52,7 +53,7 @@ public:
 
 	void getWorldCoordinateSystem( const shared_ptr<IfcRepresentationContext>& context, shared_ptr<TransformData>& resulting_matrix, std::unordered_set<IfcRepresentationContext*>& already_applied );
 
-	//\brief translates an IfcObjectPlacement (or subtype) to carve Matrix
+	/*! \brief translates an IfcObjectPlacement (or subtype) to carve Matrix.*/
 	void convertIfcObjectPlacement( const shared_ptr<IfcObjectPlacement>& ifc_object_placement, shared_ptr<ProductShapeData>& product_data,
 		std::unordered_set<IfcObjectPlacement*>& placement_already_applied, bool only_rotation );
 

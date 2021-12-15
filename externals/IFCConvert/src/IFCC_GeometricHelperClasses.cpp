@@ -652,10 +652,6 @@ PlaneNormal::PlaneNormal(const PlaneHesseNormal& plane, const IBKMK::Vector3D& p
 	m_lz.normalize();
 	m_ly.normalize();
 
-//	double x = m_lx.m_x * m_pos.m_x + m_ly.m_x * m_pos.m_y + m_lz.m_x * m_pos.m_z ;
-//	double y = m_lx.m_y * m_pos.m_x + m_ly.m_y * m_pos.m_y + m_lz.m_y * m_pos.m_z ;
-//	double z = m_lx.m_z * m_pos.m_x + m_ly.m_z * m_pos.m_y + m_lz.m_z * m_pos.m_z;
-
 	m_rotationMatrix = RotationMatrix(m_lx.m_x, m_ly.m_x, m_lz.m_x,
 								  m_lx.m_y, m_ly.m_y, m_lz.m_y,
 								  m_lx.m_z, m_ly.m_z, m_lz.m_z);
@@ -665,16 +661,6 @@ PlaneNormal::PlaneNormal(const PlaneHesseNormal& plane, const IBKMK::Vector3D& p
 		m_valid = false;
 
 	m_rot_pos = m_rotationMatrixInv * m_pos * -1;
-
-	m_transMatrix = TransformationMatrix(m_lx.m_x, m_ly.m_x, m_lz.m_x, m_rot_pos.m_x,
-								  m_lx.m_y, m_ly.m_y, m_lz.m_y, m_rot_pos.m_y,
-								  m_lx.m_z, m_ly.m_z, m_lz.m_z, m_rot_pos.m_z,
-								  0, 0, 0, 1);
-
-	m_transMatrixInv = m_transMatrix.inverse();
-
-//	matrix.clean();
-//	matrixInv.clean();
 }
 
 PlaneNormal::PlaneNormal(const PlaneHesseNormal& plane, const std::vector<IBKMK::Vector3D>& polygon) :
@@ -748,13 +734,6 @@ PlaneNormal::PlaneNormal(const PlaneHesseNormal& plane, const std::vector<IBKMK:
 		m_valid = false;
 
 	m_rot_pos = m_rotationMatrixInv * m_pos * -1;
-
-	m_transMatrix = TransformationMatrix(m_lx.m_x, m_ly.m_x, m_lz.m_x, m_rot_pos.m_x,
-										 m_lx.m_y, m_ly.m_y, m_lz.m_y, m_rot_pos.m_y,
-										 m_lx.m_z, m_ly.m_z, m_lz.m_z, m_rot_pos.m_z,
-										 0, 0, 0, 1);
-
-	m_transMatrixInv = m_transMatrix.inverse();
 }
 
 PlaneNormal::PlaneNormal(const std::vector<IBKMK::Vector3D>& polygon) :
@@ -817,13 +796,6 @@ PlaneNormal::PlaneNormal(const std::vector<IBKMK::Vector3D>& polygon) :
 		m_valid = false;
 
 	m_rot_pos = m_rotationMatrixInv * m_pos * -1;
-
-	m_transMatrix = TransformationMatrix(m_lx.m_x, m_ly.m_x, m_lz.m_x, m_rot_pos.m_x,
-										 m_lx.m_y, m_ly.m_y, m_lz.m_y, m_rot_pos.m_y,
-										 m_lx.m_z, m_ly.m_z, m_lz.m_z, m_rot_pos.m_z,
-										 0, 0, 0, 1);
-
-	m_transMatrixInv = m_transMatrix.inverse();
 }
 
 IBKMK::Vector2D PlaneNormal::convert3DPoint(const IBKMK::Vector3D& point) const {
@@ -858,15 +830,6 @@ IBKMK::Vector3D PlaneNormal::convert3DPointInv(const IBKMK::Vector2D& point) con
 	IBKMK::Vector3D res = IBKMK::Vector3D(point.m_x, point.m_y, 0) - m_rot_pos;
 	res = m_rotationMatrix * res;
 
-	return res;
-}
-
-PlaneNormal PlaneNormal::createXYPlane() {
-	PlaneNormal res;
-	res.m_pos = IBKMK::Vector3D(0,0,0);
-	res.m_lx = IBKMK::Vector3D(1,0,0);
-	res.m_ly = IBKMK::Vector3D(0,1,0);
-	res.m_lz = IBKMK::Vector3D(0,0,1);
 	return res;
 }
 

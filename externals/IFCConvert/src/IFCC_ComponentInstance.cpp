@@ -1,5 +1,9 @@
 #include "IFCC_ComponentInstance.h"
 
+#include <tinyxml.h>
+
+#include <IBK_StringUtils.h>
+
 namespace IFCC {
 
 ComponentInstance::ComponentInstance() :

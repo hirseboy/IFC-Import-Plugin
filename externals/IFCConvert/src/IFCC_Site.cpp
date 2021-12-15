@@ -4,6 +4,11 @@
 #include <ifcpp/IFC4/include/IfcGloballyUniqueId.h>
 #include <ifcpp/IFC4/include/IfcObjectDefinition.h>
 
+#include <IBKMK_Vector3D.h>
+
+#include <carve/mesh.hpp>
+#include <carve/matrix.hpp>
+
 #include "IFCC_Helper.h"
 
 namespace IFCC {
@@ -55,9 +60,9 @@ void Site::transform(std::shared_ptr<ProductShapeData> productShape) {
 	if(productShape == nullptr)
 		return;
 
-	m_transformMatrix = productShape->getTransform();
-	if(m_transformMatrix != carve::math::Matrix::IDENT()) {
-		productShape->applyTransformToProduct(m_transformMatrix);
+	carve::math::Matrix transformMatrix = productShape->getTransform();
+	if(transformMatrix != carve::math::Matrix::IDENT()) {
+		productShape->applyTransformToProduct(transformMatrix);
 	}
 }
 
@@ -72,26 +77,30 @@ void Site::fetchGeometry(std::shared_ptr<ProductShapeData> productShape) {
 		if(currentRep->m_representation_identifier == L"Body")
 			break;
 	}
+
+	meshVector_t meshSetClosedFinal;
+	meshVector_t meshSetOpenFinal;
 	if(repCount > 0) {
 		int itemDataCount = currentRep->m_vec_item_data.size();
 		if(itemDataCount > 0) {
-			m_meshSetClosedFinal = currentRep->m_vec_item_data.front()->m_meshsets;
-			m_meshSetOpenFinal = currentRep->m_vec_item_data.front()->m_meshsets_open;
+			meshSetClosedFinal = currentRep->m_vec_item_data.front()->m_meshsets;
+			meshSetOpenFinal = currentRep->m_vec_item_data.front()->m_meshsets_open;
 		}
 	}
 
 	// try to simplify meshes by merging all coplanar faces
-	meshVector_t& currentMeshSets =  m_meshSetClosedFinal.empty() ? m_meshSetOpenFinal : m_meshSetClosedFinal;
+	meshVector_t& currentMeshSets =  meshSetClosedFinal.empty() ? meshSetOpenFinal : meshSetClosedFinal;
 	if(!currentMeshSets.empty()) {
 		simplifyMesh(currentMeshSets, false);
 	}
 
-	if(!m_meshSetClosedFinal.empty()) {
-		int msCount = m_meshSetClosedFinal.size();
+	polyVector_t polyvectClosedFinal;
+	if(!meshSetClosedFinal.empty()) {
+		int msCount = meshSetClosedFinal.size();
 		for(int i=0; i<msCount; ++i) {
-			m_polyvectClosedFinal.push_back(std::vector<std::vector<std::vector<IBKMK::Vector3D>>>());
-			const carve::mesh::MeshSet<3>& currMeshSet = *m_meshSetClosedFinal[i];
-			convert(currMeshSet, m_polyvectClosedFinal.back());
+			polyvectClosedFinal.push_back(std::vector<std::vector<std::vector<IBKMK::Vector3D>>>());
+			const carve::mesh::MeshSet<3>& currMeshSet = *meshSetClosedFinal[i];
+			convert(currMeshSet, polyvectClosedFinal.back());
 			// get surfaces
 			for(size_t mi=0; mi<currMeshSet.meshes.size(); ++mi) {
 				for(size_t fi =0; fi<currMeshSet.meshes[mi]->faces.size(); ++fi) {
@@ -101,12 +110,14 @@ void Site::fetchGeometry(std::shared_ptr<ProductShapeData> productShape) {
 			}
 		}
 	}
-	if(!m_meshSetOpenFinal.empty()) {
-		int msCount = m_meshSetOpenFinal.size();
+
+	polyVector_t polyvectOpenFinal;
+	if(!meshSetOpenFinal.empty()) {
+		int msCount = meshSetOpenFinal.size();
 		for(int i=0; i<msCount; ++i) {
-			m_polyvectOpenFinal.push_back(std::vector<std::vector<std::vector<IBKMK::Vector3D>>>());
-			const carve::mesh::MeshSet<3>& currMeshSet = *m_meshSetOpenFinal[i];
-			convert(currMeshSet, m_polyvectOpenFinal.back());
+			polyvectOpenFinal.push_back(std::vector<std::vector<std::vector<IBKMK::Vector3D>>>());
+			const carve::mesh::MeshSet<3>& currMeshSet = *meshSetOpenFinal[i];
+			convert(currMeshSet, polyvectOpenFinal.back());
 			// get surfaces
 			for(size_t mi=0; mi<currMeshSet.meshes.size(); ++mi) {
 				for(size_t fi =0; fi<currMeshSet.meshes[mi]->faces.size(); ++fi) {
@@ -147,41 +158,8 @@ TiXmlElement * Site::writeXML(TiXmlElement * parent) const {
 	return e;
 }
 
-const meshVector_t& Site::meshVector() const {
-	if(!m_meshSetClosedFinal.empty() && !m_meshSetOpenFinal.empty()) {
-		throw IBK::Exception("Mesh includes open and closed meshset.", "Space::meshVector");
-	}
-
-	if(!m_meshSetClosedFinal.empty())
-		return m_meshSetClosedFinal;
-
-	return m_meshSetOpenFinal;
-}
-
-const polyVector_t& Site::polyVector() const {
-	if(!m_polyvectClosedFinal.empty() && !m_polyvectOpenFinal.empty()) {
-		throw IBK::Exception("Mesh includes open and closed meshset.", "Space::meshVector");
-	}
-
-	if(!m_polyvectClosedFinal.empty())
-		return m_polyvectClosedFinal;
-
-	return m_polyvectOpenFinal;
-}
-
 const std::vector<Surface>& Site::surfaces() const {
 	return m_surfaces;
-}
-
-carve::mesh::Face<3>* Site::face(FaceIndex findex) const {
-	if(!m_meshSetClosedFinal.empty() && !m_meshSetOpenFinal.empty()) {
-		return nullptr;
-	}
-
-	if(!m_meshSetClosedFinal.empty())
-		return faceFromMeshset(m_meshSetClosedFinal, findex);
-
-	return faceFromMeshset(m_meshSetOpenFinal, findex);
 }
 
 } // namespace IFCC

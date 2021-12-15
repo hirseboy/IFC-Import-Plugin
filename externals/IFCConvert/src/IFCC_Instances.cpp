@@ -39,7 +39,7 @@ int Instances::collectComponentInstances(std::vector<BuildingElement>& elements,
 	for(const auto& building : site.m_buildings) {
 		for(const auto& storey : building.storeys()) {
 			for(const auto& space : storey.spaces()) {
-				for(const auto& surf : space.m_surfaces) {
+				for(const auto& surf : space.surfaces()) {
 					auto fitElem = std::find_if(
 								   elements.begin(),
 								   elements.end(),
@@ -67,7 +67,7 @@ int Instances::collectComponentInstances(std::vector<BuildingElement>& elements,
 					}
 				}
 
-				for(const auto& surf2 : space.m_surfaces) {
+				for(const auto& surf2 : space.surfaces()) {
 					for(const auto& subSurf : surf2.m_subSurfaces) {
 						auto fitElem = std::find_if(
 										   elements.begin(),

@@ -1,5 +1,9 @@
 #include "IFCC_Component.h"
 
+#include <IBK_math.h>
+
+#include <tinyxml.h>
+
 #include "IFCC_Surface.h"
 
 namespace IFCC {

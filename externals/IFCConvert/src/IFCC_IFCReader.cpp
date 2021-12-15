@@ -69,6 +69,7 @@ bool IFCReader::read() {
 		m_errorText = e.what();
 		return false;
 	}
+	return true;
 }
 
 void IFCReader::splitShapeData() {
@@ -210,7 +211,7 @@ void IFCReader::splitShapeData() {
 }
 
 
-bool IFCReader::convertToSimVicus() {
+bool IFCReader::convert() {
 
 	bool subtractOpenings = false;
 

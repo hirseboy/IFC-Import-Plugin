@@ -1,10 +1,6 @@
 #ifndef IFCC_BuildingElementH
 #define IFCC_BuildingElementH
 
-#include <IBKMK_Vector3D.h>
-
-#include <carve/mesh.hpp>
-#include <carve/matrix.hpp>
 
 #include <ifcpp/IFC4/include/IfcElement.h>
 #include <ifcpp/IFC4/include/IfcOpeningElement.h>
@@ -119,7 +115,9 @@ public:
 	*/
 	bool set(std::shared_ptr<IfcElement> ifcElement, ObjectTypes type);
 
-	/*! get and transform geometry and set first opening properties.*/
+	/*! get and transform geometry and set first opening properties.
+		\param Shape data of a building element.
+	*/
 	void update(std::shared_ptr<ProductShapeData> productShape, std::vector<Opening>& openings);
 
 	/*! Get more opening properties.
