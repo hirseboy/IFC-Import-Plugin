@@ -42,7 +42,7 @@ QStringList MainWindow::statistic() const {
 					.arg(storey.spaces().size());
 			for(const auto& space : storey.spaces()) {
 				text << tr("\tSpace %1 with %2 space boundaries.").arg(QString::fromStdString(space.m_name+" - "+space.m_longName))
-						.arg(space.m_spaceBoundaries.size());
+						.arg(space.spaceBoundaries().size());
 			}
 		}
 	}
@@ -61,7 +61,7 @@ QStringList MainWindow::statistic() const {
 void MainWindow::on_actionRead_ifc_triggered() {
 	QStringList text;
 	if(m_reader != nullptr) {
-		bool res = m_reader->convertToSimVicus();
+		bool res = m_reader->convert();
 		if(!res) {
 			text << tr("Read not successful.");
 			text << tr("Error:");
