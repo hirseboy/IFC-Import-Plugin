@@ -5,6 +5,8 @@
 
 #include <IFCC_IFCReader.h>
 
+#include <IFCImportInterface.h>
+
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
 QT_END_NAMESPACE
@@ -27,7 +29,14 @@ private slots:
 private:
 	Ui::MainWindow *ui;
 	std::unique_ptr<IFCC::IFCReader> m_reader;
+	QMap<QString,IFCImportInterface*>	m_importer;
+
 
 	QStringList statistic() const;
+
+	void loadPlugins();
+
+	void runImport(QAction* action);
+
 };
 #endif // MainWindowH

@@ -20,6 +20,8 @@ CONFIG += c++11
 # In order to do so, uncomment the following line.
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
+LIBS += -L../../../submodules/SIM-VICUS/externals/lib$${DIR_PREFIX}
+
 LIBS += \
 	-lIBKMK \
 	-lIBK \
@@ -27,7 +29,10 @@ LIBS += \
 	-lclipper \
 	-lIFCPlusPlus \
 	-lIFCConvert \
-	-lCarve
+	-lCarve \
+	-lVicus \
+	-lNandrad \
+	-lCCM
 
 INCLUDEPATH = \
 	../../src \
@@ -38,7 +43,10 @@ INCLUDEPATH = \
 	../../../externals/ifcplusplus/src/IfcPlusPlus/src/ifcpp/reader \
 	../../../externals/ifcplusplus/src/IfcPlusPlus/src \
 	../../../externals/ifcplusplus/src/external/Carve/src/include \
-	../../../externals/ifcplusplus/src/external
+	../../../externals/ifcplusplus/src/external \
+	../../../externals/IFCImportPlugin/src \
+	../../../submodules/SIM-VICUS/externals/Vicus/src \
+	../../../submodules/SIM-VICUS/externals/Nandrad/src
 
 DEPENDPATH = $${INCLUDEPATH}
 

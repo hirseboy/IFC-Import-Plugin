@@ -2,6 +2,7 @@
 #include "ui_mainwindow.h"
 
 #include <QFileDialog>
+#include <QPluginLoader>
 
 MainWindow::MainWindow(QWidget *parent)
 	: QMainWindow(parent)
@@ -100,4 +101,45 @@ void MainWindow::on_actionSave_triggered() {
 	}
 
 }
+QDir directoryOf(const QString& subdir) {
+	QDir dir(QApplication::applicationDirPath());
+#if defined(Q_OS_WIN)
+	if(dir.dirName().toLower() == "debug" || dir.dirName().toLower() == "release")
+		dir.cdUp();
+#elif defined(Q_OS_MAC)
+	if( dir.dirName() == "MacOS") {
+		dir.cdUp();
+		dir.cdUp();
+		dir.cdUp();
+	}
+#endif
+	dir.cd(subdir);
+	return dir;
+}
 
+void MainWindow::loadPlugins() {
+	QDir pluginsDir = directoryOf("");
+	for( QString filename : pluginsDir.entryList(QDir::Files)) {
+		QPluginLoader loader(pluginsDir.absoluteFilePath(filename));
+		if(IFCImportInterface* import = qobject_cast<IFCImportInterface*>(loader.instance())) {
+			m_importer.insert(import->name(), import);
+		}
+	}
+	if(!m_importer.empty()) {
+		QMenu* importMenu = ui->menuPlugins;
+		for(auto name : m_importer.keys()) {
+			QIcon icon(m_importer.value(name)->icon());
+			importMenu->addAction(icon, name);
+		}
+		connect(importMenu, SIGNAL(triggered(QAction*)), this, SLOT(runImport(QAction*)));
+	}
+}
+
+void MainWindow::runImport(QAction* action)
+{
+	QString name = action->text();
+	IFCImportInterface* exp = m_importer.value(name);
+	VICUS::Project* project = new VICUS::Project;
+	if( exp )
+		exp->importFunct(project);
+}
