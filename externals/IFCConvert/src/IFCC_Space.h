@@ -61,35 +61,35 @@ public:
 		/*! Default constructor. Create a non-valid object.*/
 		OpeningConstructionMatching() :
 			m_constructionSurfaceIndex(-1),
-			m_spaceBoundaryIndex(-1),
-			m_spaceBoundarySurfaceIndex(-1)
+			m_openingIndex(-1),
+			m_openingSurfaceIndex(-1)
 		{}
 
 		/*! Standard constructor.
 			\param constructionSurfaceIndex Index of surface in current construction
-			\param spaceBoundaryIndex Index of space boundary in space
-			\param spaceBoundarySurfaceIndex Index of surface in space boundary
+			\param m_openingIndex Index of opening
+			\param m_openingSurfaceIndex Index of surface in the opening
 		*/
 		OpeningConstructionMatching(int constructionSurfaceIndex, int spaceBoundaryIndex, int spaceBoundarySurfaceIndex) :
 			m_constructionSurfaceIndex(constructionSurfaceIndex),
-			m_spaceBoundaryIndex(spaceBoundaryIndex),
-			m_spaceBoundarySurfaceIndex(spaceBoundarySurfaceIndex)
+			m_openingIndex(spaceBoundaryIndex),
+			m_openingSurfaceIndex(spaceBoundarySurfaceIndex)
 		{}
 
 		/*! Return true if all indices are valid.*/
 		bool isValid() const {
 			if(m_constructionSurfaceIndex < 0)
 				return false;
-			if(m_spaceBoundaryIndex < 0)
+			if(m_openingIndex < 0)
 				return false;
-			if(m_spaceBoundarySurfaceIndex < 0)
+			if(m_openingSurfaceIndex < 0)
 				return false;
 			return true;
 		}
 
 		int m_constructionSurfaceIndex;		///< Index of surface in current construction
-		int m_spaceBoundaryIndex;			///< Index of space boundary in space
-		int m_spaceBoundarySurfaceIndex;	///< Index of surface in space boundary
+		int m_openingIndex;			///< Index of opening
+		int m_openingSurfaceIndex;	///< Index of surface in opening
 	};
 
 
@@ -164,13 +164,14 @@ private:
 	void fetchGeometry(std::shared_ptr<ProductShapeData> productShape);
 
 	/*! Is called from updateSpaceBoundaries in case space boundaries could be evaluated from IFC model.
+		It get geometry for space boundaries and fill their surface vector.
 		It set the the space boundary type and the id of the connected building element.
 		\param shapes Vector of element shaps with type
 		\param unit_converter Unit converter from geometry converter
 		\param constructionElements Vector of all construction elements (wall, roof, slab)
 		\param openingElements Vector of all opening elements (window, door)
 	*/
-	bool getSpaceBoundaryTypes(const objectShapeTypeVector_t& shapes,
+	bool evaluateSpaceBoundaryTypes(const objectShapeTypeVector_t& shapes,
 									 shared_ptr<UnitConverter>& unit_converter,
 									 const std::vector<BuildingElement>& constructionElements,
 									 const std::vector<BuildingElement>& openingElements);

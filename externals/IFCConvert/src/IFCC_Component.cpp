@@ -41,18 +41,18 @@ TiXmlElement * Component::writeXML(TiXmlElement * parent) const {
 
 void Component::updateComponentType(const Surface& surf) {
 	if(m_type == CT_OutsideWall) {
-		if(surf.m_positionType == Surface::PT_Internal)
+		if(surf.positionType() == Surface::PT_Internal)
 			m_type = CT_InsideWall;
-		else if(surf.m_positionType == Surface::PT_External_Ground)
+		else if(surf.positionType() == Surface::PT_External_Ground)
 			m_type = CT_OutsideWallToGround;
 	}
 	else if(m_type == CT_SlopedRoof) {
 		// nothing to do
 	}
 	else if(m_type == CT_FloorToAir) {
-		if(surf.m_positionType == Surface::PT_Internal)
+		if(surf.positionType() == Surface::PT_Internal)
 			m_type = CT_Ceiling;
-		else if(surf.m_positionType == Surface::PT_External_Ground)
+		else if(surf.positionType() == Surface::PT_External_Ground)
 			m_type = CT_FloorToGround;
 	}
 }

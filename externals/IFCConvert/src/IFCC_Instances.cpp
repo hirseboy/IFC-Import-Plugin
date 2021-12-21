@@ -43,7 +43,7 @@ int Instances::collectComponentInstances(std::vector<BuildingElement>& elements,
 					auto fitElem = std::find_if(
 								   elements.begin(),
 								   elements.end(),
-								   [surf](const auto& elem) {return elem.m_id == surf.m_elementEntityId; });
+								   [surf](const auto& elem) {return elem.m_id == surf.elementId(); });
 					if(fitElem != elements.end()) {
 						const BuildingElement& elem = *fitElem;
 						auto fitComp = std::find_if(
@@ -54,45 +54,45 @@ int Instances::collectComponentInstances(std::vector<BuildingElement>& elements,
 							ComponentInstance ci;
 							ci.m_id = GUID_maker::instance().guid();
 							ci.m_componentId = fitComp->first;
-							ci.m_sideASurfaceId = surf.m_id;
+							ci.m_sideASurfaceId = surf.id();
 							fitComp->second.updateComponentType(surf);
 							m_componentInstances[ci.m_id] = ci;
 						}
 						else {
-							failedSurfaces.push_back(surf.m_id);
+							failedSurfaces.push_back(surf.id());
 						}
 					}
 					else {
-						failedSurfaces.push_back(surf.m_id);
+						failedSurfaces.push_back(surf.id());
 					}
 				}
 
 				for(const auto& surf2 : space.surfaces()) {
-					for(const auto& subSurf : surf2.m_subSurfaces) {
+					for(const auto& subSurf : surf2.subSurfaces()) {
 						auto fitElem = std::find_if(
 										   elements.begin(),
 										   elements.end(),
-										   [subSurf](const auto& elem) {return elem.m_id == subSurf.m_elementEntityId; });
+										   [subSurf](const auto& elem) {return elem.m_id == subSurf.elementId(); });
 						if(fitElem != elements.end()) {
 							const BuildingElement& elem = *fitElem;
 							auto fitComp = std::find_if(
 											   database.m_subSurfaceComponents.begin(),
 											   database.m_subSurfaceComponents.end(),
-											   [elem](const auto& comp) {return comp.second.m_guid == elem.m_guid; });
+											   [elem](const auto& comp) {return comp.second.guid() == elem.m_guid; });
 							if(fitComp != database.m_subSurfaceComponents.end()) {
 								ComponentInstance ci;
 								ci.m_id = GUID_maker::instance().guid();
 								ci.m_subSurface = true;
 								ci.m_componentId = fitComp->first;
-								ci.m_sideASurfaceId = subSurf.m_id;
+								ci.m_sideASurfaceId = subSurf.id();
 								m_subSurfaceComponentInstances[ci.m_id] = ci;
 							}
 							else {
-								failedSubSurfaces.push_back(subSurf.m_id);
+								failedSubSurfaces.push_back(subSurf.id());
 							}
 						}
 						else {
-							failedSubSurfaces.push_back(subSurf.m_id);
+							failedSubSurfaces.push_back(subSurf.id());
 						}
 					}
 				}

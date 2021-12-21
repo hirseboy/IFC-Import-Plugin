@@ -9,22 +9,19 @@
 
 namespace IFCC {
 
+/*! Class represents a window with properties and connection to glazing system.*/
 class Window
 {
 public:
+	/*! Standard constructor.
+		The default methods for frame and divider are unknown (3).
+	*/
 	Window();
 
-	int									m_id;
-	std::string							m_color;
-	std::string							m_name;
-	int									m_glazingSystemId;
-	int									m_methodFrame;
-	int									m_methodDivider;
-	std::string							m_notes;
-	std::string							m_dataSource;
-
+	/*! Write the component in vicus xml format.*/
 	TiXmlElement * writeXML(TiXmlElement * parent) const;
 
+	/*! Comparison operator.*/
 	friend bool operator==(const Window& left, const Window& right) {
 		if(left.m_glazingSystemId != right.m_glazingSystemId)
 			return false;
@@ -34,6 +31,15 @@ public:
 			return false;
 		return true;
 	}
+
+	int				m_id;				///< Window object id
+	std::string		m_color;			///< Color for using in tables and views
+	std::string		m_name;				///< Window name
+	int				m_glazingSystemId;	///< Id of the used glazing system
+	int				m_methodFrame;		///< Method for frame
+	int				m_methodDivider;	///< method for divider
+	std::string		m_notes;			///< Some remarks
+	std::string		m_dataSource;		///< Source of window data
 };
 
 

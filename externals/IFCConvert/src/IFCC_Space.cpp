@@ -11,22 +11,6 @@
 
 namespace IFCC {
 
-
-//static std::vector<std::pair<int,int>> surfaceMatchIndex(const std::vector<Surface>& wallSurfaces, const std::vector<Surface>& spaceSurfaces, double minDist) {
-
-//	std::vector<std::pair<int,int>> result;
-//	for(size_t wi=0; wi<wallSurfaces.size(); ++wi) {
-//		for(size_t si=0; si<spaceSurfaces.size(); ++si) {
-//			double dist = spaceSurfaces[si].distanceToParallelPlane(wallSurfaces[wi].planeNormal());
-//			if(dist < minDist) {
-//				result.push_back(std::make_pair(si,wi));
-//			}
-//		}
-//	}
-//	return result;
-//}
-
-
 Space::Space(int id) :
 	EntityBase(id)
 {
@@ -44,7 +28,7 @@ bool Space::set(std::shared_ptr<IfcSpace> ifcSpace) {
 	for( const auto& bound : ifcSpace->m_BoundedBy_inverse) {
 		auto boundP = bound.lock();
 		SpaceBoundary sb(GUID_maker::instance().guid());
-		bool res = sb.set(boundP);
+		bool res = sb.setFromIFC(boundP);
 		if(res) {
 			m_spaceBoundaries.push_back(sb);
 		}
@@ -158,6 +142,45 @@ static void divideSurface(const Surface::IntersectionResult& intRes, std::vector
 	}
 }
 
+/*! Struct contains result of the function findFirstSurfaceMatchIndex.
+	It is used for matching a construction surface to a space surface.*/
+struct MatchResult {
+	/*! Default constructor creates a non valid object.*/
+	MatchResult() :
+		m_wallSurfaceIndex(-1),
+		m_spaceSurfaceIndex(-1)
+	{}
+
+	/*! Standard constructor.*/
+	MatchResult(int wallSurfaceIndex, int spaceSurfaceIndex) :
+		m_wallSurfaceIndex(wallSurfaceIndex),
+		m_spaceSurfaceIndex(spaceSurfaceIndex)
+	{}
+
+	/*! Return true if both indices are valid (greater than -1).*/
+	bool isValid() const {
+		return m_wallSurfaceIndex > -1 && m_spaceSurfaceIndex > -1;
+	}
+
+	int m_wallSurfaceIndex;		///< Index of the construction surface
+	int m_spaceSurfaceIndex;	///< Index of the space surface
+};
+
+static MatchResult findFirstSurfaceMatchIndex(const std::vector<Surface>& wallSurfaces, const std::vector<Surface>& spaceSurfaces, double minDist) {
+	const double EPS = 1e-3;
+	for(size_t wi=0; wi<wallSurfaces.size(); ++wi) {
+		for(size_t si=0; si<spaceSurfaces.size(); ++si) {
+			double dist = spaceSurfaces[si].distanceToParallelPlane(wallSurfaces[wi]);
+			if(dist < minDist * (1+EPS)) {
+				if(wallSurfaces[wi].isIntersected(spaceSurfaces[si]))
+					return MatchResult(wi,si);
+			}
+		}
+	}
+	return MatchResult();
+}
+
+
 std::vector<SpaceBoundary> Space::createSpaceBoundaries(const std::vector<BuildingElement>& elements) {
 	std::vector<Surface> surfaces(m_surfacesOrg);
 	std::vector<SpaceBoundary> spaceBoundaries;
@@ -179,7 +202,7 @@ std::vector<SpaceBoundary> Space::createSpaceBoundaries(const std::vector<Buildi
 			wId = construction.m_id;
 		}
 
-		Surface::MatchResult indices = Surface::findFirstSurfaceMatchIndex(construction.surfaces(), surfaces, dist);
+		MatchResult indices = findFirstSurfaceMatchIndex(construction.surfaces(), surfaces, dist);
 		if(indices.isValid()) {
 			int loopCount = 0;
 			do {
@@ -189,16 +212,16 @@ std::vector<SpaceBoundary> Space::createSpaceBoundaries(const std::vector<Buildi
 					SpaceBoundary sb(GUID_maker::instance().guid());
 					std::string name = m_name + ":" + construction.m_name + " - " +
 									   std::to_string(indices.m_spaceSurfaceIndex) + " : " + std::to_string(indices.m_wallSurfaceIndex);
-					if(sb.set(name, construction)) {
+					if(sb.setFromBuildingElement(name, construction)) {
 						sb.m_elementEntityId = construction.m_id;
-						sb.fetchGeometry(surf);
+						sb.fetchGeometryFromBuildingElement(surf);
 						spaceBoundaries.push_back(sb);
 					}
 				}
 				std::vector<Surface> subsurfaces;
 				divideSurface(intersectionResult, surfaces, indices.m_spaceSurfaceIndex, subsurfaces);
 
-				indices = Surface::findFirstSurfaceMatchIndex(construction.surfaces(), surfaces, dist);
+				indices = findFirstSurfaceMatchIndex(construction.surfaces(), surfaces, dist);
 
 				if(loopCount > 100) {
 					break;
@@ -227,7 +250,7 @@ static Space::OpeningConstructionMatching findBestSurfaceOpeningMatchIndex(const
 
 				for(size_t sbsi=0; sbsi<openings[oi].surfaces().size(); ++sbsi) {
 					const Surface& currentSpaceSurf = openings[oi].surfaces()[sbsi];
-					double dist = currentSpaceSurf.distanceToParallelPlane(openingConstruction.surfaces()[wi].planeNormal());
+					double dist = currentSpaceSurf.distanceToParallelPlane(openingConstruction.surfaces()[wi]);
 					if(dist < minDist) {
 						if(currentSpaceSurf.isIntersected(openingConstruction.surfaces()[wi])) {
 							if(!result.isValid() || dist < lastDistance) {
@@ -259,18 +282,18 @@ void Space::createSpaceBoundariesForOpeningsFromOpenings(std::vector<SpaceBounda
 												   construction.m_openingProperties.m_constructionThicknesses.end());
 			Space::OpeningConstructionMatching match = findBestSurfaceOpeningMatchIndex(construction, openings, maxConstructionThickness);
 			if(match.isValid()) {
-				const Surface& openingSurface = openings[match.m_spaceBoundaryIndex].surfaces()[match.m_spaceBoundarySurfaceIndex];
+				const Surface& openingSurface = openings[match.m_openingIndex].surfaces()[match.m_openingSurfaceIndex];
 				const Surface& constrSurface = construction.surfaces()[match.m_constructionSurfaceIndex];
 				Surface intersectionResult = openingSurface.intersect(constrSurface);
-				if(intersectionResult.m_valid) {
+				if(intersectionResult.isValid()) {
 					SpaceBoundary sb(GUID_maker::instance().guid());
 					std::string name = m_name + ":" + construction.m_name + " - " +
-									   std::to_string(match.m_spaceBoundaryIndex) + " : " +
-									   std::to_string(match.m_spaceBoundarySurfaceIndex) + " : " +
+									   std::to_string(match.m_openingIndex) + " : " +
+									   std::to_string(match.m_openingSurfaceIndex) + " : " +
 									   std::to_string(match.m_constructionSurfaceIndex);
-					if(sb.set(name, construction)) {
+					if(sb.setFromBuildingElement(name, construction)) {
 						sb.m_elementEntityId = construction.m_id;
-						sb.fetchGeometry(intersectionResult);
+						sb.fetchGeometryFromBuildingElement(intersectionResult);
 						spaceBoundaries.push_back(sb);
 					}
 				}
@@ -279,7 +302,7 @@ void Space::createSpaceBoundariesForOpeningsFromOpenings(std::vector<SpaceBounda
 	}
 }
 
-bool Space::getSpaceBoundaryTypes(const objectShapeTypeVector_t& shapes,
+bool Space::evaluateSpaceBoundaryTypes(const objectShapeTypeVector_t& shapes,
 								 shared_ptr<UnitConverter>& unit_converter,
 								 const std::vector<BuildingElement>& constructionElements,
 								 const std::vector<BuildingElement>& openingElements) {
@@ -289,11 +312,10 @@ bool Space::getSpaceBoundaryTypes(const objectShapeTypeVector_t& shapes,
 	bool foundOne = false;
 
 	for(auto& sb : m_spaceBoundaries) {
-		sb.fetchGeometry(unit_converter, m_transformMatrix);
 		int type = -1;
 		for(const auto& elemType : shapes) {
 			for(const auto& elem : elemType.second) {
-				if(sb.m_guidRelatedElement == ws2s(elem->m_entity_guid)) {
+				if(sb.guidRelatedElement() == ws2s(elem->m_entity_guid)) {
 					type = elemType.first;
 					break;
 				}
@@ -303,13 +325,13 @@ bool Space::getSpaceBoundaryTypes(const objectShapeTypeVector_t& shapes,
 		}
 		int id = -1;
 		for(const auto& construction : constructionElements) {
-			if(construction.m_guid == sb.m_guidRelatedElement) {
+			if(construction.m_guid == sb.guidRelatedElement()) {
 				id = construction.m_id;
 			}
 		}
 		if(id == -1) {
 			for(const auto& opening : openingElements) {
-				if(opening.m_guid == sb.m_guidRelatedElement) {
+				if(opening.m_guid == sb.guidRelatedElement()) {
 					id = opening.m_id;
 				}
 			}
@@ -317,10 +339,11 @@ bool Space::getSpaceBoundaryTypes(const objectShapeTypeVector_t& shapes,
 		if(type > -1) {
 			sb.setRelatingElementType(static_cast<ObjectTypes>(type));
 			sb.m_elementEntityId = id;
+			sb.fetchGeometryFromIFC(unit_converter, m_transformMatrix);
 			foundOne = true;
 		}
 		else {
-			std::string name = sb.m_nameRelatedElement;
+			std::string name = sb.nameRelatedElement();
 			m_notes = "Element type not found: " + name;
 		}
 	}
@@ -354,9 +377,9 @@ bool Space::updateSpaceBoundaries(const objectShapeTypeVector_t& shapes,
 								  const std::vector<Opening>& openings) {
 	bool success;
 	// update existing space boundaries from IFC
-	m_spaceBoundaries.clear();
+//	m_spaceBoundaries.clear();
 	if(!m_spaceBoundaries.empty()) {
-		success = getSpaceBoundaryTypes(shapes, unit_converter, constructionElements, openingElements);
+		success = evaluateSpaceBoundaryTypes(shapes, unit_converter, constructionElements, openingElements);
 	}
 	// try to evaluate space boundaries from building element entities
 	else {
@@ -376,13 +399,16 @@ void Space::updateSurfaces(const std::vector<BuildingElement>& elems) {
 
 	if(!m_spaceBoundaries.empty()) {
 		for( const auto& sb : m_spaceBoundaries) {
-			if(sb.m_type == SpaceBoundary::CT_ConstructionElement) {
+			if(sb.isConstructionElement()) {
 				const std::vector<Surface>& tempSurfVect = sb.surfaces();
 				m_surfaces.insert(m_surfaces.end(), tempSurfVect.begin(), tempSurfVect.end());
 			}
-			else if(sb.m_type == SpaceBoundary::CT_OpeningElement) {
+			else if(sb.isOpeningElement()) {
 				const std::vector<Surface>& tempSurfVect = sb.surfaces();
 				subSurfaces.insert(subSurfaces.end(), tempSurfVect.begin(), tempSurfVect.end());
+			}
+			else {
+				///< \todo handling other space boundary types
 			}
 		}
 		std::vector<OpeningMatching> subSurfaceMatch;
@@ -390,7 +416,7 @@ void Space::updateSurfaces(const std::vector<BuildingElement>& elems) {
 			const Surface& curSurf = m_surfaces[i];
 			int elementIndex = -1;
 			for(int eli=0; eli<elems.size(); ++eli) {
-				if(curSurf.m_elementEntityId == elems[eli].m_id) {
+				if(curSurf.elementId() == elems[eli].m_id) {
 					elementIndex = eli;
 					break;
 				}

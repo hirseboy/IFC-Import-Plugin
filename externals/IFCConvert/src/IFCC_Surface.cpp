@@ -17,8 +17,6 @@ namespace IFCC {
 Surface::Surface() :
 	m_id(-1),
 	m_elementEntityId(-1),
-	m_openingId(-1),
-	m_valid(false),
 	m_positionType(PT_Unknown),
 	m_virtualSurface(false)
 {
@@ -27,8 +25,6 @@ Surface::Surface() :
 Surface::Surface(carve::mesh::Face<3>* face) :
 	m_id(-1),
 	m_elementEntityId(-1),
-	m_openingId(-1),
-	m_valid(false),
 	m_positionType(PT_Unknown),
 	m_virtualSurface(false)
 {
@@ -44,83 +40,31 @@ Surface::Surface(carve::mesh::Face<3>* face) :
 		m_polyVect.emplace_back(IBKMK::Vector3D(x,y,z));
 	}
 	m_planeCarve = face->plane;
-	m_valid = m_polyVect.size() > 2;
 	PlaneHesseNormal hesse(face->plane);
 	m_planeNormal = PlaneNormal(hesse, m_polyVect);
-
-	for(const IBKMK::Vector3D& vect : m_polyVect) {
-		IBKMK::Vector2D p2 = m_planeNormal.convert3DPoint(vect);
-		m_polyVect2D.push_back(p2);
-	}
 
 }
 
 Surface::Surface(const polygon3D_t& polygon) :
 	m_id(-1),
 	m_elementEntityId(-1),
-	m_openingId(-1),
-	m_valid(false),
 	m_positionType(PT_Unknown),
 	m_virtualSurface(false),
 	m_polyVect(polygon)
 {
-	m_valid = m_polyVect.size() > 2;
-
-	if(m_valid) {
+	if(m_polyVect.size() > 2) {
 		m_planeNormal = PlaneNormal(polygon);
 		PlaneHesseNormal planeHesseNormal(polygon);
 		m_planeCarve.N = carve::geom::VECTOR(planeHesseNormal.m_n0.m_x,planeHesseNormal.m_n0.m_x,planeHesseNormal.m_n0.m_x);
 		m_planeCarve.d = planeHesseNormal.m_d;
-
-		for(const IBKMK::Vector3D& vect : m_polyVect) {
-			IBKMK::Vector2D p2 = m_planeNormal.convert3DPoint(vect);
-			m_polyVect2D.push_back(p2);
-		}
 	}
 }
 
-IBKMK::Vector3D Surface::centroid() const {
-	IBKMK::Vector3D res;
-	for(const IBKMK::Vector3D& vert : m_polyVect) {
-		res += vert;
-	}
-	return res * (1.0/m_polyVect.size());
-}
-
-double Surface::distancePointToPlane(const IBKMK::Vector3D& point, bool negate) const {
-	IBKMK::Vector3D n0(m_planeCarve.N.x, m_planeCarve.N.y, m_planeCarve.N.z);
-	if(negate)
-		n0 = n0*-1;
-	double d1 = point.scalarProduct(n0);
-	double dist = d1 - m_planeCarve.d;
-	return dist;
-}
-
-double Surface::distanceToParallelPlane(const carve::geom::plane<3>& other) const {
-	double negFact = 1.0;
-	if(!nearEqual(m_planeCarve.N,other.N)) {
-		if(!nearEqual(m_planeCarve.N.negated(),other.N))
-			return std::numeric_limits<double>::max();
-		else
-			negFact = -1.0;
-	}
-
-	double dist = std::fabs(other.d - (m_planeCarve.d * negFact));
-	return dist;
-}
-
-double Surface::distanceToParallelPlane(const PlaneNormal& other) const {
-	double negFact = 1.0;
-	if(!nearEqual(m_planeNormal.m_lz, other.m_lz)) {
-		if(!nearEqual(m_planeNormal.m_lz*-1,other.m_lz))
-			return std::numeric_limits<double>::max();
-		else
-			negFact = -1.0;
-	}
-
-	double dist = std::fabs(other.m_distance - (m_planeNormal.m_distance * negFact));
-
-	return dist;
+void Surface::set(int id, int elementId, const std::string& name, bool isVirtual) {
+	m_id = id;
+	m_elementEntityId = elementId;
+	m_name = name;
+	m_virtualSurface = isVirtual;
 }
 
 double Surface::distanceToParallelPlane(const Surface& other) const {
@@ -135,31 +79,9 @@ double Surface::distanceToParallelPlane(const Surface& other) const {
 	double dist = std::fabs(other.m_planeNormal.m_distance - (m_planeNormal.m_distance * negFact));
 
 	IBKMK::Vector3D t = m_polyVect[0] - other.m_polyVect[0];
-	double dist2 = t.scalarProduct(PlaneHesseNormal(m_polyVect).m_n0);
+//	double dist2 = t.scalarProduct(PlaneHesseNormal(m_polyVect).m_n0);
 
 	return dist;
-}
-
-bool Surface::equalNormals(const Surface& other)  const {
-	carve::geom::vector<3> v1 = m_planeCarve.N;
-	carve::geom::vector<3> v2 = other.planeCarve().N;
-
-	return nearEqual(v1,v2);
-}
-
-bool Surface::equalNegNormals(const Surface& other)  const {
-	carve::geom::vector<3> v1 = m_planeCarve.N;
-	carve::geom::vector<3> v2 = other.planeCarve().N;
-	carve::geom::vector<3> negV1 = v1.negated();
-
-	if(!IBK::near_equal(negV1.x,v2.x))
-		return false;
-	if(!IBK::near_equal(negV1.y,v2.y))
-		return false;
-	if(!IBK::near_equal(negV1.z,v2.z))
-		return false;
-
-	return true;
 }
 
 bool Surface::isParallelTo(const Surface& other) const {
@@ -168,7 +90,7 @@ bool Surface::isParallelTo(const Surface& other) const {
 	double c;
 
 	carve::geom::vector<3> v1 = m_planeCarve.N;
-	carve::geom::vector<3> v2 = other.planeCarve().N;
+	carve::geom::vector<3> v2 = other.m_planeCarve.N;
 
 	if(IBK::near_zero(v2.x)) {
 		if(!IBK::near_zero(v1.x))
@@ -229,58 +151,6 @@ bool Surface::isParallelTo(const Surface& other) const {
 	return false;
 }
 
-TiXmlElement * Surface::writeXML(TiXmlElement * parent) const {
-	if (m_id == -1)
-		return nullptr;
-
-	TiXmlElement * e = new TiXmlElement("Surface");
-	parent->LinkEndChild(e);
-
-	e->SetAttribute("id", IBK::val2string<unsigned int>(m_id));
-	if (!m_name.empty())
-		e->SetAttribute("displayName", m_name);
-//	e->SetAttribute("visible", IBK::val2string<bool>(true));
-
-	if(!m_polyVect.empty()) {
-		TiXmlElement * child = new TiXmlElement("Polygon3D");
-		e->LinkEndChild(child);
-
-		std::stringstream vals;
-		for (unsigned int i=0; i<m_polyVect.size(); ++i) {
-			vals << m_polyVect[i].m_x << " " << m_polyVect[i].m_y << " " << m_polyVect[i].m_z;
-			if (i<m_polyVect.size()-1)  vals << ", ";
-		}
-		TiXmlText * text = new TiXmlText( vals.str() );
-		child->LinkEndChild( text );
-	}
-	if(!m_subSurfaces.empty()) {
-		TiXmlElement * child = new TiXmlElement("SubSurfaces");
-		e->LinkEndChild(child);
-
-		for( const SubSurface& subsurface : m_subSurfaces) {
-			subsurface.writeXML(child);
-		}
-	}
-	return e;
-}
-
-void Surface::simplify() {
-	if(m_polyVect.size() <= 4)
-		return;
-
-	std::vector<std::pair<size_t,size_t>> equalPoints;
-	for(size_t i=0; i<m_polyVect.size()-1; ++i) {
-		for(size_t j=i+1; j<m_polyVect.size(); ++j) {
-			if(m_polyVect[i].distanceTo(m_polyVect[j]) < 1e-6)
-				equalPoints.push_back(std::make_pair(i,j));
-		}
-	}
-	if(equalPoints.empty())
-		return;
-
-	m_polyVect.erase(m_polyVect.begin() + equalPoints.front().second, m_polyVect.end());
-}
-
 std::vector<std::pair<size_t,size_t>> Surface::samePoints(const Surface& other) const {
 	std::vector<std::pair<size_t,size_t>> equalPoints;
 	const std::vector<IBKMK::Vector3D>& otherPoly = other.polygon();
@@ -292,29 +162,6 @@ std::vector<std::pair<size_t,size_t>> Surface::samePoints(const Surface& other) 
 	}
 	return equalPoints;
 }
-
-bool Surface::isSame(const Surface& other) const {
-	if(m_polyVect.size() != other.polygon().size())
-		return false;
-
-	std::vector<std::pair<size_t,size_t>> sps = samePoints(other);
-	if(sps.size() == m_polyVect.size())
-		return true;
-	return false;
-}
-
-
-//static bool compare(const polygon3D_t& left, const polygon3D_t& right) {
-//	if(left.size() != right.size())
-//		return false;
-
-//	for(size_t i=0; i<left.size(); ++i) {
-//		double dist = left[i].distanceTo(right[i]);
-//		if(dist > 1e-5)
-//			return false;
-//	}
-//	return true;
-//}
 
 bool Surface::isIntersected(const Surface& other) const {
 	polygon3D_t result = intersectPolygons(m_polyVect, other.polygon(), m_planeNormal);
@@ -369,90 +216,73 @@ bool Surface::merge(const Surface& subsurface) {
 	polygon3D_t result = mergePolygons(m_polyVect, subsurface.polygon(), m_planeNormal);
 	if(result.empty())
 		return false;
+
 	m_polyVect = result;
-	for(const IBKMK::Vector3D& vect : m_polyVect) {
-		IBKMK::Vector2D p2 = m_planeNormal.convert3DPoint(vect);
-		m_polyVect2D.push_back(p2);
-	}
 	return true;
 }
 
 bool Surface::addSubSurface(const Surface& subsurface) {
-//	PlaneNormal subplane = m_planeNormal;
-	m_subSurfaces.emplace_back(SubSurface(subsurface.polygon(), *this, m_polyVect[0]));
-	m_subSurfaces.back().m_id = GUID_maker::instance().guid();
-	m_subSurfaces.back().m_name = subsurface.m_name;
-	m_subSurfaces.back().m_openingId = subsurface.m_openingId;
-	m_subSurfaces.back().m_elementEntityId = subsurface.m_elementEntityId;
-	return m_subSurfaces.back().m_valid;
-}
+	SubSurface sub(subsurface.polygon(), *this);
+	if(!sub.isValid())
+		return false;
 
-
-bool Surface::check() {
-#ifdef SURFACE_DUMP
-	std::ofstream debugOut("g:/temp/surfaces.txt", std::ios::app);
-	std::stringstream debug;
-
-	debug << "\n|pos|: " << m_planeNormal.m_pos.magnitude() << "\n";
-	debug << "pos: " << m_planeNormal.m_pos.m_x << "|" << m_planeNormal.m_pos.m_y << "|" << m_planeNormal.m_pos.m_z << "\n";
-	debug << "rotPos: " << m_planeNormal.m_rot_pos.m_x << "|" << m_planeNormal.m_rot_pos.m_y << "|" << m_planeNormal.m_rot_pos.m_z << "\n";
-	debug << "lx: " << m_planeNormal.m_lx.m_x << "|" << m_planeNormal.m_lx.m_y << "|" << m_planeNormal.m_lx.m_z << "\n";
-	debug << "ly: " << m_planeNormal.m_ly.m_x << "|" << m_planeNormal.m_ly.m_y << "|" << m_planeNormal.m_ly.m_z << "\n";
-	debug << "lz: " << m_planeNormal.m_lz.m_x << "|" << m_planeNormal.m_lz.m_y << "|" << m_planeNormal.m_lz.m_z << "\n";
-	debug << "n0: " << hesse.m_n0.m_x << "|" << hesse.m_n0.m_y << "|" << hesse.m_n0.m_z << "\n";
-	debug << "d: " << hesse.m_d << "\n";
-	debug << "type: " << m_planeNormal.m_polygonPlane << "\n";
-	debug << "area: " << areaPolygon(m_polyVect) << "\n";
-	debug << "\nconverted\n";
-#endif
-
-	//	PlaneNormal plane2D = PlaneNormal::createXYPlane();
-	bool errorInSurface = false;
-	IBK_ASSERT(m_polyVect.size() == m_polyVect2D.size());
-
-	for(size_t i=0; i<m_polyVect.size(); ++i) {
-		const IBKMK::Vector2D& p2 = m_polyVect2D[i];
-		const IBKMK::Vector3D& p3 = m_polyVect[i];
-		IBKMK::Vector3D p3Check = m_planeNormal.convert3DPointInv(p2);
-		errorInSurface = !nearEqual(p3Check, p3);
-
-#ifdef SURFACE_DUMP
-		debug << "p2 " << p2.m_x << "|" << p2.m_y << "|" << 0 << "\n";
-
-		debug << "org " << p3.m_x << "|" << p3.m_y << "|" << p3.m_z << "   " << "\n";
-		debug << "p3C " << p3Check.m_x << "|" << p3Check.m_y << "|" << p3Check.m_z << "   " << nearEqual(p3Check, vect) << "\n";
-		if(p3Check != vect) {
-			m_valid = false;
-		}
-#endif
-	}
-#ifdef SURFACE_DUMP
-	if(errorInSurface) {
-		debugOut << debug.str();
-	}
-	else {
-//		debugOut << "no errors in surface\n";
-	}
-#endif
-	return !errorInSurface;
+	sub.set(GUID_maker::instance().guid(), subsurface.m_name, subsurface.m_elementEntityId);
+	m_subSurfaces.push_back(sub);
+	return true;
 }
 
 double Surface::area() const {
 	return areaPolygon(m_polyVect);
 }
 
-Surface::MatchResult Surface::findFirstSurfaceMatchIndex(const std::vector<Surface>& wallSurfaces, const std::vector<Surface>& spaceSurfaces, double minDist) {
-	const double EPS = 1e-3;
-	for(size_t wi=0; wi<wallSurfaces.size(); ++wi) {
-		for(size_t si=0; si<spaceSurfaces.size(); ++si) {
-			double dist = spaceSurfaces[si].distanceToParallelPlane(wallSurfaces[wi].planeNormal());
-			if(dist < minDist * (1+EPS)) {
-				if(wallSurfaces[wi].isIntersected(spaceSurfaces[si]))
-					return MatchResult(wi,si);
-			}
+TiXmlElement * Surface::writeXML(TiXmlElement * parent) const {
+	if (m_id == -1)
+		return nullptr;
+
+	TiXmlElement * e = new TiXmlElement("Surface");
+	parent->LinkEndChild(e);
+
+	e->SetAttribute("id", IBK::val2string<unsigned int>(m_id));
+	if (!m_name.empty())
+		e->SetAttribute("displayName", m_name);
+//	e->SetAttribute("visible", IBK::val2string<bool>(true));
+
+	if(!m_polyVect.empty()) {
+		TiXmlElement * child = new TiXmlElement("Polygon3D");
+		e->LinkEndChild(child);
+
+		std::stringstream vals;
+		for (unsigned int i=0; i<m_polyVect.size(); ++i) {
+			vals << m_polyVect[i].m_x << " " << m_polyVect[i].m_y << " " << m_polyVect[i].m_z;
+			if (i<m_polyVect.size()-1)  vals << ", ";
+		}
+		TiXmlText * text = new TiXmlText( vals.str() );
+		child->LinkEndChild( text );
+	}
+	if(!m_subSurfaces.empty()) {
+		TiXmlElement * child = new TiXmlElement("SubSurfaces");
+		e->LinkEndChild(child);
+
+		for( const SubSurface& subsurface : m_subSurfaces) {
+			subsurface.writeXML(child);
 		}
 	}
-	return MatchResult();
+	return e;
+}
+
+void Surface::setSurfaceType(IfcInternalOrExternalEnum::IfcInternalOrExternalEnumEnum type) {
+	switch(type) {
+		case IfcInternalOrExternalEnum::ENUM_INTERNAL: m_positionType = Surface::PT_Internal; break;
+		case IfcInternalOrExternalEnum::ENUM_EXTERNAL: m_positionType = Surface::PT_External; break;
+		case IfcInternalOrExternalEnum::ENUM_EXTERNAL_EARTH: m_positionType = Surface::PT_External_Ground; break;
+		case IfcInternalOrExternalEnum::ENUM_EXTERNAL_WATER:
+		case IfcInternalOrExternalEnum::ENUM_EXTERNAL_FIRE:
+		case IfcInternalOrExternalEnum::ENUM_NOTDEFINED: m_positionType = Surface::PT_Unknown; break;
+	}
+}
+
+bool Surface::isValid() const {
+	return m_polyVect.size() > 2;
 }
 
 

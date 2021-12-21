@@ -94,23 +94,17 @@ void Database::collectComponents(std::vector<BuildingElement>& elements) {
 			m_components[comp.m_id] = comp;
 		}
 		else if(elem.isSubSurfaceComponent()) {
-			SubSurfaceComponent comp;
+			SubSurfaceComponent comp(GUID_maker::instance().guid(), elem.m_guid, elem.m_name);
 			if(elem.type() == OT_Window) {
-				comp.m_type = SubSurfaceComponent::CT_Window;
-				comp.m_windowId = elem.m_openingProperties.m_id;
+				comp.setWindow(elem.m_openingProperties.m_id);
 			}
 			else if(elem.type() == OT_Door) {
-				comp.m_type = SubSurfaceComponent::CT_Door;
-				comp.m_constructionId = elem.m_constructionId;
+				comp.setDoor(elem.m_constructionId);
 			}
 			else {
-				comp.m_type = SubSurfaceComponent::CT_Miscellaneous;
-				comp.m_constructionId = elem.m_constructionId;
+				comp.setOther(elem.m_constructionId);
 			}
-			comp.m_name = elem.m_name;
-			comp.m_id = GUID_maker::instance().guid();
-			comp.m_guid = elem.m_guid;
-			m_subSurfaceComponents[comp.m_id] = comp;
+			m_subSurfaceComponents[comp.id()] = comp;
 		}
 	}
 }
@@ -121,8 +115,8 @@ void Database::collectMaterialsAndConstructions(std::vector<BuildingElement>& el
 			continue;
 
 		Construction currentConst;
-		for(const auto& mat : elem.m_materialLayers) {
-			std::string name = mat.second;
+		for(size_t i=0; i<elem.m_materialLayers.size(); ++i) {
+			std::string name = elem.m_materialLayers[i].second;
 			auto fit = std::find_if(
 						   m_materials.begin(),
 						   m_materials.end(),
@@ -131,11 +125,12 @@ void Database::collectMaterialsAndConstructions(std::vector<BuildingElement>& el
 				Material material;
 				material.m_id  = GUID_maker::instance().guid();
 				material.m_name = name;
+				material.setPropertiesFromPropertyMap(elem.m_materialPropertyMap[i]);
 				m_materials[material.m_id] = material;
-				currentConst.m_layers.push_back(std::make_pair(material.m_id, mat.first));
+				currentConst.m_layers.push_back(std::make_pair(material.m_id, elem.m_materialLayers[i].first));
 			}
 			else {
-				currentConst.m_layers.push_back(std::make_pair(fit->first, mat.first));
+				currentConst.m_layers.push_back(std::make_pair(fit->first, elem.m_materialLayers[i].first));
 			}
 		}
 

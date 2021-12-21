@@ -21,13 +21,12 @@ SpaceBoundary::SpaceBoundary(int id) :
 	m_physicalOrVirtual(IfcPhysicalOrVirtualEnum::ENUM_NOTDEFINED),
 	m_internalOrExternal(IfcInternalOrExternalEnum::ENUM_NOTDEFINED),
 	m_type(CT_Unknown),
-	m_elementEntityId(-1),
-	m_openingId(-1)
+	m_elementEntityId(-1)
 {
 
 }
 
-bool SpaceBoundary::set(std::shared_ptr<IfcRelSpaceBoundary> ifcSpaceBoundary) {
+bool SpaceBoundary::setFromIFC(std::shared_ptr<IfcRelSpaceBoundary> ifcSpaceBoundary) {
 	if(!EntityBase::set(dynamic_pointer_cast<IfcRoot>(ifcSpaceBoundary)))
 		return false;
 
@@ -50,7 +49,7 @@ bool SpaceBoundary::set(std::shared_ptr<IfcRelSpaceBoundary> ifcSpaceBoundary) {
 }
 
 
-bool SpaceBoundary::set(const std::string& name, const BuildingElement& elem) {
+bool SpaceBoundary::setFromBuildingElement(const std::string& name, const BuildingElement& elem) {
 	m_name = name;
 	setRelatingElementType(elem.type());
 	m_physicalOrVirtual = IfcPhysicalOrVirtualEnum::ENUM_PHYSICAL;
@@ -68,7 +67,7 @@ void SpaceBoundary::setRelatingElementType(ObjectTypes type) {
 	else m_type = CT_Others;
 }
 
-bool SpaceBoundary::fetchGeometry(shared_ptr<UnitConverter>& unit_converter, const carve::math::Matrix& spaceTransformation) {
+bool SpaceBoundary::fetchGeometryFromIFC(shared_ptr<UnitConverter>& unit_converter, const carve::math::Matrix& spaceTransformation) {
 	// connection geometry is set from IFCSpaceBoundary
 	if(m_connectionGeometry != nullptr) {
 		// get geometry data from connection geometry by conversion via ItemShapeData
@@ -126,23 +125,24 @@ bool SpaceBoundary::fetchGeometry(shared_ptr<UnitConverter>& unit_converter, con
 			simplifyMesh(currentMeshSets, false);
 		}
 
+		polyVector_t polylines;
 		if(!meshSetClosedFinal.empty()) {
 			int msCount = meshSetClosedFinal.size();
 			for(int i=0; i<msCount; ++i) {
-				m_polyvectClosedFinal.push_back(std::vector<std::vector<std::vector<IBKMK::Vector3D>>>());
+				polylines.push_back(std::vector<std::vector<std::vector<IBKMK::Vector3D>>>());
 				const carve::mesh::MeshSet<3>& currMeshSet = *meshSetClosedFinal[i];
-				convert(currMeshSet, m_polyvectClosedFinal.back());
+				convert(currMeshSet, polylines.back());
 			}
 		}
 		if(!meshSetOpenFinal.empty()) {
 			int msCount = meshSetOpenFinal.size();
 			for(int i=0; i<msCount; ++i) {
-				m_polyvectOpenFinal.push_back(std::vector<std::vector<std::vector<IBKMK::Vector3D>>>());
+				polylines.push_back(std::vector<std::vector<std::vector<IBKMK::Vector3D>>>());
 				const carve::mesh::MeshSet<3>& currMeshSet = *meshSetOpenFinal[i];
-				convert(currMeshSet, m_polyvectOpenFinal.back());
+				convert(currMeshSet, polylines.back());
 			}
 		}
-		void createSurfaceVect();
+		createSurfaceVect(polylines);
 		return true;
 	}
 
@@ -154,61 +154,31 @@ bool SpaceBoundary::fetchGeometry(shared_ptr<UnitConverter>& unit_converter, con
 	}
 }
 
-bool SpaceBoundary::fetchGeometry(const Surface& surface) {
-	m_polyvectClosedFinal.clear();
-	m_polyvectOpenFinal.clear();
-	if(surface.m_valid) {
-		m_polyvectClosedFinal.emplace_back(std::vector<std::vector<std::vector<IBKMK::Vector3D>>>());
-		m_polyvectClosedFinal.back().emplace_back(std::vector<std::vector<IBKMK::Vector3D>>());
-		m_polyvectClosedFinal.back().back().emplace_back(surface.polygon());
-		createSurfaceVect();
+bool SpaceBoundary::fetchGeometryFromBuildingElement(const Surface& surface) {
+	polyVector_t polylines;
+	if(surface.isValid()) {
+		polylines.emplace_back(std::vector<std::vector<std::vector<IBKMK::Vector3D>>>());
+		polylines.back().emplace_back(std::vector<std::vector<IBKMK::Vector3D>>());
+		polylines.back().back().emplace_back(surface.polygon());
+		createSurfaceVect(polylines);
 		return true;
 	}
 	return false;
 }
 
-static void setSurfaceType(Surface& surf, IfcInternalOrExternalEnum::IfcInternalOrExternalEnumEnum type) {
-	switch(type) {
-		case IfcInternalOrExternalEnum::ENUM_INTERNAL: surf.m_positionType = Surface::PT_Internal; break;
-		case IfcInternalOrExternalEnum::ENUM_EXTERNAL: surf.m_positionType = Surface::PT_External; break;
-		case IfcInternalOrExternalEnum::ENUM_EXTERNAL_EARTH: surf.m_positionType = Surface::PT_External_Ground; break;
-		case IfcInternalOrExternalEnum::ENUM_EXTERNAL_WATER:
-		case IfcInternalOrExternalEnum::ENUM_EXTERNAL_FIRE:
-		case IfcInternalOrExternalEnum::ENUM_NOTDEFINED: surf.m_positionType = Surface::PT_Unknown; break;
-	}
-}
-
-void SpaceBoundary::createSurfaceVect() {
+void SpaceBoundary::createSurfaceVect(const polyVector_t& polylines) {
 	m_surfaces.clear();
 	std::string name = m_nameRelatedElement;
 	if(name.empty())
 		name = std::to_string(m_id);
-	for(const auto& polyvect3 : m_polyvectClosedFinal) {
+	for(const auto& polyvect3 : polylines) {
 		for(const auto& polyvect2 : polyvect3) {
 			for(const auto& polyvect1 : polyvect2) {
 				if(!polyvect1.empty()) {
 					m_surfaces.emplace_back(Surface(polyvect1));
-					m_surfaces.back().m_elementEntityId = m_elementEntityId;
-					m_surfaces.back().m_openingId = m_openingId;
-					m_surfaces.back().m_name = name;
-					m_surfaces.back().m_id = GUID_maker::instance().guid();
-					m_surfaces.back().m_virtualSurface = m_physicalOrVirtual == IfcPhysicalOrVirtualEnum::ENUM_VIRTUAL;
-					setSurfaceType(m_surfaces.back(), m_internalOrExternal);
-				}
-			}
-		}
-	}
-	for(const auto& polyvect3 : m_polyvectOpenFinal) {
-		for(const auto& polyvect2 : polyvect3) {
-			for(const auto& polyvect1 : polyvect2) {
-				if(!polyvect1.empty()) {
-					m_surfaces.emplace_back(Surface(polyvect1));
-					m_surfaces.back().m_elementEntityId = m_elementEntityId;
-					m_surfaces.back().m_openingId = m_openingId;
-					m_surfaces.back().m_name = name;
-					m_surfaces.back().m_id = GUID_maker::instance().guid();
-					m_surfaces.back().m_virtualSurface = m_physicalOrVirtual == IfcPhysicalOrVirtualEnum::ENUM_VIRTUAL;
-					setSurfaceType(m_surfaces.back(), m_internalOrExternal);
+					m_surfaces.back().set(GUID_maker::instance().guid(), m_elementEntityId, name,
+										  m_physicalOrVirtual == IfcPhysicalOrVirtualEnum::ENUM_VIRTUAL);
+					m_surfaces.back().setSurfaceType(m_internalOrExternal);
 				}
 			}
 		}

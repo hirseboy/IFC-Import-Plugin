@@ -2,16 +2,15 @@
 #define IFCC_HelperH
 
 #include <vector>
-#include <unordered_set>
 
 #include <IBKMK_Polygon3D.h>
 
 #include <IBK_Path.h>
 
 #include <ifcpp/IFC4/include/IfcObjectDefinition.h>
-#include <ifcpp/IFC4/include/IfcSite.h>
 #include <ifcpp/IFC4/include/IfcLabel.h>
 #include <ifcpp/IFC4/include/IfcText.h>
+#include <ifcpp/IFC4/include/IfcIdentifier.h>
 
 #include "IFCC_Types.h"
 
@@ -19,123 +18,81 @@ class TiXmlElement;
 
 namespace IFCC {
 
-struct MyIfcTreeItem
-{
-	MyIfcTreeItem() = default;
-	std::wstring m_name;
-	std::wstring m_description;
-	std::wstring m_entity_guid;
-	std::string m_ifc_class_name;
-	std::vector<shared_ptr<MyIfcTreeItem> > m_children;
-};
-
-struct FaceIndex {
-	int m_meshSetIndex;
-	int m_meshIndex;
-	int m_faceIndex;
-	FaceIndex() :
-		m_meshSetIndex(-1),
-		m_meshIndex(-1),
-		m_faceIndex(-1)
-	{}
-
-	FaceIndex(int msi, int mi, int fi) :
-		m_meshSetIndex(msi),
-		m_meshIndex(mi),
-		m_faceIndex(fi)
-	{}
-
-	operator int() const { return m_meshSetIndex * 10000 + m_meshIndex * 1000 + m_faceIndex; }
-};
-
+/*! Class for creating project unique GUIDs starting with number 1.*/
 class GUID_maker {
 public:
+	/*! Return only instance (Singleton).*/
 	static GUID_maker& instance() {
 		static GUID_maker self;
 		return self;
 	}
+	/*! Return unique GUID.*/
 	int guid() {
 		return m_guid++;
 	}
 
-
 private:
-	static int m_guid;
+	static int m_guid;	///< Current guid
 };
-
-// IFC helper
-
-std::string ws2s(const std::wstring& wstr);
-
-inline std::string label2s(const std::shared_ptr<IfcLabel>& label) {
-	if(label != nullptr)
-		return ws2s(label->m_value);
-	return std::string();
-}
-
-inline std::string text2s(const std::shared_ptr<IfcText>& label) {
-	if(label != nullptr)
-		return ws2s(label->m_value);
-	return std::string();
-}
-
-void getChildren(const shared_ptr<IfcObjectDefinition>& object_def, std::vector<shared_ptr<IfcObjectDefinition> >& vec_children);
-
-shared_ptr<MyIfcTreeItem> resolveTreeItems(shared_ptr<BuildingObject> obj, std::unordered_set<int>& set_visited);
-
-bool siteHasRelativePlacement(const shared_ptr<IfcSite>& ifc_site);
-
-void resetIfcSiteLargeCoords(shared_ptr<IfcSite>& ifc_site);
 
 // conversion functions
 
-void convert(const carve::mesh::MeshSet<3>& meshSet, std::vector<std::vector<std::vector<IBKMK::Vector3D>>>&  polyvect);
+/*! Convert wide string (Unicode) into UTF8 string.*/
+std::string ws2s(const std::wstring& wstr);
 
-carve::mesh::Face<3>* faceFromMeshset(const meshVector_t& meshvect, FaceIndex findex);
+/*! Return UTF8 version of label text from IfcLabel.*/
+std::string label2s(const std::shared_ptr<IfcLabel>& label);
+
+/*! Return UTF8 version of text from IfcText.*/
+std::string text2s(const std::shared_ptr<IfcText>& text);
+
+/*! Return UTF8 version of text from IfcText.*/
+std::string name2s(const std::shared_ptr<IfcIdentifier>& text);
+
+/*! Return UTF8 version of the guid of the given IFC object.*/
+std::string guidFromObject(IfcRoot* object);
+
+/*! Convert the given meshSet into vectors of polygons.
+	A mesh set can contain several meshes which can contain several faces. Each face will be converted to a polygon.
+	A polygon is represented by a vector of 3D vectors.
+	\param meshSet Carve mesh set.
+	\param polyvect vector of vector of polygons.
+*/
+void convert(const carve::mesh::MeshSet<3>& meshSet, std::vector<std::vector<std::vector<IBKMK::Vector3D>>>&  polyvect);
 
 // debug helper
 
+/*! Dump the content of the given carve meshSet into a file.
+	Multiple calls of this function with the same filename will extend the file.
+	\param meshSet Carve mesh set.
+	\param name Name of the the meshset.
+	\param filename Name of dump file
+*/
 void meshDump(const carve::mesh::MeshSet<3>& meshSet, const std::string& name, const IBK::Path& filename);
 
+/*! Dump the content of the given carve face into a file.
+	Multiple calls of this function with the same filename will extend the file.
+	\param face Carve face.
+	\param name Name of the the meshset.
+	\param filename Name of dump file
+*/
 void faceDump(carve::mesh::Face<3>* face, const std::string& name, const IBK::Path& filename);
-
-TiXmlElement * writeVector3D(TiXmlElement * parent, const std::string & name, const std::vector<IBKMK::Vector3D> & vec);
 
 // mesh helper
 
+/*! Try to simplify the given meshSets.
+	Merging coplanar faces will always be perfomed. This can remove triangulation. Here a eps angle of 0.1 DEG will be used.
+	\param removeLowVolume If true additionally a removing of very small volumes (<1e-8) will be performed.
+*/
 void simplifyMesh(meshVector_t& meshVector, bool removeLowVolume);
 
-void closeMeshSet(carve::mesh::MeshSet<3>* meshset);
-
-bool checkMeshSetValidAndClosed( carve::mesh::MeshSet<3>* mesh_set);
-
-IBKMK::Vector3D fromCarveVector(const carve::geom::vector<3>& vect);
-
-carve::geom::vector<3> toCarveVector(const IBKMK::Vector3D& vect);
-
-carve::geom::plane<3> pointsToPlane(const IBKMK::Vector3D& x, const IBKMK::Vector3D& y, const IBKMK::Vector3D& z);
-
-bool nearEqual(const carve::geom::vector<3>& v1, const carve::geom::vector<3>& v2);
-
-bool nearEqual(const IBKMK::Vector2D& v1, const IBKMK::Vector2D& v2);
-
+/*! Check if both vectors are nearly equal.
+	It will be done by checking near equality of each coordinate (eps = 1e-4).
+*/
 bool nearEqual(const IBKMK::Vector3D& v1, const IBKMK::Vector3D& v2);
 
+/*! Return the area of the given polygon.*/
 double areaPolygon(const std::vector<IBKMK::Vector3D>& poly);
-
-bool intersects(const std::vector<IBKMK::Vector3D>& poly1, const std::vector<IBKMK::Vector3D>& poly2);
-
-bool intersects2(const std::vector<IBKMK::Vector3D>& poly1, const std::vector<IBKMK::Vector3D>& poly2);
-
-bool intersects2From2D(const std::vector<IBKMK::Vector3D>& poly1, const std::vector<IBKMK::Vector3D>& poly2);
-
-bool intersects(carve::mesh::Face<3>* face1, carve::mesh::Face<3>* face2);
-
-bool intersects(carve::mesh::Face<3>* face1, carve::mesh::MeshSet<3>* meshset2);
-
-ObjectTypes typeFromObjectType(const std::string& typestring);
-
-std::string guidFromObject(IfcRoot* object);
 
 } // end namespace
 

@@ -8,7 +8,31 @@ SubSurfaceComponent::SubSurfaceComponent() :
 	m_windowId(-1),
 	m_constructionId(-1)
 {
+}
 
+SubSurfaceComponent::SubSurfaceComponent(int id, const std::string guid, const std::string& name) :
+	m_type(NUM_CT),
+	m_windowId(-1),
+	m_constructionId(-1),
+	m_id(id),
+	m_name(name),
+	m_guid(guid)
+{
+}
+
+void SubSurfaceComponent::setWindow(int id) {
+	m_type = CT_Window;
+	m_windowId = id;
+}
+
+void SubSurfaceComponent::setDoor(int id) {
+	m_type = CT_Door;
+	m_constructionId = id;
+}
+
+void SubSurfaceComponent::setOther(int id) {
+	m_type = CT_Miscellaneous;
+	m_constructionId = id;
 }
 
 TiXmlElement * SubSurfaceComponent::writeXML(TiXmlElement * parent) const {

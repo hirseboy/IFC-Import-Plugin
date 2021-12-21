@@ -1,31 +1,17 @@
 #include "IFCC_SubSurface.h"
 
-#include <limits>
-#include <fstream>
-#include <sstream>
-
-#include <IBK_math.h>
-#include <IBK_assert.h>
-
-#include "IFCC_Clippertools.h"
-#include "IFCC_Helper.h"
 #include "IFCC_Surface.h"
 
 
-//#define SubSurface_DUMP
-
 namespace IFCC {
 
-SubSurface::SubSurface(const std::vector<IBKMK::Vector3D>& polygon, const Surface& parentSurface, const IBKMK::Vector3D& nullPos) :
+SubSurface::SubSurface(const std::vector<IBKMK::Vector3D>& polygon, const Surface& parentSurface) :
 	m_id(-1),
 	m_elementEntityId(-1),
-	m_openingId(-1),
 	m_valid(false),
 	m_planeNormal(parentSurface.polygon())
 {
-	m_valid = m_polyVect.size() > 2;
-
-//	IBKMK::Vector2D p2NullPos =m_planeNormal.convert3DPoint(nullPos);
+	m_valid = polygon.size() > 2;
 
 	for(const IBKMK::Vector3D& vect : polygon) {
 		IBKMK::Vector2D p2 = m_planeNormal.convert3DPoint(vect);
@@ -33,6 +19,13 @@ SubSurface::SubSurface(const std::vector<IBKMK::Vector3D>& polygon, const Surfac
 	}
 
 }
+
+void SubSurface::set(int id, const std::string& name, int elementId) {
+	m_id = id;
+	m_name = name;
+	m_elementEntityId = elementId;
+}
+
 
 TiXmlElement * SubSurface::writeXML(TiXmlElement * parent) const {
 	if (m_id == -1)

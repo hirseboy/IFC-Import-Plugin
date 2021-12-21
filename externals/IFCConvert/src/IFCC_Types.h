@@ -12,7 +12,7 @@
 
 namespace IFCC {
 
-
+/*! Types of building elements.*/
 enum ObjectTypes {
 	OT_Beam,
 	OT_Chimney,
@@ -45,6 +45,8 @@ enum ObjectTypes {
 	OT_VirtualElement,
 	OT_All
 };
+
+// some type definitions
 
 using polyVector_t = std::vector<std::vector<std::vector<std::vector<IBKMK::Vector3D>>>>;
 using meshVector_t = std::vector<std::shared_ptr<carve::mesh::MeshSet<3> > >;
