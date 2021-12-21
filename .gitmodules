@@ -1,3 +1,6 @@
 [submodule "externals/ifcplusplus"]
 	path = externals/ifcplusplus/src
 	url = https://github.com/ifcquery/ifcplusplus
+[submodule "submodules/SIM-VICUS"]
+	path = submodules/SIM-VICUS
+	url = ../SIM-VICUS.git
