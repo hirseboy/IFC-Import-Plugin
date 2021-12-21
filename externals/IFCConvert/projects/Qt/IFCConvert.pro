@@ -47,6 +47,7 @@ SOURCES +=  \
 	../../src/IFCC_Instances.cpp \
 	../../src/IFCC_Material.cpp \
 	../../src/IFCC_Opening.cpp \
+	../../src/IFCC_Property.cpp \
 	../../src/IFCC_Site.cpp \
 	../../src/IFCC_Space.cpp \
 	../../src/IFCC_SpaceBoundary.cpp \
@@ -76,6 +77,7 @@ HEADERS +=  \
 	../../src/IFCC_Instances.h \
 	../../src/IFCC_Material.h \
 	../../src/IFCC_Opening.h \
+	../../src/IFCC_Property.h \
 	../../src/IFCC_Site.h \
 	../../src/IFCC_Space.h \
 	../../src/IFCC_SpaceBoundary.h \
