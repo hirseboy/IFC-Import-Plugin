@@ -23,6 +23,29 @@
 #include <ifcpp/IFC4/include/IfcRelFillsElement.h>
 #include <ifcpp/IFC4/include/IfcRelAssociatesMaterial.h>
 #include <ifcpp/IFC4/include/IfcRelDefinesByType.h>
+#include <ifcpp/IFC4/include/IfcRelDefinesByProperties.h>
+
+#include <ifcpp/IFC4/include/IfcPropertySetDefinitionSelect.h>
+#include <ifcpp/IFC4/include/IfcPropertySetDefinition.h>
+#include <ifcpp/IFC4/include/IfcPropertySet.h>
+#include <ifcpp/IFC4/include/IfcProperty.h>
+#include <ifcpp/IFC4/include/IfcPropertySingleValue.h>
+#include <ifcpp/IFC4/include/IfcDerivedMeasureValue.h>
+#include <ifcpp/IFC4/include/IfcMeasureValue.h>
+#include <ifcpp/IFC4/include/IfcSimpleValue.h>
+#include <ifcpp/IFC4/include/IfcBinary.h>
+#include <ifcpp/IFC4/include/IfcBoolean.h>
+#include <ifcpp/IFC4/include/IfcDate.h>
+#include <ifcpp/IFC4/include/IfcDateTime.h>
+#include <ifcpp/IFC4/include/IfcDuration.h>
+#include <ifcpp/IFC4/include/IfcReal.h>
+#include <ifcpp/IFC4/include/IfcPositiveInteger.h>
+#include <ifcpp/IFC4/include/IfcTime.h>
+#include <ifcpp/IFC4/include/IfcTimeStamp.h>
+#include <ifcpp/IFC4/include/IfcLogical.h>
+
+#include <ifcpp/IFC4/include/IfcMaterialProperties.h>
+
 
 
 #include "IFCC_Helper.h"
@@ -31,9 +54,10 @@ namespace IFCC {
 
 BuildingElement::BuildingElement(int id) :
 	EntityBase(id),
+	m_constructionId(-1),
+	m_type(OT_All),
 	m_surfaceComponent(false),
-	m_subSurfaceComponent(false),
-	m_constructionId(-1)
+	m_subSurfaceComponent(false)
 
 {
 
@@ -52,6 +76,33 @@ bool BuildingElement::set(std::shared_ptr<IfcElement> ifcElement, ObjectTypes ty
 		m_surfaceComponent = true;
 	else if(m_type == OT_Window || m_type == OT_Door)
 		m_subSurfaceComponent = true;
+
+	// look for properties
+	for(const auto& relproperties : ifcElement->m_IsDefinedBy_inverse) {
+		shared_ptr<IfcRelDefinesByProperties> rel_properties(relproperties);
+		if(rel_properties && rel_properties->m_RelatingPropertyDefinition) {
+			shared_ptr<IfcPropertySetDefinition> property_set_def = dynamic_pointer_cast<IfcPropertySetDefinition>(rel_properties->m_RelatingPropertyDefinition);
+			if( property_set_def ) {
+				shared_ptr<IfcPropertySet> property_set = dynamic_pointer_cast<IfcPropertySet>(property_set_def);
+				if( property_set ) {
+					std::string pset_name = label2s(property_set->m_Name);
+					for(const auto& property : property_set->m_HasProperties) {
+						std::string name = name2s(property->m_Name);
+						bool usesThisProperty = Property::relevantProperty(pset_name,name);
+						if(usesThisProperty) {
+							Property prop;
+							prop.m_name = name;
+							getProperty(property,pset_name, prop);
+							std::map<std::string, Property> inner;
+							inner.insert(std::make_pair(name, prop));
+							m_propertyMap.insert(std::make_pair(pset_name, inner));
+						}
+					}
+				}
+			}
+		}
+	}
+	setThermalTransmittance();
 
 	if(m_type == OT_Window || m_type == OT_Door) {
 		for(const auto& relop : ifcElement->m_FillsVoids_inverse) {
@@ -149,9 +200,27 @@ bool BuildingElement::set(std::shared_ptr<IfcElement> ifcElement, ObjectTypes ty
 						const shared_ptr<IfcMaterial>& mat = material_layer->m_Material;					//optional
 						if (mat) {
 							m_materialLayers.emplace_back(std::pair<double,std::string>(material_layer->m_LayerThickness->m_value, label2s(mat->m_Name)));
+							m_materialPropertyMap.emplace_back(std::map<std::string,std::map<std::string,Property>>());
+							for(const auto& relproperties : mat->m_HasProperties_inverse) {
+								shared_ptr<IfcMaterialProperties> mat_properties(relproperties);
+								if(mat_properties) {
+									std::string pset_name = name2s(mat_properties->m_Name);
+									for(const auto& property : mat_properties->m_Properties) {
+										std::string name = name2s(property->m_Name);
+										bool usesThisProperty = Property::relevantProperty(pset_name,name);
+										if(usesThisProperty) {
+											Property prop;
+											prop.m_name = name;
+											getProperty(property,pset_name, prop);
+											std::map<std::string, Property> inner;
+											inner.insert(std::make_pair(name, prop));
+											m_materialPropertyMap.back().insert(std::make_pair(pset_name, inner));
+										}
+									}
+								}
+							}
 						}
 					}
-
 				}
 			}
 		}
@@ -291,7 +360,7 @@ double	BuildingElement::thickness() const {
 		for(int epi=0; epi<m_parallelSurfaces.size(); ++epi) {
 			const Surface& surf1 = m_surfaces[m_parallelSurfaces[epi].first];
 			const Surface& surf2 = m_surfaces[m_parallelSurfaces[epi].second];
-			minDist = std::min(minDist, surf1.distanceToParallelPlane(surf2.planeNormal()));
+			minDist = std::min(minDist, surf1.distanceToParallelPlane(surf2));
 		}
 		if(minDist > 10000)
 			return 0;
@@ -342,5 +411,16 @@ void BuildingElement::fillOpeningProperties(const std::vector<BuildingElement>& 
 		}
 	}
 }
+
+void BuildingElement::setThermalTransmittance() {
+	double tt = 0;
+	if(m_type == OT_Wall && getDoubleProperty(m_propertyMap, "Pset_WallCommon", "ThermalTransmittance", tt))
+		m_thermalTransmittance = tt;
+	if(m_type == OT_Window && getDoubleProperty(m_propertyMap, "Pset_WindowCommon", "ThermalTransmittance", tt))
+		m_thermalTransmittance = tt;
+	if(m_type == OT_Door && getDoubleProperty(m_propertyMap, "Pset_DoorCommon", "ThermalTransmittance", tt))
+		m_thermalTransmittance = tt;
+}
+
 
 } // namespace IFCC

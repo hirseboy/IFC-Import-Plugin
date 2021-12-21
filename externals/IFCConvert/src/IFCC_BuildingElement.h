@@ -16,6 +16,7 @@
 #include "IFCC_Surface.h"
 #include "IFCC_Opening.h"
 #include "IFCC_EntityBase.h"
+#include "IFCC_Property.h"
 
 namespace IFCC {
 
@@ -163,7 +164,9 @@ public:
 	}
 
 	/*! Vector of thickness and name for the layers of this element.*/
-	std::vector<std::pair<double,std::string>>	m_materialLayers;
+	std::vector<std::pair<double,std::string>>							m_materialLayers;
+	/*! Vector of material property maps with the same order as the layers vector.*/
+	std::vector<std::map<std::string,std::map<std::string,Property>>>	m_materialPropertyMap;
 	/*! This building element is used from the openings given by their ids.
 		That means it must be a opening element (window or door).*/
 	std::vector<int>							m_usedFromOpenings;
@@ -200,6 +203,8 @@ private:
 	*/
 	void fetchOpenings(std::vector<Opening>& openings);
 
+	void setThermalTransmittance();
+
 	ObjectTypes													m_type;					///< Type of the building element
 	bool														m_surfaceComponent;		///< If true its a construction element usable as surface
 	bool														m_subSurfaceComponent;	///< If true its a opening element usable as subsurface.
@@ -208,6 +213,8 @@ private:
 	std::vector<std::shared_ptr<IfcOpeningElement>>				m_isUsedFromOpeningsOriginal;
 	/*! Vector of IFC opening objects which are contained in this building element.*/
 	std::vector<std::shared_ptr<IfcFeatureElementSubtraction>>	m_containedOpeningsOriginal;
+	double														m_thermalTransmittance;
+	std::map<std::string,std::map<std::string,Property>>		m_propertyMap;
 };
 
 } // namespace IFCC
