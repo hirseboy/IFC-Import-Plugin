@@ -1,7 +1,6 @@
 # -------------------------
 # Project for IFC++ library
 # -------------------------
-CONFIG -= qt
 
 # first we define what we are
 TARGET = IFCConvert
@@ -14,6 +13,7 @@ CONFIG += c++11
 include( ../../../IBK/projects/Qt/IBK.pri )
 
 #CONFIG += static
+QT       += core gui
 
 # finally we setup our custom library specfic things
 # like version number etc., we also may reset all
@@ -29,7 +29,9 @@ INCLUDEPATH += \
 				../../../TiCPP/src \
 				../../../ifcplusplus/src/external/Carve/src/include \
 				../../../ifcplusplus/src/external \
-				../../../ifcplusplus/src/external/Carve/src/common
+				../../../ifcplusplus/src/external/Carve/src/common \
+				../../../../submodules/SIM-VICUS/externals/Vicus/src \
+				../../../../submodules/SIM-VICUS/externals/Nandrad/src
 
 SOURCES +=  \
 	../../src/IFCC_Building.cpp \

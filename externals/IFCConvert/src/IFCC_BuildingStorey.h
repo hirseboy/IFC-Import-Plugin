@@ -7,6 +7,8 @@
 
 #include <tinyxml.h>
 
+#include <VICUS_BuildingLevel.h>
+
 #include "IFCC_EntityBase.h"
 #include "IFCC_Space.h"
 
@@ -51,6 +53,11 @@ public:
 
 	/*! Write the storey in vicus xml format including spaces.*/
 	TiXmlElement * writeXML(TiXmlElement * parent) const;
+
+	/*! Create a VICUS building level object and return this.
+		The returned object contains all transferable data.
+	*/
+	VICUS::BuildingLevel getVicusObject() const;
 
 	/*! Vector of spaces in the storey.*/
 	const std::vector<Space>& spaces() const {

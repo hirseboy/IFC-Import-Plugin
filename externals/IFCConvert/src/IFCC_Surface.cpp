@@ -285,5 +285,21 @@ bool Surface::isValid() const {
 	return m_polyVect.size() > 2;
 }
 
+VICUS::Surface Surface::getVicusObject() const {
+	VICUS::Surface res;
+	res.m_displayName = QString::fromUtf8(m_name.c_str());
+	res.setPolygon3D(m_polyVect);
+
+	std::vector<VICUS::SubSurface> vicusSubs;
+	for(const auto& subsurf : m_subSurfaces) {
+		VICUS::SubSurface vs;
+		vs.m_displayName = QString::fromUtf8(subsurf.name().c_str());
+		vs.m_polygon2D = subsurf.polygon();
+		vicusSubs.push_back(vs);
+	}
+	res.setSubSurfaces(vicusSubs);
+
+	return res;
+}
 
 } // namespace IFCC

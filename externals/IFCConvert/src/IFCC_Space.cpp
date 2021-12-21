@@ -488,8 +488,10 @@ TiXmlElement * Space::writeXML(TiXmlElement * parent) const {
 	parent->LinkEndChild(e);
 
 	e->SetAttribute("id", IBK::val2string<unsigned int>(m_id));
-	if (!m_name.empty())
+	if (!m_longName.empty())
 		e->SetAttribute("displayName", m_longName);
+	else if (!m_name.empty())
+		e->SetAttribute("displayName", m_name);
 //	e->SetAttribute("visible", IBK::val2string<bool>(true));
 
 	if(!m_surfaces.empty()) {
@@ -503,5 +505,19 @@ TiXmlElement * Space::writeXML(TiXmlElement * parent) const {
 	return e;
 }
 
+VICUS::Room Space::getVicusObject() const {
+	VICUS::Room res;
+	if (!m_longName.empty())
+		res.m_displayName = QString::fromUtf8(m_longName.c_str());
+	else
+		res.m_displayName = QString::fromUtf8(m_name.c_str());
+
+	for(const auto& surface : m_surfaces) {
+		res.m_surfaces.emplace_back(surface.getVicusObject());
+		res.m_surfaces.back().m_id = res.m_surfaces.back().uniqueID();
+	}
+
+	return res;
+}
 
 } // namespace IFCC

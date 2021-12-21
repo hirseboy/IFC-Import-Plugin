@@ -313,6 +313,22 @@ bool IFCReader::convert() {
 	return false;
 }
 
+bool IFCReader::setVicusProject(VICUS::Project* project) {
+	IBK_ASSERT(project != nullptr);
+
+	// add building structure
+	for(auto& building : m_site.m_buildings) {
+		project->m_buildings.emplace_back(building.getVicusObject());
+		project->m_buildings.back().m_id = project->m_buildings.back().uniqueID();
+	}
+
+	// add component instances
+
+	// add databases
+
+}
+
+
 void IFCReader::writeXML(const IBK::Path & filename) const {
 	TiXmlDocument doc;
 	TiXmlDeclaration * decl = new TiXmlDeclaration( "1.0", "UTF-8", "" );

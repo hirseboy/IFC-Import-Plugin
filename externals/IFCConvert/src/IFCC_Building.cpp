@@ -91,5 +91,16 @@ TiXmlElement * Building::writeXML(TiXmlElement * parent) const {
 	return e;
 }
 
+VICUS::Building Building::getVicusObject() const {
+	VICUS::Building res;
+
+	res.m_displayName = QString::fromUtf8(m_name.c_str());
+	for(const auto& storey : m_storeys) {
+		res.m_buildingLevels.emplace_back(storey.getVicusObject());
+		res.m_buildingLevels.back().m_id = res.m_buildingLevels.back().uniqueID();
+	}
+
+	return res;
+}
 
 } // namespace IFCC

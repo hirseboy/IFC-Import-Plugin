@@ -5,6 +5,8 @@
 
 #include <tinyxml.h>
 
+#include <VICUS_Surface.h>
+
 #include <ifcpp/IFC4/include/IfcInternalOrExternalEnum.h>
 
 #include "IFCC_Types.h"
@@ -128,6 +130,11 @@ public:
 
 	/*! Return if the object is valid.*/
 	bool isValid() const;
+
+	/*! Create a VICUS surface object and return this.
+		The returned object contains all transferable data.
+	*/
+	VICUS::Surface getVicusObject() const;
 
 
 private:

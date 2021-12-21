@@ -8,6 +8,8 @@
 
 #include <tinyxml.h>
 
+#include <VICUS_Room.h>
+
 #include "IFCC_BuildingElement.h"
 #include "IFCC_Helper.h"
 #include "IFCC_Surface.h"
@@ -134,6 +136,11 @@ public:
 
 	/*! Write the space in vicus xml format including space boundaries.*/
 	TiXmlElement * writeXML(TiXmlElement * parent) const;
+
+	/*! Create a VICUS room object and return this.
+		The returned object contains all transferable data.
+	*/
+	VICUS::Room getVicusObject() const;
 
 	std::string									m_longName;			///< More detailed name of the space
 	/*! IFC space type. It can be:

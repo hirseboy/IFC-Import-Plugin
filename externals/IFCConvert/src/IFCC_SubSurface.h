@@ -51,6 +51,11 @@ public:
 		return m_elementEntityId;
 	}
 
+	/*! Return the name of the subsurface.*/
+	std::string name() const {
+		return m_name;
+	}
+
 private:
 	int										m_id;				///< Unique id of the object
 	int										m_elementEntityId;	///< Id of the corresponding building element (opening)

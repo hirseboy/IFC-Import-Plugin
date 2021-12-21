@@ -10,6 +10,8 @@
 
 #include <ifcpp/IFC4/include/IfcSpaceTypeEnum.h>
 
+#include <VICUS_Project.h>
+
 #include "IFCC_GeometryConverter.h"
 #include "IFCC_Types.h"
 #include "IFCC_Space.h"
@@ -36,6 +38,8 @@ public:
 		It needs calling of read and splitShapeData before.
 	*/
 	bool convert();
+
+	bool setVicusProject(VICUS::Project* project);
 
 	/*! Write converted data as vicus file.*/
 	void writeXML(const IBK::Path & filename) const;
