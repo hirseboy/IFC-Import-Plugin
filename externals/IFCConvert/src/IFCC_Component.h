@@ -3,6 +3,9 @@
 
 #include <vector>
 #include <string>
+#include <map>
+
+#include <VICUS_Component.h>
 
 class TiXmlElement;
 
@@ -59,6 +62,11 @@ public:
 			return false;
 		return true;
 	}
+
+	/*! Create a VICUS component object and return this.
+		The returned object contains all transferable data.
+	*/
+	VICUS::Component getVicusObject(std::map<int,int>& idMap) const;
 
 private:
 	/*! Create name of component type for writing.*/

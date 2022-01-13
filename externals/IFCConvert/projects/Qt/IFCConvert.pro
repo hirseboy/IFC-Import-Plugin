@@ -10,7 +10,7 @@ CONFIG += c++11
 
 # this pri must be sourced from all our libraries,
 # it contains all functions defined for casual libraries
-include( ../../../IBK/projects/Qt/IBK.pri )
+include( ../../../../submodules/SIM-VICUS/externals/IBK/projects/Qt/IBK.pri )
 
 #CONFIG += static
 QT       += core gui
@@ -24,9 +24,9 @@ INCLUDEPATH += \
 				../../../ifcplusplus/src/IfcPlusPlus/src \
 				../../../ifcplusplus/src/IfcPlusPlus/src/ifcpp/reader \
 				../../../clipper/src \
-				../../../IBK/src \
-				../../../IBKMK/src \
-				../../../TiCPP/src \
+				../../../../submodules/SIM-VICUS/externals/IBK/src \
+				../../../../submodules/SIM-VICUS/externals/IBKMK/src \
+				../../../../submodules/SIM-VICUS/externals/TiCPP/src \
 				../../../ifcplusplus/src/external/Carve/src/include \
 				../../../ifcplusplus/src/external \
 				../../../ifcplusplus/src/external/Carve/src/common \

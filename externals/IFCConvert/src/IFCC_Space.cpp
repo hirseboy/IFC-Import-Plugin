@@ -505,16 +505,18 @@ TiXmlElement * Space::writeXML(TiXmlElement * parent) const {
 	return e;
 }
 
-VICUS::Room Space::getVicusObject() const {
+VICUS::Room Space::getVicusObject(std::map<int,int>& idMap) const {
 	VICUS::Room res;
+	int newId = res.uniqueID();
 	if (!m_longName.empty())
 		res.m_displayName = QString::fromUtf8(m_longName.c_str());
 	else
 		res.m_displayName = QString::fromUtf8(m_name.c_str());
+	res.m_id = newId;
+	idMap[m_id] = newId;
 
 	for(const auto& surface : m_surfaces) {
-		res.m_surfaces.emplace_back(surface.getVicusObject());
-		res.m_surfaces.back().m_id = res.m_surfaces.back().uniqueID();
+		res.m_surfaces.emplace_back(surface.getVicusObject(idMap));
 	}
 
 	return res;

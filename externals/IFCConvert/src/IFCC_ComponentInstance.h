@@ -2,6 +2,10 @@
 #define IFCC_ComponentInstanceH
 
 #include <vector>
+#include <map>
+
+#include <VICUS_ComponentInstance.h>
+#include <VICUS_SubSurfaceComponentInstance.h>
 
 class TiXmlElement;
 
@@ -26,6 +30,18 @@ public:
 	/*! Write the component in vicus xml format.*/
 	TiXmlElement * writeXML(TiXmlElement * parent) const;
 
+	/*! Create a VICUS component instance object and return this.
+		The returned object contains all transferable data.
+		\param idMap Used for mapping current ids to VICUS ids.
+	*/
+	VICUS::ComponentInstance getVicusComponentInstance(std::map<int,int>& idMap) const;
+
+	/*! Create a VICUS component instance object and return this.
+		The returned object contains all transferable data.
+		\param idMap Used for mapping current ids to VICUS ids.
+	*/
+	VICUS::SubSurfaceComponentInstance getVicusSubSurfaceComponentInstance(std::map<int,int>& idMap) const;
+
 	/*! Comparison operator.*/
 	friend bool operator==(const ComponentInstance& left, const ComponentInstance& right) {
 		if(left.m_componentId != right.m_componentId)
@@ -36,6 +52,9 @@ public:
 			return false;
 		return true;
 	}
+
+private:
+
 };
 
 

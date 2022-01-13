@@ -34,5 +34,27 @@ TiXmlElement * ComponentInstance::writeXML(TiXmlElement * parent) const {
 	return e;
 }
 
+VICUS::ComponentInstance ComponentInstance::getVicusComponentInstance(std::map<int,int>& idMap) const {
+	VICUS::ComponentInstance res;
+	res.m_id = m_id;
+	idMap[m_id] = m_id;
+
+	res.m_idComponent = idMap[m_componentId];
+	res.m_idSideASurface = idMap[m_sideASurfaceId];
+	res.m_idSideBSurface = idMap[m_sideBSurfaceId];
+	return res;
+}
+
+VICUS::SubSurfaceComponentInstance ComponentInstance::getVicusSubSurfaceComponentInstance(std::map<int,int>& idMap) const {
+	VICUS::SubSurfaceComponentInstance res;
+	res.m_id = m_id;
+	idMap[m_id] = m_id;
+
+	res.m_idSubSurfaceComponent = idMap[m_componentId];
+	res.m_idSideASurface = idMap[m_sideASurfaceId];
+	res.m_idSideBSurface = idMap[m_sideBSurfaceId];
+	return res;
+}
+
 
 } // namespace IFCC

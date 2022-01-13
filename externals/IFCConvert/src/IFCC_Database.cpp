@@ -1,4 +1,7 @@
 #include "IFCC_Database.h"
+
+#include <VICUS_Project.h>
+
 #include "IFCC_Helper.h"
 
 namespace IFCC {
@@ -74,6 +77,28 @@ void Database::collectData(std::vector<BuildingElement>& elements) {
 	collectMaterialsAndConstructions(elements);
 	collectComponents(elements);
 }
+
+void Database::addToVicusProject(VICUS::Project* project, std::map<int,int>& idMap) {
+	for(const auto& mat : m_materials) {
+		project->m_embeddedDB.m_materials.emplace_back(mat.second.getVicusObject(idMap));
+	}
+	for(const auto& con : m_constructions) {
+		project->m_embeddedDB.m_constructions.emplace_back(con.second.getVicusObject(idMap));
+	}
+	for(const auto& wg : m_windowGlazings) {
+		project->m_embeddedDB.m_windowGlazingSystems.emplace_back(wg.second.getVicusObject(idMap));
+	}
+	for(const auto& win : m_windows) {
+		project->m_embeddedDB.m_windows.emplace_back(win.second.getVicusObject(idMap));
+	}
+	for(const auto& comp : m_components) {
+		project->m_embeddedDB.m_components.emplace_back(comp.second.getVicusObject(idMap));
+	}
+	for(const auto& scomp : m_subSurfaceComponents) {
+		project->m_embeddedDB.m_subSurfaceComponents.emplace_back(scomp.second.getVicusObject(idMap));
+	}
+}
+
 
 void Database::collectComponents(std::vector<BuildingElement>& elements) {
 	for(auto& elem : elements) {

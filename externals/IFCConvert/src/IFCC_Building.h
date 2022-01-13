@@ -53,8 +53,9 @@ public:
 
 	/*! Create a VICUS building object and return this.
 		The returned object contains all transferable data.
+		\param idMap Used for mapping current ids to VICUS ids.
 	*/
-	VICUS::Building getVicusObject() const;
+	VICUS::Building getVicusObject(std::map<int,int>& idMap) const;
 
 	/*! Return vector of building storeys.*/
 	const std::vector<BuildingStorey>& storeys() const {

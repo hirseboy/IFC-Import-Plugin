@@ -7,6 +7,8 @@
 
 #include <tinyxml.h>
 
+#include <VICUS_Window.h>
+
 namespace IFCC {
 
 /*! Class represents a window with properties and connection to glazing system.*/
@@ -31,6 +33,11 @@ public:
 			return false;
 		return true;
 	}
+
+	/*! Create a VICUS window object and return this.
+		The returned object contains all transferable data.
+	*/
+	VICUS::Window getVicusObject(std::map<int,int>& idMap) const;
 
 	int				m_id;				///< Window object id
 	std::string		m_color;			///< Color for using in tables and views

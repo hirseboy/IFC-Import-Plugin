@@ -91,13 +91,15 @@ TiXmlElement * Building::writeXML(TiXmlElement * parent) const {
 	return e;
 }
 
-VICUS::Building Building::getVicusObject() const {
+VICUS::Building Building::getVicusObject(std::map<int,int>& idMap) const {
 	VICUS::Building res;
+	int newId = res.uniqueID();
 
 	res.m_displayName = QString::fromUtf8(m_name.c_str());
+	res.m_id = newId;
+	idMap[m_id] = newId;
 	for(const auto& storey : m_storeys) {
-		res.m_buildingLevels.emplace_back(storey.getVicusObject());
-		res.m_buildingLevels.back().m_id = res.m_buildingLevels.back().uniqueID();
+		res.m_buildingLevels.emplace_back(storey.getVicusObject(idMap));
 	}
 
 	return res;

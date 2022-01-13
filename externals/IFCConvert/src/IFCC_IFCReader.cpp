@@ -42,12 +42,13 @@ namespace IFCC {
 
 const std::string VERSION = "1.0";
 
-IFCReader::IFCReader(const std::wstring& filename) :
-	m_filename(filename),
+IFCReader::IFCReader() :
 	m_model(new BuildingModel),
 	m_geometryConverter(m_model),
 	m_hasError(false),
 	m_hasWarning(false),
+	m_readCompletedSuccessfully(false),
+	m_convertCompletedSuccessfully(false),
 	m_site(0)
 {
 	m_geometryConverter.clearMessagesCallback();
@@ -56,19 +57,24 @@ IFCReader::IFCReader(const std::wstring& filename) :
 	m_geometryConverter.getGeomSettings()->setMinNumVerticesPerArc(4);
 }
 
-bool IFCReader::read() {
+bool IFCReader::read(const IBK::Path& filename) {
+	m_filename = filename.wstr();
 	try {
 		ReaderSTEP readerStep;
 		readerStep.setMessageCallBack(this, &IFCReader::messageTarget);
 		readerStep.loadModelFromFile(m_filename, m_geometryConverter.getBuildingModel());
-		if(m_hasError)
+		if(m_hasError) {
+			m_readCompletedSuccessfully = false;
 			return !m_hasError;
+		}
 	}
 	catch (std::exception& e) {
+		m_readCompletedSuccessfully = false;
 		m_hasError = true;
 		m_errorText = e.what();
 		return false;
 	}
+	m_readCompletedSuccessfully = true;
 	return true;
 }
 
@@ -212,16 +218,16 @@ void IFCReader::splitShapeData() {
 
 
 bool IFCReader::convert() {
+	m_convertCompletedSuccessfully = false;
+	if(!m_readCompletedSuccessfully) {
+		m_errorText = "Cannot convert data because file not readed";
+		return false;
+	}
 
 	bool subtractOpenings = false;
 
 	std::string errtxt;
 	try {
-
-		bool res = read();
-		if(!res) {
-
-		}
 
 		// convert IFC geometric representations into Carve geometry
 		const double length_in_meter = m_geometryConverter.getBuildingModel()->getUnitConverter()->getLengthInMeterFactor();
@@ -298,10 +304,11 @@ bool IFCReader::convert() {
 		if(failures > 0) {
 			m_errorText = "Not all surface can be matched to a component. failures: " + std::to_string(failures);
 			m_hasError = true;
-			return false;
+//			return false;
 		}
 
-		return res;
+		m_convertCompletedSuccessfully = true;
+		return true;
 
 	}
 	catch (std::exception& e) {
@@ -316,17 +323,29 @@ bool IFCReader::convert() {
 bool IFCReader::setVicusProject(VICUS::Project* project) {
 	IBK_ASSERT(project != nullptr);
 
+	std::map<int,int> idConversionMap;
+
 	// add building structure
 	for(auto& building : m_site.m_buildings) {
-		project->m_buildings.emplace_back(building.getVicusObject());
-		project->m_buildings.back().m_id = project->m_buildings.back().uniqueID();
+		project->m_buildings.emplace_back(building.getVicusObject(idConversionMap));
 	}
 
-	// add component instances
-
 	// add databases
+	m_database.addToVicusProject(project, idConversionMap);
 
+	// add component instances
+	m_instances.addToVicusProject(project, idConversionMap);
+
+	return true;
 }
+
+int IFCReader::totalNumberOfIFCEntities() const {
+	if(!m_readCompletedSuccessfully)
+		return 0;
+
+	return m_model->getMapIfcEntities().size();
+}
+
 
 
 void IFCReader::writeXML(const IBK::Path & filename) const {
@@ -351,6 +370,46 @@ void IFCReader::writeXML(const IBK::Path & filename) const {
 	// other files
 
 	doc.SaveFile( filename.c_str() );
+}
+
+QStringList IFCReader::statistic() const {
+	QStringList text;
+	text << tr("Statistic:");
+	text << tr("%1 buildings.").arg(m_site.m_buildings.size());
+	for(const auto& building : m_site.m_buildings) {
+		text << tr("Building %1 with %2 storeys.").arg(QString::fromStdString(building.m_name))
+				.arg(building.storeys().size());
+		for(const auto& storey : building.storeys()) {
+			text << tr("\tStorey %1 with %2 spaces.").arg(QString::fromStdString(storey.m_name))
+					.arg(storey.spaces().size());
+			for(const auto& space : storey.spaces()) {
+				text << tr("\t\tSpace %1 with %2 space boundaries and %3 surfaces.").arg(QString::fromStdString(space.m_name+" - "+space.m_longName))
+						.arg(space.spaceBoundaries().size()).arg(space.surfaces().size());
+				for(const auto& surf : space.surfaces()) {
+					text << tr("\t\t\tSurface %1 with %2 subsurfaces.").arg(QString::fromStdString(surf.name()))
+							.arg(surf.subSurfaces().size());
+				}
+			}
+		}
+	}
+	text << "\nDatabases\n";
+	text << tr("\t%1 materials").arg(m_database.m_materials.size());
+	for(const auto& mat : m_database.m_materials) {
+		text << tr("\t\t%1 - id %2").arg(QString::fromStdString(mat.second.m_name)).arg(mat.first);
+	}
+	text << tr("\t%1 constructions").arg(m_database.m_constructions.size());
+	for(const auto& con : m_database.m_constructions) {
+		text << tr("\t\tConstruction id %1 with %2 layers").arg(con.first).arg(con.second.m_layers.size());
+	}
+	text << tr("\t%1 windows").arg(m_database.m_windows.size());
+	for(const auto& win : m_database.m_windows) {
+		text << tr("\t\tWindow %1 id %2").arg(QString::fromStdString(win.second.m_name)).arg(win.first);
+	}
+	text << tr("\t%1 windows").arg(m_database.m_windowGlazings.size());
+	for(const auto& wgl : m_database.m_windowGlazings) {
+		text << tr("\t\tWindow %1 id %2").arg(QString::fromStdString(wgl.second.m_name)).arg(wgl.first);
+	}
+	return text;
 }
 
 void IFCReader::messageTarget( void* ptr, shared_ptr<StatusCallback::Message> m ) {

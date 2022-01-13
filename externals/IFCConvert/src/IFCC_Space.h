@@ -140,7 +140,7 @@ public:
 	/*! Create a VICUS room object and return this.
 		The returned object contains all transferable data.
 	*/
-	VICUS::Room getVicusObject() const;
+	VICUS::Room getVicusObject(std::map<int,int>& idMap) const;
 
 	std::string									m_longName;			///< More detailed name of the space
 	/*! IFC space type. It can be:

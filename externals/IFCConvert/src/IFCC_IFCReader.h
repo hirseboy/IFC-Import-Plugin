@@ -28,21 +28,33 @@
 namespace IFCC {
 
 /*! Main class for IFC reading and conversion int vicus model.*/
-class IFCReader
-{
+class IFCReader {
+
+Q_DECLARE_TR_FUNCTIONS( IFCReader );
+
 public:
-	/*! Standard constructor. Initializes geometry converter and set the IFC file.*/
-	explicit IFCReader(const std::wstring& filename);
+	/*! Standard constructor. Initializes geometry converter.*/
+	IFCReader();
+
+//	/*! Standard constructor. Initializes geometry converter and set the IFC file.*/
+//	explicit IFCReader(const std::wstring& filename);
+
+	/*! Read the IFC file.*/
+	bool read(const IBK::Path& filename);
 
 	/*! Convert IFC data into internal format similar to SimVicus.
-		It needs calling of read and splitShapeData before.
+		It needs calling of read before. splitShapeData is called internally.
 	*/
 	bool convert();
 
 	bool setVicusProject(VICUS::Project* project);
 
+	int totalNumberOfIFCEntities() const;
+
 	/*! Write converted data as vicus file.*/
 	void writeXML(const IBK::Path & filename) const;
+
+	QStringList statistic() const;
 
 	std::wstring					m_filename;				///< IFC file
 	std::shared_ptr<BuildingModel>	m_model;				///< IFC model created from file
@@ -52,6 +64,8 @@ public:
 	std::string						m_errorText;			///< Text of error messages
 	std::string						m_warningText;			///< Text of warning messages
 	std::string						m_progressText;			///< Progress text
+	bool							m_readCompletedSuccessfully;
+	bool							m_convertCompletedSuccessfully;
 
 	/*! Vector for shapes of building element entities with type.*/
 	objectShapeTypeVector_t			m_elementEntitesShape;
@@ -101,9 +115,6 @@ private:
 
 	/*! Function for collecting messages from IFC reading process (error, warning, progress).*/
 	static void messageTarget( void* obj_ptr, shared_ptr<StatusCallback::Message> t );
-
-	/*! Read the IFC file given in constructor.*/
-	bool read();
 
 	/*! Call the geometry converter which converts IFC objects from local to global coordinate system.
 		From this a vector of shape data will be cerated. Then the data are split with regard to their type.

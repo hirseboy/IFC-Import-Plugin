@@ -6,6 +6,10 @@
 #include "IFCC_BuildingElement.h"
 #include "IFCC_ComponentInstance.h"
 
+namespace VICUS {
+	class Project;
+}
+
 namespace IFCC {
 
 class Site;
@@ -28,6 +32,11 @@ public:
 		\return The number of surfaces from space boundaries which cannot be connected with a component
 	*/
 	int collectComponentInstances(std::vector<BuildingElement>& elements, Database& database, const Site& site);
+
+	/*! Add all component instances and sub surface component instances to the given vicus project.
+		\param idMap Map for mapping current ids to new VICUS ids.
+	*/
+	void addToVicusProject(VICUS::Project* project, std::map<int,int>& idMap);
 
 private:
 

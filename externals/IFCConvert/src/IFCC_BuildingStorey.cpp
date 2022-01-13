@@ -90,12 +90,14 @@ TiXmlElement * BuildingStorey::writeXML(TiXmlElement * parent) const {
 	return e;
 }
 
-VICUS::BuildingLevel BuildingStorey::getVicusObject() const {
+VICUS::BuildingLevel BuildingStorey::getVicusObject(std::map<int,int>& idMap) const {
 	VICUS::BuildingLevel res;
+	int newId = res.uniqueID();
 	res.m_displayName = QString::fromUtf8(m_name.c_str());
+	res.m_id = newId;
+	idMap[m_id] = newId;
 	for(const auto& space : m_spaces) {
-		res.m_rooms.emplace_back(space.getVicusObject());
-		res.m_rooms.back().m_id = res.m_rooms.back().uniqueID();
+		res.m_rooms.emplace_back(space.getVicusObject(idMap));
 	}
 
 	return res;

@@ -285,14 +285,20 @@ bool Surface::isValid() const {
 	return m_polyVect.size() > 2;
 }
 
-VICUS::Surface Surface::getVicusObject() const {
+VICUS::Surface Surface::getVicusObject(std::map<int,int>& idMap) const {
 	VICUS::Surface res;
+	int newId = res.uniqueID();
 	res.m_displayName = QString::fromUtf8(m_name.c_str());
 	res.setPolygon3D(m_polyVect);
+	res.m_id = newId;
+	idMap[m_id] = newId;
 
 	std::vector<VICUS::SubSurface> vicusSubs;
 	for(const auto& subsurf : m_subSurfaces) {
 		VICUS::SubSurface vs;
+		int newIdSub = vs.uniqueID();
+		vs.m_id = newIdSub;
+		idMap[subsurf.id()] = newIdSub;
 		vs.m_displayName = QString::fromUtf8(subsurf.name().c_str());
 		vs.m_polygon2D = subsurf.polygon();
 		vicusSubs.push_back(vs);

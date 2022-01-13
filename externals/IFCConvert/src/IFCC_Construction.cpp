@@ -31,4 +31,20 @@ TiXmlElement * Construction::writeXML(TiXmlElement * parent) const {
 	return e;
 }
 
+VICUS::Construction Construction::getVicusObject(std::map<int,int>& idMap) const {
+	VICUS::Construction vcon;
+	vcon.m_id = m_id;
+	idMap[m_id] = m_id;
+	vcon.m_displayName.setString(m_name,"de");
+
+	for(const auto& layer : m_layers) {
+		VICUS::MaterialLayer vlay;
+		vlay.m_idMaterial = idMap[layer.first];
+		vlay.m_thickness.set("Thickness", layer.first, "m");
+		vcon.m_materialLayers.push_back(vlay);
+	}
+
+	return vcon;
+}
+
 } // namespace IFCC

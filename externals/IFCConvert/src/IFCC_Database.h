@@ -11,6 +11,10 @@
 #include "IFCC_Component.h"
 #include "IFCC_SubSurfaceComponent.h"
 
+namespace VICUS {
+	class Project;
+}
+
 namespace IFCC {
 
 /*! Class contains all objects for databases and functions for handling.*/
@@ -27,6 +31,11 @@ public:
 		Calls collectMaterialsAndConstructions, collectWindowsAndGlazings and collectComponents.
 	*/
 	void collectData(std::vector<BuildingElement>& elements);
+
+	/*! Add all component instances and sub surface component instances to the given vicus project.
+		\param idMap Map for mapping current ids to new VICUS ids.
+	*/
+	void addToVicusProject(VICUS::Project* project, std::map<int,int>& idMap);
 
 
 	std::map<int, Material>				m_materials;			///< Material database as map of id and material object

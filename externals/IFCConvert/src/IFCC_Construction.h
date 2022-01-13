@@ -7,6 +7,8 @@
 
 #include <tinyxml.h>
 
+#include <VICUS_Construction.h>
+
 namespace IFCC {
 
 /*! Class contains a construction as list of layers (material id + thickness) with additional informations.
@@ -23,6 +25,11 @@ public:
 
 	/*! Write the component in vicus xml format including storeys.*/
 	TiXmlElement * writeXML(TiXmlElement * parent) const;
+
+	/*! Create a VICUS construction object and return this.
+		The returned object contains all transferable data.
+	*/
+	VICUS::Construction getVicusObject(std::map<int,int>& idMap) const;
 
 	/*! Comparison operator.*/
 	friend bool operator==(const Construction& left, const Construction& right) {

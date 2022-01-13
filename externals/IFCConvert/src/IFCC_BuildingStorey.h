@@ -57,7 +57,7 @@ public:
 	/*! Create a VICUS building level object and return this.
 		The returned object contains all transferable data.
 	*/
-	VICUS::BuildingLevel getVicusObject() const;
+	VICUS::BuildingLevel getVicusObject(std::map<int,int>& idMap) const;
 
 	/*! Vector of spaces in the storey.*/
 	const std::vector<Space>& spaces() const {

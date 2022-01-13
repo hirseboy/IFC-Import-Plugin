@@ -134,7 +134,12 @@ public:
 	/*! Create a VICUS surface object and return this.
 		The returned object contains all transferable data.
 	*/
-	VICUS::Surface getVicusObject() const;
+	VICUS::Surface getVicusObject(std::map<int,int>& idMap) const;
+
+	/*! Return name of the object.*/
+	std::string name() const {
+		return m_name;
+	}
 
 
 private:
