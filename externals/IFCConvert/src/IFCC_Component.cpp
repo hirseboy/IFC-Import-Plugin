@@ -57,10 +57,10 @@ void Component::updateComponentType(const Surface& surf) {
 	}
 }
 
-VICUS::Component Component::getVicusObject(std::map<int,int>& idMap) const {
+VICUS::Component Component::getVicusObject(std::map<int,int>& idMap, int idOffset) const {
 	VICUS::Component vcomp;
-	vcomp.m_id = m_id;
-	idMap[m_id] = m_id;
+	vcomp.m_id = m_id + idOffset;
+	idMap[m_id] = vcomp.m_id;
 
 	vcomp.m_displayName.setString(m_name,"de");
 	vcomp.m_dataSource.setString(m_dataSource,"de");

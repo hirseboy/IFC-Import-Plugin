@@ -31,10 +31,10 @@ TiXmlElement * Construction::writeXML(TiXmlElement * parent) const {
 	return e;
 }
 
-VICUS::Construction Construction::getVicusObject(std::map<int,int>& idMap) const {
+VICUS::Construction Construction::getVicusObject(std::map<int,int>& idMap, int idOffset) const {
 	VICUS::Construction vcon;
-	vcon.m_id = m_id;
-	idMap[m_id] = m_id;
+	vcon.m_id = m_id + idOffset;
+	idMap[m_id] = vcon.m_id;
 	vcon.m_displayName.setString(m_name,"de");
 
 	for(const auto& layer : m_layers) {

@@ -23,13 +23,18 @@ public:
 	std::vector<std::pair<int, double>>	m_layers;	///< Vector of layers with material id and thickness in m
 	std::string							m_name;		///< Name of the construction
 
+	/*! Return the object ID.*/
+	int id() const {
+		return m_id;
+	}
+
 	/*! Write the component in vicus xml format including storeys.*/
 	TiXmlElement * writeXML(TiXmlElement * parent) const;
 
 	/*! Create a VICUS construction object and return this.
 		The returned object contains all transferable data.
 	*/
-	VICUS::Construction getVicusObject(std::map<int,int>& idMap) const;
+	VICUS::Construction getVicusObject(std::map<int,int>& idMap, int idOffset) const;
 
 	/*! Comparison operator.*/
 	friend bool operator==(const Construction& left, const Construction& right) {

@@ -32,8 +32,10 @@ public:
 	*/
 	void collectData(std::vector<BuildingElement>& elements);
 
-	/*! Add all component instances and sub surface component instances to the given vicus project.
+	/*! Add all database items to the embedded database of the given vicus project.
+		\param project Vicus project
 		\param idMap Map for mapping current ids to new VICUS ids.
+		It adds the elements only if they are not already included. Otherwise only the id mapping will be added.
 	*/
 	void addToVicusProject(VICUS::Project* project, std::map<int,int>& idMap);
 

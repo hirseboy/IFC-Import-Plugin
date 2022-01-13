@@ -48,6 +48,12 @@ public:
 	ComponentType						m_type;				///< Component type
 	std::string							m_guid;				///< GUID of the corresponding building element
 
+
+	/*! Return the object ID.*/
+	int id() const {
+		return m_id;
+	}
+
 	/*! Write the component in vicus xml format.*/
 	TiXmlElement * writeXML(TiXmlElement * parent) const;
 
@@ -66,7 +72,7 @@ public:
 	/*! Create a VICUS component object and return this.
 		The returned object contains all transferable data.
 	*/
-	VICUS::Component getVicusObject(std::map<int,int>& idMap) const;
+	VICUS::Component getVicusObject(std::map<int,int>& idMap, int idOffset) const;
 
 private:
 	/*! Create name of component type for writing.*/

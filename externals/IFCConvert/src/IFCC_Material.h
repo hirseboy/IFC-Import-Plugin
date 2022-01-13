@@ -18,6 +18,11 @@ public:
 	/*! Standard constructor.*/
 	Material();
 
+	/*! Return the object ID.*/
+	int id() const {
+		return m_id;
+	}
+
 	/*! Write the component in vicus xml format.*/
 	TiXmlElement * writeXML(TiXmlElement * parent) const;
 
@@ -37,7 +42,7 @@ public:
 	/*! Create a VICUS material object and return this.
 		The returned object contains all transferable data.
 	*/
-	VICUS::Material getVicusObject(std::map<int,int>& idMap) const;
+	VICUS::Material getVicusObject(std::map<int,int>& idMap, int idOffset) const;
 
 	std::string m_name;				///< Material name
 	int			m_id;				///< Material object id

@@ -29,10 +29,10 @@ TiXmlElement * WindowGlazing::writeXML(TiXmlElement * parent) const {
 	return e;
 }
 
-VICUS::WindowGlazingSystem WindowGlazing::getVicusObject(std::map<int,int>& idMap) const {
+VICUS::WindowGlazingSystem WindowGlazing::getVicusObject(std::map<int,int>& idMap, int idOffset) const {
 	VICUS::WindowGlazingSystem vwg;
-	vwg.m_id = m_id;
-	idMap[m_id] = m_id;
+	vwg.m_id = m_id + idOffset;
+	idMap[m_id] = vwg.m_id;
 	vwg.m_displayName.setString(m_name,"de");
 	vwg.m_dataSource.setString(m_dataSource,"de");
 	vwg.m_manufacturer.setString(m_manufacturer,"de");

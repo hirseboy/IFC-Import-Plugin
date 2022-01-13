@@ -20,6 +20,11 @@ public:
 	*/
 	WindowGlazing();
 
+	/*! Return the object ID.*/
+	int id() const {
+		return m_id;
+	}
+
 	/*! Write the component in vicus xml format.*/
 	TiXmlElement * writeXML(TiXmlElement * parent) const;
 
@@ -37,7 +42,7 @@ public:
 	/*! Create a VICUS window glazing object and return this.
 		The returned object contains all transferable data.
 	*/
-	VICUS::WindowGlazingSystem getVicusObject(std::map<int,int>& idMap) const;
+	VICUS::WindowGlazingSystem getVicusObject(std::map<int,int>& idMap, int idOffset) const;
 
 	int			m_id;					///< Window object id
 	std::string	m_color;				///< Color for using in tables and views

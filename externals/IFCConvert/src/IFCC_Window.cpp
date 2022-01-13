@@ -33,10 +33,10 @@ TiXmlElement * Window::writeXML(TiXmlElement * parent) const {
 	return e;
 }
 
-VICUS::Window Window::getVicusObject(std::map<int,int>& idMap) const {
+VICUS::Window Window::getVicusObject(std::map<int,int>& idMap, int idOffset) const {
 	VICUS::Window vwin;
-	vwin.m_id = m_id;
-	idMap[m_id] = m_id;
+	vwin.m_id = m_id + idOffset;
+	idMap[m_id] = vwin.m_id;
 	vwin.m_displayName.setString(m_name,"de");
 	vwin.m_idGlazingSystem = idMap[m_glazingSystemId];
 	vwin.m_dataSource = QString::fromStdString(m_dataSource);

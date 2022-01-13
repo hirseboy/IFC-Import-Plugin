@@ -54,10 +54,10 @@ TiXmlElement * SubSurfaceComponent::writeXML(TiXmlElement * parent) const {
 	return e;
 }
 
-VICUS::SubSurfaceComponent SubSurfaceComponent::getVicusObject(std::map<int,int>& idMap) const {
+VICUS::SubSurfaceComponent SubSurfaceComponent::getVicusObject(std::map<int,int>& idMap, int idOffset) const {
 	VICUS::SubSurfaceComponent vscomp;
-	vscomp.m_id = m_id;
-	idMap[m_id] = m_id;
+	vscomp.m_id = m_id + idOffset;
+	idMap[m_id] = vscomp.m_id;
 
 	vscomp.m_displayName.setString(m_name,"de");
 	vscomp.m_idConstruction = idMap[m_constructionId];

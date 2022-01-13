@@ -64,10 +64,10 @@ void Material::setPropertiesFromPropertyMap(const std::map<std::string,std::map<
 		m_thermalConductivity = value;
 }
 
-VICUS::Material Material::getVicusObject(std::map<int,int>& idMap) const {
+VICUS::Material Material::getVicusObject(std::map<int,int>& idMap, int idOffset) const {
 	VICUS::Material vmat;
-	vmat.m_id = m_id;
-	idMap[m_id] = m_id;
+	vmat.m_id = m_id + idOffset;
+	idMap[m_id] = vmat.m_id;
 	vmat.m_displayName.setString(m_name,"de");
 	vmat.m_dataSource.setString(m_dataSource,"de");
 	vmat.m_manufacturer.setString(m_manufacturer,"de");
