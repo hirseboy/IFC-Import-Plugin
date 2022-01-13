@@ -20,14 +20,15 @@ contains(QT_ARCH, i386): {
 
 INCLUDEPATH = \
 	../../src \
-	../../../IBK/src \
-	../../../IBKMK/src \
-	../../../TiCPP/src \
+	../../../../submodules/SIM-VICUS/externals/IBK/src \
+	../../../../submodules/SIM-VICUS/externals/IBKMK/src \
+	../../../../submodules/SIM-VICUS/externals/TiCPP/src \
 	../../../IFCConvert/src \
 	../../../ifcplusplus/src/IfcPlusPlus/src/ifcpp/reader \
 	../../../ifcplusplus/src/IfcPlusPlus/src \
 	../../../ifcplusplus/src/external/Carve/src/include \
 	../../../ifcplusplus/src/external \
+	../../../../submodules/SIM-VICUS/SIM-VICUS/src/plugins \
 	../../../../submodules/SIM-VICUS/externals/CCM/src \
 	../../../../submodules/SIM-VICUS/externals/Vicus/src \
 	../../../../submodules/SIM-VICUS/externals/Nandrad/src
@@ -52,11 +53,16 @@ UI_DIR = ui
 
 SOURCES += \
 	../../src/IFCImportPlugin.cpp \
+	../../src/ImportWPConvert.cpp \
+	../../src/ImportWPRead.cpp \
 	../../src/ImportWizard.cpp
 
 HEADERS += \
-	../../src/IFCImportInterface.h \
+	../../../../submodules/SIM-VICUS/SIM-VICUS/src/plugins/SVCommonPluginInterface.h \
+	../../../../submodules/SIM-VICUS/SIM-VICUS/src/plugins/SVImportPluginInterface.h \
 	../../src/IFCImportPlugin.h \
+	../../src/ImportWPConvert.h \
+	../../src/ImportWPRead.h \
 	../../src/ImportWizard.h
 
 TRANSLATIONS += \
@@ -67,16 +73,20 @@ QMAKE_LIBDIR += ../../../../externals/lib$${DIR_PREFIX}
 LIBS += -L../../../../submodules/SIM-VICUS/externals/lib$${DIR_PREFIX}
 
 LIBS += \
-	-lIBKMK \
-	-lIBK \
-	-lTiCPP \
+	-lNandrad \
+	-lVicus \
 	-lclipper \
 	-lIFCPlusPlus \
 	-lIFCConvert \
 	-lCarve \
-	-lVicus \
-	-lNandrad \
-	-lCCM
+	-lDataIO \
+	-lCCM \
+	-lTiCPP \
+	-lIBKMK \
+	-lIBK
+
+win32:LIBS += -liphlpapi
+win32:LIBS += -lshell32
 
 # Default rules for deployment.
 unix {
@@ -85,4 +95,6 @@ unix {
 !isEmpty(target.path): INSTALLS += target
 
 FORMS += \
+	../../src/ImportWPConvert.ui \
+	../../src/ImportWPRead.ui \
 	../../src/ImportWizard.ui

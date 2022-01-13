@@ -1,26 +1,33 @@
 #include "IFCImportPlugin.h"
 
+#include <IFCC_IFCReader.h>
+
 #include "ImportWizard.h"
 
 IFCImportPlugin::IFCImportPlugin(QObject *parent)
 {
 }
 
-bool IFCImportPlugin::importFunct(VICUS::Project* prj) {
-	ImportWizard wz;
+bool IFCImportPlugin::import(QWidget * parent, VICUS::Project& prj) {
+	ImportWizard wz(parent, &m_reader);
+
+	wz.setProject(&prj);
 
 	if (wz.exec() == QDialog::Rejected)
 		return false;
 
-	return true;
+	if(m_reader.m_convertCompletedSuccessfully) {
+		m_reader.setVicusProject(&prj);
+		return true;
+	}
+
+	return false;
 }
 
-QString IFCImportPlugin::name() const {
+QString IFCImportPlugin::title() const {
 	return tr("Import IFC file");
 }
 
-QIcon IFCImportPlugin::icon() const {
-	QIcon icon;
-	return icon;
+QString IFCImportPlugin::importMenuCaption() const {
+	return tr("Import IFC file");
 }
-
