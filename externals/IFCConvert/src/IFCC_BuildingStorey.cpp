@@ -57,10 +57,14 @@ void BuildingStorey::updateSpaces(const objectShapeTypeVector_t& shapes,
 				  shared_ptr<UnitConverter>& unit_converter,
 				  const std::vector<BuildingElement>& constructionElemnts,
 				  const std::vector<BuildingElement>& openingElemnts,
-								  const std::vector<Opening>& openings) {
+								  const std::vector<Opening>& openings,
+								  bool useSpaceBoundaries) {
 
 	for(auto& space : m_spaces) {
-		space.updateSpaceBoundaries(shapes, unit_converter,	constructionElemnts, openingElemnts, openings);
+		bool res = space.updateSpaceBoundaries(shapes, unit_converter,	constructionElemnts, openingElemnts, openings, useSpaceBoundaries);
+		if(!res) {
+			std::string errstr = space.m_spaceBoundaryErrors;
+		}
 	}
 }
 

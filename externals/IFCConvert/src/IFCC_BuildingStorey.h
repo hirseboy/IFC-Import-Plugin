@@ -49,7 +49,8 @@ public:
 					  shared_ptr<UnitConverter>& unit_converter,
 					  const std::vector<BuildingElement>& constructionElemnts,
 					  const std::vector<BuildingElement>& openingElements,
-					  const std::vector<Opening>& openings);
+					  const std::vector<Opening>& openings,
+					  bool useSpaceBoundaries);
 
 	/*! Write the storey in vicus xml format including spaces.*/
 	TiXmlElement * writeXML(TiXmlElement * parent) const;
