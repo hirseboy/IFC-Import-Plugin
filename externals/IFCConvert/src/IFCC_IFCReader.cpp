@@ -57,24 +57,26 @@ IFCReader::IFCReader() :
 	m_geometryConverter.getGeomSettings()->setMinNumVerticesPerArc(4);
 }
 
-bool IFCReader::read(const IBK::Path& filename) {
+bool IFCReader::read(const IBK::Path& filename, bool ignoreReadError) {
 	m_filename = filename.wstr();
+	m_readCompletedSuccessfully = true;
 	try {
 		ReaderSTEP readerStep;
 		readerStep.setMessageCallBack(this, &IFCReader::messageTarget);
 		readerStep.loadModelFromFile(m_filename, m_geometryConverter.getBuildingModel());
-		if(m_hasError) {
+		if(!ignoreReadError && m_hasError) {
 			m_readCompletedSuccessfully = false;
-			return !m_hasError;
 		}
+		return !m_hasError;
 	}
 	catch (std::exception& e) {
-		m_readCompletedSuccessfully = false;
-		m_hasError = true;
 		m_errorText = e.what();
+		if(!ignoreReadError) {
+			m_readCompletedSuccessfully = false;
+			m_hasError = true;
+		}
 		return false;
 	}
-	m_readCompletedSuccessfully = true;
 	return true;
 }
 
@@ -216,8 +218,13 @@ void IFCReader::splitShapeData() {
 	}
 }
 
+void IFCReader::IFCReader::updateSpaceConnections() {
 
-bool IFCReader::convert() {
+}
+
+bool IFCReader::convert(bool useSpaceBoundaries) {
+	m_useSpaceBoundaries = useSpaceBoundaries;
+
 	m_convertCompletedSuccessfully = false;
 	if(!m_readCompletedSuccessfully) {
 		m_errorText = "Cannot convert data because file not readed";
@@ -260,11 +267,11 @@ bool IFCReader::convert() {
 
 				BuildingElement bElem(GUID_maker::instance().guid());
 				if(bElem.set(e, elems.first)) {
-					if(elems.first == OT_Wall || elems.first == OT_Roof || elems.first == OT_Slab) {
+					if(isConstructionType(elems.first)) {
 						m_constructionElements.push_back(bElem);
 						m_constructionElements.back().update(elem, m_openings);
 					}
-					else if(elems.first == OT_Window || elems.first == OT_Door) {
+					else if(isOpeningType(elems.first)) {
 						m_openingElemnts.push_back(bElem);
 						m_openingElemnts.back().update(elem, m_openings);
 					}
@@ -293,7 +300,7 @@ bool IFCReader::convert() {
 			for(auto& building : m_site.m_buildings) {
 				building.fetchStoreys(m_storeysShape);
 				building.updateStoreys(m_elementEntitesShape, m_spaceEntitesShape, m_geometryConverter.getBuildingModel()->getUnitConverter(),
-									   m_constructionElements, m_openingElemnts, m_openings);
+									   m_constructionElements, m_openingElemnts, m_openings, m_useSpaceBoundaries);
 			}
 		}
 
@@ -327,7 +334,7 @@ bool IFCReader::setVicusProject(VICUS::Project* project) {
 
 	// add building structure
 	for(auto& building : m_site.m_buildings) {
-		project->m_buildings.emplace_back(building.getVicusObject(idConversionMap));
+		project->m_buildings.emplace_back(building.getVicusObject(idConversionMap, project));
 	}
 
 	// add databases
@@ -386,8 +393,16 @@ QStringList IFCReader::statistic() const {
 				text << tr("\t\tSpace %1 with %2 space boundaries and %3 surfaces.").arg(QString::fromStdString(space.m_name+" - "+space.m_longName))
 						.arg(space.spaceBoundaries().size()).arg(space.surfaces().size());
 				for(const auto& surf : space.surfaces()) {
-					text << tr("\t\t\tSurface %1 with %2 subsurfaces.").arg(QString::fromStdString(surf.name()))
-							.arg(surf.subSurfaces().size());
+					if(surf.isMissing()) {
+						text << tr("\t\t\tSurface %1 with missing connection.").arg(QString::fromStdString(surf.name()));
+					}
+					else if(surf.isVirtual()) {
+						text << tr("\t\t\tSurface %1 is virtual.").arg(QString::fromStdString(surf.name()));
+					}
+					else {
+						text << tr("\t\t\tSurface %1 with %2 subsurfaces.").arg(QString::fromStdString(surf.name()))
+								.arg(surf.subSurfaces().size());
+					}
 				}
 			}
 		}

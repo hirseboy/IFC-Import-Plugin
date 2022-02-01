@@ -52,6 +52,13 @@ public:
 	/*! Add all ids from the containing element ids vector to the end of the given one.*/
 	void insertContainingElementId(std::vector<int>& other) const;
 
+	/*! Map store the surface indices which are connected to a space given by ID.
+		Map key is id of space.
+		First value is index if space surface.
+		Second value is index of opening surface.
+	*/
+	std::map<int,std::vector<std::pair<size_t,size_t>>>	m_spaceSurfaceConnection;
+
 
 private:
 

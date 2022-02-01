@@ -5,6 +5,8 @@
 #include <ifcpp/IFC4/include/IfcBuilding.h>
 
 
+#include <VICUS_Project.h>
+
 #include "IFCC_Helper.h"
 
 namespace IFCC {
@@ -55,10 +57,10 @@ void Building::fetchStoreys(const std::map<std::string,shared_ptr<ProductShapeDa
 }
 
 void Building::updateStoreys(const objectShapeTypeVector_t& elementShapes,
-				   const objectShapeGUIDMap_t& spaceShapes,
-				  shared_ptr<UnitConverter>& unit_converter,
-				  const std::vector<BuildingElement>& constructionElemnts,
-				  const std::vector<BuildingElement>& openingElements,
+							 const objectShapeGUIDMap_t& spaceShapes,
+							 shared_ptr<UnitConverter>& unit_converter,
+							 const std::vector<BuildingElement>& constructionElemnts,
+							 const std::vector<BuildingElement>& openingElements,
 							 const std::vector<Opening>& openings,
 							 bool useSpaceBoundaries) {
 
@@ -92,15 +94,15 @@ TiXmlElement * Building::writeXML(TiXmlElement * parent) const {
 	return e;
 }
 
-VICUS::Building Building::getVicusObject(std::map<int,int>& idMap) const {
+VICUS::Building Building::getVicusObject(std::map<int,int>& idMap, VICUS::Project* project) const {
 	VICUS::Building res;
-	int newId = res.uniqueID();
+	int newId = project->nextUnusedID();
 
 	res.m_displayName = QString::fromUtf8(m_name.c_str());
 	res.m_id = newId;
 	idMap[m_id] = newId;
 	for(const auto& storey : m_storeys) {
-		res.m_buildingLevels.emplace_back(storey.getVicusObject(idMap));
+		res.m_buildingLevels.emplace_back(storey.getVicusObject(idMap, project));
 	}
 
 	return res;

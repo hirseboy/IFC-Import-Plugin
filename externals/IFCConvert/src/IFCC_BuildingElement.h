@@ -193,8 +193,12 @@ public:
 	*/
 	std::vector<std::pair<int,int>>										m_parallelSurfaces;
 
-	/*! Map store the surface indices which are connected to a space given by ID.*/
-	std::map<int,std::vector<int>>										m_spaceSurfaceConnection;
+	/*! Map store the surface indices which are connected to a space given by ID.
+		Map key is id of space.
+		First value is index if space surface.
+		Second value is index of opening surface.
+	*/
+	std::map<int,std::vector<std::pair<size_t,size_t>>>	m_spaceSurfaceConnection;
 
 private:
 	/*! Fille the surface pair vector.*/

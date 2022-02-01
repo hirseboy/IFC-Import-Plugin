@@ -4,6 +4,8 @@
 #include <ifcpp/IFC4/include/IfcRelAggregates.h>
 #include <ifcpp/IFC4/include/IfcGloballyUniqueId.h>
 
+#include <VICUS_Project.h>
+
 #include "IFCC_Helper.h"
 
 namespace IFCC {
@@ -54,17 +56,25 @@ void BuildingStorey::fetchSpaces(const std::map<std::string,shared_ptr<ProductSh
 }
 
 void BuildingStorey::updateSpaces(const objectShapeTypeVector_t& shapes,
-				  shared_ptr<UnitConverter>& unit_converter,
-				  const std::vector<BuildingElement>& constructionElemnts,
-				  const std::vector<BuildingElement>& openingElemnts,
+								  shared_ptr<UnitConverter>& unit_converter,
+								  const std::vector<BuildingElement>& constructionElemnts,
+								  const std::vector<BuildingElement>& openingElements,
 								  const std::vector<Opening>& openings,
 								  bool useSpaceBoundaries) {
 
 	for(auto& space : m_spaces) {
-		bool res = space.updateSpaceBoundaries(shapes, unit_converter,	constructionElemnts, openingElemnts, openings, useSpaceBoundaries);
+		bool res = space.updateSpaceBoundaries(shapes, unit_converter,	constructionElemnts, openingElements, openings, useSpaceBoundaries);
 		if(!res) {
 			std::string errstr = space.m_spaceBoundaryErrors;
 		}
+	}
+}
+
+void BuildingStorey::updateSpaceConnections(std::vector<BuildingElement>& constructionElemnts,
+							std::vector<BuildingElement>& openingElements,
+							std::vector<Opening>& openings) {
+	for(auto& space : m_spaces) {
+		bool res = space.updateSpaceConnections(constructionElemnts, openingElements, openings);
 	}
 }
 
@@ -94,14 +104,14 @@ TiXmlElement * BuildingStorey::writeXML(TiXmlElement * parent) const {
 	return e;
 }
 
-VICUS::BuildingLevel BuildingStorey::getVicusObject(std::map<int,int>& idMap) const {
+VICUS::BuildingLevel BuildingStorey::getVicusObject(std::map<int,int>& idMap, VICUS::Project* project) const {
 	VICUS::BuildingLevel res;
-	int newId = res.uniqueID();
+	int newId = project->nextUnusedID();
 	res.m_displayName = QString::fromUtf8(m_name.c_str());
 	res.m_id = newId;
 	idMap[m_id] = newId;
 	for(const auto& space : m_spaces) {
-		res.m_rooms.emplace_back(space.getVicusObject(idMap));
+		res.m_rooms.emplace_back(space.getVicusObject(idMap, project));
 	}
 
 	return res;

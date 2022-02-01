@@ -40,15 +40,22 @@ public:
 //	explicit IFCReader(const std::wstring& filename);
 
 	/*! Read the IFC file.*/
-	bool read(const IBK::Path& filename);
+	bool read(const IBK::Path& filename, bool ignoreReadError);
 
 	/*! Convert IFC data into internal format similar to SimVicus.
 		It needs calling of read before. splitShapeData is called internally.
+		When space boundaries exist they are used in order to create component instances.
+		Otherwise space boundaries will be created by using a matching algorithm from building components to spaces.
+		\param useSpaceBoundaries When true space boundaries will be used if the exist.
 	*/
-	bool convert();
+	bool convert(bool useSpaceBoundaries);
 
+	/*! Convert the data into vicus format and add it to the given project.
+		Read and convert must be called before.
+	*/
 	bool setVicusProject(VICUS::Project* project);
 
+	/*! Return the total number of IFC entities. Call read before use.*/
 	int totalNumberOfIFCEntities() const;
 
 	/*! Write converted data as vicus file.*/
@@ -123,11 +130,16 @@ private:
 	*/
 	void splitShapeData();
 
+	/*! Update the connection maps of building elements and openings to spaces.*/
+	void updateSpaceConnections();
+
 	/*! It evaluates the object and their type from element shape vector from the given GUID.
 		\param guid IFC element GUID as string
 		\param res Resulting pair of element pointer and its type.
 	*/
 	bool typeByGuid(const std::string& guid, std::pair<ObjectTypes,std::shared_ptr<ProductShapeData>>& res);
+
+	bool		m_useSpaceBoundaries = true;
 };
 
 } // end namespace

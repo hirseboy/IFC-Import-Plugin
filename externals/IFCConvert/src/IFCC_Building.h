@@ -12,6 +12,10 @@
 #include "IFCC_EntityBase.h"
 #include "IFCC_BuildingStorey.h"
 
+namespace VICUS {
+	class Project;
+}
+
 namespace IFCC {
 
 /*! Represents a building in a project.
@@ -49,6 +53,19 @@ public:
 					  const std::vector<Opening>& openings,
 					   bool useSpaceBoundaries);
 
+	/*! Update storeys and related spaces and space boundaries.
+		\param elementShapes Product shape vector for all IfcElement based objects in project.
+		\param spaceShapes Product shape vector for all IfcSpace based objects in project.
+		\param unit_converter Unit converter is necessary for create geometries.
+		\param constructionElements Vector for all construction elements (wall, slab, roof)
+		\param openingElements Vector for all opening elements (window, door)
+		\param openings Vector for all openings (based on IfcOpeningElement)
+	*/
+	void updateSpaceConnections(std::vector<BuildingElement>& constructionElemnts,
+					  const std::vector<BuildingElement>& openingElements,
+					  const std::vector<Opening>& openings,
+					   bool useSpaceBoundaries);
+
 	/*! Write the building in vicus xml format including storeys.*/
 	TiXmlElement * writeXML(TiXmlElement * parent) const;
 
@@ -56,7 +73,7 @@ public:
 		The returned object contains all transferable data.
 		\param idMap Used for mapping current ids to VICUS ids.
 	*/
-	VICUS::Building getVicusObject(std::map<int,int>& idMap) const;
+	VICUS::Building getVicusObject(std::map<int,int>& idMap, VICUS::Project* project) const;
 
 	/*! Return vector of building storeys.*/
 	const std::vector<BuildingStorey>& storeys() const {

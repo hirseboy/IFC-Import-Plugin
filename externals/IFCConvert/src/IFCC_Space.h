@@ -17,6 +17,10 @@
 #include "IFCC_SpaceBoundary.h"
 #include "IFCC_Opening.h"
 
+namespace VICUS {
+	class Project;
+}
+
 namespace IFCC {
 
 /*! Class represents a space (room) in a building.
@@ -94,6 +98,13 @@ public:
 		int m_openingSurfaceIndex;	///< Index of surface in opening
 	};
 
+	struct SurfaceConnection {
+		int m_spaceSurfaceIndex = -1;
+		int m_otherEntityId = -1;
+		int m_otherSurfaceIndex = -1;
+		double dist = 1e30;
+	};
+
 
 	/*! Standard constructor.
 		\param id Unique id for using in project.
@@ -126,7 +137,18 @@ public:
 							   shared_ptr<UnitConverter>& unit_converter,
 							   const std::vector<BuildingElement>& constructionElements,
 							   const std::vector<BuildingElement>& openingElements,
-							   const std::vector<Opening>& openings);
+							   const std::vector<Opening>& openings,
+							   bool useSpaceBoundaries);
+
+	/*! Updates the type and content (surfaces) of the space boundaries. Also the connection to building elements will be set.
+		If the IFC model doesn't contain space boundaries the function try to evaluate these from construction elements and openings.
+		\param constructionElements Vector of all construction elements (wall, roof, slab)
+		\param openingElements Vector of all opening elements (window, door)
+		\param openings Vector of openings with connections to opening elements and construction elements
+	*/
+	bool updateSpaceConnections(std::vector<BuildingElement>& constructionElements,
+								std::vector<BuildingElement>& openingElements,
+								std::vector<Opening>& openings);
 
 	/*! Return all surfaces of this space.*/
 	const std::vector<Surface>& surfaces() const;
@@ -140,7 +162,7 @@ public:
 	/*! Create a VICUS room object and return this.
 		The returned object contains all transferable data.
 	*/
-	VICUS::Room getVicusObject(std::map<int,int>& idMap) const;
+	VICUS::Room getVicusObject(std::map<int,int>& idMap, VICUS::Project* project) const;
 
 	std::string									m_longName;			///< More detailed name of the space
 	/*! IFC space type. It can be:
@@ -223,6 +245,10 @@ private:
 	std::vector<Surface>						m_surfaces;			///< Surfaces of the space
 	carve::math::Matrix							m_transformMatrix;	///< Matrix for geometry transformation from local to global coordinates
 	std::vector<Surface>						m_surfacesOrg;		///< Original surfaces from the IFC model converted into global coordinates
+	std::vector<SurfaceConnection>				m_parallelSpaceSurfaces;
+	std::vector<SurfaceConnection>				m_spaceBoundaryConnections;
+	std::vector<SurfaceConnection>				m_constructionConnections;
+	std::vector<SurfaceConnection>				m_openingConnections;
 };
 
 } // namespace IFCC

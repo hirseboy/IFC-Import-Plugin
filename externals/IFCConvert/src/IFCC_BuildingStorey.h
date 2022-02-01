@@ -12,6 +12,10 @@
 #include "IFCC_EntityBase.h"
 #include "IFCC_Space.h"
 
+namespace VICUS {
+	class Project;
+}
+
 namespace IFCC {
 
 /*! Represents a building storey in a project.
@@ -44,6 +48,7 @@ public:
 		\param constructionElements Vector for all construction elements (wall, slab, roof)
 		\param openingElements Vector for all opening elements (window, door)
 		\param openings Vector for all openings (based on IfcOpeningElement)
+		\return If false no space boundaries with connected building elements can be found (\sa m_spaceBoundaryErrors).
 	*/
 	void updateSpaces(const objectShapeTypeVector_t& shapes,
 					  shared_ptr<UnitConverter>& unit_converter,
@@ -52,13 +57,22 @@ public:
 					  const std::vector<Opening>& openings,
 					  bool useSpaceBoundaries);
 
+	/*! Update spaces and related space boundaries.
+		\param constructionElements Vector for all construction elements (wall, slab, roof)
+		\param openingElements Vector for all opening elements (window, door)
+		\param openings Vector for all openings (based on IfcOpeningElement)
+	*/
+	void updateSpaceConnections(std::vector<BuildingElement>& constructionElemnts,
+								std::vector<BuildingElement>& openingElements,
+								std::vector<Opening>& openings);
+
 	/*! Write the storey in vicus xml format including spaces.*/
 	TiXmlElement * writeXML(TiXmlElement * parent) const;
 
 	/*! Create a VICUS building level object and return this.
 		The returned object contains all transferable data.
 	*/
-	VICUS::BuildingLevel getVicusObject(std::map<int,int>& idMap) const;
+	VICUS::BuildingLevel getVicusObject(std::map<int,int>& idMap, VICUS::Project* project) const;
 
 	/*! Vector of spaces in the storey.*/
 	const std::vector<Space>& spaces() const {

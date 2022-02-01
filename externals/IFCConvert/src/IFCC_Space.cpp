@@ -7,6 +7,8 @@
 
 #include <IBK_math.h>
 
+#include <VICUS_Project.h>
+
 #include "IFCC_Helper.h"
 
 namespace IFCC {
@@ -106,6 +108,15 @@ void Space::fetchGeometry(std::shared_ptr<ProductShapeData> productShape) {
 					if(currMeshSet.meshes[mi]->faces[fi] != nullptr)
 						m_surfacesOrg.emplace_back(Surface(currMeshSet.meshes[mi]->faces[fi]));
 				}
+			}
+		}
+	}
+
+	for(size_t i=0; i<m_surfacesOrg.size()-1; ++i) {
+		for(size_t j=i+1; j<m_surfacesOrg.size(); ++j) {
+			if(m_surfacesOrg[i].isParallelTo(m_surfacesOrg[j])) {
+				double dist = m_surfacesOrg[i].distanceToParallelPlane(m_surfacesOrg[j]);
+				m_parallelSpaceSurfaces.emplace_back(SurfaceConnection{(int)i,0,(int)j,dist});
 			}
 		}
 	}
@@ -230,6 +241,17 @@ std::vector<SpaceBoundary> Space::createSpaceBoundaries(const std::vector<Buildi
 		}
 	}
 
+	for(const Surface& surf : surfaces) {
+		if(surf.area() < 0.01)
+			continue;
+
+		SpaceBoundary sb(GUID_maker::instance().guid());
+		std::string name = "Missing";
+		sb.setForMissingElement(name);
+		sb.fetchGeometryFromBuildingElement(surf);
+		spaceBoundaries.push_back(sb);
+	}
+
 	return spaceBoundaries;
 }
 
@@ -309,9 +331,12 @@ bool Space::evaluateSpaceBoundaryTypes(const objectShapeTypeVector_t& shapes,
 	if(m_spaceBoundaries.empty())
 		return false;
 
+
 	bool foundOne = false;
 
-	for(auto& sb : m_spaceBoundaries) {
+	for(size_t sbI=0; sbI<m_spaceBoundaries.size(); ++sbI) {
+		auto& sb = m_spaceBoundaries[sbI];
+
 		int type = -1;
 		for(const auto& elemType : shapes) {
 			for(const auto& elem : elemType.second) {
@@ -336,20 +361,55 @@ bool Space::evaluateSpaceBoundaryTypes(const objectShapeTypeVector_t& shapes,
 				}
 			}
 		}
+		std::string errmsg;
 		if(type > -1) {
 			sb.setRelatingElementType(static_cast<ObjectTypes>(type));
 			sb.m_elementEntityId = id;
-			sb.fetchGeometryFromIFC(unit_converter, m_transformMatrix);
-			foundOne = true;
+			bool res = sb.fetchGeometryFromIFC(unit_converter, m_transformMatrix, errmsg);
+			if(res)
+				foundOne = true;
 		}
 		else {
-			std::string name = sb.nameRelatedElement();
-			m_notes = "Element type not found: " + name;
+			if(sb.isVirtual()) {
+				sb.setRelatingElementType(static_cast<ObjectTypes>(OT_None));
+				sb.m_elementEntityId = -1;
+				bool res = sb.fetchGeometryFromIFC(unit_converter, m_transformMatrix, errmsg);
+				if(res)
+					foundOne = true;
+			}
+			else {
+				sb.setRelatingElementType(static_cast<ObjectTypes>(OT_None));
+				sb.m_elementEntityId = -1;
+				bool res = sb.fetchGeometryFromIFC(unit_converter, m_transformMatrix, errmsg);
+				if(res)
+					foundOne = true;
+			}
 		}
-	}
+
+		if(!errmsg.empty()) {
+			m_spaceBoundaryErrors += "\nError while getting geometry for space boundary. " + errmsg;
+			return false;
+		}
+
+		// create connection vector for current space boundary
+		for(size_t spaceI=0; spaceI<m_surfacesOrg.size(); ++spaceI) {
+			for(size_t sbsI=0; sbsI<sb.surfaces().size(); ++sbsI) {
+				const Surface& spaceSurf = m_surfacesOrg[spaceI];
+				const Surface& sbSurf = sb.surfaces()[sbsI];
+				bool parallel = spaceSurf.isParallelTo(sbSurf);
+				if(parallel) {
+					double dist = spaceSurf.distanceToParallelPlane(sbSurf);
+					if(dist<10) {
+						m_spaceBoundaryConnections.emplace_back(SurfaceConnection{(int)spaceI,(int)sbI,(int)sbsI,dist});
+					}
+				}
+			}
+		}
+
+	} // end loop over space boundaries
 
 	if(!foundOne) {
-		m_spaceBoundaryErrors = "Cannot find at least one connected space boundary";
+		m_spaceBoundaryErrors += "\nCannot find at least one connected space boundary";
 	}
 	return foundOne;
 }
@@ -364,7 +424,7 @@ bool Space::evaluateSpaceBoundaries(const std::vector<BuildingElement>& construc
 	m_spaceBoundaries = newSpaceBoundaries;
 
 	if(m_spaceBoundaries.empty()) {
-		m_spaceBoundaryErrors = "Cannot evaluate any space boundary for this space";
+		m_spaceBoundaryErrors += "\nCannot evaluate any space boundary for this space";
 		return false;
 	}
 	return true;
@@ -374,11 +434,12 @@ bool Space::updateSpaceBoundaries(const objectShapeTypeVector_t& shapes,
 								  shared_ptr<UnitConverter>& unit_converter,
 								  const std::vector<BuildingElement>& constructionElements,
 								  const std::vector<BuildingElement>& openingElements,
-								  const std::vector<Opening>& openings) {
+								  const std::vector<Opening>& openings,
+								  bool useSpaceBoundaries) {
+
 	bool success;
 	// update existing space boundaries from IFC
-//	m_spaceBoundaries.clear();
-	if(!m_spaceBoundaries.empty()) {
+	if(useSpaceBoundaries && !m_spaceBoundaries.empty()) {
 		success = evaluateSpaceBoundaryTypes(shapes, unit_converter, constructionElements, openingElements);
 	}
 	// try to evaluate space boundaries from building element entities
@@ -391,6 +452,75 @@ bool Space::updateSpaceBoundaries(const objectShapeTypeVector_t& shapes,
 
 	return success;
 }
+
+bool Space::updateSpaceConnections(std::vector<BuildingElement>& constructionElements,
+							std::vector<BuildingElement>& openingElements,
+								   std::vector<Opening>& openings) {
+
+	for(size_t spaceSurfI=0; spaceSurfI<m_surfacesOrg.size(); ++spaceSurfI) {
+
+		// create connection vector for construction
+		for(size_t conI=0; conI<constructionElements.size(); ++conI) {
+			BuildingElement& constr = constructionElements[conI];
+			double thickness = constr.thickness();
+			if(thickness <= 0)
+				thickness = 1;
+			for(size_t entSurfI=0; entSurfI<constr.surfaces().size(); ++entSurfI) {
+				const Surface& spaceSurf = m_surfacesOrg[spaceSurfI];
+				const Surface& conSurf = constr.surfaces()[entSurfI];
+				bool parallel = spaceSurf.isParallelTo(conSurf);
+				if(parallel) {
+					double dist = spaceSurf.distanceToParallelPlane(conSurf);
+					if(dist<=thickness*1.1 && spaceSurf.isIntersected(conSurf)) {
+						m_constructionConnections.emplace_back(SurfaceConnection{(int)spaceSurfI,constr.m_id,(int)entSurfI,dist});
+						constr.m_spaceSurfaceConnection[m_id].push_back(std::pair<size_t,size_t>(spaceSurfI,entSurfI));
+					}
+				}
+			}
+		}
+
+		// create connection vector for opening elements
+		for(size_t conI=0; conI<openingElements.size(); ++conI) {
+			BuildingElement& constr = openingElements[conI];
+			double thickness = constr.thickness();
+			if(thickness <= 0)
+				thickness = 1;
+			for(size_t entSurfI=0; entSurfI<constr.surfaces().size(); ++entSurfI) {
+				const Surface& spaceSurf = m_surfacesOrg[spaceSurfI];
+				const Surface& opSurf = constr.surfaces()[entSurfI];
+				bool parallel = spaceSurf.isParallelTo(opSurf);
+				if(parallel) {
+					double dist = spaceSurf.distanceToParallelPlane(opSurf);
+					if(dist<=thickness*1.1 && spaceSurf.isIntersected(opSurf)) {
+						m_openingConnections.emplace_back(SurfaceConnection{(int)spaceSurfI,constr.m_id,(int)entSurfI,dist});
+						constr.m_spaceSurfaceConnection[m_id].push_back(std::pair<size_t,size_t>(spaceSurfI,entSurfI));
+					}
+				}
+			}
+		}
+
+		// create connection vector for opening elements
+		for(size_t opI=0; opI<openings.size(); ++opI) {
+			Opening& opening = openings[opI];
+			double thickness = 0.5;
+			for(size_t entSurfI=0; entSurfI<opening.surfaces().size(); ++entSurfI) {
+				const Surface& spaceSurf = m_surfacesOrg[spaceSurfI];
+				const Surface& opSurf = opening.surfaces()[entSurfI];
+				bool parallel = spaceSurf.isParallelTo(opSurf);
+				if(parallel) {
+					double dist = spaceSurf.distanceToParallelPlane(opSurf);
+					if(dist<=thickness*1.1 && spaceSurf.isIntersected(opSurf)) {
+						opening.m_spaceSurfaceConnection[m_id].push_back(std::pair<size_t,size_t>(spaceSurfI,entSurfI));
+					}
+				}
+			}
+		}
+
+	}
+
+	return true;
+}
+
 
 void Space::updateSurfaces(const std::vector<BuildingElement>& elems) {
 
@@ -408,7 +538,14 @@ void Space::updateSurfaces(const std::vector<BuildingElement>& elems) {
 				subSurfaces.insert(subSurfaces.end(), tempSurfVect.begin(), tempSurfVect.end());
 			}
 			else {
-				///< \todo handling other space boundary types
+				if(sb.isVirtual()) {
+					const std::vector<Surface>& tempSurfVect = sb.surfaces();
+					m_surfaces.insert(m_surfaces.end(), tempSurfVect.begin(), tempSurfVect.end());
+				}
+				else {
+					const std::vector<Surface>& tempSurfVect = sb.surfaces();
+					m_surfaces.insert(m_surfaces.end(), tempSurfVect.begin(), tempSurfVect.end());
+				}
 			}
 		}
 		std::vector<OpeningMatching> subSurfaceMatch;
@@ -505,9 +642,9 @@ TiXmlElement * Space::writeXML(TiXmlElement * parent) const {
 	return e;
 }
 
-VICUS::Room Space::getVicusObject(std::map<int,int>& idMap) const {
+VICUS::Room Space::getVicusObject(std::map<int,int>& idMap, VICUS::Project* project) const {
 	VICUS::Room res;
-	int newId = res.uniqueID();
+	int newId = project->nextUnusedID();
 	if (!m_longName.empty())
 		res.m_displayName = QString::fromUtf8(m_longName.c_str());
 	else
@@ -516,7 +653,7 @@ VICUS::Room Space::getVicusObject(std::map<int,int>& idMap) const {
 	idMap[m_id] = newId;
 
 	for(const auto& surface : m_surfaces) {
-		res.m_surfaces.emplace_back(surface.getVicusObject(idMap));
+		res.m_surfaces.emplace_back(surface.getVicusObject(idMap, project));
 	}
 
 	return res;
