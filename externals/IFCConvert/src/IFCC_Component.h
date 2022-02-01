@@ -7,6 +7,8 @@
 
 #include <VICUS_Component.h>
 
+#include "IFCC_Types.h"
+
 class TiXmlElement;
 
 namespace IFCC {
@@ -47,6 +49,7 @@ public:
 	std::string							m_manufacturer;		///< producer name
 	ComponentType						m_type;				///< Component type
 	std::string							m_guid;				///< GUID of the corresponding building element
+	BasicType							m_basictype;		///< Basic type of component
 
 
 	/*! Return the object ID.*/

@@ -11,7 +11,8 @@ namespace IFCC {
 Component::Component() :
 	m_id(-1),
 	m_constructionId(-1),
-	m_type(NUM_CT)
+	m_type(NUM_CT),
+	m_basictype(NUM_BT)
 {
 
 }
@@ -55,6 +56,9 @@ void Component::updateComponentType(const Surface& surf) {
 		else if(surf.positionType() == Surface::PT_External_Ground)
 			m_type = CT_FloorToGround;
 	}
+	else if(m_type == NUM_CT) {
+		m_type = CT_Miscellaneous;
+	}
 }
 
 VICUS::Component Component::getVicusObject(std::map<int,int>& idMap, int idOffset) const {
@@ -88,6 +92,7 @@ std::string Component::type2String(ComponentType type) const {
 		case CT_Miscellaneous: return "Miscellaneous";
 		case NUM_CT: return "Unknown";
 	}
+	return "Unknown";
 }
 
 
