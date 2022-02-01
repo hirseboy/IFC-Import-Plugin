@@ -19,7 +19,6 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OU
 
 #include <unordered_set>
 #include <ifcpp/model/BasicTypes.h>
-#include <ifcpp/model/BuildingModel.h>
 #include <ifcpp/model/OpenMPIncludes.h>
 #include <ifcpp/model/StatusCallback.h>
 #include <ifcpp/IFC4/include/IfcCurtainWall.h>
@@ -28,9 +27,9 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OU
 #include <ifcpp/IFC4/include/IfcRelAggregates.h>
 #include <ifcpp/IFC4/include/IfcRelContainedInSpatialStructure.h>
 #include <ifcpp/IFC4/include/IfcRelDefinesByProperties.h>
-#include <ifcpp/IFC4/include/IfcSite.h>
 #include <ifcpp/IFC4/include/IfcSpace.h>
 #include <ifcpp/IFC4/include/IfcWindow.h>
+#include <ifcpp/IFC4/include/IfcWall.h>
 
 #include <carve/carve.hpp>
 

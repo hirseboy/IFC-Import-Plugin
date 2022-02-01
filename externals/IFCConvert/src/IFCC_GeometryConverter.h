@@ -22,6 +22,9 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OU
 #include <unordered_set>
 
 #include <ifcpp/IFC4/include/IfcWindow.h>
+#include <ifcpp/IFC4/include/IfcSite.h>
+
+#include <ifcpp/model/BuildingModel.h>
 
 #include "IFCC_RepresentationConverter.h"
 
