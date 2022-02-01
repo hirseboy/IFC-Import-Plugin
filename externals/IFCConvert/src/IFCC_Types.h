@@ -43,8 +43,19 @@ enum ObjectTypes {
 	OT_GeographicalElement,
 	OT_TransportElement,
 	OT_VirtualElement,
-	OT_All
+	OT_All,
+	OT_None
 };
+
+
+/*! Basic type of the object.*/
+enum BasicType {
+	BT_Real,			///< A real and existing object
+	BT_Virtual,			///< A virtual object (e.g. space divider)
+	BT_Missing,			///< A missing object for existing surfaces which doesn't have real connection
+	NUM_BT
+};
+
 
 // some type definitions
 
