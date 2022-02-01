@@ -10,6 +10,8 @@
 #include <ifcpp/IFC4/include/IfcPropertyReferenceValue.h>
 #include <ifcpp/IFC4/include/IfcPropertyTableValue.h>
 
+#include <ifcpp/IFC4/include/IfcMaterialProperties.h>
+
 #include <ifcpp/IFC4/include/IfcDerivedMeasureValue.h>
 #include <ifcpp/IFC4/include/IfcMeasureValue.h>
 #include <ifcpp/IFC4/include/IfcSimpleValue.h>
@@ -386,6 +388,27 @@ bool getDoubleProperty(const std::map<std::string,std::map<std::string,Property>
 	}
 
 	return false;
+}
+
+void getMaterialProperties(const shared_ptr<IfcMaterial>& mat, std::map<std::string,std::map<std::string,Property>>& propItem) {
+	for(const auto& relproperties : mat->m_HasProperties_inverse) {
+		shared_ptr<IfcMaterialProperties> mat_properties(relproperties);
+		if(mat_properties) {
+			std::string pset_name = name2s(mat_properties->m_Name);
+			for(const auto& property : mat_properties->m_Properties) {
+				std::string name = name2s(property->m_Name);
+				bool usesThisProperty = Property::relevantProperty(pset_name,name);
+				if(usesThisProperty) {
+					Property prop;
+					prop.m_name = name;
+					getProperty(property,pset_name, prop);
+					std::map<std::string, Property> inner;
+					inner.insert(std::make_pair(name, prop));
+					propItem.insert(std::make_pair(pset_name, inner));
+				}
+			}
+		}
+	}
 }
 
 
