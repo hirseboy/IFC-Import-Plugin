@@ -12,6 +12,11 @@
 #include <ifcpp/IFC4/include/IfcMaterialLayerSet.h>
 #include <ifcpp/IFC4/include/IfcMaterialLayer.h>
 #include <ifcpp/IFC4/include/IfcMaterial.h>
+#include <ifcpp/IFC4/include/IfcMaterialDefinitionRepresentation.h>
+#include <ifcpp/IFC4/include/IfcMaterialList.h>
+#include <ifcpp/IFC4/include/IfcMaterialProfile.h>
+#include <ifcpp/IFC4/include/IfcMaterialProfileSet.h>
+
 #include <ifcpp/IFC4/include/IfcNonNegativeLengthMeasure.h>
 #include <ifcpp/IFC4/include/IfcPositiveLengthMeasure.h>
 #include <ifcpp/IFC4/include/IfcWindowStyle.h>
@@ -24,6 +29,8 @@
 #include <ifcpp/IFC4/include/IfcRelAssociatesMaterial.h>
 #include <ifcpp/IFC4/include/IfcRelDefinesByType.h>
 #include <ifcpp/IFC4/include/IfcRelDefinesByProperties.h>
+#include <ifcpp/IFC4/include/IfcRelAggregates.h>
+#include <ifcpp/IFC4/include/IfcObjectDefinition.h>
 
 #include <ifcpp/IFC4/include/IfcPropertySetDefinitionSelect.h>
 #include <ifcpp/IFC4/include/IfcPropertySetDefinition.h>
@@ -52,6 +59,13 @@
 
 namespace IFCC {
 
+void BuildingElement::WallProperties::update(std::shared_ptr<IfcWall>& ifcWall) {
+	if(!ifcWall)
+		return;
+	if(ifcWall->m_PredefinedType)
+		m_wallType = ifcWall->m_PredefinedType->m_enum;
+}
+
 BuildingElement::BuildingElement(int id) :
 	EntityBase(id),
 	m_constructionId(-1),
@@ -72,7 +86,7 @@ bool BuildingElement::set(std::shared_ptr<IfcElement> ifcElement, ObjectTypes ty
 	for(const auto& relop : ifcElement->m_HasOpenings_inverse) {
 		m_containedOpeningsOriginal.push_back(relop.lock()->m_RelatedOpeningElement);
 	}
-	if(m_type == OT_Roof || m_type == OT_Slab || m_type == OT_Wall)
+	if(isConstructionType(m_type))
 		m_surfaceComponent = true;
 	else if(m_type == OT_Window || m_type == OT_Door)
 		m_subSurfaceComponent = true;
@@ -104,7 +118,7 @@ bool BuildingElement::set(std::shared_ptr<IfcElement> ifcElement, ObjectTypes ty
 	}
 	setThermalTransmittance();
 
-	if(m_type == OT_Window || m_type == OT_Door) {
+	if(isOpeningType(m_type)) {
 		for(const auto& relop : ifcElement->m_FillsVoids_inverse) {
 			m_isUsedFromOpeningsOriginal.push_back(relop.lock()->m_RelatingOpeningElement);
 		}
@@ -188,41 +202,98 @@ bool BuildingElement::set(std::shared_ptr<IfcElement> ifcElement, ObjectTypes ty
 		}
 	}
 
+	if(m_type == OT_Wall) {
+		shared_ptr<IfcWall> wall = dynamic_pointer_cast<IfcWall>(ifcElement);
+		m_wallProperties.update(wall);
+
+		if(!wall->m_IsDecomposedBy_inverse.empty()) {
+			for(size_t i=0; i<wall->m_IsDecomposedBy_inverse.size(); ++i) {
+				shared_ptr<IfcRelAggregates> relAggregate(wall->m_IsDecomposedBy_inverse[i]);
+				if(relAggregate) {
+					for(size_t io=0; io<relAggregate->m_RelatedObjects.size(); ++io) {
+						const shared_ptr<IfcObjectDefinition>& object = relAggregate->m_RelatedObjects[io];
+
+					}
+				}
+			}
+		}
+		if(!wall->m_Decomposes_inverse.empty()) {
+			for(size_t i=0; i<wall->m_Decomposes_inverse.size(); ++i) {
+				shared_ptr<IfcRelAggregates> relAggregate(wall->m_Decomposes_inverse[i]);
+				if(relAggregate) {
+
+				}
+			}
+		}
+	}
+
 	for(const auto& relass : ifcElement->m_HasAssociations_inverse) {
 		shared_ptr<IfcRelAssociates> rel_associates(relass);
 		shared_ptr<IfcRelAssociatesMaterial> associated_material = dynamic_pointer_cast<IfcRelAssociatesMaterial>(rel_associates);
 		if (associated_material != nullptr && associated_material->m_RelatingMaterial != nullptr) {
-			shared_ptr<IfcMaterialLayerSetUsage> material_layer_set_usage = dynamic_pointer_cast<IfcMaterialLayerSetUsage>(associated_material->m_RelatingMaterial);
-			if (material_layer_set_usage != nullptr && material_layer_set_usage->m_ForLayerSet != nullptr) {
-				for (size_t jj = 0; jj < material_layer_set_usage->m_ForLayerSet->m_MaterialLayers.size(); ++jj) {
-					const shared_ptr<IfcMaterialLayer>& material_layer = material_layer_set_usage->m_ForLayerSet->m_MaterialLayers[jj];
-					if (material_layer) {
-						const shared_ptr<IfcMaterial>& mat = material_layer->m_Material;					//optional
-						if (mat) {
-							m_materialLayers.emplace_back(std::pair<double,std::string>(material_layer->m_LayerThickness->m_value, label2s(mat->m_Name)));
-							m_materialPropertyMap.emplace_back(std::map<std::string,std::map<std::string,Property>>());
-							for(const auto& relproperties : mat->m_HasProperties_inverse) {
-								shared_ptr<IfcMaterialProperties> mat_properties(relproperties);
-								if(mat_properties) {
-									std::string pset_name = name2s(mat_properties->m_Name);
-									for(const auto& property : mat_properties->m_Properties) {
-										std::string name = name2s(property->m_Name);
-										bool usesThisProperty = Property::relevantProperty(pset_name,name);
-										if(usesThisProperty) {
-											Property prop;
-											prop.m_name = name;
-											getProperty(property,pset_name, prop);
-											std::map<std::string, Property> inner;
-											inner.insert(std::make_pair(name, prop));
-											m_materialPropertyMap.back().insert(std::make_pair(pset_name, inner));
-										}
-									}
-								}
+			std::string classname = associated_material->m_RelatingMaterial->className();
+
+			shared_ptr<IfcMaterialDefinitionRepresentation> material_definition_rep = dynamic_pointer_cast<IfcMaterialDefinitionRepresentation>(associated_material->m_RelatingMaterial);
+			if(material_definition_rep) {
+				const shared_ptr<IfcMaterial>& mat = material_definition_rep->m_RepresentedMaterial;
+				if (mat) {
+					m_materialLayers.emplace_back(std::pair<double,std::string>(0.01, label2s(mat->m_Name)));
+					m_materialPropertyMap.emplace_back(std::map<std::string,std::map<std::string,Property>>());
+					getMaterialProperties(mat, m_materialPropertyMap.back());
+				}
+			}
+
+			shared_ptr<IfcMaterialDefinition> material_definition = dynamic_pointer_cast<IfcMaterialDefinition>(associated_material->m_RelatingMaterial);
+			if(material_definition) {
+				shared_ptr<IfcMaterial> mat = dynamic_pointer_cast<IfcMaterial>(material_definition);
+				if (mat) {
+					m_materialLayers.emplace_back(std::pair<double,std::string>(0.01, label2s(mat->m_Name)));
+					m_materialPropertyMap.emplace_back(std::map<std::string,std::map<std::string,Property>>());
+					getMaterialProperties(mat, m_materialPropertyMap.back());
+				}
+				shared_ptr<IfcMaterialLayer> matLayer = dynamic_pointer_cast<IfcMaterialLayer>(material_definition);
+				if (matLayer) {
+					const shared_ptr<IfcMaterial>& mat = matLayer->m_Material;					//optional
+					if (mat) {
+						m_materialLayers.emplace_back(std::pair<double,std::string>(matLayer->m_LayerThickness->m_value, label2s(mat->m_Name)));
+						m_materialPropertyMap.emplace_back(std::map<std::string,std::map<std::string,Property>>());
+						getMaterialProperties(mat, m_materialPropertyMap.back());
+					}
+				}
+				shared_ptr<IfcMaterialLayerSet> matLayerSet = dynamic_pointer_cast<IfcMaterialLayerSet>(material_definition);
+				shared_ptr<IfcMaterialProfile> matProfile = dynamic_pointer_cast<IfcMaterialProfile>(material_definition);
+				shared_ptr<IfcMaterialProfileSet> matProfileSet = dynamic_pointer_cast<IfcMaterialProfileSet>(material_definition);
+
+			}
+			shared_ptr<IfcMaterialList> material_list = dynamic_pointer_cast<IfcMaterialList>(associated_material->m_RelatingMaterial);
+			if(material_list) {
+				for(size_t im=0; im<material_list->m_Materials.size(); ++im) {
+					const shared_ptr<IfcMaterial>& mat = material_list->m_Materials[im];
+					if (mat) {
+						m_materialLayers.emplace_back(std::pair<double,std::string>(0.01, label2s(mat->m_Name)));
+						m_materialPropertyMap.emplace_back(std::map<std::string,std::map<std::string,Property>>());
+						getMaterialProperties(mat, m_materialPropertyMap.back());
+					}
+				}
+			}
+			shared_ptr<IfcMaterialUsageDefinition> material_usage_definition = dynamic_pointer_cast<IfcMaterialUsageDefinition>(associated_material->m_RelatingMaterial);
+			if(material_usage_definition) {
+				shared_ptr<IfcMaterialLayerSetUsage> material_layer_set_usage = dynamic_pointer_cast<IfcMaterialLayerSetUsage>(material_usage_definition);
+				if (material_layer_set_usage != nullptr && material_layer_set_usage->m_ForLayerSet != nullptr) {
+					for (size_t jj = 0; jj < material_layer_set_usage->m_ForLayerSet->m_MaterialLayers.size(); ++jj) {
+						const shared_ptr<IfcMaterialLayer>& material_layer = material_layer_set_usage->m_ForLayerSet->m_MaterialLayers[jj];
+						if (material_layer) {
+							const shared_ptr<IfcMaterial>& mat = material_layer->m_Material;					//optional
+							if (mat) {
+								m_materialLayers.emplace_back(std::pair<double,std::string>(material_layer->m_LayerThickness->m_value, label2s(mat->m_Name)));
+								m_materialPropertyMap.emplace_back(std::map<std::string,std::map<std::string,Property>>());
+								getMaterialProperties(mat, m_materialPropertyMap.back());
 							}
 						}
 					}
 				}
 			}
+
 		}
 	}
 
@@ -345,6 +416,30 @@ void BuildingElement::fetchOpenings(std::vector<Opening>& openings) {
 			}
 		}
 	}
+
+	// check openings
+//	for(const auto& op : m_containedOpenings) {
+//		auto fit = std::find_if(
+//					   openings.begin(),
+//					   openings.end(),
+//					   [op](const auto& opening) {return opening.second.m_id == op; });
+//		if(fit == openings.end())
+//			continue;
+
+//		std::vector<Surface> diffSurfaces;
+//		for(const Surface& elemSurface : m_surfaces) {
+//			for(const Surface& opSurface : fit->surfaces()) {
+//				bool parallel = elemSurface.isParallelTo(opSurface);
+//				if(parallel) {
+//					std::vector<Surface> differences = elemSurface.difference(opSurface);
+//					if(differences.empty()) {
+//						diffSurfaces.push_back(elemSurface);
+//					}
+//				}
+//			}
+//		}
+
+//	}
 }
 
 const std::vector<Surface>& BuildingElement::surfaces() const {

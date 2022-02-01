@@ -3,6 +3,7 @@
 
 
 #include <ifcpp/IFC4/include/IfcElement.h>
+#include <ifcpp/IFC4/include/IfcWall.h>
 #include <ifcpp/IFC4/include/IfcOpeningElement.h>
 #include <ifcpp/IFC4/include/IfcWindow.h>
 #include <ifcpp/IFC4/include/IfcWindowTypeEnum.h>
@@ -10,6 +11,8 @@
 #include <ifcpp/IFC4/include/IfcDoorTypeEnum.h>
 #include <ifcpp/IFC4/include/IfcDoorTypeOperationEnum.h>
 #include <ifcpp/IFC4/include/IfcWindowTypePartitioningEnum.h>
+#include <ifcpp/IFC4/include/IfcWallTypeEnum.h>
+#include <ifcpp/IFC4/include/IfcWallType.h>
 #include <ifcpp/geometry/Carve/GeometryInputData.h>
 
 #include "IFCC_Types.h"
@@ -104,6 +107,12 @@ public:
 		std::string					m_doorUserDefinedOperationType;
 	};
 
+	struct WallProperties {
+		void update(std::shared_ptr<IfcWall>& ifcWall);
+
+		IfcWallTypeEnum::IfcWallTypeEnumEnum	m_wallType = IfcWallTypeEnum::ENUM_USERDEFINED;
+	};
+
 	/*! Standard constructor.
 		\param id Unique id for using in project.
 	*/
@@ -169,18 +178,23 @@ public:
 	std::vector<std::map<std::string,std::map<std::string,Property>>>	m_materialPropertyMap;
 	/*! This building element is used from the openings given by their ids.
 		That means it must be a opening element (window or door).*/
-	std::vector<int>							m_usedFromOpenings;
+	std::vector<int>													m_usedFromOpenings;
 	/*! Vector of opening ids which are contained in this building element.
 		Its only filled if this is a construction element.*/
-	std::vector<int>							m_containedOpenings;
+	std::vector<int>													m_containedOpenings;
 	/*! Id of the element construction. It is used to generate component instances.*/
-	int											m_constructionId;
+	int																	m_constructionId;
 	/*! Contains additional properties only for opening elements.*/
-	OpeningProperties							m_openingProperties;
+	OpeningProperties													m_openingProperties;
+	/*! Contains additional properties only for walls.*/
+	WallProperties														m_wallProperties;
 	/*! Vector of surface pairs (given by index) which are parallel.
 		This vector is used in order to evaluate element thickness.
 	*/
-	std::vector<std::pair<int,int>>				m_parallelSurfaces;
+	std::vector<std::pair<int,int>>										m_parallelSurfaces;
+
+	/*! Map store the surface indices which are connected to a space given by ID.*/
+	std::map<int,std::vector<int>>										m_spaceSurfaceConnection;
 
 private:
 	/*! Fille the surface pair vector.*/
