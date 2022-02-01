@@ -35,6 +35,16 @@ private:
 	static int m_guid;	///< Current guid
 };
 
+// check functions
+
+inline bool isConstructionType(ObjectTypes type) {
+	return type == OT_Wall || type == OT_Roof || type == OT_Slab || type == OT_Footing;
+}
+
+inline bool isOpeningType(ObjectTypes type) {
+	return type == OT_Window || type == OT_Door;
+}
+
 // conversion functions
 
 /*! Convert wide string (Unicode) into UTF8 string.*/
