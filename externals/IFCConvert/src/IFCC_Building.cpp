@@ -59,11 +59,12 @@ void Building::updateStoreys(const objectShapeTypeVector_t& elementShapes,
 				  shared_ptr<UnitConverter>& unit_converter,
 				  const std::vector<BuildingElement>& constructionElemnts,
 				  const std::vector<BuildingElement>& openingElements,
-							 const std::vector<Opening>& openings) {
+							 const std::vector<Opening>& openings,
+							 bool useSpaceBoundaries) {
 
 	for(auto& storey : m_storeys) {
 		storey.fetchSpaces(spaceShapes, unit_converter);
-		storey.updateSpaces(elementShapes, unit_converter, constructionElemnts, openingElements, openings);
+		storey.updateSpaces(elementShapes, unit_converter, constructionElemnts, openingElements, openings, useSpaceBoundaries);
 	}
 }
 
