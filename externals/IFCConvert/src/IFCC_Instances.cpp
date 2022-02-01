@@ -44,30 +44,46 @@ int Instances::collectComponentInstances(std::vector<BuildingElement>& elements,
 		for(const auto& storey : building.storeys()) {
 			for(const auto& space : storey.spaces()) {
 				for(const auto& surf : space.surfaces()) {
-					auto fitElem = std::find_if(
-								   elements.begin(),
-								   elements.end(),
-								   [surf](const auto& elem) {return elem.m_id == surf.elementId(); });
-					if(fitElem != elements.end()) {
-						const BuildingElement& elem = *fitElem;
-						auto fitComp = std::find_if(
-									   database.m_components.begin(),
-									   database.m_components.end(),
-									   [elem](const auto& comp) {return comp.second.m_guid == elem.m_guid; });
-						if(fitComp != database.m_components.end()) {
-							ComponentInstance ci;
-							ci.m_id = GUID_maker::instance().guid();
-							ci.m_componentId = fitComp->first;
-							ci.m_sideASurfaceId = surf.id();
-							fitComp->second.updateComponentType(surf);
-							m_componentInstances[ci.m_id] = ci;
+					if(surf.isMissing()) {
+						ComponentInstance ci;
+						ci.m_id = GUID_maker::instance().guid();
+						ci.m_componentId = Database::m_missingComponentId;
+						ci.m_sideASurfaceId = surf.id();
+						m_componentInstances[ci.m_id] = ci;
+					}
+					else if(surf.isVirtual()) {
+						ComponentInstance ci;
+						ci.m_id = GUID_maker::instance().guid();
+						ci.m_componentId = Database::m_virtualComponentId;
+						ci.m_sideASurfaceId = surf.id();
+						m_componentInstances[ci.m_id] = ci;
+					}
+					else {
+						auto fitElem = std::find_if(
+										   elements.begin(),
+										   elements.end(),
+										   [surf](const auto& elem) {return elem.m_id == surf.elementId(); });
+						if(fitElem != elements.end()) {
+							const BuildingElement& elem = *fitElem;
+							auto fitComp = std::find_if(
+											   database.m_components.begin(),
+											   database.m_components.end(),
+											   [elem](const auto& comp) {return comp.second.m_guid == elem.m_guid; });
+							if(fitComp != database.m_components.end()) {
+								ComponentInstance ci;
+								ci.m_id = GUID_maker::instance().guid();
+								ci.m_componentId = fitComp->first;
+								ci.m_sideASurfaceId = surf.id();
+								fitComp->second.updateComponentType(surf);
+								m_componentInstances[ci.m_id] = ci;
+							}
+							else {
+								failedSurfaces.push_back(surf.id());
+							}
 						}
 						else {
 							failedSurfaces.push_back(surf.id());
 						}
-					}
-					else {
-						failedSurfaces.push_back(surf.id());
 					}
 				}
 
