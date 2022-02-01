@@ -2,7 +2,8 @@
 
 namespace IFCC {
 
-Construction::Construction()
+Construction::Construction() :
+	m_basictype(NUM_BT)
 {
 
 }

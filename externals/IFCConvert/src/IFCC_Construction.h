@@ -9,6 +9,8 @@
 
 #include <VICUS_Construction.h>
 
+#include "IFCC_Types.h"
+
 namespace IFCC {
 
 /*! Class contains a construction as list of layers (material id + thickness) with additional informations.
@@ -19,9 +21,10 @@ public:
 	/*! Standard constructor.*/
 	Construction();
 
-	int									m_id;		///< Unique id of the construction
-	std::vector<std::pair<int, double>>	m_layers;	///< Vector of layers with material id and thickness in m
-	std::string							m_name;		///< Name of the construction
+	int									m_id;			///< Unique id of the construction
+	std::vector<std::pair<int, double>>	m_layers;		///< Vector of layers with material id and thickness in m
+	std::string							m_name;			///< Name of the construction
+	BasicType							m_basictype;	///< Basic type of component
 
 	/*! Return the object ID.*/
 	int id() const {
