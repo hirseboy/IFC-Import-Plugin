@@ -78,6 +78,12 @@ public:
 	*/
 	Surface::IntersectionResult intersect2(const Surface& other) const;
 
+	/*! Return the rest (difference) area of the original surface minus the given one.
+		The result vector is empty in case of no intersection.
+		\param other Vector of difference surfaces
+	*/
+	std::vector<Surface> difference(const Surface& other) const;
+
 	/*! Merge the given subsurface into the current surface.
 		If the original surface was intersected by this subsurface the resulting surface is complete without holes.
 		The merging is performed in 2D level using clipper library (\sa mergePolygons).
@@ -139,6 +145,14 @@ public:
 	/*! Return name of the object.*/
 	std::string name() const {
 		return m_name;
+	}
+
+	bool isVirtual() const  {
+		return m_virtualSurface;
+	}
+
+	bool isMissing() const {
+		return m_elementEntityId == -1;
 	}
 
 

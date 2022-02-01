@@ -55,7 +55,7 @@ Surface::Surface(const polygon3D_t& polygon) :
 	if(m_polyVect.size() > 2) {
 		m_planeNormal = PlaneNormal(polygon);
 		PlaneHesseNormal planeHesseNormal(polygon);
-		m_planeCarve.N = carve::geom::VECTOR(planeHesseNormal.m_n0.m_x,planeHesseNormal.m_n0.m_x,planeHesseNormal.m_n0.m_x);
+		m_planeCarve.N = carve::geom::VECTOR(planeHesseNormal.m_n0.m_x,planeHesseNormal.m_n0.m_y,planeHesseNormal.m_n0.m_z);
 		m_planeCarve.d = planeHesseNormal.m_d;
 	}
 }
@@ -68,20 +68,28 @@ void Surface::set(int id, int elementId, const std::string& name, bool isVirtual
 }
 
 double Surface::distanceToParallelPlane(const Surface& other) const {
-	double negFact = 1.0;
-	if(!nearEqual(m_planeNormal.m_lz, other.m_planeNormal.m_lz)) {
-		if(!nearEqual(m_planeNormal.m_lz*-1,other.m_planeNormal.m_lz))
-			return std::numeric_limits<double>::max();
-		else
-			negFact = -1.0;
-	}
+//	double negFact = 1.0;
+//	if(!nearEqual(m_planeNormal.m_lz, other.m_planeNormal.m_lz)) {
+//		if(!nearEqual(m_planeNormal.m_lz*-1,other.m_planeNormal.m_lz))
+//			return std::numeric_limits<double>::max();
+//		else
+//			negFact = -1.0;
+//	}
 
-	double dist = std::fabs(other.m_planeNormal.m_distance - (m_planeNormal.m_distance * negFact));
+//	double dist = std::fabs(other.m_planeNormal.m_distance - (m_planeNormal.m_distance * negFact));
 
-	IBKMK::Vector3D t = m_polyVect[0] - other.m_polyVect[0];
+//	IBKMK::Vector3D t = m_polyVect[0] - other.m_polyVect[0];
+
+	PlaneHesseNormal phn1(m_polyVect);
+	PlaneHesseNormal phn2(other.m_polyVect);
+	double dist2 = std::fabs(phn1.m_d - phn2.m_d);
+//	if(dist2<dist) {
+//		int check = 0;
+//	}
+
 //	double dist2 = t.scalarProduct(PlaneHesseNormal(m_polyVect).m_n0);
 
-	return dist;
+	return dist2;
 }
 
 bool Surface::isParallelTo(const Surface& other) const {
@@ -206,6 +214,18 @@ Surface::IntersectionResult Surface::intersect2(const Surface& other) const {
 				if(hole.size() > 3 && areaPolygon(hole) > 1e-4)
 					result.m_holesClipMinusBase.back().push_back(hole);
 			}
+		}
+	}
+	return result;
+}
+
+std::vector<Surface> Surface::difference(const Surface& other) const {
+	IFCC::IntersectionResult tmp = intersectPolygons2(m_polyVect, other.polygon(), m_planeNormal);
+	std::vector<Surface> result;
+	for(size_t i=0; i<tmp.m_diffBaseMinusClip.size(); ++i) {
+		const polygon3D_t& poly = tmp.m_diffBaseMinusClip[i];
+		if(poly.size() > 3 && areaPolygon(poly) > 1e-4) {
+			result.push_back(Surface(poly));
 		}
 	}
 	return result;
