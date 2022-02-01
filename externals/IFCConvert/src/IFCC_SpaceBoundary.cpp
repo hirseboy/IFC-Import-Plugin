@@ -8,10 +8,14 @@
 #include <ifcpp/IFC4/include/IfcSurface.h>
 #include <ifcpp/IFC4/include/IfcFaceBasedSurfaceModel.h>
 #include <ifcpp/IFC4/include/IfcFaceSurface.h>
+#include <ifcpp/IFC4/include/IfcRelSpaceBoundary1stLevel.h>
+#include <ifcpp/IFC4/include/IfcRelSpaceBoundary2ndLevel.h>
+
 
 #include "IFCC_Helper.h"
 #include "IFCC_Types.h"
 #include "IFCC_RepresentationConverter.h"
+#include "IFCC_Database.h"
 
 namespace IFCC {
 
@@ -21,7 +25,9 @@ SpaceBoundary::SpaceBoundary(int id) :
 	m_physicalOrVirtual(IfcPhysicalOrVirtualEnum::ENUM_NOTDEFINED),
 	m_internalOrExternal(IfcInternalOrExternalEnum::ENUM_NOTDEFINED),
 	m_type(CT_Unknown),
-	m_elementEntityId(-1)
+	m_elementEntityId(-1),
+	m_spaceBoundaryType(SBT_Unknown),
+	m_levelType(SBLT_NoLevel)
 {
 
 }
@@ -37,17 +43,47 @@ bool SpaceBoundary::setFromIFC(std::shared_ptr<IfcRelSpaceBoundary> ifcSpaceBoun
 
 	if(ifcSpaceBoundary->m_PhysicalOrVirtualBoundary != nullptr) {
 		m_physicalOrVirtual = ifcSpaceBoundary->m_PhysicalOrVirtualBoundary->m_enum;
-		if(m_physicalOrVirtual == IfcPhysicalOrVirtualEnum::ENUM_VIRTUAL)
-			return false;
+//		if(m_physicalOrVirtual == IfcPhysicalOrVirtualEnum::ENUM_VIRTUAL)
+//			return false;
 	}
 	if(ifcSpaceBoundary->m_InternalOrExternalBoundary != nullptr) {
 		m_internalOrExternal = ifcSpaceBoundary->m_InternalOrExternalBoundary->m_enum;
 	}
 
+	if(m_name == "2ndLevel")
+		m_levelType = SBLT_2ndLevel;
+	if(m_name == "1stLevel")
+		m_levelType = SBLT_1stLevel;
+	if(m_description == "2a")
+		m_spaceBoundaryType = SBT_A;
+	if(m_description == "2b")
+		m_spaceBoundaryType = SBT_B;
+
+	shared_ptr<IfcRelSpaceBoundary1stLevel> sb1stLevel = std::dynamic_pointer_cast<IfcRelSpaceBoundary1stLevel>(ifcSpaceBoundary);
+	if(sb1stLevel) {
+		m_levelType = SBLT_1stLevel;
+		if(sb1stLevel->m_ParentBoundary != nullptr) {
+			m_spaceBoundaryType = SBT_Inner;
+		}
+	}
+
+	shared_ptr<IfcRelSpaceBoundary2ndLevel> sb2ndLevel = std::dynamic_pointer_cast<IfcRelSpaceBoundary2ndLevel>(ifcSpaceBoundary);
+	if(sb2ndLevel) {
+		m_levelType = SBLT_2ndLevel;
+		if(sb2ndLevel->m_CorrespondingBoundary != nullptr) {
+			m_guidCorrespondingBoundary = guidFromObject(sb2ndLevel->m_CorrespondingBoundary.get());
+			if(m_spaceBoundaryType != SBT_Inner)
+				m_spaceBoundaryType = SBT_A;
+		}
+		else {
+			if(m_spaceBoundaryType != SBT_Inner)
+				m_spaceBoundaryType = SBT_B;
+		}
+	}
+
 	m_connectionGeometry = ifcSpaceBoundary->m_ConnectionGeometry;
 	return true;
 }
-
 
 bool SpaceBoundary::setFromBuildingElement(const std::string& name, const BuildingElement& elem) {
 	m_name = name;
@@ -58,30 +94,60 @@ bool SpaceBoundary::setFromBuildingElement(const std::string& name, const Buildi
 	return true;
 }
 
+void SpaceBoundary::setForMissingElement(const std::string& name) {
+	m_name = name;
+	m_typeRelatedElement = OT_None;
+	m_type = CT_Others;
+	m_spaceBoundaryType = SBT_Unknown;
+	m_levelType = SBLT_NoLevel;
+	m_elementEntityId = -1;
+	m_physicalOrVirtual = IfcPhysicalOrVirtualEnum::ENUM_PHYSICAL;
+	m_guidRelatedElement.clear();
+	m_nameRelatedElement.clear();
+}
+
+void SpaceBoundary::setForVirtualElement(const std::string& name) {
+	m_name = name;
+	m_typeRelatedElement = OT_None;
+	m_type = CT_Others;
+	m_spaceBoundaryType = SBT_Unknown;
+	m_levelType = SBLT_NoLevel;
+	m_elementEntityId = -1;
+	m_physicalOrVirtual = IfcPhysicalOrVirtualEnum::ENUM_VIRTUAL;
+	m_guidRelatedElement.clear();
+	m_nameRelatedElement.clear();
+}
+
 void SpaceBoundary::setRelatingElementType(ObjectTypes type) {
 	m_typeRelatedElement = type;
-	if(type == OT_Wall || type == OT_CurtainWall || type == OT_Roof || type == OT_Slab)
+	if(isConstructionType(type))
 		m_type = CT_ConstructionElement;
-	else if(type == OT_Door || type == OT_Window)
+	else if(isOpeningType(type))
 		m_type = CT_OpeningElement;
 	else m_type = CT_Others;
 }
 
-bool SpaceBoundary::fetchGeometryFromIFC(shared_ptr<UnitConverter>& unit_converter, const carve::math::Matrix& spaceTransformation) {
+bool SpaceBoundary::fetchGeometryFromIFC(shared_ptr<UnitConverter>& unit_converter, const carve::math::Matrix& spaceTransformation, std::string& errmsg) {
 	// connection geometry is set from IFCSpaceBoundary
 	if(m_connectionGeometry != nullptr) {
 		// get geometry data from connection geometry by conversion via ItemShapeData
 		shared_ptr<ItemShapeData> item_data(new ItemShapeData);
 		std::shared_ptr<IfcConnectionCurveGeometry> curveGeom = std::dynamic_pointer_cast<IfcConnectionCurveGeometry>(m_connectionGeometry);
 		if(curveGeom != nullptr) {
+			errmsg = "IfcConnectionCurveGeometry not implemented";
+			return false;
 			///< \todo Implement
 		}
 		std::shared_ptr<IfcConnectionPointEccentricity> pointEccGeom = std::dynamic_pointer_cast<IfcConnectionPointEccentricity>(m_connectionGeometry);
 		if(pointEccGeom != nullptr) {
+			errmsg = "IfcConnectionPointEccentricity not implemented";
+			return false;
 			///< \todo Implement
 		}
 		std::shared_ptr<IfcConnectionPointGeometry> pointGeom = std::dynamic_pointer_cast<IfcConnectionPointGeometry>(m_connectionGeometry);
 		if(pointGeom != nullptr) {
+			errmsg = "IfcConnectionPointGeometry not implemented";
+			return false;
 			///< \todo Implement
 		}
 		std::shared_ptr<IfcConnectionSurfaceGeometry> surfaceGeom = std::dynamic_pointer_cast<IfcConnectionSurfaceGeometry>(m_connectionGeometry);
@@ -90,10 +156,14 @@ bool SpaceBoundary::fetchGeometryFromIFC(shared_ptr<UnitConverter>& unit_convert
 			if(surface != nullptr) {
 				std::shared_ptr<IfcFaceBasedSurfaceModel> fbSurface = std::dynamic_pointer_cast<IfcFaceBasedSurfaceModel>(surface);
 				if(fbSurface != nullptr) {
+					errmsg = "IfcFaceBasedSurfaceModel not implemented";
+					return false;
 					///< \todo Implement
 				}
 				std::shared_ptr<IfcFaceSurface> fSurface = std::dynamic_pointer_cast<IfcFaceSurface>(surface);
 				if(fSurface != nullptr) {
+					errmsg = "IfcFaceSurface not implemented";
+					return false;
 					///< \todo Implement
 				}
 				std::shared_ptr<IfcSurface> nSurface = std::dynamic_pointer_cast<IfcSurface>(surface);
@@ -109,6 +179,8 @@ bool SpaceBoundary::fetchGeometryFromIFC(shared_ptr<UnitConverter>& unit_convert
 		}
 		std::shared_ptr<IfcConnectionVolumeGeometry> volumeGeom = std::dynamic_pointer_cast<IfcConnectionVolumeGeometry>(m_connectionGeometry);
 		if(volumeGeom != nullptr) {
+			errmsg = "IfcConnectionVolumeGeometry not implemented";
+			return false;
 			///< \todo Implement
 		}
 

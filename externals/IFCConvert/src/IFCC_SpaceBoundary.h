@@ -27,6 +27,21 @@ public:
 		CT_Unknown				///< Type is not set or unknown
 	};
 
+	/*! Defines the internal space boundary type.*/
+	enum SpaceBoundaryType {
+		SBT_A,			///< Type 2a - space boundary is connected to construction which have a space boundary at other side
+		SBT_B,			///< Type 2b - space boundary is connected to construction without other side (e.g. inner wall junction)
+		SBT_Inner,		///< Inner space boundary which is connected to a opening element like a door. Should have a parent space boundary type 2a
+		SBT_Unknown,	///< Type is not set or unknown
+	};
+
+	enum SpaceBoundaryLevelType {
+		SBLT_NoLevel,	///< Space boundary has no level
+		SBLT_1stLevel,	///< First level - only plain inner surfaces
+		SBLT_2ndLevel,	///< Second level - divided into type 2a and 2b for plain walls and junctions
+		SBLT_3rdLevel	///< Currently not used in IFC
+	};
+
 
 	/*! Standard constructor.
 		\param id Unique id for using in project.
@@ -45,6 +60,10 @@ public:
 	*/
 	bool setFromBuildingElement(const std::string& name, const BuildingElement& elem);
 
+	void setForMissingElement(const std::string& name);
+
+	void setForVirtualElement(const std::string& name);
+
 	/*! Set connection base type from building element type.*/
 	void setRelatingElementType(ObjectTypes type);
 
@@ -52,7 +71,7 @@ public:
 		\param unit_converter Unit converter from geometry converter
 		\param spaceTransformation Coordinate transformation matrix
 	*/
-	bool fetchGeometryFromIFC(shared_ptr<UnitConverter>& unit_converter, const carve::math::Matrix& spaceTransformation);
+	bool fetchGeometryFromIFC(shared_ptr<UnitConverter>& unit_converter, const carve::math::Matrix& spaceTransformation, std::string& errmsg);
 
 	/*! Get geomtry from given surface.
 		\param surface Surface for space boundary
@@ -84,6 +103,14 @@ public:
 		return m_type == CT_OpeningElement;
 	}
 
+	bool isVirtual() const {
+		return m_physicalOrVirtual == IfcPhysicalOrVirtualEnum::ENUM_VIRTUAL;
+	}
+
+	bool isMissing() const {
+		return m_physicalOrVirtual == IfcPhysicalOrVirtualEnum::ENUM_PHYSICAL && m_elementEntityId == -1;
+	}
+
 	/*! Unique ID of the related building element.*/
 	int															m_elementEntityId;
 
@@ -92,6 +119,7 @@ private:
 	void createSurfaceVect(const polyVector_t& polylines);
 
 	std::string													m_guidRelatedElement;	///< GUID of the related building element
+	std::string													m_guidCorrespondingBoundary;	///< GUID of the corresponding space boundary
 	std::string													m_nameRelatedElement;	///< Name of the related building element
 	ObjectTypes													m_typeRelatedElement;	///< Object type of the related element
 	/*! Defines if the space boundary is a physical or a virtual boundary.
@@ -115,6 +143,8 @@ private:
 	ConstructionType											m_type;					///< Type of connected construction
 	std::vector<Surface>										m_surfaces;				///< Surfaces of the space boundary
 	std::shared_ptr<IfcConnectionGeometry>						m_connectionGeometry;	///< Geometry from IFC space boundary object
+	SpaceBoundaryType											m_spaceBoundaryType;
+	SpaceBoundaryLevelType										m_levelType;
 };
 
 } // namespace IFCC
