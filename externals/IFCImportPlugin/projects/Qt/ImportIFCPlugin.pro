@@ -44,7 +44,7 @@ else {
 	OBJECTS_DIR = release
 	DESTDIR = ../../../lib$${DIR_PREFIX}
 	windows {
-		DLLDESTDIR = ../../../../../bin/release$${DIR_PREFIX}
+		DLLDESTDIR = ../../../../bin/release$${DIR_PREFIX}
 	}
 }
 
