@@ -39,13 +39,18 @@ public:
 	*/
 	void addToVicusProject(VICUS::Project* project, std::map<int,int>& idMap);
 
-
 	std::map<int, Material>				m_materials;			///< Material database as map of id and material object
 	std::map<int, Construction>			m_constructions;		///< Construction database as map of id and construction object
 	std::map<int, Window>				m_windows;				///< Window database as map of id and window object
 	std::map<int, WindowGlazing>		m_windowGlazings;		///< Glazing system database as map of id and glazing object
 	std::map<int, Component>			m_components;			///< Component database as map of id and component object
 	std::map<int, SubSurfaceComponent>	m_subSurfaceComponents;	///< Subsurface component database as map of id and subsurface component object
+
+	static int m_virtualConstructionId;
+	static int m_missingConstructionId;
+	static int m_virtualComponentId;
+	static int m_missingComponentId;
+	static int m_missingWindowId;
 
 private:
 	/*! Create material and construction database from given building element vector.*/

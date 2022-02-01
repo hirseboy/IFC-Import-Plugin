@@ -6,9 +6,44 @@
 
 namespace IFCC {
 
-Database::Database()
-{
+int Database::m_virtualConstructionId = -1;
+int Database::m_missingConstructionId = -1;
+int Database::m_virtualComponentId = -1;
+int Database::m_missingComponentId = -1;
+int Database::m_missingWindowId = -1;
 
+Database::Database() {
+	Construction virtualConstuction;
+	virtualConstuction.m_id = GUID_maker::instance().guid();
+	virtualConstuction.m_name = "virtual";
+	virtualConstuction.m_basictype = BT_Virtual;
+	m_constructions[virtualConstuction.m_id] = virtualConstuction;
+	m_virtualConstructionId = virtualConstuction.m_id;
+
+	Construction missingConstuction;
+	missingConstuction.m_id = GUID_maker::instance().guid();
+	missingConstuction.m_name = "missing";
+	missingConstuction.m_basictype = BT_Missing;
+	m_constructions[missingConstuction.m_id] = missingConstuction;
+	m_missingConstructionId = missingConstuction.m_id;
+
+	Component virtualComponent;
+	virtualComponent.m_id = GUID_maker::instance().guid();
+	virtualComponent.m_name = "virtual";
+	virtualComponent.m_basictype = BT_Virtual;
+	virtualComponent.m_constructionId = m_virtualConstructionId;
+	virtualComponent.m_type = Component::CT_Miscellaneous;
+	m_components[virtualComponent.m_id] = virtualComponent;
+	m_virtualComponentId = virtualComponent.m_id;
+
+	Component missingComponent;
+	missingComponent.m_id = GUID_maker::instance().guid();
+	missingComponent.m_name = "missing";
+	missingComponent.m_basictype = BT_Missing;
+	missingComponent.m_constructionId = m_missingConstructionId;
+	missingComponent.m_type = Component::CT_Miscellaneous;
+	m_components[missingComponent.m_id] = missingComponent;
+	m_missingComponentId = missingComponent.m_id;
 }
 
 TiXmlElement * Database::writeXML(TiXmlElement * parent) const {
@@ -84,6 +119,9 @@ void Database::collectData(std::vector<BuildingElement>& elements) {
 template<typename T>
 int getHighestId(const std::vector<T>& vect) {
 	int res = 1;
+	if(vect.empty())
+		return res;
+
 	for(const auto& v : vect) {
 		res = std::max<int>(res,v.m_id);
 	}
@@ -95,6 +133,9 @@ int getHighestId(const std::vector<T>& vect) {
 */
 template<typename T>
 typename std::vector<T>::const_iterator findItem(const std::vector<T>& vect, const T& elem) {
+	if(vect.empty())
+		return vect.end();
+
 	return std::find_if(vect.begin(), vect.end(),
 							[elem](const auto& eit) {return eit.equal(&elem) == VICUS::AbstractDBElement::Equal; });
 }
@@ -114,6 +155,9 @@ typename std::vector<T>::const_iterator findItem(const std::vector<T>& vect, con
 */
 template<typename T, typename U>
 void addItems(std::vector<T>& dbVect, const std::map<int,U>& sourceVect, std::map<int,int>& idMap) {
+	if(sourceVect.empty())
+		return;
+
 	int maxMatId = getHighestId(dbVect);
 	for(const auto& sourceIt : sourceVect) {
 		T newItem = sourceIt.second.getVicusObject(idMap, maxMatId);
@@ -151,6 +195,7 @@ void Database::collectComponents(std::vector<BuildingElement>& elements) {
 			comp.m_name = elem.m_name;
 			comp.m_id = GUID_maker::instance().guid();
 			comp.m_guid = elem.m_guid;
+			comp.m_basictype = BT_Real;
 			m_components[comp.m_id] = comp;
 		}
 		else if(elem.isSubSurfaceComponent()) {
@@ -171,8 +216,10 @@ void Database::collectComponents(std::vector<BuildingElement>& elements) {
 
 void Database::collectMaterialsAndConstructions(std::vector<BuildingElement>& elements) {
 	for(auto& elem : elements) {
-		if(elem.m_materialLayers.empty())
+		if(elem.m_materialLayers.empty()) {
+			elem.m_constructionId = Database::m_missingConstructionId;
 			continue;
+		}
 
 		Construction currentConst;
 		for(size_t i=0; i<elem.m_materialLayers.size(); ++i) {
@@ -201,6 +248,7 @@ void Database::collectMaterialsAndConstructions(std::vector<BuildingElement>& el
 		if(fit == m_constructions.end()) {
 			currentConst.m_id = GUID_maker::instance().guid();
 			currentConst.m_name = "construction - " + std::to_string(currentConst.m_id);
+			currentConst.m_basictype = BT_Real;
 			m_constructions[currentConst.m_id] = currentConst;
 			elem.m_constructionId = currentConst.m_id;
 		}
