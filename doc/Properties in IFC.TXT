@@ -1,0 +1,207 @@
+Für Fenster
+
+  Pset_WindowCommon
+    IsExternal              P_SingleValue IfcBoolean
+    Infiltration            P_SingleValue IfcVolumetricFlowRateMeasure
+    ThermalTransmittance    P_SingleValue IfcThermalTransmittanceMeasure
+    GlazingAreaFraction     P_SingleValue IfcPositiveRatioMeasure
+    ...
+    
+Für Wände
+
+  Pset_WallCommon
+    ThermalTransmittance
+    IsExternal
+  
+  
+  
+Für Dächer
+
+  Pset_RoofCommon
+    IsExternal
+    ProjectedArea
+    TotalArea
+  
+  
+Für Decken und Bodenplatten
+
+  Pset_SlabCommon
+    IsExternal
+    PitchAngle
+  
+  
+Für Türen
+
+  Pset_DoorCommon
+    IsExternal
+    Infiltration
+    ThermalTransmittance
+    GlazingAreaFraction
+  
+  
+Für Verglasungen
+
+  Pset_DoorWindowGlazingCommon
+    GlassLayers
+    GlassThickness1
+    GlassThickness2
+    GlassThickness3
+    FillGas
+    Translucency
+    Reflectivity
+    SolarHeatGainTransmittance
+  
+  
+Für Verschattungen
+
+  Pset_DoorWindowShadingCommon
+    ExternalShadingCoefficient
+    InternalShadingCoefficient
+    InsetShadingCoefficient
+    
+
+
+Materialien
+
+  Pset_MaterialCombustion
+     SpecificHeatCapacity
+     N20Content
+     COContent
+     CO2Content
+  
+  Pset_MaterialCommon
+    MolecularWeight
+    Porosity
+    MassDensity
+  
+  Pset_MaterialConcrete
+    CompressiveStrength
+    MaxAggregateSize
+    AdmixturesDescription
+    Workability
+    WaterImpermeability
+    ProtectivePoreRatio
+  
+  Pset_MaterialEnergy
+    ViscosityTemperatureDerivative
+    MoistureCapacityThermalGradient
+    ThermalConductivityTemperatureDerivative
+    SpecificHeatTemperatureDerivative
+    VisibleRefractionIndex
+    SolarRefractionIndex
+    GasPressure
+  
+  Pset_MaterialFuel
+    CombustionTemperature
+    CarbonContent
+    LowerHeatingValue
+    HigherHeatingValue
+  
+  Pset_MaterialHygroscopic
+    UpperVaporResistanceFactor
+    LowerVaporResistanceFactor
+    IsothermalMoistureCapacity
+    VaporPermeability
+    MoistureDiffusivity
+  
+  Pset_MaterialMechanical
+    DynamicViscosity
+    YoungModulus
+    ShearModulus
+    PoissonRatio
+    ThermalExpansionCoefficient
+  
+  Pset_MaterialOptical
+    VisibleTransmittance
+    SolarTransmittance
+    ThermalIrTransmittance
+    ThermalIrEmissivityBack
+    ThermalIrEmissivityFront
+    VisibleReflectanceBack
+    VisibleReflectanceFront
+    SolarReflectanceBack
+    SolarReflectanceFront
+  
+  Pset_MaterialSteel
+    YieldStress
+    UltimateStress
+    UltimateStrain
+    HardeningModule
+    ProportionalStress
+    PlasticStrain
+    Relaxations
+  
+  Pset_MaterialThermal
+    SpecificHeatCapacity
+    BoilingPoint
+    FreezingPoint
+    ThermalConductivity
+  
+  Pset_MaterialWater
+    IsPotable
+    Hardness
+    AlkalinityConcentration
+    AcidityConcentration
+    ImpuritiesContent
+    DissolvedSolidsContent
+    PHLevel
+  
+  Pset_MaterialWood
+    Species
+    StrengthGrade
+    AppearanceGrade
+    Layup
+    Layers
+    Plies
+    MoistureContent
+    DimensionalChangeCoefficient
+    ThicknessSwelling
+  
+  Pset_MaterialWoodBasedbeam
+    ApplicableStructuralDesignMethod
+    InPlane       COMPLEX / CP_MaterialMechanicalBeam
+      YoungModulus
+      YoungModulusMin
+      ...
+    InPlaneNegative
+      YoungModulus
+      YoungModulusMin
+      ...
+    OutOfPlane
+      YoungModulus
+      YoungModulusMin
+      ...
+  
+  Pset_MaterialWoodBasedPanel
+    InPlane
+    OutOfPlane
+    OutOfPlaneNegative
+    
+    
+Für Spaces
+
+  Pset_SpaceCommon
+  
+  
+  Pset_SpaceCoveringRequirements
+  
+  
+  Pset_SpaceFireSafetyRequirements
+  
+  
+  Pset_SpaceLightingRequirements
+  
+  
+  Pset_SpaceOccupancyRequirements
+  
+  
+  Pset_SpaceThermalRequirements
+  
+  
+  Pset_AirSideSystemInformation
+  
+  
+  Pset_SpaceThermalDesign
+  
+  
+  Pset_SpaceThermalLoad
