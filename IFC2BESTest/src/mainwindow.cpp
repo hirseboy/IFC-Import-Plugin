@@ -127,7 +127,7 @@ QDir directoryOf(const QString& subdir) {
 }
 
 void MainWindow::loadPlugins() {
-	QDir pluginsDir = directoryOf("plugins");
+	QDir pluginsDir = directoryOf("");
 #if defined(Q_OS_WIN32)
 	SetDllDirectoryW(pluginsDir.absolutePath().toStdWString().c_str());
 #endif
