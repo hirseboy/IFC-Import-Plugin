@@ -11,7 +11,7 @@ CONFIG += c++11
 
 # this pri must be sourced from all our libraries,
 # it contains all functions defined for casual libraries
-include( ../../../IBK/projects/Qt/IBK.pri )
+include( ../../../../submodules/SIM-VICUS/externals/IBK/projects/Qt/IBK.pri )
 
 CONFIG -= static
 CONFIG += shared
