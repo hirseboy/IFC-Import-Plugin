@@ -39,9 +39,12 @@ VICUS::ComponentInstance ComponentInstance::getVicusComponentInstance(std::map<i
 	res.m_id = m_id;
 	idMap[m_id] = m_id;
 
-	res.m_idComponent = idMap[m_componentId];
-	res.m_idSideASurface = idMap[m_sideASurfaceId];
-	res.m_idSideBSurface = idMap[m_sideBSurfaceId];
+	if(m_componentId > -1)
+		res.m_idComponent = idMap[m_componentId];
+	if(m_sideASurfaceId > -1)
+		res.m_idSideASurface = idMap[m_sideASurfaceId];
+	if(m_sideBSurfaceId > -1)
+		res.m_idSideBSurface = idMap[m_sideBSurfaceId];
 	return res;
 }
 
@@ -50,9 +53,12 @@ VICUS::SubSurfaceComponentInstance ComponentInstance::getVicusSubSurfaceComponen
 	res.m_id = m_id;
 	idMap[m_id] = m_id;
 
-	res.m_idSubSurfaceComponent = idMap[m_componentId];
-	res.m_idSideASurface = idMap[m_sideASurfaceId];
-	res.m_idSideBSurface = idMap[m_sideBSurfaceId];
+	if(m_componentId > -1)
+		res.m_idSubSurfaceComponent = idMap[m_componentId];
+	if(m_sideASurfaceId > -1)
+		res.m_idSideASurface = idMap[m_sideASurfaceId];
+	if(m_sideBSurfaceId > -1)
+		res.m_idSideBSurface = idMap[m_sideBSurfaceId];
 	return res;
 }
 
