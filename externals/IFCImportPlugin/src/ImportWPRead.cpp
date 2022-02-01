@@ -43,7 +43,7 @@ void ImportWPRead::on_toolButtonOpenIFCFile_clicked() {
 
 
 void ImportWPRead::on_pushButtonRead_clicked() {
-	m_readSuccessfully = false;
+	m_readSuccessfully = true;
 	if(ui->lineEditIFCFile->text().isEmpty())
 		return;
 
@@ -51,12 +51,12 @@ void ImportWPRead::on_pushButtonRead_clicked() {
 	ui->textEdit->setText(tr("Reading ..."));
 	ui->textEdit->update();
 	IBK::Path ifcfilename(ui->lineEditIFCFile->text().toStdString());
-	bool res = m_reader->read(ifcfilename);
+	bool ignoreError = ui->checkBoxIgnoreReadError->isChecked();
+	bool res = m_reader->read(ifcfilename, ignoreError);
 	if(res) {
 		int number = m_reader->totalNumberOfIFCEntities();
 		ui->textEdit->clear();
 		ui->textEdit->setText(tr("File read successfully with %1 IFC entities.").arg(number));
-		m_readSuccessfully = true;
 	}
 	else {
 		QStringList text;
@@ -66,6 +66,8 @@ void ImportWPRead::on_pushButtonRead_clicked() {
 		text << tr("Warnings:");
 		text << QString::fromStdString(m_reader->m_warningText);
 		ui->textEdit->setText(text.join("\n"));
+		if(!ignoreError)
+			m_readSuccessfully = false;
 	}
 	emit completeChanged();
 }

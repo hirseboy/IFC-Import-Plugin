@@ -14,9 +14,6 @@
    <string>WizardPage</string>
   </property>
   <layout class="QGridLayout" name="gridLayout" columnstretch="0,0,0">
-   <item row="1" column="0" colspan="3">
-    <widget class="QTextEdit" name="textEdit"/>
-   </item>
    <item row="0" column="0">
     <widget class="QPushButton" name="pushButtonConvert">
      <property name="text">
@@ -36,6 +33,16 @@
       </size>
      </property>
     </spacer>
+   </item>
+   <item row="2" column="0" colspan="3">
+    <widget class="QTextEdit" name="textEdit"/>
+   </item>
+   <item row="1" column="0">
+    <widget class="QCheckBox" name="checkBoxUseSpaceBoundaries">
+     <property name="text">
+      <string>Use space boundaries</string>
+     </property>
+    </widget>
    </item>
   </layout>
  </widget>

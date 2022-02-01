@@ -18,7 +18,7 @@ ImportWPConvert::ImportWPConvert(QWidget *parent, IFCC::IFCReader* reader) :
 //	setSubTitle(tr("You can load an IFC file."));
 
 	ui->pushButtonConvert->setEnabled(true);
-
+	ui->checkBoxUseSpaceBoundaries->setChecked(true);
 }
 
 ImportWPConvert::~ImportWPConvert() {
@@ -34,7 +34,7 @@ void ImportWPConvert::on_pushButtonConvert_clicked() {
 	m_convertSuccessfully = false;
 
 	ui->textEdit->setText(tr("Converting ..."));
-	bool res = m_reader->convert();
+	bool res = m_reader->convert(ui->checkBoxUseSpaceBoundaries->isChecked());
 	ui->textEdit->clear();
 	QStringList text;
 	if(res) {
