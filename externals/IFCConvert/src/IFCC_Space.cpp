@@ -7,8 +7,6 @@
 
 #include <IBK_math.h>
 
-#include <VICUS_Project.h>
-
 #include "IFCC_Helper.h"
 
 namespace IFCC {
@@ -642,9 +640,9 @@ TiXmlElement * Space::writeXML(TiXmlElement * parent) const {
 	return e;
 }
 
-VICUS::Room Space::getVicusObject(std::map<int,int>& idMap, VICUS::Project* project) const {
+VICUS::Room Space::getVicusObject(std::map<int,int>& idMap, int& nextid) const {
 	VICUS::Room res;
-	int newId = project->nextUnusedID();
+	int newId = nextid++;
 	if (!m_longName.empty())
 		res.m_displayName = QString::fromUtf8(m_longName.c_str());
 	else
@@ -653,7 +651,7 @@ VICUS::Room Space::getVicusObject(std::map<int,int>& idMap, VICUS::Project* proj
 	idMap[m_id] = newId;
 
 	for(const auto& surface : m_surfaces) {
-		res.m_surfaces.emplace_back(surface.getVicusObject(idMap, project));
+		res.m_surfaces.emplace_back(surface.getVicusObject(idMap, nextid));
 	}
 
 	return res;

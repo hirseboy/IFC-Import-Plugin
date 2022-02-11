@@ -7,8 +7,6 @@
 #include <IBK_math.h>
 #include <IBK_assert.h>
 
-#include <VICUS_Project.h>
-
 #include "IFCC_Clippertools.h"
 #include "IFCC_Helper.h"
 
@@ -307,9 +305,9 @@ bool Surface::isValid() const {
 	return m_polyVect.size() > 2;
 }
 
-VICUS::Surface Surface::getVicusObject(std::map<int,int>& idMap, VICUS::Project* project) const {
+VICUS::Surface Surface::getVicusObject(std::map<int,int>& idMap, int& nextid) const {
 	VICUS::Surface res;
-	int newId = project->nextUnusedID();
+	int newId = nextid++;
 	res.m_displayName = QString::fromUtf8(m_name.c_str());
 	res.setPolygon3D(m_polyVect);
 	res.m_id = newId;
@@ -318,7 +316,7 @@ VICUS::Surface Surface::getVicusObject(std::map<int,int>& idMap, VICUS::Project*
 	std::vector<VICUS::SubSurface> vicusSubs;
 	for(const auto& subsurf : m_subSurfaces) {
 		VICUS::SubSurface vs;
-		int newIdSub = project->nextUnusedID();
+		int newIdSub = nextid++;
 		vs.m_id = newIdSub;
 		idMap[subsurf.id()] = newIdSub;
 		vs.m_displayName = QString::fromUtf8(subsurf.name().c_str());

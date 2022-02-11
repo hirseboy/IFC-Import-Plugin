@@ -4,9 +4,6 @@
 #include <ifcpp/IFC4/include/IfcGloballyUniqueId.h>
 #include <ifcpp/IFC4/include/IfcBuilding.h>
 
-
-#include <VICUS_Project.h>
-
 #include "IFCC_Helper.h"
 
 namespace IFCC {
@@ -94,15 +91,15 @@ TiXmlElement * Building::writeXML(TiXmlElement * parent) const {
 	return e;
 }
 
-VICUS::Building Building::getVicusObject(std::map<int,int>& idMap, VICUS::Project* project) const {
+VICUS::Building Building::getVicusObject(std::map<int,int>& idMap, int& nextid) const {
 	VICUS::Building res;
-	int newId = project->nextUnusedID();
+	int newId = nextid++;
 
 	res.m_displayName = QString::fromUtf8(m_name.c_str());
 	res.m_id = newId;
 	idMap[m_id] = newId;
 	for(const auto& storey : m_storeys) {
-		res.m_buildingLevels.emplace_back(storey.getVicusObject(idMap, project));
+		res.m_buildingLevels.emplace_back(storey.getVicusObject(idMap, nextid));
 	}
 
 	return res;

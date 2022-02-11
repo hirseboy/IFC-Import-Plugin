@@ -12,10 +12,6 @@
 #include "IFCC_EntityBase.h"
 #include "IFCC_Space.h"
 
-namespace VICUS {
-	class Project;
-}
-
 namespace IFCC {
 
 /*! Represents a building storey in a project.
@@ -72,7 +68,7 @@ public:
 	/*! Create a VICUS building level object and return this.
 		The returned object contains all transferable data.
 	*/
-	VICUS::BuildingLevel getVicusObject(std::map<int,int>& idMap, VICUS::Project* project) const;
+	VICUS::BuildingLevel getVicusObject(std::map<int,int>& idMap, int& nextid) const;
 
 	/*! Vector of spaces in the storey.*/
 	const std::vector<Space>& spaces() const {

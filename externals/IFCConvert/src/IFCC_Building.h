@@ -12,10 +12,6 @@
 #include "IFCC_EntityBase.h"
 #include "IFCC_BuildingStorey.h"
 
-namespace VICUS {
-	class Project;
-}
-
 namespace IFCC {
 
 /*! Represents a building in a project.
@@ -73,7 +69,7 @@ public:
 		The returned object contains all transferable data.
 		\param idMap Used for mapping current ids to VICUS ids.
 	*/
-	VICUS::Building getVicusObject(std::map<int,int>& idMap, VICUS::Project* project) const;
+	VICUS::Building getVicusObject(std::map<int,int>& idMap, int& nextid) const;
 
 	/*! Return vector of building storeys.*/
 	const std::vector<BuildingStorey>& storeys() const {

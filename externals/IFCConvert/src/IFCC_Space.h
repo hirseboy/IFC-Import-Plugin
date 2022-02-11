@@ -17,10 +17,6 @@
 #include "IFCC_SpaceBoundary.h"
 #include "IFCC_Opening.h"
 
-namespace VICUS {
-	class Project;
-}
-
 namespace IFCC {
 
 /*! Class represents a space (room) in a building.
@@ -162,7 +158,7 @@ public:
 	/*! Create a VICUS room object and return this.
 		The returned object contains all transferable data.
 	*/
-	VICUS::Room getVicusObject(std::map<int,int>& idMap, VICUS::Project* project) const;
+	VICUS::Room getVicusObject(std::map<int,int>& idMap, int& nextid) const;
 
 	std::string									m_longName;			///< More detailed name of the space
 	/*! IFC space type. It can be:

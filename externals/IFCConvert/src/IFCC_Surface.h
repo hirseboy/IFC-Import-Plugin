@@ -14,10 +14,6 @@
 #include "IFCC_GeometricHelperClasses.h"
 #include "IFCC_SubSurface.h"
 
-namespace VICUS {
-	class Project;
-}
-
 namespace IFCC {
 
 /*! Classe represents a surface which can be represented as splanar polygon.*/
@@ -144,7 +140,7 @@ public:
 	/*! Create a VICUS surface object and return this.
 		The returned object contains all transferable data.
 	*/
-	VICUS::Surface getVicusObject(std::map<int,int>& idMap, VICUS::Project* project) const;
+	VICUS::Surface getVicusObject(std::map<int,int>& idMap, int& nextid) const;
 
 	/*! Return name of the object.*/
 	std::string name() const {

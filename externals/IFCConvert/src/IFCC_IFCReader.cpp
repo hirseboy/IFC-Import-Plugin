@@ -333,8 +333,9 @@ bool IFCReader::setVicusProject(VICUS::Project* project) {
 	std::map<int,int> idConversionMap;
 
 	// add building structure
+	int nextId = project->nextUnusedID();
 	for(auto& building : m_site.m_buildings) {
-		project->m_buildings.emplace_back(building.getVicusObject(idConversionMap, project));
+		project->m_buildings.emplace_back(building.getVicusObject(idConversionMap, nextId));
 	}
 
 	// add databases
