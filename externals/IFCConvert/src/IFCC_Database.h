@@ -30,7 +30,7 @@ public:
 	/*! Create all databases from given building element vector.
 		Calls collectMaterialsAndConstructions, collectWindowsAndGlazings and collectComponents.
 	*/
-	void collectData(std::vector<BuildingElement>& elements);
+	void collectData(BuildingElementsCollector& elements);
 
 	/*! Add all database items to the embedded database of the given vicus project.
 		\param project Vicus project
@@ -54,13 +54,13 @@ public:
 
 private:
 	/*! Create material and construction database from given building element vector.*/
-	void collectMaterialsAndConstructions(std::vector<BuildingElement>& elements);
+	void collectMaterialsAndConstructions(std::vector<std::shared_ptr<BuildingElement>>& elements);
 
 	/*! Create window and glazing database from given building element vector.*/
-	void collectWindowsAndGlazings(std::vector<BuildingElement>& elements);
+	void collectWindowsAndGlazings(std::vector<std::shared_ptr<BuildingElement>>& elements);
 
 	/*! Create components and subsurface components database from given building element vector.*/
-	void collectComponents(std::vector<BuildingElement>& elements);
+	void collectComponents(std::vector<std::shared_ptr<BuildingElement>>& elements);
 
 };
 

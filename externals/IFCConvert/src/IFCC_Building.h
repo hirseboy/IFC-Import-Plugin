@@ -44,21 +44,7 @@ public:
 	void updateStoreys(const objectShapeTypeVector_t& elementShapes,
 					   const objectShapeGUIDMap_t& spaceShapes,
 					  shared_ptr<UnitConverter>& unit_converter,
-					  const std::vector<BuildingElement>& constructionElemnts,
-					  const std::vector<BuildingElement>& openingElements,
-					  const std::vector<Opening>& openings,
-					   bool useSpaceBoundaries);
-
-	/*! Update storeys and related spaces and space boundaries.
-		\param elementShapes Product shape vector for all IfcElement based objects in project.
-		\param spaceShapes Product shape vector for all IfcSpace based objects in project.
-		\param unit_converter Unit converter is necessary for create geometries.
-		\param constructionElements Vector for all construction elements (wall, slab, roof)
-		\param openingElements Vector for all opening elements (window, door)
-		\param openings Vector for all openings (based on IfcOpeningElement)
-	*/
-	void updateSpaceConnections(std::vector<BuildingElement>& constructionElemnts,
-					  const std::vector<BuildingElement>& openingElements,
+					  const BuildingElementsCollector& buildingElements,
 					  const std::vector<Opening>& openings,
 					   bool useSpaceBoundaries);
 

@@ -13,6 +13,8 @@
 
 namespace IFCC {
 
+class Space;
+
 /*! Class represents a space boundary.
 	A space boundary is a planar surface which is part of a space and has connections to building elements.
 */
@@ -55,14 +57,27 @@ public:
 	bool setFromIFC(std::shared_ptr<IfcRelSpaceBoundary> ifcSpaceBoundary);
 
 	/*! Initialise space boundary from a building element object.
-		It set a name, related element and type. Geometry is not set.
-		\param ifcSpaceBoundary Original IFC space boundary element
+		It set a name, related element, related space and type. Geometry is not set.
+		\param name Name for space boundary
+		\param elem Building element which is related to.
+		\param space Space which is related to.
 	*/
-	bool setFromBuildingElement(const std::string& name, const BuildingElement& elem);
+	bool setFromBuildingElement(const std::string& name, const std::shared_ptr<BuildingElement>& elem,
+								const IFCC::Space& space);
 
-	void setForMissingElement(const std::string& name);
+	/*! Initialise space boundary which doesn't have a connection to a buiding element.
+		It set a name, related space and type. Geometry is not set.
+		\param name Name for space boundary.
+		\param space Space which is related to.
+	*/
+	void setForMissingElement(const std::string& name, const Space& space);
 
-	void setForVirtualElement(const std::string& name);
+	/*! Initialise space boundary which doesn't have a connection to a buiding element.
+		It set a name, related space and type. Geometry is not set.
+		\param name Name for space boundary.
+		\param space Space which is related to.
+	*/
+	void setForVirtualElement(const std::string& name, const Space& space);
 
 	/*! Set connection base type from building element type.*/
 	void setRelatingElementType(ObjectTypes type);
@@ -93,6 +108,20 @@ public:
 		return m_nameRelatedElement;
 	}
 
+	/*! Return GUID of the related space.*/
+	std::string guidRelatedSpace() const {
+		return m_guidRelatedSpace;
+	}
+
+	/*! Return the name of the related space.*/
+	std::string nameRelatedSpace() const {
+		return m_nameRelatedSpace;
+	}
+
+	ObjectTypes typeRelatedElement() const {
+		return m_typeRelatedElement;
+	}
+
 	/*! Return true if the space boundary is connected to a construction element.*/
 	bool isConstructionElement() const {
 		return m_type == CT_ConstructionElement;
@@ -119,8 +148,10 @@ private:
 	void createSurfaceVect(const polyVector_t& polylines);
 
 	std::string													m_guidRelatedElement;	///< GUID of the related building element
+	std::string													m_guidRelatedSpace;	///< GUID of the related space
 	std::string													m_guidCorrespondingBoundary;	///< GUID of the corresponding space boundary
 	std::string													m_nameRelatedElement;	///< Name of the related building element
+	std::string													m_nameRelatedSpace;	///< Name of the related space
 	ObjectTypes													m_typeRelatedElement;	///< Object type of the related element
 	/*! Defines if the space boundary is a physical or a virtual boundary.
 		Possible types:

@@ -41,6 +41,9 @@ public:
 	/*! Return the internal surface vector.*/
 	const std::vector<Surface>& surfaces() const;
 
+	/*! Return a vector of all space boundaroies in project.*/
+	std::vector<SpaceBoundary> allSpaceBoundaries() const;
+
 	/*! Write the site in vicus xml format including buildings.*/
 	TiXmlElement * writeXML(TiXmlElement * parent) const;
 

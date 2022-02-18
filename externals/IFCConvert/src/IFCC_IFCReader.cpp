@@ -256,28 +256,30 @@ bool IFCReader::convert(bool useSpaceBoundaries) {
 			}
 		}
 
-		m_constructionElements.clear();
-		m_openingElemnts.clear();
-		m_otherElemnts.clear();
+		m_buildingElements.clear();
 		for(auto& elems : m_elementEntitesShape) {
 			for(auto& elem : elems.second) {
 				std::shared_ptr<IfcElement> e = dynamic_pointer_cast<IfcElement>(elem->m_ifc_object_definition.lock());
 				if(e == nullptr)
 					continue;
 
-				BuildingElement bElem(GUID_maker::instance().guid());
-				if(bElem.set(e, elems.first)) {
+				std::shared_ptr<BuildingElement> bElem(new BuildingElement(GUID_maker::instance().guid()));
+				if(bElem->set(e, elems.first)) {
 					if(isConstructionType(elems.first)) {
-						m_constructionElements.push_back(bElem);
-						m_constructionElements.back().update(elem, m_openings);
+						m_buildingElements.m_constructionElements.push_back( bElem);
+						m_buildingElements.m_constructionElements.back()->update(elem, m_openings);
+					}
+					else if(isConstructionSimilarType(elems.first)) {
+						m_buildingElements.m_constructionSimilarElements.push_back(bElem);
+						m_buildingElements.m_constructionSimilarElements.back()->update(elem, m_openings);
 					}
 					else if(isOpeningType(elems.first)) {
-						m_openingElemnts.push_back(bElem);
-						m_openingElemnts.back().update(elem, m_openings);
+						m_buildingElements.m_openingElemnts.push_back(bElem);
+						m_buildingElements.m_openingElemnts.back()->update(elem, m_openings);
 					}
 					else {
-						m_otherElemnts.push_back(bElem);
-						m_otherElemnts.back().update(elem, m_openings);
+						m_buildingElements.m_otherElemnts.push_back(bElem);
+						m_buildingElements.m_otherElemnts.back()->update(elem, m_openings);
 					}
 				}
 				else
@@ -285,14 +287,12 @@ bool IFCReader::convert(bool useSpaceBoundaries) {
 			}
 		}
 
-		for(BuildingElement& openingElement : m_openingElemnts) {
-			openingElement.fillOpeningProperties(m_constructionElements, m_openings);
+		for(std::shared_ptr<BuildingElement>& openingElement : m_buildingElements.m_openingElemnts) {
+			openingElement->fillOpeningProperties(m_buildingElements.m_constructionElements, m_openings);
 		}
 
 
-		m_database.collectData(m_constructionElements);
-		m_database.collectData(m_openingElemnts);
-		m_database.collectData(m_otherElemnts);
+		m_database.collectData(m_buildingElements);
 
 		if(m_siteShape != nullptr) {
 			std::shared_ptr<IfcSpatialStructureElement> se = std::dynamic_pointer_cast<IfcSpatialStructureElement>(m_siteShape->m_ifc_object_definition.lock());
@@ -300,14 +300,16 @@ bool IFCReader::convert(bool useSpaceBoundaries) {
 			for(auto& building : m_site.m_buildings) {
 				building.fetchStoreys(m_storeysShape);
 				building.updateStoreys(m_elementEntitesShape, m_spaceEntitesShape, m_geometryConverter.getBuildingModel()->getUnitConverter(),
-									   m_constructionElements, m_openingElemnts, m_openings, m_useSpaceBoundaries);
+									   m_buildingElements, m_openings, m_useSpaceBoundaries);
 			}
 		}
+		else {
+			m_errorText = "No site";
+			m_hasError = true;
+			return false;
+		}
 
-		int failures = 0;
-		failures += m_instances.collectComponentInstances(m_constructionElements, m_database, m_site);
-		failures += m_instances.collectComponentInstances(m_openingElemnts, m_database, m_site);
-//		failures += m_instances.collectComponentInstances(m_otherElemnts, m_database, m_site);
+		int failures = m_instances.collectComponentInstances(m_buildingElements, m_database, m_site);
 		if(failures > 0) {
 			m_errorText = "Not all surface can be matched to a component. failures: " + std::to_string(failures);
 			m_hasError = true;
@@ -380,52 +382,106 @@ void IFCReader::writeXML(const IBK::Path & filename) const {
 	doc.SaveFile( filename.c_str() );
 }
 
+
+struct SpaceBoundaryEvaluation {
+	enum Type {
+		Construction,
+		Opening,
+		Virtual,
+		Missing,
+		Unknown
+	};
+	Type		m_type;
+	QString	m_name;
+	QString	m_nameRelatedElement;
+	QString	m_nameRelatedSpace;
+	ObjectTypes	m_typeRelatedElement;
+
+	static QString typeString(Type type) {
+		switch(type) {
+			case Construction: return "Construction element";
+			case Opening: return "Openening element";
+			case Virtual: return "Virtual";
+			case Missing: return "Missing";
+			case Unknown: return "Unknown connection";
+		}
+	}
+};
+
 QStringList IFCReader::statistic() const {
-	QStringList text;
-	text << tr("Statistic:");
-	text << tr("%1 buildings.").arg(m_site.m_buildings.size());
+	QStringList result;
+	result << tr("Statistic:");
+	result << tr("%1 buildings.").arg(m_site.m_buildings.size());
 	for(const auto& building : m_site.m_buildings) {
-		text << tr("Building %1 with %2 storeys.").arg(QString::fromStdString(building.m_name))
+		result << tr("Building %1 with %2 storeys.").arg(QString::fromStdString(building.m_name))
 				.arg(building.storeys().size());
 		for(const auto& storey : building.storeys()) {
-			text << tr("\tStorey %1 with %2 spaces.").arg(QString::fromStdString(storey.m_name))
+			result << tr("\tStorey %1 with %2 spaces.").arg(QString::fromStdString(storey.m_name))
 					.arg(storey.spaces().size());
 			for(const auto& space : storey.spaces()) {
-				text << tr("\t\tSpace %1 with %2 space boundaries and %3 surfaces.").arg(QString::fromStdString(space.m_name+" - "+space.m_longName))
+				result << tr("\t\tSpace %1 with %2 space boundaries and %3 surfaces.").arg(QString::fromStdString(space.m_name+" - "+space.m_longName))
 						.arg(space.spaceBoundaries().size()).arg(space.surfaces().size());
 				for(const auto& surf : space.surfaces()) {
 					if(surf.isMissing()) {
-						text << tr("\t\t\tSurface %1 with missing connection.").arg(QString::fromStdString(surf.name()));
+						result << tr("\t\t\tSurface %1 with missing connection.").arg(QString::fromStdString(surf.name()));
 					}
 					else if(surf.isVirtual()) {
-						text << tr("\t\t\tSurface %1 is virtual.").arg(QString::fromStdString(surf.name()));
+						result << tr("\t\t\tSurface %1 is virtual.").arg(QString::fromStdString(surf.name()));
 					}
 					else {
-						text << tr("\t\t\tSurface %1 with %2 subsurfaces.").arg(QString::fromStdString(surf.name()))
+						result << tr("\t\t\tSurface %1 with %2 subsurfaces.").arg(QString::fromStdString(surf.name()))
 								.arg(surf.subSurfaces().size());
 					}
 				}
 			}
 		}
 	}
-	text << "\nDatabases\n";
-	text << tr("\t%1 materials").arg(m_database.m_materials.size());
+	result << "\nDatabases\n";
+	result << tr("\t%1 materials").arg(m_database.m_materials.size());
 	for(const auto& mat : m_database.m_materials) {
-		text << tr("\t\t%1 - id %2").arg(QString::fromStdString(mat.second.m_name)).arg(mat.first);
+		result << tr("\t\t%1 - id %2").arg(QString::fromStdString(mat.second.m_name)).arg(mat.first);
 	}
-	text << tr("\t%1 constructions").arg(m_database.m_constructions.size());
+	result << tr("\t%1 constructions").arg(m_database.m_constructions.size());
 	for(const auto& con : m_database.m_constructions) {
-		text << tr("\t\tConstruction id %1 with %2 layers").arg(con.first).arg(con.second.m_layers.size());
+		result << tr("\t\tConstruction id %1 with %2 layers").arg(con.first).arg(con.second.m_layers.size());
 	}
-	text << tr("\t%1 windows").arg(m_database.m_windows.size());
+	result << tr("\t%1 windows").arg(m_database.m_windows.size());
 	for(const auto& win : m_database.m_windows) {
-		text << tr("\t\tWindow %1 id %2").arg(QString::fromStdString(win.second.m_name)).arg(win.first);
+		result << tr("\t\tWindow %1 id %2").arg(QString::fromStdString(win.second.m_name)).arg(win.first);
 	}
-	text << tr("\t%1 windows").arg(m_database.m_windowGlazings.size());
+	result << tr("\t%1 windows").arg(m_database.m_windowGlazings.size());
 	for(const auto& wgl : m_database.m_windowGlazings) {
-		text << tr("\t\tWindow %1 id %2").arg(QString::fromStdString(wgl.second.m_name)).arg(wgl.first);
+		result << tr("\t\tWindow %1 id %2").arg(QString::fromStdString(wgl.second.m_name)).arg(wgl.first);
 	}
-	return text;
+
+	result << QString() << tr("Space boundary list") << QString();
+
+	std::vector<SpaceBoundary> spaceBoundaries = m_site.allSpaceBoundaries();
+	std::vector<SpaceBoundaryEvaluation> sbEvals;
+	for(const SpaceBoundary& sb : spaceBoundaries) {
+		SpaceBoundaryEvaluation sbEval;
+		if(sb.isConstructionElement())
+			sbEval.m_type = SpaceBoundaryEvaluation::Construction;
+		else if(sb.isOpeningElement())
+			sbEval.m_type = SpaceBoundaryEvaluation::Opening;
+		else if(sb.isVirtual())
+			sbEval.m_type = SpaceBoundaryEvaluation::Virtual;
+		else if(sb.isMissing())
+			sbEval.m_type = SpaceBoundaryEvaluation::Missing;
+		else {
+			sbEval.m_type = SpaceBoundaryEvaluation::Unknown;
+		}
+		sbEval.m_name = QString::fromStdString(sb.m_name);
+		sbEval.m_nameRelatedElement = QString::fromStdString(sb.nameRelatedElement());
+		sbEval.m_nameRelatedSpace = QString::fromStdString(sb.nameRelatedSpace());
+		sbEval.m_typeRelatedElement = sb.typeRelatedElement();
+		QString text = sbEval.m_name + "\tis a " + QString::fromStdString(objectTypeToString(sb.typeRelatedElement()));
+		text += "\tconnected with: " + sbEval.m_nameRelatedElement;
+		text += "\tcontained in: " + sbEval.m_nameRelatedSpace;
+		result << text;
+	}
+
+	return result;
 }
 
 void IFCReader::messageTarget( void* ptr, shared_ptr<StatusCallback::Message> m ) {

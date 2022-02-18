@@ -38,7 +38,11 @@ private:
 // check functions
 
 inline bool isConstructionType(ObjectTypes type) {
-	return type == OT_Wall || type == OT_Roof || type == OT_Slab || type == OT_Footing;
+	return type == OT_Wall || type == OT_Roof || type == OT_Slab;
+}
+
+inline bool isConstructionSimilarType(ObjectTypes type) {
+	return type == OT_Beam || type == OT_Covering || type == OT_Column || type == OT_CurtainWall || type == OT_Footing;
 }
 
 inline bool isOpeningType(ObjectTypes type) {
@@ -103,6 +107,8 @@ bool nearEqual(const IBKMK::Vector3D& v1, const IBKMK::Vector3D& v2);
 
 /*! Return the area of the given polygon.*/
 double areaPolygon(const std::vector<IBKMK::Vector3D>& poly);
+
+std::string objectTypeToString(ObjectTypes type);
 
 } // end namespace
 

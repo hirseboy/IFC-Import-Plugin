@@ -6,6 +6,8 @@
 #include <ifcpp/IFC4/include/IfcConnectionSurfaceGeometry.h>
 #include <ifcpp/IFC4/include/IfcConnectionVolumeGeometry.h>
 #include <ifcpp/IFC4/include/IfcSurface.h>
+#include <ifcpp/IFC4/include/IfcSpace.h>
+#include <ifcpp/IFC4/include/IfcExternalSpatialElement.h>
 #include <ifcpp/IFC4/include/IfcFaceBasedSurfaceModel.h>
 #include <ifcpp/IFC4/include/IfcFaceSurface.h>
 #include <ifcpp/IFC4/include/IfcRelSpaceBoundary1stLevel.h>
@@ -16,16 +18,18 @@
 #include "IFCC_Types.h"
 #include "IFCC_RepresentationConverter.h"
 #include "IFCC_Database.h"
+#include "IFCC_Space.h"
+
 
 namespace IFCC {
 
 SpaceBoundary::SpaceBoundary(int id) :
 	EntityBase(id),
+	m_elementEntityId(-1),
 	m_typeRelatedElement(OT_All),
 	m_physicalOrVirtual(IfcPhysicalOrVirtualEnum::ENUM_NOTDEFINED),
 	m_internalOrExternal(IfcInternalOrExternalEnum::ENUM_NOTDEFINED),
 	m_type(CT_Unknown),
-	m_elementEntityId(-1),
 	m_spaceBoundaryType(SBT_Unknown),
 	m_levelType(SBLT_NoLevel)
 {
@@ -39,6 +43,21 @@ bool SpaceBoundary::setFromIFC(std::shared_ptr<IfcRelSpaceBoundary> ifcSpaceBoun
 	if(ifcSpaceBoundary->m_RelatedBuildingElement != nullptr) {
 		m_guidRelatedElement = guidFromObject(ifcSpaceBoundary->m_RelatedBuildingElement.get());
 		m_nameRelatedElement = label2s(ifcSpaceBoundary->m_RelatedBuildingElement->m_Name);
+	}
+
+	if(ifcSpaceBoundary->m_RelatingSpace != nullptr) {
+		shared_ptr<IfcSpace> space = dynamic_pointer_cast<IfcSpace>(ifcSpaceBoundary->m_RelatingSpace);
+		if(space) {
+			m_guidRelatedSpace = guidFromObject(space.get());
+			m_nameRelatedSpace = label2s(space->m_Name);
+		}
+		else {
+			shared_ptr<IfcExternalSpatialElement> externalSpace = dynamic_pointer_cast<IfcExternalSpatialElement>(ifcSpaceBoundary->m_RelatingSpace);
+			if(externalSpace) {
+				m_guidRelatedSpace = guidFromObject(externalSpace.get());
+				m_nameRelatedSpace = label2s(externalSpace->m_Name);
+			}
+		}
 	}
 
 	if(ifcSpaceBoundary->m_PhysicalOrVirtualBoundary != nullptr) {
@@ -85,16 +104,19 @@ bool SpaceBoundary::setFromIFC(std::shared_ptr<IfcRelSpaceBoundary> ifcSpaceBoun
 	return true;
 }
 
-bool SpaceBoundary::setFromBuildingElement(const std::string& name, const BuildingElement& elem) {
+bool SpaceBoundary::setFromBuildingElement(const std::string& name, const std::shared_ptr<BuildingElement>& elem,
+										   const Space& space) {
 	m_name = name;
-	setRelatingElementType(elem.type());
+	setRelatingElementType(elem->type());
 	m_physicalOrVirtual = IfcPhysicalOrVirtualEnum::ENUM_PHYSICAL;
-	m_guidRelatedElement = elem.m_guid;
-	m_nameRelatedElement = elem.m_name;
+	m_guidRelatedElement = elem->m_guid;
+	m_nameRelatedElement = elem->m_name;
+	m_guidRelatedSpace = space.m_guid;
+	m_nameRelatedSpace = space.m_name;
 	return true;
 }
 
-void SpaceBoundary::setForMissingElement(const std::string& name) {
+void SpaceBoundary::setForMissingElement(const std::string& name, const Space& space) {
 	m_name = name;
 	m_typeRelatedElement = OT_None;
 	m_type = CT_Others;
@@ -104,9 +126,11 @@ void SpaceBoundary::setForMissingElement(const std::string& name) {
 	m_physicalOrVirtual = IfcPhysicalOrVirtualEnum::ENUM_PHYSICAL;
 	m_guidRelatedElement.clear();
 	m_nameRelatedElement.clear();
+	m_guidRelatedSpace = space.m_guid;
+	m_nameRelatedSpace = space.m_name;
 }
 
-void SpaceBoundary::setForVirtualElement(const std::string& name) {
+void SpaceBoundary::setForVirtualElement(const std::string& name, const Space& space) {
 	m_name = name;
 	m_typeRelatedElement = OT_None;
 	m_type = CT_Others;
@@ -116,11 +140,15 @@ void SpaceBoundary::setForVirtualElement(const std::string& name) {
 	m_physicalOrVirtual = IfcPhysicalOrVirtualEnum::ENUM_VIRTUAL;
 	m_guidRelatedElement.clear();
 	m_nameRelatedElement.clear();
+	m_guidRelatedSpace = space.m_guid;
+	m_nameRelatedSpace = space.m_name;
 }
 
 void SpaceBoundary::setRelatingElementType(ObjectTypes type) {
 	m_typeRelatedElement = type;
 	if(isConstructionType(type))
+		m_type = CT_ConstructionElement;
+	else if(isConstructionSimilarType(type))
 		m_type = CT_ConstructionElement;
 	else if(isOpeningType(type))
 		m_type = CT_OpeningElement;

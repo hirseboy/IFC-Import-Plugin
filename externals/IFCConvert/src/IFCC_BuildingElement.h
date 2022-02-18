@@ -136,7 +136,7 @@ public:
 		\param elements All construction building elements in the project
 		\param openings All openings in the project
 	*/
-	void fillOpeningProperties(const std::vector<BuildingElement>& elements, const std::vector<Opening>& openings);
+	void fillOpeningProperties(const std::vector<std::shared_ptr<BuildingElement>>& elements, const std::vector<Opening>& openings);
 
 	/*! Return the internal surface vector.*/
 	const std::vector<Surface>& surfaces() const;

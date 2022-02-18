@@ -164,5 +164,42 @@ std::string guidFromObject(IfcRoot* object) {
 	return converterX.to_bytes(object->m_GlobalId->m_value);
 }
 
+std::string objectTypeToString(ObjectTypes type) {
+	switch(type) {
+		case OT_Beam:					return "beam";
+		case OT_Chimney:				return "chimney";
+		case OT_Column:					return "column";
+		case OT_Covering:				return "covering";
+		case OT_CurtainWall:			return "curtain wall";
+		case OT_Door:					return "door";
+		case OT_Footing:				return "footing";
+		case OT_Member:					return "member";
+		case OT_Pile:					return "pile";
+		case OT_Plate:					return "plate";
+		case OT_Railing:				return "railing";
+		case OT_Ramp:					return "ramp";
+		case OT_RampFlight:				return "ramp flight";
+		case OT_Roof:					return "roof";
+		case OT_ShadingDevice:			return "shading device";
+		case OT_Slab:					return "slab";
+		case OT_Stair:					return "stair";
+		case OT_StairFlight:			return "stair flight";
+		case OT_Wall:					return "wall";
+		case OT_Window:					return "window";
+		case OT_CivilElement:			return "civil element";
+		case OT_DistributionElement:	return "distribution element";
+		case OT_ElementAssembly:		return "element assembly";
+		case OT_ElementComponent:		return "element component";
+		case OT_FeatureElement:			return "feature element";
+		case OT_FurnishingElement:		return "furnishing element";
+		case OT_GeographicalElement:	return "geographical element";
+		case OT_TransportElement:		return "transport element";
+		case OT_VirtualElement:			return "virtual element";
+		case OT_All:					return "not defined";
+		case OT_None:					return "not defined";
+	}
+	return "not defined";
+}
+
 
 } // end namespace

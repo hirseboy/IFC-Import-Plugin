@@ -10,7 +10,45 @@
 
 #include <ifcpp/geometry/Carve/GeometryInputData.h>
 
+
 namespace IFCC {
+
+class BuildingElement;
+
+/*! Struct collects all types of building elements.*/
+struct BuildingElementsCollector {
+	/*! Primary building elements which are part of the construction and can contain openings.
+		This can be: Wall, Roof, Slab
+	*/
+	std::vector<std::shared_ptr<BuildingElement>>		m_constructionElements;
+
+	/*! Secondary building elements which are part of the construction and can contain openings.
+		This can be: Beam, Column, Covering, Footing, CurtainWall
+	*/
+	std::vector<std::shared_ptr<BuildingElement>>		m_constructionSimilarElements;
+
+	/*! All building elements which can be a opening.
+		This can be: Window, Door
+	*/
+	std::vector<std::shared_ptr<BuildingElement>>		m_openingElemnts;
+
+	/*! All other building elements.*/
+	std::vector<std::shared_ptr<BuildingElement>>		m_otherElemnts;
+
+	void clear() {
+		m_constructionElements.clear();
+		m_constructionSimilarElements.clear();
+		m_openingElemnts.clear();
+		m_otherElemnts.clear();
+	}
+
+	std::vector<std::shared_ptr<BuildingElement>> allConstructionElements() const {
+		std::vector<std::shared_ptr<BuildingElement>> constructionElements(m_constructionElements);
+		constructionElements.insert(constructionElements.begin(), m_constructionSimilarElements.begin(),
+									m_constructionSimilarElements.end());
+		return constructionElements;
+	}
+};
 
 /*! Types of building elements.*/
 enum ObjectTypes {

@@ -95,16 +95,8 @@ public:
 	/*! Pointer to site shape.*/
 	shared_ptr<ProductShapeData>	m_siteShape;
 
-	/*! All building elements which are part of the construction and can contain openings.
-		This can be: Wall, Roof, Slab
-	*/
-	std::vector<BuildingElement>						m_constructionElements;
-	/*! All building elements which can be a opening.
-		This can be: Window, Door
-	*/
-	std::vector<BuildingElement>						m_openingElemnts;
-	/*! All other building elements.*/
-	std::vector<BuildingElement>						m_otherElemnts;
+	/*! Collection of building elements.*/
+	BuildingElementsCollector		m_buildingElements;
 
 	/*! Vector of opening elements.
 		Openings should have connections to the corresponding opening structure and the construction element which contains the opening.

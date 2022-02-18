@@ -36,7 +36,14 @@ TiXmlElement * Instances::writeXML(TiXmlElement * parent) const {
 	return parent;
 }
 
-int Instances::collectComponentInstances(std::vector<BuildingElement>& elements, Database& database, const Site& site) {
+int Instances::collectComponentInstances(BuildingElementsCollector& elements, Database& database, const Site& site) {
+	int res = collectComponentInstances(elements.m_constructionElements, database, site);
+	res += collectComponentInstances(elements.m_constructionSimilarElements, database, site);
+	res += collectComponentInstances(elements.m_openingElemnts, database, site);
+	return res;
+}
+
+int Instances::collectComponentInstances(std::vector<std::shared_ptr<BuildingElement>>& elements, Database& database, const Site& site) {
 	std::vector<int> failedSurfaces;
 	std::vector<int> failedSubSurfaces;
 
@@ -62,13 +69,13 @@ int Instances::collectComponentInstances(std::vector<BuildingElement>& elements,
 						auto fitElem = std::find_if(
 										   elements.begin(),
 										   elements.end(),
-										   [surf](const auto& elem) {return elem.m_id == surf.elementId(); });
+										   [surf](const auto& elem) {return elem->m_id == surf.elementId(); });
 						if(fitElem != elements.end()) {
-							const BuildingElement& elem = *fitElem;
+							const std::shared_ptr<BuildingElement>& elem = *fitElem;
 							auto fitComp = std::find_if(
 											   database.m_components.begin(),
 											   database.m_components.end(),
-											   [elem](const auto& comp) {return comp.second.m_guid == elem.m_guid; });
+											   [elem](const auto& comp) {return comp.second.m_guid == elem->m_guid; });
 							if(fitComp != database.m_components.end()) {
 								ComponentInstance ci;
 								ci.m_id = GUID_maker::instance().guid();
@@ -92,13 +99,13 @@ int Instances::collectComponentInstances(std::vector<BuildingElement>& elements,
 						auto fitElem = std::find_if(
 										   elements.begin(),
 										   elements.end(),
-										   [subSurf](const auto& elem) {return elem.m_id == subSurf.elementId(); });
+										   [subSurf](const auto& elem) {return elem->m_id == subSurf.elementId(); });
 						if(fitElem != elements.end()) {
-							const BuildingElement& elem = *fitElem;
+							const std::shared_ptr<BuildingElement>& elem = *fitElem;
 							auto fitComp = std::find_if(
 											   database.m_subSurfaceComponents.begin(),
 											   database.m_subSurfaceComponents.end(),
-											   [elem](const auto& comp) {return comp.second.guid() == elem.m_guid; });
+											   [elem](const auto& comp) {return comp.second.guid() == elem->m_guid; });
 							if(fitComp != database.m_subSurfaceComponents.end()) {
 								ComponentInstance ci;
 								ci.m_id = GUID_maker::instance().guid();

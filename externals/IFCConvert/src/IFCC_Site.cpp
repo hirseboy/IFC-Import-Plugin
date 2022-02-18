@@ -145,6 +145,21 @@ void Site::fetchBuildings(const std::map<std::string,shared_ptr<ProductShapeData
 	}
 }
 
+std::vector<SpaceBoundary> Site::allSpaceBoundaries() const {
+	std::vector<SpaceBoundary> res;
+	for(const Building& building : m_buildings) {
+		const std::vector<BuildingStorey>& storeys = building.storeys();
+		for(const BuildingStorey& storey : storeys) {
+			const std::vector<Space>& spaces = storey.spaces();
+			for(const Space& space : spaces) {
+				const std::vector<SpaceBoundary>& sbs = space.spaceBoundaries();
+				res.insert(res.begin(), sbs.begin(), sbs.end());
+			}
+		}
+	}
+	return res;
+}
+
 TiXmlElement * Site::writeXML(TiXmlElement * parent) const {
 	if(m_buildings.empty())
 		return nullptr;

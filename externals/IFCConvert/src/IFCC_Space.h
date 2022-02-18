@@ -131,8 +131,7 @@ public:
 	*/
 	bool updateSpaceBoundaries(const objectShapeTypeVector_t& shapes,
 							   shared_ptr<UnitConverter>& unit_converter,
-							   const std::vector<BuildingElement>& constructionElements,
-							   const std::vector<BuildingElement>& openingElements,
+							   const BuildingElementsCollector& buildingElements,
 							   const std::vector<Opening>& openings,
 							   bool useSpaceBoundaries);
 
@@ -142,8 +141,7 @@ public:
 		\param openingElements Vector of all opening elements (window, door)
 		\param openings Vector of openings with connections to opening elements and construction elements
 	*/
-	bool updateSpaceConnections(std::vector<BuildingElement>& constructionElements,
-								std::vector<BuildingElement>& openingElements,
+	bool updateSpaceConnections(BuildingElementsCollector& buildingElements,
 								std::vector<Opening>& openings);
 
 	/*! Return all surfaces of this space.*/
@@ -198,8 +196,7 @@ private:
 	*/
 	bool evaluateSpaceBoundaryTypes(const objectShapeTypeVector_t& shapes,
 									 shared_ptr<UnitConverter>& unit_converter,
-									 const std::vector<BuildingElement>& constructionElements,
-									 const std::vector<BuildingElement>& openingElements);
+									 const BuildingElementsCollector& buildingElements);
 
 	/*! Is called from updateSpaceBoundaries in case IFC model doesn't contain space boundaries.
 		It try to evaluate space boundaries from construction elements and openings.
@@ -207,8 +204,7 @@ private:
 		\param openingElements Vector of all opening elements (window, door)
 		\param openings Vector of all openings
 	*/
-	bool evaluateSpaceBoundaries(const std::vector<BuildingElement>& constructionElements,
-								 const std::vector<BuildingElement>& openingElements,
+	bool evaluateSpaceBoundaries(const BuildingElementsCollector& buildingElements,
 								 const std::vector<Opening>& openings);
 
 	/*! Try to find space boundaries for construction elements by test of surface properties (parallel, distance, intersections).
@@ -216,7 +212,7 @@ private:
 		\param constructionElements Vector for all construction elements with own surfaces
 		\return Vector of evaluated space boundaries
 	*/
-	std::vector<SpaceBoundary> createSpaceBoundaries( const std::vector<BuildingElement>& constructionElements);
+	std::vector<SpaceBoundary> createSpaceBoundaries( const BuildingElementsCollector& buildingElements);
 
 	/*! Try to find space boundaries for opening elements based on openings.
 		\param spaceBoundaries Result vector for adding new space boundaries
@@ -224,7 +220,7 @@ private:
 		\param openings Vector of all openings
 	*/
 	void createSpaceBoundariesForOpeningsFromOpenings(std::vector<SpaceBoundary>& spaceBoundaries,
-													  const std::vector<BuildingElement>& openingElements,
+													  const BuildingElementsCollector& buildingElements,
 													  const std::vector<Opening>& openings);
 
 	/*! Update space surfaces from existing space boundaries.
@@ -235,7 +231,7 @@ private:
 		The given building elements will be used in order to get intersection ranges from the element thicknesses.
 		\param elems Vector of construction elements
 	*/
-	void updateSurfaces(const std::vector<BuildingElement>& elems);
+	void updateSurfaces(const BuildingElementsCollector& buildingElements);
 
 	std::vector<SpaceBoundary>					m_spaceBoundaries;	///< Space boundaries of the space
 	std::vector<Surface>						m_surfaces;			///< Surfaces of the space

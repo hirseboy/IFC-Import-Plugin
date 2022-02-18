@@ -86,7 +86,7 @@ bool BuildingElement::set(std::shared_ptr<IfcElement> ifcElement, ObjectTypes ty
 	for(const auto& relop : ifcElement->m_HasOpenings_inverse) {
 		m_containedOpeningsOriginal.push_back(relop.lock()->m_RelatedOpeningElement);
 	}
-	if(isConstructionType(m_type))
+	if(isConstructionType(m_type) || isConstructionSimilarType(m_type))
 		m_surfaceComponent = true;
 	else if(m_type == OT_Window || m_type == OT_Door)
 		m_subSurfaceComponent = true;
@@ -484,7 +484,7 @@ double BuildingElement::openingArea() const {
 }
 
 
-void BuildingElement::fillOpeningProperties(const std::vector<BuildingElement>& elements, const std::vector<Opening>& openings) {
+void BuildingElement::fillOpeningProperties(const std::vector<std::shared_ptr<BuildingElement>>& elements, const std::vector<Opening>& openings) {
 	if(!isSubSurfaceComponent())
 		return;
 
@@ -500,9 +500,9 @@ void BuildingElement::fillOpeningProperties(const std::vector<BuildingElement>& 
 	for(int i=0; i<constructionIDCount; ++i) {
 		int constId = m_openingProperties.m_usedInConstructionIds[i];
 		auto fit = std::find_if(elements.begin(), elements.end(),
-								[constId](const auto& constr) {return constr.m_id == constId; });
+								[constId](const auto& constr) {return constr->m_id == constId; });
 		if(fit != elements.end()) {
-			m_openingProperties.m_constructionThicknesses.push_back(fit->thickness());
+			m_openingProperties.m_constructionThicknesses.push_back((*fit)->thickness());
 		}
 	}
 }

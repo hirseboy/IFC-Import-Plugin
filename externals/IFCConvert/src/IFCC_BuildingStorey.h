@@ -48,8 +48,7 @@ public:
 	*/
 	void updateSpaces(const objectShapeTypeVector_t& shapes,
 					  shared_ptr<UnitConverter>& unit_converter,
-					  const std::vector<BuildingElement>& constructionElemnts,
-					  const std::vector<BuildingElement>& openingElements,
+					  const BuildingElementsCollector& buildingElements,
 					  const std::vector<Opening>& openings,
 					  bool useSpaceBoundaries);
 
@@ -58,9 +57,7 @@ public:
 		\param openingElements Vector for all opening elements (window, door)
 		\param openings Vector for all openings (based on IfcOpeningElement)
 	*/
-	void updateSpaceConnections(std::vector<BuildingElement>& constructionElemnts,
-								std::vector<BuildingElement>& openingElements,
-								std::vector<Opening>& openings);
+	void updateSpaceConnections(BuildingElementsCollector& buildingElements, std::vector<Opening>& openings);
 
 	/*! Write the storey in vicus xml format including spaces.*/
 	TiXmlElement * writeXML(TiXmlElement * parent) const;

@@ -55,24 +55,21 @@ void BuildingStorey::fetchSpaces(const std::map<std::string,shared_ptr<ProductSh
 
 void BuildingStorey::updateSpaces(const objectShapeTypeVector_t& shapes,
 								  shared_ptr<UnitConverter>& unit_converter,
-								  const std::vector<BuildingElement>& constructionElemnts,
-								  const std::vector<BuildingElement>& openingElements,
+								  const BuildingElementsCollector& buildingElements,
 								  const std::vector<Opening>& openings,
 								  bool useSpaceBoundaries) {
 
 	for(auto& space : m_spaces) {
-		bool res = space.updateSpaceBoundaries(shapes, unit_converter,	constructionElemnts, openingElements, openings, useSpaceBoundaries);
+		bool res = space.updateSpaceBoundaries(shapes, unit_converter,	buildingElements, openings, useSpaceBoundaries);
 		if(!res) {
 			std::string errstr = space.m_spaceBoundaryErrors;
 		}
 	}
 }
 
-void BuildingStorey::updateSpaceConnections(std::vector<BuildingElement>& constructionElemnts,
-							std::vector<BuildingElement>& openingElements,
-							std::vector<Opening>& openings) {
+void BuildingStorey::updateSpaceConnections(BuildingElementsCollector& buildingElements, std::vector<Opening>& openings) {
 	for(auto& space : m_spaces) {
-		bool res = space.updateSpaceConnections(constructionElemnts, openingElements, openings);
+		bool res = space.updateSpaceConnections(buildingElements, openings);
 	}
 }
 

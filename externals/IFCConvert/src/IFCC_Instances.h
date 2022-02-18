@@ -26,12 +26,12 @@ public:
 	TiXmlElement * writeXML(TiXmlElement * parent) const;
 
 	/*! Collect component and subsurface component instances from building elements and other databases.
-		\param elements Building element vector
+		\param elements Collection of all building element vectors
 		\param database Collection of all databases
 		\param site Building site which contains all geometric data (including space boundaries)
 		\return The number of surfaces from space boundaries which cannot be connected with a component
 	*/
-	int collectComponentInstances(std::vector<BuildingElement>& elements, Database& database, const Site& site);
+	int collectComponentInstances(BuildingElementsCollector& elements, Database& database, const Site& site);
 
 	/*! Add all component instances and sub surface component instances to the given vicus project.
 		\param idMap Map for mapping current ids to new VICUS ids.
@@ -39,6 +39,14 @@ public:
 	void addToVicusProject(VICUS::Project* project, std::map<int,int>& idMap);
 
 private:
+
+	/*! Collect component and subsurface component instances from building elements and other databases.
+		\param elements Building element vector
+		\param database Collection of all databases
+		\param site Building site which contains all geometric data (including space boundaries)
+		\return The number of surfaces from space boundaries which cannot be connected with a component
+	*/
+	int collectComponentInstances(std::vector<std::shared_ptr<BuildingElement>>& elements, Database& database, const Site& site);
 
 	std::map<int, ComponentInstance>		m_componentInstances;			///< Map of id and component instance
 	std::map<int, ComponentInstance>		m_subSurfaceComponentInstances;	///< map of id and subsurface component instance
