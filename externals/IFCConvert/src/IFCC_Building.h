@@ -43,9 +43,9 @@ public:
 	*/
 	void updateStoreys(const objectShapeTypeVector_t& elementShapes,
 					   const objectShapeGUIDMap_t& spaceShapes,
-					  shared_ptr<UnitConverter>& unit_converter,
-					  const BuildingElementsCollector& buildingElements,
-					  const std::vector<Opening>& openings,
+					   shared_ptr<UnitConverter>& unit_converter,
+					   const BuildingElementsCollector& buildingElements,
+					   const std::vector<Opening>& openings,
 					   bool useSpaceBoundaries);
 
 	/*! Write the building in vicus xml format including storeys.*/
@@ -58,14 +58,15 @@ public:
 	VICUS::Building getVicusObject(std::map<int,int>& idMap, int& nextid) const;
 
 	/*! Return vector of building storeys.*/
-	const std::vector<BuildingStorey>& storeys() const {
+	const std::vector<std::shared_ptr<BuildingStorey>>& storeys() const {
 		return m_storeys;
 	}
 
 private:
 
 	/*! Vector of building storeys.*/
-	std::vector<BuildingStorey>						m_storeys;
+	std::vector<std::shared_ptr<BuildingStorey>>	m_storeys;
+
 	/*! Vector of original IFC building storey objects.*/
 	std::vector<std::shared_ptr<IfcBuildingStorey>>	m_storeysOriginal;
 };

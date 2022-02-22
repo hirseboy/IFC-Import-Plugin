@@ -41,13 +41,19 @@ public:
 	/*! Return the internal surface vector.*/
 	const std::vector<Surface>& surfaces() const;
 
-	/*! Return a vector of all space boundaroies in project.*/
-	std::vector<SpaceBoundary> allSpaceBoundaries() const;
+	/*! Return a vector of all space boundaries in project.*/
+	std::vector<std::shared_ptr<SpaceBoundary>> allSpaceBoundaries() const;
+
+	/*! Return a vector of all spaces in project.*/
+	std::vector<std::shared_ptr<Space>> allSpaces() const;
+
+	/*! Return a vector of all space connection in project.*/
+	std::vector<Space::SurfaceConnectionVectors> allSurfaceConnectionVectors() const;
 
 	/*! Write the site in vicus xml format including buildings.*/
 	TiXmlElement * writeXML(TiXmlElement * parent) const;
 
-	std::vector<Building>	m_buildings;
+	std::vector<std::shared_ptr<Building>>	m_buildings;	///< vector of pointers to building objects
 
 private:
 

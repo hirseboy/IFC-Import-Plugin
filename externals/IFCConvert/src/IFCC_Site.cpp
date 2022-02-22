@@ -135,8 +135,8 @@ void Site::fetchBuildings(const std::map<std::string,shared_ptr<ProductShapeData
 			std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> converterX;
 			std::string guid = converterX.to_bytes(opOrg->m_GlobalId->m_value);
 			if(shape.first == guid) {
-				Building building(GUID_maker::instance().guid());
-				if(building.set(opOrg)) {
+				std::shared_ptr<Building> building = std::shared_ptr<Building>(new Building(GUID_maker::instance().guid()));
+				if(building->set(opOrg)) {
 					m_buildings.push_back(building);
 				}
 				break;
@@ -145,20 +145,48 @@ void Site::fetchBuildings(const std::map<std::string,shared_ptr<ProductShapeData
 	}
 }
 
-std::vector<SpaceBoundary> Site::allSpaceBoundaries() const {
-	std::vector<SpaceBoundary> res;
-	for(const Building& building : m_buildings) {
-		const std::vector<BuildingStorey>& storeys = building.storeys();
-		for(const BuildingStorey& storey : storeys) {
-			const std::vector<Space>& spaces = storey.spaces();
-			for(const Space& space : spaces) {
-				const std::vector<SpaceBoundary>& sbs = space.spaceBoundaries();
+std::vector<std::shared_ptr<SpaceBoundary>> Site::allSpaceBoundaries() const {
+	std::vector<std::shared_ptr<SpaceBoundary>> res;
+	for(const std::shared_ptr<Building>& building : m_buildings) {
+		const std::vector<std::shared_ptr<BuildingStorey>>& storeys = building->storeys();
+		for(const std::shared_ptr<BuildingStorey>& storey : storeys) {
+			const std::vector<std::shared_ptr<Space>>& spaces = storey->spaces();
+			for(const std::shared_ptr<Space>& space : spaces) {
+				const std::vector<std::shared_ptr<SpaceBoundary>>& sbs = space->spaceBoundaries();
 				res.insert(res.begin(), sbs.begin(), sbs.end());
 			}
 		}
 	}
 	return res;
 }
+
+std::vector<std::shared_ptr<Space>> Site::allSpaces() const {
+	std::vector<std::shared_ptr<Space>> res;
+	for(const std::shared_ptr<Building>& building : m_buildings) {
+		const std::vector<std::shared_ptr<BuildingStorey>>& storeys = building->storeys();
+		for(const std::shared_ptr<BuildingStorey>& storey : storeys) {
+			const std::vector<std::shared_ptr<Space>>& spaces = storey->spaces();
+			res.insert(res.begin(), spaces.begin(), spaces.end());
+		}
+	}
+	return res;
+}
+
+/*! Return a vector of all space connection in project.*/
+std::vector<Space::SurfaceConnectionVectors> Site::allSurfaceConnectionVectors() const {
+	std::vector<Space::SurfaceConnectionVectors> res;
+	for(const std::shared_ptr<Building>& building : m_buildings) {
+		const std::vector<std::shared_ptr<BuildingStorey>>& storeys = building->storeys();
+		for(const std::shared_ptr<BuildingStorey>& storey : storeys) {
+			const std::vector<std::shared_ptr<Space>>& spaces = storey->spaces();
+			for(const std::shared_ptr<Space>& space : spaces) {
+				res.push_back(space->surfaceConnectionVectors());
+			}
+		}
+	}
+	return res;
+}
+
 
 TiXmlElement * Site::writeXML(TiXmlElement * parent) const {
 	if(m_buildings.empty())
@@ -167,8 +195,8 @@ TiXmlElement * Site::writeXML(TiXmlElement * parent) const {
 	TiXmlElement * e = new TiXmlElement("Buildings");
 	parent->LinkEndChild(e);
 
-	for( const Building& building : m_buildings) {
-		building.writeXML(e);
+	for( const std::shared_ptr<Building>& building : m_buildings) {
+		building->writeXML(e);
 	}
 	return e;
 }

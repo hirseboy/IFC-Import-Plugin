@@ -42,10 +42,10 @@ void BuildingStorey::fetchSpaces(const std::map<std::string,shared_ptr<ProductSh
 	for(const auto& shape : shapes) {
 		for(const auto& opOrg : m_spacesOriginal) {
 			if(shape.first == guidFromObject(opOrg.get())) {
-				Space space(GUID_maker::instance().guid());
-				if(space.set(opOrg)) {
+				std::shared_ptr<Space> space = std::shared_ptr<Space>(new Space(GUID_maker::instance().guid()));
+				if(space->set(opOrg)) {
 					m_spaces.push_back(space);
-					m_spaces.back().update(shape.second);
+					m_spaces.back()->update(shape.second);
 				}
 				break;
 			}
@@ -60,16 +60,16 @@ void BuildingStorey::updateSpaces(const objectShapeTypeVector_t& shapes,
 								  bool useSpaceBoundaries) {
 
 	for(auto& space : m_spaces) {
-		bool res = space.updateSpaceBoundaries(shapes, unit_converter,	buildingElements, openings, useSpaceBoundaries);
+		bool res = space->updateSpaceBoundaries(shapes, unit_converter,	buildingElements, openings, useSpaceBoundaries);
 		if(!res) {
-			std::string errstr = space.m_spaceBoundaryErrors;
+			std::string errstr = space->m_spaceBoundaryErrors;
 		}
 	}
 }
 
 void BuildingStorey::updateSpaceConnections(BuildingElementsCollector& buildingElements, std::vector<Opening>& openings) {
 	for(auto& space : m_spaces) {
-		bool res = space.updateSpaceConnections(buildingElements, openings);
+		bool res = space->updateSpaceConnections(buildingElements, openings);
 	}
 }
 
@@ -92,8 +92,8 @@ TiXmlElement * BuildingStorey::writeXML(TiXmlElement * parent) const {
 		TiXmlElement * child = new TiXmlElement("Rooms");
 		e->LinkEndChild(child);
 
-		for( const Space& space : m_spaces) {
-			space.writeXML(child);
+		for( const auto& space : m_spaces) {
+			space->writeXML(child);
 		}
 	}
 	return e;
@@ -106,7 +106,7 @@ VICUS::BuildingLevel BuildingStorey::getVicusObject(std::map<int,int>& idMap, in
 	res.m_id = newId;
 	idMap[m_id] = newId;
 	for(const auto& space : m_spaces) {
-		res.m_rooms.emplace_back(space.getVicusObject(idMap, nextid));
+		res.m_rooms.emplace_back(space->getVicusObject(idMap, nextid));
 	}
 
 	return res;

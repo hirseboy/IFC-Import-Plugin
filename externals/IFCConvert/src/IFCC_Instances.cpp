@@ -48,9 +48,9 @@ int Instances::collectComponentInstances(std::vector<std::shared_ptr<BuildingEle
 	std::vector<int> failedSubSurfaces;
 
 	for(const auto& building : site.m_buildings) {
-		for(const auto& storey : building.storeys()) {
-			for(const auto& space : storey.spaces()) {
-				for(const auto& surf : space.surfaces()) {
+		for(const auto& storey : building->storeys()) {
+			for(const auto& space : storey->spaces()) {
+				for(const auto& surf : space->surfaces()) {
 					if(surf.isMissing()) {
 						ComponentInstance ci;
 						ci.m_id = GUID_maker::instance().guid();
@@ -94,7 +94,7 @@ int Instances::collectComponentInstances(std::vector<std::shared_ptr<BuildingEle
 					}
 				}
 
-				for(const auto& surf2 : space.surfaces()) {
+				for(const auto& surf2 : space->surfaces()) {
 					for(const auto& subSurf : surf2.subSurfaces()) {
 						auto fitElem = std::find_if(
 										   elements.begin(),

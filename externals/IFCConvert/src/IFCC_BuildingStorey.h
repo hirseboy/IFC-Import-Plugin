@@ -68,14 +68,14 @@ public:
 	VICUS::BuildingLevel getVicusObject(std::map<int,int>& idMap, int& nextid) const;
 
 	/*! Vector of spaces in the storey.*/
-	const std::vector<Space>& spaces() const {
+	const std::vector<std::shared_ptr<Space>>& spaces() const {
 		return m_spaces;
 	}
 
 private:
 
 	/*! Vector of spaces in the storey.*/
-	std::vector<Space>						m_spaces;
+	std::vector<std::shared_ptr<Space>>						m_spaces;
 	/*! Vector of original IFC space objects.*/
 	std::vector<std::shared_ptr<IfcSpace>>	m_spacesOriginal;
 };

@@ -94,6 +94,9 @@ public:
 		int m_openingSurfaceIndex;	///< Index of surface in opening
 	};
 
+	/*! Store connections of surfaces with there distance.
+		Two surfaces can be connected if both normal vectors are the same and the distance is lower than a certain value.
+	*/
 	struct SurfaceConnection {
 		int m_spaceSurfaceIndex = -1;
 		int m_otherEntityId = -1;
@@ -101,6 +104,12 @@ public:
 		double dist = 1e30;
 	};
 
+	struct SurfaceConnectionVectors {
+		std::vector<SurfaceConnection>				m_spaceBoundaryConnections;			///< Space boundaries with connections to space
+		std::vector<SurfaceConnection>				m_constructionElementConnections;	///< Construction elements with connections to space
+		std::vector<SurfaceConnection>				m_openingElementConnections;		///< Opening elements with connections to space
+		std::vector<SurfaceConnection>				m_openingConnections;				///< Openings with connections to space
+	};
 
 	/*! Standard constructor.
 		\param id Unique id for using in project.
@@ -148,7 +157,7 @@ public:
 	const std::vector<Surface>& surfaces() const;
 
 	/*! Return all space boundaries of this space.*/
-	const std::vector<SpaceBoundary>& spaceBoundaries() const;
+	const std::vector<std::shared_ptr<SpaceBoundary>>& spaceBoundaries() const;
 
 	/*! Write the space in vicus xml format including space boundaries.*/
 	TiXmlElement * writeXML(TiXmlElement * parent) const;
@@ -157,6 +166,12 @@ public:
 		The returned object contains all transferable data.
 	*/
 	VICUS::Room getVicusObject(std::map<int,int>& idMap, int& nextid) const;
+
+	/*! Return the surface connection vectors. It only makes sense if the following function are called before:
+		- updateSpaceConnections
+		- updateSpaceBoundaries
+	*/
+	SurfaceConnectionVectors surfaceConnectionVectors() const;
 
 	std::string									m_longName;			///< More detailed name of the space
 	/*! IFC space type. It can be:
@@ -212,14 +227,14 @@ private:
 		\param constructionElements Vector for all construction elements with own surfaces
 		\return Vector of evaluated space boundaries
 	*/
-	std::vector<SpaceBoundary> createSpaceBoundaries( const BuildingElementsCollector& buildingElements);
+	std::vector<std::shared_ptr<SpaceBoundary>> createSpaceBoundaries( const BuildingElementsCollector& buildingElements);
 
 	/*! Try to find space boundaries for opening elements based on openings.
 		\param spaceBoundaries Result vector for adding new space boundaries
 		\param openingElements Vector of opening elements (window or door).
 		\param openings Vector of all openings
 	*/
-	void createSpaceBoundariesForOpeningsFromOpenings(std::vector<SpaceBoundary>& spaceBoundaries,
+	void createSpaceBoundariesForOpeningsFromOpenings(std::vector<std::shared_ptr<SpaceBoundary>>& spaceBoundaries,
 													  const BuildingElementsCollector& buildingElements,
 													  const std::vector<Opening>& openings);
 
@@ -233,14 +248,12 @@ private:
 	*/
 	void updateSurfaces(const BuildingElementsCollector& buildingElements);
 
-	std::vector<SpaceBoundary>					m_spaceBoundaries;	///< Space boundaries of the space
+	std::vector<std::shared_ptr<SpaceBoundary>>	m_spaceBoundaries;	///< Space boundaries of the space
 	std::vector<Surface>						m_surfaces;			///< Surfaces of the space
 	carve::math::Matrix							m_transformMatrix;	///< Matrix for geometry transformation from local to global coordinates
 	std::vector<Surface>						m_surfacesOrg;		///< Original surfaces from the IFC model converted into global coordinates
-	std::vector<SurfaceConnection>				m_parallelSpaceSurfaces;
-	std::vector<SurfaceConnection>				m_spaceBoundaryConnections;
-	std::vector<SurfaceConnection>				m_constructionConnections;
-	std::vector<SurfaceConnection>				m_openingConnections;
+	std::vector<SurfaceConnection>				m_parallelSpaceSurfaces;			///< vector of parallel space surfaces with distances
+	SurfaceConnectionVectors					m_connectionVectors;
 };
 
 } // namespace IFCC

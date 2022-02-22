@@ -43,8 +43,8 @@ void Building::fetchStoreys(const std::map<std::string,shared_ptr<ProductShapeDa
 		for(const auto& opOrg : m_storeysOriginal) {
 			std::string guid = guidFromObject(opOrg.get());
 			if(shape.first == guid) {
-				BuildingStorey storey(GUID_maker::instance().guid());
-				if(storey.set(opOrg)) {
+				std::shared_ptr<BuildingStorey> storey = std::shared_ptr<BuildingStorey>(new BuildingStorey(GUID_maker::instance().guid()));
+				if(storey->set(opOrg)) {
 					m_storeys.push_back(storey);
 				}
 				break;
@@ -61,8 +61,8 @@ void Building::updateStoreys(const objectShapeTypeVector_t& elementShapes,
 							 bool useSpaceBoundaries) {
 
 	for(auto& storey : m_storeys) {
-		storey.fetchSpaces(spaceShapes, unit_converter);
-		storey.updateSpaces(elementShapes, unit_converter, buildingElements, openings, useSpaceBoundaries);
+		storey->fetchSpaces(spaceShapes, unit_converter);
+		storey->updateSpaces(elementShapes, unit_converter, buildingElements, openings, useSpaceBoundaries);
 	}
 }
 
@@ -83,8 +83,8 @@ TiXmlElement * Building::writeXML(TiXmlElement * parent) const {
 		TiXmlElement * child = new TiXmlElement("BuildingLevels");
 		e->LinkEndChild(child);
 
-		for( const BuildingStorey& storey : m_storeys) {
-			storey.writeXML(child);
+		for( const auto& storey : m_storeys) {
+			storey->writeXML(child);
 		}
 	}
 	return e;
@@ -98,7 +98,7 @@ VICUS::Building Building::getVicusObject(std::map<int,int>& idMap, int& nextid) 
 	res.m_id = newId;
 	idMap[m_id] = newId;
 	for(const auto& storey : m_storeys) {
-		res.m_buildingLevels.emplace_back(storey.getVicusObject(idMap, nextid));
+		res.m_buildingLevels.emplace_back(storey->getVicusObject(idMap, nextid));
 	}
 
 	return res;
