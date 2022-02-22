@@ -298,8 +298,8 @@ bool IFCReader::convert(bool useSpaceBoundaries) {
 			std::shared_ptr<IfcSpatialStructureElement> se = std::dynamic_pointer_cast<IfcSpatialStructureElement>(m_siteShape->m_ifc_object_definition.lock());
 			m_site.set(se, m_siteShape, m_buildingsShape);
 			for(auto& building : m_site.m_buildings) {
-				building.fetchStoreys(m_storeysShape);
-				building.updateStoreys(m_elementEntitesShape, m_spaceEntitesShape, m_geometryConverter.getBuildingModel()->getUnitConverter(),
+				building->fetchStoreys(m_storeysShape);
+				building->updateStoreys(m_elementEntitesShape, m_spaceEntitesShape, m_geometryConverter.getBuildingModel()->getUnitConverter(),
 									   m_buildingElements, m_openings, m_useSpaceBoundaries);
 			}
 		}
@@ -337,7 +337,7 @@ bool IFCReader::setVicusProject(VICUS::Project* project) {
 	// add building structure
 	int nextId = project->nextUnusedID();
 	for(auto& building : m_site.m_buildings) {
-		project->m_buildings.emplace_back(building.getVicusObject(idConversionMap, nextId));
+		project->m_buildings.emplace_back(building->getVicusObject(idConversionMap, nextId));
 	}
 
 	// add databases
@@ -356,6 +356,19 @@ int IFCReader::totalNumberOfIFCEntities() const {
 	return m_model->getMapIfcEntities().size();
 }
 
+int IFCReader::numberOfIFCSpaceBoundaries() const {
+	if(!m_readCompletedSuccessfully)
+		return 0;
+
+	const auto& ifcMap = m_model->getMapIfcEntities();
+	int count = 0;
+	for(const auto& item : ifcMap) {
+		shared_ptr<IfcRelSpaceBoundary> sb = dynamic_pointer_cast<IfcRelSpaceBoundary>(item.second);
+		if(sb)
+			++count;
+	}
+	return count;
+}
 
 
 void IFCReader::writeXML(const IBK::Path & filename) const {
@@ -408,20 +421,57 @@ struct SpaceBoundaryEvaluation {
 	}
 };
 
+QStringList IFCReader::messages() const {
+	QStringList result;
+	result << tr("Messages:");
+	std::vector<std::shared_ptr<SpaceBoundary>> spaceBoundaries = m_site.allSpaceBoundaries();
+
+	int sbCount = spaceBoundaries.size();
+	if(sbCount > 0) {
+		int sbConstruction = 0;
+		int sbOpenings = 0;
+		int sbMissing = 0;
+		int sbVirtual = 0;
+		for(const auto& sb : spaceBoundaries) {
+			if(sb->isConstructionElement())
+				++sbConstruction;
+			if(sb->isOpeningElement())
+				++sbOpenings;
+			if(sb->isMissing())
+				++sbMissing;
+			if(sb->isVirtual())
+				++sbVirtual;
+		}
+		result << tr("%1 space boundaries.").arg(sbCount);
+		if(sbConstruction > 0)
+			result << tr("%1 connected with construction elements").arg(sbConstruction);
+		if(sbOpenings > 0)
+			result << tr("%1 connected with opening elements").arg(sbOpenings);
+		if(sbMissing > 0)
+			result << tr("%1 without connection").arg(sbMissing);
+		if(sbVirtual > 0)
+			result << tr("%1 virtual surfaces").arg(sbVirtual);
+	}
+	else {
+
+	}
+	return result;
+}
+
 QStringList IFCReader::statistic() const {
 	QStringList result;
 	result << tr("Statistic:");
 	result << tr("%1 buildings.").arg(m_site.m_buildings.size());
 	for(const auto& building : m_site.m_buildings) {
-		result << tr("Building %1 with %2 storeys.").arg(QString::fromStdString(building.m_name))
-				.arg(building.storeys().size());
-		for(const auto& storey : building.storeys()) {
-			result << tr("\tStorey %1 with %2 spaces.").arg(QString::fromStdString(storey.m_name))
-					.arg(storey.spaces().size());
-			for(const auto& space : storey.spaces()) {
-				result << tr("\t\tSpace %1 with %2 space boundaries and %3 surfaces.").arg(QString::fromStdString(space.m_name+" - "+space.m_longName))
-						.arg(space.spaceBoundaries().size()).arg(space.surfaces().size());
-				for(const auto& surf : space.surfaces()) {
+		result << tr("Building %1 with %2 storeys.").arg(QString::fromStdString(building->m_name))
+				.arg(building->storeys().size());
+		for(const auto& storey : building->storeys()) {
+			result << tr("\tStorey %1 with %2 spaces.").arg(QString::fromStdString(storey->m_name))
+					.arg(storey->spaces().size());
+			for(const auto& space : storey->spaces()) {
+				result << tr("\t\tSpace %1 with %2 space boundaries and %3 surfaces.").arg(QString::fromStdString(space->m_name+" - "+space->m_longName))
+						.arg(space->spaceBoundaries().size()).arg(space->surfaces().size());
+				for(const auto& surf : space->surfaces()) {
 					if(surf.isMissing()) {
 						result << tr("\t\t\tSurface %1 with missing connection.").arg(QString::fromStdString(surf.name()));
 					}
@@ -456,26 +506,26 @@ QStringList IFCReader::statistic() const {
 
 	result << QString() << tr("Space boundary list") << QString();
 
-	std::vector<SpaceBoundary> spaceBoundaries = m_site.allSpaceBoundaries();
+	std::vector<std::shared_ptr<SpaceBoundary>> spaceBoundaries = m_site.allSpaceBoundaries();
 	std::vector<SpaceBoundaryEvaluation> sbEvals;
-	for(const SpaceBoundary& sb : spaceBoundaries) {
+	for(const auto& sb : spaceBoundaries) {
 		SpaceBoundaryEvaluation sbEval;
-		if(sb.isConstructionElement())
+		if(sb->isConstructionElement())
 			sbEval.m_type = SpaceBoundaryEvaluation::Construction;
-		else if(sb.isOpeningElement())
+		else if(sb->isOpeningElement())
 			sbEval.m_type = SpaceBoundaryEvaluation::Opening;
-		else if(sb.isVirtual())
+		else if(sb->isVirtual())
 			sbEval.m_type = SpaceBoundaryEvaluation::Virtual;
-		else if(sb.isMissing())
+		else if(sb->isMissing())
 			sbEval.m_type = SpaceBoundaryEvaluation::Missing;
 		else {
 			sbEval.m_type = SpaceBoundaryEvaluation::Unknown;
 		}
-		sbEval.m_name = QString::fromStdString(sb.m_name);
-		sbEval.m_nameRelatedElement = QString::fromStdString(sb.nameRelatedElement());
-		sbEval.m_nameRelatedSpace = QString::fromStdString(sb.nameRelatedSpace());
-		sbEval.m_typeRelatedElement = sb.typeRelatedElement();
-		QString text = sbEval.m_name + "\tis a " + QString::fromStdString(objectTypeToString(sb.typeRelatedElement()));
+		sbEval.m_name = QString::fromStdString(sb->m_name);
+		sbEval.m_nameRelatedElement = QString::fromStdString(sb->nameRelatedElement());
+		sbEval.m_nameRelatedSpace = QString::fromStdString(sb->nameRelatedSpace());
+		sbEval.m_typeRelatedElement = sb->typeRelatedElement();
+		QString text = sbEval.m_name + "\tis a " + QString::fromStdString(objectTypeToString(sb->typeRelatedElement()));
 		text += "\tconnected with: " + sbEval.m_nameRelatedElement;
 		text += "\tcontained in: " + sbEval.m_nameRelatedSpace;
 		result << text;

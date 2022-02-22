@@ -36,9 +36,6 @@ public:
 	/*! Standard constructor. Initializes geometry converter.*/
 	IFCReader();
 
-//	/*! Standard constructor. Initializes geometry converter and set the IFC file.*/
-//	explicit IFCReader(const std::wstring& filename);
-
 	/*! Read the IFC file.*/
 	bool read(const IBK::Path& filename, bool ignoreReadError);
 
@@ -58,8 +55,13 @@ public:
 	/*! Return the total number of IFC entities. Call read before use.*/
 	int totalNumberOfIFCEntities() const;
 
+	/*! Return the total number of IFC space boundaries. Call read before use.*/
+	int numberOfIFCSpaceBoundaries() const;
+
 	/*! Write converted data as vicus file.*/
 	void writeXML(const IBK::Path & filename) const;
+
+	QStringList messages() const;
 
 	QStringList statistic() const;
 
