@@ -1,5 +1,5 @@
-#ifndef IMPORTWPREAD_H
-#define IMPORTWPREAD_H
+#ifndef ImportWPReadH
+#define ImportWPReadH
 
 #include <QWizardPage>
 
@@ -38,4 +38,4 @@ private:
 	bool				m_readSuccessfully;
 };
 
-#endif // IMPORTWPREAD_H
+#endif // ImportWPReadH

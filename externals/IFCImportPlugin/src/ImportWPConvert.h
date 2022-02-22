@@ -29,6 +29,8 @@ private slots:
 	void on_pushButtonConvert_clicked();
 
 private:
+	void initializePage() override;
+
 	Ui::ImportWPConvert *ui;
 
 	IFCC::IFCReader*	m_reader;

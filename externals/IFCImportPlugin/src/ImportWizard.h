@@ -27,6 +27,7 @@ public:
 	void setProject(VICUS::Project*	project);
 
 private:
+
 	Ui::ImportWizard *	ui;
 
 	VICUS::Project*		m_project;

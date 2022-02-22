@@ -25,8 +25,7 @@ ImportWizard::ImportWizard(QWidget *parent, IFCC::IFCReader* reader) :
 	addPage(m_pageConvert);
 }
 
-ImportWizard::~ImportWizard()
-{
+ImportWizard::~ImportWizard() {
 	delete ui;
 }
 

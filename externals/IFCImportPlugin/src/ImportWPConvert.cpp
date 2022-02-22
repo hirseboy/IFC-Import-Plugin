@@ -25,6 +25,20 @@ ImportWPConvert::~ImportWPConvert() {
 	delete ui;
 }
 
+
+void ImportWPConvert::initializePage() {
+	int sbCount = m_reader->numberOfIFCSpaceBoundaries();
+	ui->checkBoxUseSpaceBoundaries->setEnabled(sbCount > 0);
+	if(sbCount == 0) {
+		ui->labelSBDescription->setText(tr("There are no space boundaries in the IFC file"));
+		ui->checkBoxUseSpaceBoundaries->setChecked(false);
+	}
+	else {
+		ui->labelSBDescription->setText(tr("There are %1 space boundaries in the IFC file").arg(sbCount));
+	}
+}
+
+
 bool ImportWPConvert::isComplete() const {
 	return m_convertSuccessfully;
 }
@@ -39,6 +53,8 @@ void ImportWPConvert::on_pushButtonConvert_clicked() {
 	QStringList text;
 	if(res) {
 		text << tr("File converted successfully.");
+		text << m_reader->messages();
+		text << " ";
 		text << m_reader->statistic();
 		m_convertSuccessfully = true;
 	}
