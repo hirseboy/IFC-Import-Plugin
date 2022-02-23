@@ -94,12 +94,12 @@ void IFCReader::clear() {
 bool IFCReader::read(const IBK::Path& filename, bool ignoreReadError) {
 	clear();
 
-	m_filename = filename.wstr();
+	m_filename = filename;
 	m_readCompletedSuccessfully = true;
 	try {
 		ReaderSTEP readerStep;
 		readerStep.setMessageCallBack(this, &IFCReader::messageTarget);
-		readerStep.loadModelFromFile(m_filename, m_geometryConverter.getBuildingModel());
+		readerStep.loadModelFromFile(m_filename.wstr(), m_geometryConverter.getBuildingModel());
 		if(!ignoreReadError && m_hasError) {
 			m_readCompletedSuccessfully = false;
 		}
@@ -372,6 +372,9 @@ bool IFCReader::setVicusProject(VICUS::Project* project) {
 
 	// add building structure
 	int nextId = project->nextUnusedID();
+
+	project->m_ifcFilePath = m_filename;
+
 	for(auto& building : m_site.m_buildings) {
 		project->m_buildings.emplace_back(building->getVicusObject(idConversionMap, nextId));
 	}

@@ -150,7 +150,7 @@ public:
 		\param openingElements Vector of all opening elements (window, door)
 		\param openings Vector of openings with connections to opening elements and construction elements
 	*/
-	bool updateSpaceConnections(BuildingElementsCollector& buildingElements,
+	void updateSpaceConnections(BuildingElementsCollector& buildingElements,
 								std::vector<Opening>& openings);
 
 	/*! Return all surfaces of this space.*/

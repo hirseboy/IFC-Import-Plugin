@@ -465,7 +465,7 @@ bool Space::updateSpaceBoundaries(const objectShapeTypeVector_t& shapes,
 	return success;
 }
 
-bool Space::updateSpaceConnections(BuildingElementsCollector& buildingElements, std::vector<Opening>& openings) {
+void Space::updateSpaceConnections(BuildingElementsCollector& buildingElements, std::vector<Opening>& openings) {
 
 	for(size_t spaceSurfI=0; spaceSurfI<m_surfacesOrg.size(); ++spaceSurfI) {
 
@@ -548,8 +548,6 @@ bool Space::updateSpaceConnections(BuildingElementsCollector& buildingElements, 
 		}
 
 	}
-
-	return true;
 }
 
 
@@ -683,6 +681,7 @@ VICUS::Room Space::getVicusObject(std::map<int,int>& idMap, int& nextid) const {
 	else
 		res.m_displayName = QString::fromUtf8(m_name.c_str());
 	res.m_id = newId;
+	res.m_ifcGUID = m_guid;
 	idMap[m_id] = newId;
 
 	for(const auto& surface : m_surfaces) {

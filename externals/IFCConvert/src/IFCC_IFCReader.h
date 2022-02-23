@@ -68,7 +68,7 @@ public:
 
 	QStringList statistic() const;
 
-	std::wstring					m_filename;				///< IFC file
+	IBK::Path						m_filename;				///< IFC file
 	std::shared_ptr<BuildingModel>	m_model;				///< IFC model created from file
 	GeometryConverter				m_geometryConverter;	///< Geometry converter for converting local to global coordinates.
 	bool							m_hasError;				///< If true an error while reading IFC file was occured

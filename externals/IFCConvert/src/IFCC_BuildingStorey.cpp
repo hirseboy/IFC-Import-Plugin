@@ -69,7 +69,7 @@ void BuildingStorey::updateSpaces(const objectShapeTypeVector_t& shapes,
 
 void BuildingStorey::updateSpaceConnections(BuildingElementsCollector& buildingElements, std::vector<Opening>& openings) {
 	for(auto& space : m_spaces) {
-		bool res = space->updateSpaceConnections(buildingElements, openings);
+		space->updateSpaceConnections(buildingElements, openings);
 	}
 }
 
@@ -104,6 +104,7 @@ VICUS::BuildingLevel BuildingStorey::getVicusObject(std::map<int,int>& idMap, in
 	int newId = nextid++;
 	res.m_displayName = QString::fromUtf8(m_name.c_str());
 	res.m_id = newId;
+	res.m_ifcGUID = m_guid;
 	idMap[m_id] = newId;
 	for(const auto& space : m_spaces) {
 		res.m_rooms.emplace_back(space->getVicusObject(idMap, nextid));
