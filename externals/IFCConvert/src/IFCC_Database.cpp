@@ -13,6 +13,17 @@ int Database::m_missingComponentId = -1;
 int Database::m_missingWindowId = -1;
 
 Database::Database() {
+	clear();
+}
+
+void Database::clear() {
+	m_materials.clear();
+	m_constructions.clear();
+	m_windows.clear();
+	m_windowGlazings.clear();
+	m_components.clear();
+	m_subSurfaceComponents.clear();
+
 	Construction virtualConstuction;
 	virtualConstuction.m_id = GUID_maker::instance().guid();
 	virtualConstuction.m_name = "virtual";
@@ -45,6 +56,7 @@ Database::Database() {
 	m_components[missingComponent.m_id] = missingComponent;
 	m_missingComponentId = missingComponent.m_id;
 }
+
 
 TiXmlElement * Database::writeXML(TiXmlElement * parent) const {
 	TiXmlElement * e = new TiXmlElement("EmbeddedDatabase");

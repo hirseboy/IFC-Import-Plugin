@@ -36,6 +36,9 @@ public:
 	/*! Standard constructor. Initializes geometry converter.*/
 	IFCReader();
 
+	/*! Clear complete data structure.*/
+	void clear();
+
 	/*! Read the IFC file.*/
 	bool read(const IBK::Path& filename, bool ignoreReadError);
 

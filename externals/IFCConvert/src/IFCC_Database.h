@@ -24,6 +24,9 @@ public:
 	/*! Standard constructor.*/
 	Database();
 
+	/*! Clear the complete database.*/
+	void clear();
+
 	/*! Write all databases in vicus xml format.*/
 	TiXmlElement * writeXML(TiXmlElement * parent) const;
 

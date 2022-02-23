@@ -57,7 +57,43 @@ IFCReader::IFCReader() :
 	m_geometryConverter.getGeomSettings()->setMinNumVerticesPerArc(4);
 }
 
+void IFCReader::clear() {
+	m_model.reset(new BuildingModel);
+	m_geometryConverter.setModel(m_model);
+	m_hasError = false;
+	m_hasWarning = false;
+	m_site = Site(0);
+	m_geometryConverter.clearMessagesCallback();
+	m_geometryConverter.resetModel();
+	m_geometryConverter.getGeomSettings()->setNumVerticesPerCircle(16);
+	m_geometryConverter.getGeomSettings()->setMinNumVerticesPerArc(4);
+
+	m_errorText.clear();
+	m_warningText.clear();
+	m_progressText.clear();
+	m_readCompletedSuccessfully = false;
+	m_convertCompletedSuccessfully = false;
+
+	m_elementEntitesShape.clear();
+	m_spatialEntitesShape.clear();
+	m_spaceEntitesShape.clear();
+	m_unknownEntitesShape.clear();
+	m_buildingsShape.clear();
+	m_storeysShape.clear();
+	m_openingsShape.clear();
+	m_externalSpatialShapes.clear();
+	m_spatialZoneShapes.clear();
+	m_siteShape.reset();
+	m_buildingElements.clear();
+	m_openings.clear();
+	m_database.clear();
+	m_instances.clear();
+}
+
+
 bool IFCReader::read(const IBK::Path& filename, bool ignoreReadError) {
+	clear();
+
 	m_filename = filename.wstr();
 	m_readCompletedSuccessfully = true;
 	try {

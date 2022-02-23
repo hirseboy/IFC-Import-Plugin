@@ -11,8 +11,13 @@ namespace IFCC {
 
 Instances::Instances()
 {
-
 }
+
+void Instances::clear() {
+	m_componentInstances.clear();
+	m_subSurfaceComponentInstances.clear();
+}
+
 
 TiXmlElement * Instances::writeXML(TiXmlElement * parent) const {
 	if(!m_componentInstances.empty()) {

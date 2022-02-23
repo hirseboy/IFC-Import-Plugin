@@ -22,6 +22,9 @@ public:
 	/*! Standard constructor.*/
 	Instances();
 
+	/*! Clear all the content.*/
+	void clear();
+
 	/*! Write the instances in vicus xml format.*/
 	TiXmlElement * writeXML(TiXmlElement * parent) const;
 
