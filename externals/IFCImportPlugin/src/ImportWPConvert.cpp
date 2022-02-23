@@ -27,6 +27,7 @@ ImportWPConvert::~ImportWPConvert() {
 
 
 void ImportWPConvert::initializePage() {
+	ui->textEdit->clear();
 	int sbCount = m_reader->numberOfIFCSpaceBoundaries();
 	ui->checkBoxUseSpaceBoundaries->setEnabled(sbCount > 0);
 	if(sbCount == 0) {

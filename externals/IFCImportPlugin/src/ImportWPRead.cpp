@@ -30,15 +30,16 @@ bool ImportWPRead::isComplete() const {
 }
 
 void ImportWPRead::on_toolButtonOpenIFCFile_clicked() {
-	  QString filename = QFileDialog::getOpenFileName(this, tr("Open ifc file"), QString(), tr("ifc STEP file (*.ifc)"));
-	  if(!filename.isEmpty()) {
-		  ui->lineEditIFCFile->setText(filename);
-		  ui->pushButtonRead->setEnabled(true);
-	  }
-	  else {
-		  ui->lineEditIFCFile->clear();
-		  ui->pushButtonRead->setEnabled(false);
-	  }
+	QString filename = QFileDialog::getOpenFileName(this, tr("Open ifc file"), QString(), tr("ifc STEP file (*.ifc)"));
+	if(!filename.isEmpty()) {
+		ui->lineEditIFCFile->setText(filename);
+		ui->pushButtonRead->setEnabled(true);
+	}
+	else {
+		ui->lineEditIFCFile->clear();
+		ui->pushButtonRead->setEnabled(false);
+	}
+	ui->textEdit->clear();
 }
 
 
