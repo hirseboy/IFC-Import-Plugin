@@ -357,6 +357,9 @@ GeometryConverter::~GeometryConverter() {}
 #endif
 			for( int i = 0; i < num_object_definitions; ++i ) {
 				shared_ptr<IfcObjectDefinition> object_def = vec_object_definitions[i];
+				ObjectTypes type = getObjectType(object_def);
+				bool geometricObject = isConstructionType(type) || isOpeningType(type) || isConstructionSimilarType(type);
+
 				const int entity_id = object_def->m_entity_id;
 				std::string guid;
 				std::wstring guid_wstr;
@@ -401,7 +404,7 @@ GeometryConverter::~GeometryConverter() {}
 				try {
 					std::string errmsg;
 					convertIfcProductShape( product_geom_input_data, performSubtractOpenings, errmsg );
-					if(!errmsg.empty()) {
+					if(!errmsg.empty() && geometricObject) {
 						errmsg += " in " + std::to_string(entity_id);
 						errmsgs.push_back(errmsg);
 					}
@@ -681,98 +684,80 @@ GeometryConverter::~GeometryConverter() {}
 		}
 	}
 
-	bool GeometryConverter::hasRelatedOpenings(shared_ptr<ProductShapeData>& product_shape)
-	{
-		if (product_shape->m_ifc_object_definition.expired())
-		{
+	bool GeometryConverter::hasRelatedOpenings(shared_ptr<ProductShapeData>& product_shape) {
+		if (product_shape->m_ifc_object_definition.expired()) {
 			return false;
 		}
 
 		shared_ptr<IfcObjectDefinition> ifc_object_def(product_shape->m_ifc_object_definition);
 		shared_ptr<IfcProduct> ifc_product = dynamic_pointer_cast<IfcProduct>(ifc_object_def);
-		if (!ifc_product)
-		{
+		if (!ifc_product) {
 			return false;
 		}
 
 		shared_ptr<IfcElement> ifc_element = dynamic_pointer_cast<IfcElement>(ifc_product);
-		if (!ifc_element)
-		{
+		if (!ifc_element) {
 			return false;
 		}
 
-		if (ifc_element->m_HasOpenings_inverse.size() == 0)
-		{
+		if (ifc_element->m_HasOpenings_inverse.size() == 0) {
 			return false;
 		}
 
 		// collect aggregated objects
 		const std::vector<weak_ptr<IfcRelAggregates> >& vec_decomposed_by = ifc_object_def->m_IsDecomposedBy_inverse;
-		if (vec_decomposed_by.size() > 0)
-		{
+		if (vec_decomposed_by.size() > 0) {
 			return true;
 		}
 
 		const std::vector<weak_ptr<IfcRelAggregates> >& vec_decomposes = ifc_object_def->m_Decomposes_inverse;
-		if (vec_decomposes.size() > 0)
-		{
+		if (vec_decomposes.size() > 0) {
 			return true;
 		}
 		return false;
 	}
 
-	void GeometryConverter::subtractOpeningsInRelatedObjects(shared_ptr<ProductShapeData>& product_shape, std::string& errmsg)
-	{
-		if( product_shape->m_ifc_object_definition.expired() )
-		{
+	void GeometryConverter::subtractOpeningsInRelatedObjects(shared_ptr<ProductShapeData>& product_shape, std::string& errmsg) {
+		if( product_shape->m_ifc_object_definition.expired() ) {
 			return;
 		}
 
 		shared_ptr<IfcObjectDefinition> ifc_object_def(product_shape->m_ifc_object_definition);
 		shared_ptr<IfcProduct> ifc_product = dynamic_pointer_cast<IfcProduct>(ifc_object_def);
-		if (!ifc_product)
-		{
+		if (!ifc_product) {
 			return;
 		}
 
 		shared_ptr<IfcElement> ifc_element = dynamic_pointer_cast<IfcElement>(ifc_product);
-		if( !ifc_element )
-		{
+		if( !ifc_element ) {
 			return;
 		}
 
-		if( ifc_element->m_HasOpenings_inverse.size() == 0 )
-		{
+		if( ifc_element->m_HasOpenings_inverse.size() == 0 ) {
 			return;
 		}
 
 		// collect aggregated objects
 		const std::vector<weak_ptr<IfcRelAggregates> >& vec_decomposed_by = ifc_element->m_IsDecomposedBy_inverse;
 
-		for( auto& decomposed_by : vec_decomposed_by )
-		{
-			if( decomposed_by.expired() )
-			{
+		for( auto& decomposed_by : vec_decomposed_by ) {
+			if( decomposed_by.expired() ) {
 				continue;
 			}
 			shared_ptr<IfcRelAggregates> decomposed_by_aggregates(decomposed_by);
 			std::vector<shared_ptr<IfcObjectDefinition> >& vec_related_objects = decomposed_by_aggregates->m_RelatedObjects;
-			for( auto& related_object : vec_related_objects )
-			{
-				if( !related_object )
-				{
+			for( auto& related_object : vec_related_objects ) {
+				if( !related_object ) {
 					continue;
 				}
 
 				std::string guid;
-				if (related_object->m_GlobalId)
-				{
+				if (related_object->m_GlobalId) {
 					std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> converterX;
 					guid = converterX.to_bytes(related_object->m_GlobalId->m_value);
 
 					auto it_find_related_shape = m_product_shape_data.find(guid);
-					if( it_find_related_shape != m_product_shape_data.end() )
-					{
+					if( it_find_related_shape != m_product_shape_data.end() ) {
 						shared_ptr<ProductShapeData>& related_product_shape = it_find_related_shape->second;
 						bool res = m_representation_converter->subtractOpenings(ifc_element, related_product_shape, errmsg);
 					}

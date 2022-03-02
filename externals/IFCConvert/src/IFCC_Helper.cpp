@@ -5,6 +5,38 @@
 #include <fstream>
 
 #include <ifcpp/IFC4/include/IfcGloballyUniqueId.h>
+#include <ifcpp/IFC4/include/IfcWall.h>
+#include <ifcpp/IFC4/include/IfcBeam.h>
+#include <ifcpp/IFC4/include/IfcChimney.h>
+#include <ifcpp/IFC4/include/IfcColumn.h>
+#include <ifcpp/IFC4/include/IfcCovering.h>
+#include <ifcpp/IFC4/include/IfcCurtainWall.h>
+#include <ifcpp/IFC4/include/IfcDoor.h>
+#include <ifcpp/IFC4/include/IfcFooting.h>
+#include <ifcpp/IFC4/include/IfcMember.h>
+#include <ifcpp/IFC4/include/IfcPile.h>
+#include <ifcpp/IFC4/include/IfcPlate.h>
+#include <ifcpp/IFC4/include/IfcRailing.h>
+#include <ifcpp/IFC4/include/IfcRamp.h>
+#include <ifcpp/IFC4/include/IfcRampFlight.h>
+#include <ifcpp/IFC4/include/IfcRoof.h>
+#include <ifcpp/IFC4/include/IfcShadingDevice.h>
+#include <ifcpp/IFC4/include/IfcSlab.h>
+#include <ifcpp/IFC4/include/IfcStair.h>
+#include <ifcpp/IFC4/include/IfcStairFlight.h>
+#include <ifcpp/IFC4/include/IfcWall.h>
+#include <ifcpp/IFC4/include/IfcCivilElement.h>
+#include <ifcpp/IFC4/include/IfcDistributionElement.h>
+#include <ifcpp/IFC4/include/IfcElementAssembly.h>
+#include <ifcpp/IFC4/include/IfcElementComponent.h>
+#include <ifcpp/IFC4/include/IfcFurnishingElement.h>
+#include <ifcpp/IFC4/include/IfcGeographicElement.h>
+#include <ifcpp/IFC4/include/IfcTransportElement.h>
+#include <ifcpp/IFC4/include/IfcVirtualElement.h>
+#include <ifcpp/IFC4/include/IfcExternalSpatialElement.h>
+#include <ifcpp/IFC4/include/IfcSpatialZone.h>
+#include <ifcpp/IFC4/include/IfcWindow.h>
+#include <ifcpp/IFC4/include/IfcFeatureElement.h>
 
 #include <carve/mesh_simplify.hpp>
 
@@ -204,5 +236,69 @@ std::string objectTypeToString(ObjectTypes type) {
 	return "not defined";
 }
 
+ObjectTypes getObjectType(const std::shared_ptr<IfcObjectDefinition>& od) {
+	if(dynamic_pointer_cast<IfcElement>(od) == nullptr)
+		return OT_None;
+
+	if(dynamic_pointer_cast<IfcWall>(od) != nullptr)
+		return OT_Wall;
+	if(dynamic_pointer_cast<IfcBeam>(od) != nullptr)
+		return OT_Beam;
+	if(dynamic_pointer_cast<IfcChimney>(od) != nullptr)
+		return OT_Chimney;
+	if(dynamic_pointer_cast<IfcCovering>(od) != nullptr)
+		return OT_Covering;
+	if(dynamic_pointer_cast<IfcCurtainWall>(od) != nullptr)
+		return OT_CurtainWall;
+	if(dynamic_pointer_cast<IfcDoor>(od) != nullptr)
+		return OT_Door;
+	if(dynamic_pointer_cast<IfcFooting>(od) != nullptr)
+		return OT_Footing;
+	if(dynamic_pointer_cast<IfcMember>(od) != nullptr)
+		return OT_Member;
+	if(dynamic_pointer_cast<IfcPile>(od) != nullptr)
+		return OT_Pile;
+	if(dynamic_pointer_cast<IfcPlate>(od) != nullptr)
+		return OT_Plate;
+	if(dynamic_pointer_cast<IfcRailing>(od) != nullptr)
+		return OT_Railing;
+	if(dynamic_pointer_cast<IfcRamp>(od) != nullptr)
+		return OT_Ramp;
+	if(dynamic_pointer_cast<IfcRampFlight>(od) != nullptr)
+		return OT_RampFlight;
+	if(dynamic_pointer_cast<IfcRoof>(od) != nullptr)
+		return OT_Roof;
+	if(dynamic_pointer_cast<IfcShadingDevice>(od) != nullptr)
+		return OT_ShadingDevice;
+	if(dynamic_pointer_cast<IfcSlab>(od) != nullptr)
+		return OT_Slab;
+	if(dynamic_pointer_cast<IfcStair>(od) != nullptr)
+		return OT_Stair;
+	if(dynamic_pointer_cast<IfcStairFlight>(od) != nullptr)
+		return OT_StairFlight;
+	if(dynamic_pointer_cast<IfcWindow>(od) != nullptr)
+		return OT_Window;
+	if(dynamic_pointer_cast<IfcFeatureElement>(od) != nullptr)
+		return OT_FeatureElement;
+	if(dynamic_pointer_cast<IfcCivilElement>(od) != nullptr)
+		return OT_CivilElement;
+	if(dynamic_pointer_cast<IfcDistributionElement>(od) != nullptr)
+		return OT_DistributionElement;
+	if(dynamic_pointer_cast<IfcElementAssembly>(od) != nullptr)
+		return OT_ElementAssembly;
+	if(dynamic_pointer_cast<IfcElementComponent>(od) != nullptr)
+		return OT_ElementComponent;
+	if(dynamic_pointer_cast<IfcFurnishingElement>(od) != nullptr)
+		return OT_FurnishingElement;
+	if(dynamic_pointer_cast<IfcGeographicElement>(od) != nullptr)
+		return OT_GeographicalElement;
+	if(dynamic_pointer_cast<IfcTransportElement>(od) != nullptr)
+		return OT_TransportElement;
+	if(dynamic_pointer_cast<IfcVirtualElement>(od) != nullptr)
+		return OT_VirtualElement;
+
+	return OT_All;
+
+}
 
 } // end namespace

@@ -130,7 +130,6 @@ void IFCReader::splitShapeData() {
 		std::wstring guid = data->m_entity_guid;
 		const std::shared_ptr<IfcObjectDefinition> od = data->m_ifc_object_definition.lock();
 		if(dynamic_pointer_cast<IfcElement>(od) != nullptr) {
-			// i have an element
 			if(dynamic_pointer_cast<IfcWall>(od) != nullptr) {
 				m_elementEntitesShape[OT_Wall].push_back(data);
 			}

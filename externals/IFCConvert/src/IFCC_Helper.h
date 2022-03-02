@@ -108,7 +108,11 @@ bool nearEqual(const IBKMK::Vector3D& v1, const IBKMK::Vector3D& v2);
 /*! Return the area of the given polygon.*/
 double areaPolygon(const std::vector<IBKMK::Vector3D>& poly);
 
+/*! Return a string for the given object type.*/
 std::string objectTypeToString(ObjectTypes type);
+
+/*! Evaluate object type of given object definition.*/
+ObjectTypes getObjectType(const std::shared_ptr<IfcObjectDefinition>& od);
 
 } // end namespace
 
