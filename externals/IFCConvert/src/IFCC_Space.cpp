@@ -56,59 +56,10 @@ void Space::fetchGeometry(std::shared_ptr<ProductShapeData> productShape) {
 	if(productShape == nullptr)
 		return;
 
-	int repCount = productShape->m_vec_representations.size();
-	std::shared_ptr<RepresentationData> currentRep;
-	for(int repi = 0; repi<repCount; ++repi) {
-		currentRep = productShape->m_vec_representations[repi];
-		if(currentRep->m_representation_identifier == L"Body")
-			break;
-	}
+	surfacesFromRepresentation(productShape, m_surfacesOrg);
 
-	meshVector_t meshSetClosedFinal;
-	meshVector_t meshSetOpenFinal;
-	if(repCount > 0) {
-		int itemDataCount = currentRep->m_vec_item_data.size();
-		if(itemDataCount > 0) {
-			meshSetClosedFinal = currentRep->m_vec_item_data.front()->m_meshsets;
-			meshSetOpenFinal = currentRep->m_vec_item_data.front()->m_meshsets_open;
-		}
-	}
-
-	meshVector_t& currentMeshSets =  meshSetClosedFinal.empty() ? meshSetOpenFinal : meshSetClosedFinal;
-	simplifyMesh(currentMeshSets, false);
-
-	polyVector_t polyvectClosedFinal;
-	if(!meshSetClosedFinal.empty()) {
-		int msCount = meshSetClosedFinal.size();
-		for(int i=0; i<msCount; ++i) {
-			polyvectClosedFinal.push_back(std::vector<std::vector<std::vector<IBKMK::Vector3D>>>());
-			const carve::mesh::MeshSet<3>& currMeshSet = *meshSetClosedFinal[i];
-			convert(currMeshSet, polyvectClosedFinal.back());
-			// get surfaces
-			for(size_t mi=0; mi<currMeshSet.meshes.size(); ++mi) {
-				for(size_t fi =0; fi<currMeshSet.meshes[mi]->faces.size(); ++fi) {
-					if(currMeshSet.meshes[mi]->faces[fi] != nullptr)
-						m_surfacesOrg.emplace_back(Surface(currMeshSet.meshes[mi]->faces[fi]));
-				}
-			}
-		}
-	}
-	polyVector_t polyvectOpenFinal;
-	if(!meshSetOpenFinal.empty()) {
-		int msCount = meshSetOpenFinal.size();
-		for(int i=0; i<msCount; ++i) {
-			polyvectOpenFinal.push_back(std::vector<std::vector<std::vector<IBKMK::Vector3D>>>());
-			const carve::mesh::MeshSet<3>& currMeshSet = *meshSetOpenFinal[i];
-			convert(currMeshSet, polyvectOpenFinal.back());
-			// get surfaces
-			for(size_t mi=0; mi<currMeshSet.meshes.size(); ++mi) {
-				for(size_t fi =0; fi<currMeshSet.meshes[mi]->faces.size(); ++fi) {
-					if(currMeshSet.meshes[mi]->faces[fi] != nullptr)
-						m_surfacesOrg.emplace_back(Surface(currMeshSet.meshes[mi]->faces[fi]));
-				}
-			}
-		}
-	}
+	if(m_surfacesOrg.empty())
+		return;
 
 	for(size_t i=0; i<m_surfacesOrg.size()-1; ++i) {
 		for(size_t j=i+1; j<m_surfacesOrg.size(); ++j) {
@@ -290,7 +241,7 @@ void Space::createSpaceBoundariesForOpeningsFromOpenings(std::vector<std::shared
 	if(openings.empty())
 		return;
 
-	for(const auto& construction : buildingElements.m_openingElemnts) {
+	for(const auto& construction : buildingElements.m_openingElements) {
 		if(!construction->isSubSurfaceComponent())
 			continue;
 
@@ -352,7 +303,7 @@ bool Space::evaluateSpaceBoundaryTypes(const objectShapeTypeVector_t& shapes,
 			}
 		}
 		if(id == -1) {
-			for(const auto& opening : buildingElements.m_openingElemnts) {
+			for(const auto& opening : buildingElements.m_openingElements) {
 				if(opening->m_guid == sb->guidRelatedElement()) {
 					id = opening->m_id;
 				}
@@ -510,8 +461,8 @@ void Space::updateSpaceConnections(BuildingElementsCollector& buildingElements, 
 		}
 
 		// create connection vector for opening elements
-		for(size_t conI=0; conI<buildingElements.m_openingElemnts.size(); ++conI) {
-			std::shared_ptr<BuildingElement>& constr = buildingElements.m_openingElemnts[conI];
+		for(size_t conI=0; conI<buildingElements.m_openingElements.size(); ++conI) {
+			std::shared_ptr<BuildingElement>& constr = buildingElements.m_openingElements[conI];
 			double thickness = constr->thickness();
 			if(thickness <= 0)
 				thickness = 1;

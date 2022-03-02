@@ -200,6 +200,7 @@ struct Surface::IntersectionResult {
 	std::vector<std::vector<Surface>>	m_holesClipMinusBase;
 };
 
+void surfacesFromRepresentation(std::shared_ptr<ProductShapeData> productShape, std::vector<Surface>& surfaces);
 
 } // namespace IFCC
 

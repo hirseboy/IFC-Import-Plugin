@@ -61,17 +61,17 @@ public:
 
 	/*\brief method convertGeometry: Creates geometry for Carve from previously loaded BuildingModel model.
 	**/
-	void convertGeometry(bool performSubtractOpenings);
+	void convertGeometry(bool performSubtractOpenings, std::vector<std::string>& errmsgs);
 
 	void addVector3D(const vec3& point, std::vector<float>& target_array);
 
 	//\brief method convertIfcProduct: Creates geometry objects (meshset with connected vertex-edge-face graph) from an IfcProduct object
 	// caution: when using OpenMP, this method runs in parallel threads, so every write access to member variables needs a write lock
-	void convertIfcProductShape( shared_ptr<ProductShapeData>& product_shape, bool performSubtractOpenings );
+	void convertIfcProductShape( shared_ptr<ProductShapeData>& product_shape, bool performSubtractOpenings, std::string& errmsg );
 
 	bool hasRelatedOpenings(shared_ptr<ProductShapeData>& product_shape);
 
-	void subtractOpeningsInRelatedObjects(shared_ptr<ProductShapeData>& product_shape);
+	void subtractOpeningsInRelatedObjects(shared_ptr<ProductShapeData>& product_shape, std::string& errmsg);
 
 	virtual void messageTarget( void* ptr, shared_ptr<StatusCallback::Message> m );
 

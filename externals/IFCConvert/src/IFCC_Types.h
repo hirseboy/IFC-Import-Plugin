@@ -30,16 +30,20 @@ struct BuildingElementsCollector {
 	/*! All building elements which can be a opening.
 		This can be: Window, Door
 	*/
-	std::vector<std::shared_ptr<BuildingElement>>		m_openingElemnts;
+	std::vector<std::shared_ptr<BuildingElement>>		m_openingElements;
 
 	/*! All other building elements.*/
-	std::vector<std::shared_ptr<BuildingElement>>		m_otherElemnts;
+	std::vector<std::shared_ptr<BuildingElement>>		m_otherElements;
+
+	/*! Building elements without surfaces.*/
+	std::vector<std::shared_ptr<BuildingElement>>		m_elementsWithoutSurfaces;
 
 	void clear() {
 		m_constructionElements.clear();
 		m_constructionSimilarElements.clear();
-		m_openingElemnts.clear();
-		m_otherElemnts.clear();
+		m_openingElements.clear();
+		m_otherElements.clear();
+		m_elementsWithoutSurfaces.clear();
 	}
 
 	std::vector<std::shared_ptr<BuildingElement>> allConstructionElements() const {

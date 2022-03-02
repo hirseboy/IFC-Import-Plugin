@@ -53,6 +53,12 @@ void ImportWPConvert::on_pushButtonConvert_clicked() {
 	ui->textEdit->clear();
 	QStringList text;
 	if(res) {
+		if(!m_reader->m_errorText.empty()) {
+			text << tr("Errors while converting:");
+			QString errTxt = QString::fromStdString(m_reader->m_errorText);
+			text << errTxt.split("\n");
+			text << "";
+		}
 		text << tr("File converted successfully.");
 		text << m_reader->messages();
 		text << " ";

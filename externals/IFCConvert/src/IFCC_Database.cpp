@@ -122,18 +122,18 @@ TiXmlElement * Database::writeXML(TiXmlElement * parent) const {
 void Database::collectData(BuildingElementsCollector& elements) {
 	collectWindowsAndGlazings(elements.m_constructionElements);
 	collectWindowsAndGlazings(elements.m_constructionSimilarElements);
-	collectWindowsAndGlazings(elements.m_openingElemnts);
-	collectWindowsAndGlazings(elements.m_otherElemnts);
+	collectWindowsAndGlazings(elements.m_openingElements);
+	collectWindowsAndGlazings(elements.m_otherElements);
 
 	collectMaterialsAndConstructions(elements.m_constructionElements);
 	collectMaterialsAndConstructions(elements.m_constructionSimilarElements);
-	collectMaterialsAndConstructions(elements.m_openingElemnts);
-	collectMaterialsAndConstructions(elements.m_otherElemnts);
+	collectMaterialsAndConstructions(elements.m_openingElements);
+	collectMaterialsAndConstructions(elements.m_otherElements);
 
 	collectComponents(elements.m_constructionElements);
 	collectComponents(elements.m_constructionSimilarElements);
-	collectComponents(elements.m_openingElemnts);
-	collectComponents(elements.m_otherElemnts);
+	collectComponents(elements.m_openingElements);
+	collectComponents(elements.m_otherElements);
 }
 
 /*! Function searches for the highest Id in the given vector.

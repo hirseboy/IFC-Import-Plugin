@@ -44,7 +44,7 @@ TiXmlElement * Instances::writeXML(TiXmlElement * parent) const {
 int Instances::collectComponentInstances(BuildingElementsCollector& elements, Database& database, const Site& site) {
 	int res = collectComponentInstances(elements.m_constructionElements, database, site);
 	res += collectComponentInstances(elements.m_constructionSimilarElements, database, site);
-	res += collectComponentInstances(elements.m_openingElemnts, database, site);
+	res += collectComponentInstances(elements.m_openingElements, database, site);
 	return res;
 }
 

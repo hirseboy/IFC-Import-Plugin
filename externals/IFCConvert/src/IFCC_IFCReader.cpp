@@ -62,7 +62,6 @@ void IFCReader::clear() {
 	m_geometryConverter.setModel(m_model);
 	m_hasError = false;
 	m_hasWarning = false;
-	m_site = Site(0);
 	m_geometryConverter.clearMessagesCallback();
 	m_geometryConverter.resetModel();
 	m_geometryConverter.getGeomSettings()->setNumVerticesPerCircle(16);
@@ -72,8 +71,14 @@ void IFCReader::clear() {
 	m_warningText.clear();
 	m_progressText.clear();
 	m_readCompletedSuccessfully = false;
+
+	clearConvertData();
+}
+
+void IFCReader::clearConvertData() {
 	m_convertCompletedSuccessfully = false;
 
+	m_site = Site(0);
 	m_elementEntitesShape.clear();
 	m_spatialEntitesShape.clear();
 	m_spaceEntitesShape.clear();
@@ -259,23 +264,31 @@ void IFCReader::IFCReader::updateSpaceConnections() {
 }
 
 bool IFCReader::convert(bool useSpaceBoundaries) {
-	m_useSpaceBoundaries = useSpaceBoundaries;
 
-	m_convertCompletedSuccessfully = false;
 	if(!m_readCompletedSuccessfully) {
 		m_errorText = "Cannot convert data because file not readed";
 		return false;
 	}
 
+	clearConvertData();
+
+	m_useSpaceBoundaries = useSpaceBoundaries;
+
 	bool subtractOpenings = false;
 
-	std::string errtxt;
 	try {
 
 		// convert IFC geometric representations into Carve geometry
 		const double length_in_meter = m_geometryConverter.getBuildingModel()->getUnitConverter()->getLengthInMeterFactor();
 		m_geometryConverter.setCsgEps(1.5e-08 * length_in_meter);
-		m_geometryConverter.convertGeometry(subtractOpenings);
+		std::vector<std::string> errmsgs;
+		m_geometryConverter.convertGeometry(subtractOpenings,errmsgs);
+		if(!errmsgs.empty()) {
+			for(const std::string& str : errmsgs) {
+				m_errorText += str + "\n";
+			}
+			m_hasError = true;
+		}
 
 		splitShapeData();
 
@@ -304,18 +317,26 @@ bool IFCReader::convert(bool useSpaceBoundaries) {
 					if(isConstructionType(elems.first)) {
 						m_buildingElements.m_constructionElements.push_back( bElem);
 						m_buildingElements.m_constructionElements.back()->update(elem, m_openings);
+						if(m_buildingElements.m_constructionElements.back()->surfaces().empty())
+							m_buildingElements.m_elementsWithoutSurfaces.push_back(m_buildingElements.m_constructionElements.back());
 					}
 					else if(isConstructionSimilarType(elems.first)) {
 						m_buildingElements.m_constructionSimilarElements.push_back(bElem);
 						m_buildingElements.m_constructionSimilarElements.back()->update(elem, m_openings);
+						if(m_buildingElements.m_constructionSimilarElements.back()->surfaces().empty())
+							m_buildingElements.m_elementsWithoutSurfaces.push_back(m_buildingElements.m_constructionSimilarElements.back());
 					}
 					else if(isOpeningType(elems.first)) {
-						m_buildingElements.m_openingElemnts.push_back(bElem);
-						m_buildingElements.m_openingElemnts.back()->update(elem, m_openings);
+						m_buildingElements.m_openingElements.push_back(bElem);
+						m_buildingElements.m_openingElements.back()->update(elem, m_openings);
+						if(m_buildingElements.m_openingElements.back()->surfaces().empty())
+							m_buildingElements.m_elementsWithoutSurfaces.push_back(m_buildingElements.m_openingElements.back());
 					}
 					else {
-						m_buildingElements.m_otherElemnts.push_back(bElem);
-						m_buildingElements.m_otherElemnts.back()->update(elem, m_openings);
+						m_buildingElements.m_otherElements.push_back(bElem);
+						m_buildingElements.m_otherElements.back()->update(elem, m_openings);
+//						if(m_buildingElements.m_otherElements.back()->surfaces().empty())
+//							m_buildingElements.m_elementsWithoutSurfaces.push_back(m_buildingElements.m_otherElements.back());
 					}
 				}
 				else
@@ -323,8 +344,15 @@ bool IFCReader::convert(bool useSpaceBoundaries) {
 			}
 		}
 
-		for(std::shared_ptr<BuildingElement>& openingElement : m_buildingElements.m_openingElemnts) {
-			openingElement->fillOpeningProperties(m_buildingElements.m_constructionElements, m_openings);
+		for(std::shared_ptr<BuildingElement>& openingElement : m_buildingElements.m_openingElements) {
+			openingElement->setContainingElements(m_openings);
+			openingElement->setContainedConstructionThickesses(m_buildingElements.m_constructionElements);
+			openingElement->setContainedConstructionThickesses(m_buildingElements.m_constructionSimilarElements);
+		}
+
+		for(const auto& elem : m_buildingElements.m_elementsWithoutSurfaces) {
+			qDebug() << QString::fromStdString(objectTypeToString(elem->type()));
+			qDebug() << QString::fromStdString(elem->m_guid);
 		}
 
 
@@ -347,7 +375,7 @@ bool IFCReader::convert(bool useSpaceBoundaries) {
 
 		int failures = m_instances.collectComponentInstances(m_buildingElements, m_database, m_site);
 		if(failures > 0) {
-			m_errorText = "Not all surface can be matched to a component. failures: " + std::to_string(failures);
+			m_errorText += "\nNot all surface can be matched to a component. failures: " + std::to_string(failures);
 			m_hasError = true;
 //			return false;
 		}

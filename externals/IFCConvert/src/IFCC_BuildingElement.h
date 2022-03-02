@@ -130,13 +130,19 @@ public:
 	*/
 	void update(std::shared_ptr<ProductShapeData> productShape, std::vector<Opening>& openings);
 
-	/*! Get more opening properties.
+	/*! Only for opening constructions.
 		Set also the ids for construction which contains opening elements
 		Must be called after update().
-		\param elements All construction building elements in the project
 		\param openings All openings in the project
 	*/
-	void fillOpeningProperties(const std::vector<std::shared_ptr<BuildingElement>>& elements, const std::vector<Opening>& openings);
+	void setContainingElements(const std::vector<Opening>& openings);
+
+	/*! Only for opening constructions.
+		Fills vector of thicknesses of containing constructions.
+		Must be called after update() and setContainingElements().
+		\param elements All construction building elements in the project
+	*/
+	void setContainedConstructionThickesses(const std::vector<std::shared_ptr<BuildingElement>>& elements);
 
 	/*! Return the internal surface vector.*/
 	const std::vector<Surface>& surfaces() const;

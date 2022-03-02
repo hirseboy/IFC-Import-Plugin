@@ -30,6 +30,7 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OU
 #include <ifcpp/IFC4/include/IfcSpace.h>
 #include <ifcpp/IFC4/include/IfcWindow.h>
 #include <ifcpp/IFC4/include/IfcWall.h>
+#include <ifcpp/IFC4/include/IfcDoor.h>
 
 #include <carve/carve.hpp>
 
@@ -38,6 +39,7 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OU
 #include <ifcpp/geometry/Carve/CSG_Adapter.h>
 
 #include "IFCC_RepresentationConverter.h"
+#include "IFCC_Helper.h"
 
 
 namespace IFCC {
@@ -303,7 +305,7 @@ GeometryConverter::~GeometryConverter() {}
 
 	/*\brief method convertGeometry: Creates geometry for Carve from previously loaded BuildingModel model.
 	**/
-	void GeometryConverter::convertGeometry(bool performSubtractOpenings) {
+	void GeometryConverter::convertGeometry(bool performSubtractOpenings, std::vector<std::string>& errmsgs) {
 		progressTextCallback( L"Creating geometry..." );
 		progressValueCallback( 0, "geometry" );
 		m_product_shape_data.clear();
@@ -391,24 +393,37 @@ GeometryConverter::~GeometryConverter() {}
 					nameOfSpace = dynamic_pointer_cast<IfcWall>(object_def)->m_Name->m_value;
 					int i=0;
 				}
+				if( dynamic_pointer_cast<IfcDoor>(object_def)) {
+					nameOfSpace = dynamic_pointer_cast<IfcDoor>(object_def)->m_Name->m_value;
+					int i=0;
+				}
 
 				try {
-					convertIfcProductShape( product_geom_input_data, performSubtractOpenings );
+					std::string errmsg;
+					convertIfcProductShape( product_geom_input_data, performSubtractOpenings, errmsg );
+					if(!errmsg.empty()) {
+						errmsg += " in " + std::to_string(entity_id);
+						errmsgs.push_back(errmsg);
+					}
 				}
 				catch( OutOfMemoryException& e ) {
 					throw e;
 				}
 				catch( BuildingException& e ) {
 					thread_err << e.what();
+					errmsgs.push_back(std::string(e.what()) + " in " + std::to_string(entity_id));
 				}
 				catch( carve::exception& e ) {
 					thread_err << e.str();
+					errmsgs.push_back(e.str() + " in " + std::to_string(entity_id));
 				}
 				catch( std::exception& e ) {
 					thread_err << e.what();
+					errmsgs.push_back(std::string(e.what()) + " in " + std::to_string(entity_id));
 				}
 				catch( ... ) {
 					thread_err << "undefined error, product id " << entity_id;
+					errmsgs.push_back("undefined error, product id " + std::to_string(entity_id));
 				}
 
 				{
@@ -444,8 +459,14 @@ GeometryConverter::~GeometryConverter() {}
 		for( auto it = map_products_ptr->begin(); it != map_products_ptr->end(); ++it ) {
 			shared_ptr<ProductShapeData> product_geom_input_data = it->second;
 			try {
-				if(performSubtractOpenings)
-					subtractOpeningsInRelatedObjects(product_geom_input_data);
+				if(performSubtractOpenings) {
+					std::string errmsg;
+					subtractOpeningsInRelatedObjects(product_geom_input_data, errmsg);
+					if(!errmsg.empty()) {
+						errmsg += " in " + ws2s(product_geom_input_data->m_entity_guid);
+						errmsgs.push_back(errmsg);
+					}
+				}
 			}
 			catch( OutOfMemoryException& e ) {
 				throw e;
@@ -528,7 +549,8 @@ GeometryConverter::~GeometryConverter() {}
 
 	//\brief method convertIfcProduct: Creates geometry objects (meshset with connected vertex-edge-face graph) from an IfcProduct object
 	// caution: when using OpenMP, this method runs in parallel threads, so every write access to member variables needs a write lock
-	void GeometryConverter::convertIfcProductShape( shared_ptr<ProductShapeData>& product_shape, bool performSubtractOpenings ) {
+	void GeometryConverter::convertIfcProductShape( shared_ptr<ProductShapeData>& product_shape, bool performSubtractOpenings,
+													std::string& errmsg) {
 		if( product_shape->m_ifc_object_definition.expired() ) {
 			return;
 		}
@@ -568,7 +590,7 @@ GeometryConverter::~GeometryConverter() {}
 			try
 			{
 				shared_ptr<RepresentationData> representation_data( new RepresentationData() );
-				m_representation_converter->convertIfcRepresentation( representation, representation_data );
+				bool res = m_representation_converter->convertIfcRepresentation( representation, representation_data, errmsg );
 				product_shape->m_vec_representations.push_back( representation_data );
 				representation_data->m_parent_product = product_shape;
 			}
@@ -602,7 +624,7 @@ GeometryConverter::~GeometryConverter() {}
 		{
 			// handle openings
 			if(performSubtractOpenings)
-				m_representation_converter->subtractOpenings(ifc_element, product_shape);
+				bool res = m_representation_converter->subtractOpenings(ifc_element, product_shape, errmsg);
 
 			// handle styles on IfcElement level
 			std::vector<shared_ptr<AppearanceData> > vec_apperances;
@@ -699,7 +721,7 @@ GeometryConverter::~GeometryConverter() {}
 		return false;
 	}
 
-	void GeometryConverter::subtractOpeningsInRelatedObjects(shared_ptr<ProductShapeData>& product_shape)
+	void GeometryConverter::subtractOpeningsInRelatedObjects(shared_ptr<ProductShapeData>& product_shape, std::string& errmsg)
 	{
 		if( product_shape->m_ifc_object_definition.expired() )
 		{
@@ -752,7 +774,7 @@ GeometryConverter::~GeometryConverter() {}
 					if( it_find_related_shape != m_product_shape_data.end() )
 					{
 						shared_ptr<ProductShapeData>& related_product_shape = it_find_related_shape->second;
-						m_representation_converter->subtractOpenings(ifc_element, related_product_shape);
+						bool res = m_representation_converter->subtractOpenings(ifc_element, related_product_shape, errmsg);
 					}
 				}
 			}

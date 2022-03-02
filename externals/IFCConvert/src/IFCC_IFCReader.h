@@ -39,6 +39,9 @@ public:
 	/*! Clear complete data structure.*/
 	void clear();
 
+	/*! Clear all data sets filled by convert function.*/
+	void clearConvertData();
+
 	/*! Read the IFC file.*/
 	bool read(const IBK::Path& filename, bool ignoreReadError);
 

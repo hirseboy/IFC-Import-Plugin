@@ -198,7 +198,10 @@ bool SpaceBoundary::fetchGeometryFromIFC(shared_ptr<UnitConverter>& unit_convert
 				if(nSurface != nullptr) {
 					shared_ptr<GeometrySettings> geom_settings = shared_ptr<GeometrySettings>( new GeometrySettings() );
 					RepresentationConverter repConvert(geom_settings, unit_converter);
-					repConvert.convertIfcGeometricRepresentationItem(nSurface,item_data);
+					bool res = repConvert.convertIfcGeometricRepresentationItem(nSurface,item_data, errmsg);
+					if(!res)
+						return false;
+
 					if(spaceTransformation != carve::math::Matrix::IDENT()) {
 						item_data->applyTransformToItem(spaceTransformation);
 					}

@@ -54,6 +54,7 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OU
 #include <ifcpp/IFC4/include/IfcRepresentationMap.h>
 #include <ifcpp/IFC4/include/IfcTessellatedItem.h>
 #include <ifcpp/IFC4/include/IfcTextLiteral.h>
+#include <ifcpp/IFC4/include/IfcAdvancedBrep.h>
 
 #include <ifcpp/geometry/Carve/IncludeCarveHeaders.h>
 #include <ifcpp/geometry/Carve/GeometryInputData.h>
@@ -172,7 +173,8 @@ RepresentationConverter::RepresentationConverter( shared_ptr<GeometrySettings> g
 		}
 	}
 
-	void RepresentationConverter::convertIfcRepresentation( const shared_ptr<IfcRepresentation>& ifc_representation, shared_ptr<RepresentationData>& representation_data )
+	bool RepresentationConverter::convertIfcRepresentation( const shared_ptr<IfcRepresentation>& ifc_representation,
+															shared_ptr<RepresentationData>& representation_data, std::string& errmsg )
 	{
 		if( ifc_representation->m_RepresentationIdentifier )
 		{
@@ -239,21 +241,23 @@ RepresentationConverter::RepresentationConverter( shared_ptr<GeometrySettings> g
 				geom_item_data->m_parent_representation = representation_data;
 				geom_item_data->m_ifc_item = geom_item;
 
-				try
-				{
-					convertIfcGeometricRepresentationItem( geom_item, geom_item_data );
+				try {
+					bool res = convertIfcGeometricRepresentationItem( geom_item, geom_item_data, errmsg );
+					if(!res)
+						return false;
 				}
-				catch( OutOfMemoryException& e )
-				{
+				catch( OutOfMemoryException& e ) {
 					throw e;
 				}
-				catch( BuildingException& e )
-				{
+				catch( BuildingException& e ) {
 					messageCallback( e.what(), StatusCallback::MESSAGE_TYPE_ERROR, "", representation_item.get() );
+					errmsg = e.what();
+					return false;
 				}
-				catch( std::exception& e )
-				{
+				catch( std::exception& e ) {
 					messageCallback( e.what(), StatusCallback::MESSAGE_TYPE_ERROR, __FUNC__, representation_item.get() );
+					errmsg = e.what();
+					return false;
 				}
 				continue;
 			}
@@ -305,7 +309,9 @@ RepresentationConverter::RepresentationConverter( shared_ptr<GeometrySettings> g
 
 				try
 				{
-					convertIfcRepresentation( mapped_representation, mapped_input_data );
+					bool res = convertIfcRepresentation( mapped_representation, mapped_input_data, errmsg );
+					if(!res)
+						return false;
 				}
 				catch( OutOfMemoryException& e )
 				{
@@ -314,10 +320,14 @@ RepresentationConverter::RepresentationConverter( shared_ptr<GeometrySettings> g
 				catch( BuildingException& e )
 				{
 					messageCallback( e.what(), StatusCallback::MESSAGE_TYPE_ERROR, "" );
+					errmsg = e.what();
+					return false;
 				}
 				catch( std::exception& e )
 				{
 					messageCallback( e.what(), StatusCallback::MESSAGE_TYPE_ERROR, __FUNC__ );
+					errmsg = e.what();
+					return false;
 				}
 
 				if( m_geom_settings->handleStyledItems() )
@@ -393,6 +403,8 @@ RepresentationConverter::RepresentationConverter( shared_ptr<GeometrySettings> g
 			}
 
 			messageCallback( "unhandled representation", StatusCallback::MESSAGE_TYPE_WARNING, __FUNC__, representation_item.get() );
+			errmsg = "unhandled representation";
+			return false;
 		}
 
 		if( m_geom_settings->handleLayerAssignments() )
@@ -424,9 +436,11 @@ RepresentationConverter::RepresentationConverter( shared_ptr<GeometrySettings> g
 				}
 			}
 		}
+		return true;
 	}
 
-	void RepresentationConverter::convertIfcGeometricRepresentationItem( const shared_ptr<IfcGeometricRepresentationItem>& geom_item, shared_ptr<ItemShapeData> item_data )
+	bool RepresentationConverter::convertIfcGeometricRepresentationItem( const shared_ptr<IfcGeometricRepresentationItem>& geom_item,
+																		 shared_ptr<ItemShapeData> item_data, std::string& errmsg )
 	{
 		//ENTITY IfcGeometricRepresentationItem
 		//ABSTRACT SUPERTYPE OF(ONEOF(IfcAnnotationFillArea, IfcBooleanResult, IfcBoundingBox, IfcCartesianPointList, IfcCartesianTransformationOperator,
@@ -447,7 +461,7 @@ RepresentationConverter::RepresentationConverter( shared_ptr<GeometrySettings> g
 			shared_ptr<IfcPositiveLengthMeasure> x_dim = bbox->m_XDim;
 			shared_ptr<IfcPositiveLengthMeasure> y_dim = bbox->m_YDim;
 			shared_ptr<IfcPositiveLengthMeasure> z_dim = bbox->m_ZDim;
-			return;
+			return true;
 		}
 
 		shared_ptr<IfcFaceBasedSurfaceModel> surface_model = dynamic_pointer_cast<IfcFaceBasedSurfaceModel>( geom_item );
@@ -461,7 +475,7 @@ RepresentationConverter::RepresentationConverter( shared_ptr<GeometrySettings> g
 				m_face_converter->convertIfcFaceList( vec_ifc_faces, item_data, FaceConverter::SHELL_TYPE_UNKONWN );
 			}
 
-			return;
+			return true;
 		}
 
 		shared_ptr<IfcBooleanResult> boolean_result = dynamic_pointer_cast<IfcBooleanResult>( geom_item );
@@ -470,14 +484,19 @@ RepresentationConverter::RepresentationConverter( shared_ptr<GeometrySettings> g
 			m_solid_converter->convertIfcBooleanResult( boolean_result, item_data );
 
 //			meshDump(*item_data->m_meshsets.front(), "Result after convertBoolean", "g:/temp/meshsets.txt");
-			return;
+			return true;
 		}
 
 		shared_ptr<IfcSolidModel> solid_model = dynamic_pointer_cast<IfcSolidModel>( geom_item );
 		if( solid_model )
 		{
+			shared_ptr<IfcAdvancedBrep> advanced_brep = dynamic_pointer_cast<IfcAdvancedBrep>( solid_model );
+			if(advanced_brep) {
+				errmsg = "Advanced brep not implemented";
+				return false;
+			}
 			m_solid_converter->convertIfcSolidModel( solid_model, item_data );
-			return;
+			return true;
 		}
 
 		shared_ptr<IfcCurve> ifc_curve = dynamic_pointer_cast<IfcCurve>( geom_item );
@@ -501,7 +520,7 @@ RepresentationConverter::RepresentationConverter( shared_ptr<GeometrySettings> g
 			}
 			item_data->m_polylines.push_back( polyline_data );
 
-			return;
+			return true;
 		}
 
 		shared_ptr<IfcShellBasedSurfaceModel> shell_based_surface_model = dynamic_pointer_cast<IfcShellBasedSurfaceModel>( geom_item );
@@ -529,7 +548,7 @@ RepresentationConverter::RepresentationConverter( shared_ptr<GeometrySettings> g
 				}
 			}
 
-			return;
+			return true;
 		}
 
 		shared_ptr<IfcSurface> ifc_surface = dynamic_pointer_cast<IfcSurface>( geom_item );
@@ -537,7 +556,7 @@ RepresentationConverter::RepresentationConverter( shared_ptr<GeometrySettings> g
 		{
 			shared_ptr<SurfaceProxy> surface_proxy;
 			m_face_converter->convertIfcSurface( ifc_surface, item_data, surface_proxy );
-			return;
+			return true;
 		}
 
 		shared_ptr<IfcPolyline> poly_line = dynamic_pointer_cast<IfcPolyline>( geom_item );
@@ -563,7 +582,7 @@ RepresentationConverter::RepresentationConverter( shared_ptr<GeometrySettings> g
 			}
 			item_data->m_polylines.push_back( polyline_data );
 
-			return;
+			return true;
 		}
 
 		shared_ptr<IfcGeometricSet> geometric_set = dynamic_pointer_cast<IfcGeometricSet>( geom_item );
@@ -622,16 +641,16 @@ RepresentationConverter::RepresentationConverter( shared_ptr<GeometrySettings> g
 			if( geometric_curve_set )
 			{
 				// no additional attributes
-				return;
+				return true;
 			}
-			return;
+			return true;
 		}
 
 		shared_ptr<IfcSectionedSpine> sectioned_spine = dynamic_pointer_cast<IfcSectionedSpine>( geom_item );
 		if( sectioned_spine )
 		{
 			m_solid_converter->convertIfcSectionedSpine( sectioned_spine, item_data );
-			return;
+			return true;
 		}
 
 		shared_ptr<IfcTextLiteral> text_literal = dynamic_pointer_cast<IfcTextLiteral>( geom_item );
@@ -679,7 +698,7 @@ RepresentationConverter::RepresentationConverter( shared_ptr<GeometrySettings> g
 
 				item_data->m_vec_text_literals.push_back( text_item_data );
 			}
-			return;
+			return true;
 		}
 
 		shared_ptr<IfcAnnotationFillArea> annotation_fill_area = dynamic_pointer_cast<IfcAnnotationFillArea>( geom_item );
@@ -711,7 +730,7 @@ RepresentationConverter::RepresentationConverter( shared_ptr<GeometrySettings> g
 			Sweeper::createTriangulated3DFace( face_loops, outer_boundary.get(), poly_cache );
 			item_data->addOpenPolyhedron( poly_cache.m_poly_data );
 
-			return;
+			return true;
 		}
 
 		shared_ptr<IfcPoint> ifc_point = dynamic_pointer_cast<IfcPoint>( geom_item );
@@ -727,7 +746,7 @@ RepresentationConverter::RepresentationConverter( shared_ptr<GeometrySettings> g
 				{
 					item_data->addPoint( point );
 				}
-				return;
+				return true;
 			}
 		}
 
@@ -735,10 +754,13 @@ RepresentationConverter::RepresentationConverter( shared_ptr<GeometrySettings> g
 		if(ifc_tessel_item)
 		{
 			m_tessel_converter->convertTessellatedItem(ifc_tessel_item, item_data);
-			return;
+			return true;
 		}
 
 		messageCallback( "Unhandled IFC Representation", StatusCallback::MESSAGE_TYPE_WARNING, __FUNC__, geom_item.get() );
+
+		errmsg = "Unknown IFC representation";
+		return false;
 	}
 
 	void RepresentationConverter::convertTopologicalRepresentationItem( const shared_ptr<IfcTopologicalRepresentationItem>& topological_item, shared_ptr<ItemShapeData> topo_item_data )
@@ -939,13 +961,14 @@ RepresentationConverter::RepresentationConverter( shared_ptr<GeometrySettings> g
 		messageCallback( "Unhandled IFC Representation", StatusCallback::MESSAGE_TYPE_WARNING, __FUNC__, topological_item.get() );
 	}
 
-	void RepresentationConverter::subtractOpenings( const shared_ptr<IfcElement>& ifc_element, shared_ptr<ProductShapeData>& product_shape )
+	bool RepresentationConverter::subtractOpenings( const shared_ptr<IfcElement>& ifc_element, shared_ptr<ProductShapeData>& product_shape,
+													std::string& errmsg )
 	{
 		std::vector<shared_ptr<ProductShapeData> > vec_opening_data;
 		std::vector<weak_ptr<IfcRelVoidsElement> > vec_rel_voids( ifc_element->m_HasOpenings_inverse );
 		if( vec_rel_voids.size() == 0 )
 		{
-			return;
+			return true;
 		}
 		const double length_factor = m_unit_converter->getLengthInMeterFactor();
 
@@ -994,7 +1017,9 @@ RepresentationConverter::RepresentationConverter( shared_ptr<GeometrySettings> g
 				// TODO: Representation caching, one element could be used for several openings
 				try
 				{
-					convertIfcRepresentation( ifc_opening_representation, opening_representation_data );
+					bool res = convertIfcRepresentation( ifc_opening_representation, opening_representation_data, errmsg );
+					if(!res)
+						return false;
 				}
 				catch( OutOfMemoryException& e )
 				{
@@ -1003,10 +1028,14 @@ RepresentationConverter::RepresentationConverter( shared_ptr<GeometrySettings> g
 				catch( BuildingException& e )
 				{
 					messageCallback( e.what(), StatusCallback::MESSAGE_TYPE_ERROR, "", ifc_element.get() );
+					errmsg = e.what();
+					return false;
 				}
 				catch( std::exception& e )
 				{
 					messageCallback( e.what(), StatusCallback::MESSAGE_TYPE_ERROR, "", ifc_element.get() );
+					errmsg = e.what();
+					return false;
 				}
 
 				product_shape_opening->m_vec_representations.push_back( opening_representation_data );
@@ -1126,6 +1155,7 @@ RepresentationConverter::RepresentationConverter( shared_ptr<GeometrySettings> g
 				}
 			}
 		}
+		return true;
 	}
 
 } // end namespace

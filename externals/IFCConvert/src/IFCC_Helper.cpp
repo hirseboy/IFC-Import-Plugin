@@ -153,6 +153,9 @@ bool nearEqual(const IBKMK::Vector3D& v1, const IBKMK::Vector3D& v2) {
 
 double areaPolygon(const std::vector<IBKMK::Vector3D>& poly) {
 	IBKMK::Vector3D tmp;
+	if(poly.empty())
+		return 0;
+
 	for(size_t i=0; i<poly.size()-1; ++i) {
 		tmp = tmp + poly[i].crossProduct(poly[(i+1)%poly.size()]);
 	}
