@@ -328,6 +328,27 @@ VICUS::Surface Surface::getVicusObject(std::map<int,int>& idMap, int& nextid) co
 	return res;
 }
 
+void surfacesFromMeshSets(std::vector<shared_ptr<carve::mesh::MeshSet<3> > >& meshsets, std::vector<Surface>& surfaces) {
+	if(meshsets.empty())
+		return;
+
+	// try to simplify meshes by merging all coplanar faces
+	simplifyMesh(meshsets, false);
+	polyVector_t polyvectClosedFinal;
+	int msCount = meshsets.size();
+	for(int i=0; i<msCount; ++i) {
+		polyvectClosedFinal.push_back(std::vector<std::vector<std::vector<IBKMK::Vector3D>>>());
+		const carve::mesh::MeshSet<3>& currMeshSet = *meshsets[i];
+		convert(currMeshSet, polyvectClosedFinal.back());
+		// get surfaces
+		for(size_t mi=0; mi<currMeshSet.meshes.size(); ++mi) {
+			for(size_t fi =0; fi<currMeshSet.meshes[mi]->faces.size(); ++fi) {
+				if(currMeshSet.meshes[mi]->faces[fi] != nullptr)
+					surfaces.emplace_back(Surface(currMeshSet.meshes[mi]->faces[fi]));
+			}
+		}
+	}
+}
 
 void surfacesFromRepresentation(std::shared_ptr<ProductShapeData> productShape, std::vector<Surface>& surfaces) {
 
@@ -359,50 +380,32 @@ void surfacesFromRepresentation(std::shared_ptr<ProductShapeData> productShape, 
 		meshVector_t meshSetClosedFinal;
 		meshVector_t meshSetOpenFinal;
 		for(const auto& shapeData : bodyRep->m_vec_item_data) {
-			if(!shapeData->m_meshsets.empty()) {
-				meshSetClosedFinal.insert(meshSetClosedFinal.begin(), shapeData->m_meshsets.begin(), shapeData->m_meshsets.end());
+			const std::vector<shared_ptr<carve::mesh::MeshSet<3> > >& mc = shapeData->m_meshsets;
+			if(!mc.empty()) {
+				meshSetClosedFinal.insert(meshSetClosedFinal.begin(), mc.begin(), mc.end());
 			}
-			if(!shapeData->m_meshsets_open.empty()) {
-				meshSetOpenFinal.insert(meshSetOpenFinal.begin(), shapeData->m_meshsets.begin(), shapeData->m_meshsets.end());
+			const std::vector<shared_ptr<carve::mesh::MeshSet<3> > >& mo = shapeData->m_meshsets_open;
+			if(!mo.empty()) {
+				meshSetOpenFinal.insert(meshSetOpenFinal.begin(), mo.begin(), mo.end());
 			}
 		}
 
-		if(!meshSetClosedFinal.empty()) {
-			// try to simplify meshes by merging all coplanar faces
-			simplifyMesh(meshSetClosedFinal, false);
-			polyVector_t polyvectClosedFinal;
-			int msCount = meshSetClosedFinal.size();
-			for(int i=0; i<msCount; ++i) {
-				polyvectClosedFinal.push_back(std::vector<std::vector<std::vector<IBKMK::Vector3D>>>());
-				const carve::mesh::MeshSet<3>& currMeshSet = *meshSetClosedFinal[i];
-				convert(currMeshSet, polyvectClosedFinal.back());
-				// get surfaces
-				for(size_t mi=0; mi<currMeshSet.meshes.size(); ++mi) {
-					for(size_t fi =0; fi<currMeshSet.meshes[mi]->faces.size(); ++fi) {
-						if(currMeshSet.meshes[mi]->faces[fi] != nullptr)
-							surfaces.emplace_back(Surface(currMeshSet.meshes[mi]->faces[fi]));
-					}
-				}
-			}
-		}
-		if(!meshSetOpenFinal.empty()) {
-			simplifyMesh(meshSetOpenFinal, false);
-			polyVector_t polyvectOpenFinal;
-			int msCount = meshSetOpenFinal.size();
-			for(int i=0; i<msCount; ++i) {
-				polyvectOpenFinal.push_back(std::vector<std::vector<std::vector<IBKMK::Vector3D>>>());
-				const carve::mesh::MeshSet<3>& currMeshSet = *meshSetOpenFinal[i];
-				convert(currMeshSet, polyvectOpenFinal.back());
-				// get surfaces
-				for(size_t mi=0; mi<currMeshSet.meshes.size(); ++mi) {
-					for(size_t fi =0; fi<currMeshSet.meshes[mi]->faces.size(); ++fi) {
-						if(currMeshSet.meshes[mi]->faces[fi] != nullptr)
-							surfaces.emplace_back(Surface(currMeshSet.meshes[mi]->faces[fi]));
-					}
-				}
-			}
-		}
+		surfacesFromMeshSets(meshSetClosedFinal, surfaces);
+		surfacesFromMeshSets(meshSetOpenFinal, surfaces);
 	}
+
+	if(referenceRep) {
+		///< \todo Implement
+	}
+
+	if(surfaceRep) {
+		///< \todo Implement
+	}
+
+	if(profileRep) {
+		///< \todo Implement
+	}
+
 }
 
 

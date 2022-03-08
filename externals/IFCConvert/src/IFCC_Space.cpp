@@ -56,6 +56,10 @@ void Space::fetchGeometry(std::shared_ptr<ProductShapeData> productShape) {
 	if(productShape == nullptr)
 		return;
 
+	if(m_name == "34") {
+		int i=0;
+	}
+
 	surfacesFromRepresentation(productShape, m_surfacesOrg);
 
 	if(m_surfacesOrg.empty())
@@ -145,6 +149,7 @@ std::vector<std::shared_ptr<SpaceBoundary>> Space::createSpaceBoundaries(const B
 	std::vector<Surface> surfaces(m_surfacesOrg);
 	std::vector<std::shared_ptr<SpaceBoundary>> spaceBoundaries;
 	std::vector<std::shared_ptr<BuildingElement>> constructionElements = buildingElements.allConstructionElements();
+
 	for(const auto& construction : constructionElements) {
 		double dist = construction->thickness();
 		double maxConstructionDist = 0;
