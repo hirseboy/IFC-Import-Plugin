@@ -31,7 +31,7 @@ public:
 	bool set(std::shared_ptr<IfcSpatialStructureElement> ifcElement);
 
 	/*! Create storey vector from original vector and given shapes.*/
-	void fetchStoreys(const std::map<std::string,shared_ptr<ProductShapeData>>& openings);
+	void fetchStoreys(const objectShapeGUIDMap_t& storeys, const objectShapeGUIDMap_t& spaces);
 
 	/*! Update storeys and related spaces and space boundaries.
 		\param elementShapes Product shape vector for all IfcElement based objects in project.

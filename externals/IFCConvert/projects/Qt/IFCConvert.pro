@@ -60,6 +60,7 @@ SOURCES +=  \
 	../../src/IFCC_PlacementConverter.cpp \
 	../../src/IFCC_RepresentationConverter.cpp \
 	../../src/IFCC_SolidModelConverter.cpp \
+	../../src/IFCC_TessellatedItemConverter.cpp \
 	../../src/IFCC_Window.cpp \
 	../../src/IFCC_WindowGlazing.cpp
 
@@ -86,6 +87,7 @@ HEADERS +=  \
 	../../src/IFCC_SubSurface.h \
 	../../src/IFCC_SubSurfaceComponent.h \
 	../../src/IFCC_Surface.h \
+	../../src/IFCC_TessellatedItemConverter.h \
 	../../src/IFCC_Types.h \
 	../../src/IFCC_GeometryConverter.h \
 	../../src/IFCC_PlacementConverter.h \

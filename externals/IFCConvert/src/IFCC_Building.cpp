@@ -38,16 +38,25 @@ bool Building::set(std::shared_ptr<IfcSpatialStructureElement> ifcElement) {
 	return true;
 }
 
-void Building::fetchStoreys(const std::map<std::string,shared_ptr<ProductShapeData>>& storeys) {
-	for(const auto& shape : storeys) {
-		for(const auto& opOrg : m_storeysOriginal) {
-			std::string guid = guidFromObject(opOrg.get());
-			if(shape.first == guid) {
-				std::shared_ptr<BuildingStorey> storey = std::shared_ptr<BuildingStorey>(new BuildingStorey(GUID_maker::instance().guid()));
-				if(storey->set(opOrg)) {
-					m_storeys.push_back(storey);
+void Building::fetchStoreys(const objectShapeGUIDMap_t& storeys, const objectShapeGUIDMap_t& spaces) {
+	if(storeys.empty()) {
+		std::shared_ptr<BuildingStorey> storey = std::shared_ptr<BuildingStorey>(new BuildingStorey(GUID_maker::instance().guid()));
+		if(storey->set(spaces)) {
+			storey->m_name = "Only one storey";
+			m_storeys.push_back(storey);
+		}
+	}
+	else {
+		for(const auto& shape : storeys) {
+			for(const auto& opOrg : m_storeysOriginal) {
+				std::string guid = guidFromObject(opOrg.get());
+				if(shape.first == guid) {
+					std::shared_ptr<BuildingStorey> storey = std::shared_ptr<BuildingStorey>(new BuildingStorey(GUID_maker::instance().guid()));
+					if(storey->set(opOrg)) {
+						m_storeys.push_back(storey);
+					}
+					break;
 				}
-				break;
 			}
 		}
 	}

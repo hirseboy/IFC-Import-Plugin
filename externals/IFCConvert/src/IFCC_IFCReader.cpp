@@ -361,7 +361,7 @@ bool IFCReader::convert(bool useSpaceBoundaries) {
 			std::shared_ptr<IfcSpatialStructureElement> se = std::dynamic_pointer_cast<IfcSpatialStructureElement>(m_siteShape->m_ifc_object_definition.lock());
 			m_site.set(se, m_siteShape, m_buildingsShape);
 			for(auto& building : m_site.m_buildings) {
-				building->fetchStoreys(m_storeysShape);
+				building->fetchStoreys(m_storeysShape, m_spaceEntitesShape);
 				building->updateStoreys(m_elementEntitesShape, m_spaceEntitesShape, m_geometryConverter.getBuildingModel()->getUnitConverter(),
 									   m_buildingElements, m_openings, m_useSpaceBoundaries);
 			}

@@ -11,6 +11,7 @@
 
 #include "IFCC_EntityBase.h"
 #include "IFCC_Space.h"
+#include "IFCC_Types.h"
 
 namespace IFCC {
 
@@ -30,6 +31,8 @@ public:
 		\param ifcElement IFC object for a building storey. It uses the base class of IfcBuildingStorey.
 	*/
 	bool set(std::shared_ptr<IfcSpatialStructureElement> ifcElement);
+
+	bool set(const objectShapeGUIDMap_t& spaces);
 
 	/*! Create spaces vector from original vector and given shapes.
 		\param shapes Product shape for all spaces in project.

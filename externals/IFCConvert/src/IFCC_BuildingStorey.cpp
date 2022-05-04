@@ -37,6 +37,22 @@ bool BuildingStorey::set(std::shared_ptr<IfcSpatialStructureElement> ifcElement)
 	return true;
 }
 
+// add all storeys in project to this storey
+// function should be used if no storey exist in project
+bool BuildingStorey::set(const objectShapeGUIDMap_t& spaces) {
+	for(const auto& contObj : spaces) {
+		const shared_ptr<ProductShapeData>& shape = contObj.second;
+		if( shape ) {
+			std::shared_ptr<IfcObjectDefinition> objdef(shape->m_ifc_object_definition);
+			shared_ptr<IfcSpace> space = std::dynamic_pointer_cast<IfcSpace>(objdef);
+			if(space != nullptr)
+				m_spacesOriginal.push_back(space);
+		}
+	}
+	return !m_spacesOriginal.empty();
+}
+
+
 void BuildingStorey::fetchSpaces(const std::map<std::string,shared_ptr<ProductShapeData>>& shapes,
 								 shared_ptr<UnitConverter>& unit_converter) {
 	for(const auto& shape : shapes) {
