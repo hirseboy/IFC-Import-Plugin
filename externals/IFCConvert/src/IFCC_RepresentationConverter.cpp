@@ -23,6 +23,7 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OU
 #include <ifcpp/model/BasicTypes.h>
 #include <ifcpp/model/StatusCallback.h>
 #include <ifcpp/model/UnitConverter.h>
+
 #include <ifcpp/IFC4/include/IfcAnnotationFillArea.h>
 #include <ifcpp/IFC4/include/IfcBooleanResult.h>
 #include <ifcpp/IFC4/include/IfcBoundingBox.h>
@@ -64,7 +65,6 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OU
 #include <ifcpp/geometry/Carve/CurveConverter.h>
 #include <ifcpp/geometry/Carve/FaceConverter.h>
 #include <ifcpp/geometry/Carve/ProfileCache.h>
-#include <ifcpp/geometry/Carve/TessellatedItemConverter.h>
 
 #include "IFCC_SolidModelConverter.h"
 
@@ -160,6 +160,7 @@ RepresentationConverter::RepresentationConverter( shared_ptr<GeometrySettings> g
 		m_sweeper->m_unit_converter = unit_converter;
 		m_placement_converter->m_unit_converter = unit_converter;
 		m_face_converter->m_unit_converter = unit_converter;
+		m_tessel_converter->m_unit_converter = unit_converter;
 	}
 
 	void RepresentationConverter::convertRepresentationStyle( const shared_ptr<IfcRepresentationItem>& representation_item, std::vector<shared_ptr<AppearanceData> >& vec_appearance_data )
