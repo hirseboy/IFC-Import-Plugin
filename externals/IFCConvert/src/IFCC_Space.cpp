@@ -56,10 +56,6 @@ void Space::fetchGeometry(std::shared_ptr<ProductShapeData> productShape) {
 	if(productShape == nullptr)
 		return;
 
-	if(m_name == "34") {
-		int i=0;
-	}
-
 	surfacesFromRepresentation(productShape, m_surfacesOrg);
 
 	if(m_surfacesOrg.empty())
@@ -76,6 +72,10 @@ void Space::fetchGeometry(std::shared_ptr<ProductShapeData> productShape) {
 }
 
 static void divideSurface(const Surface::IntersectionResult& intRes, std::vector<Surface>& spaceSurfaces, int ssIndex, std::vector<Surface>& subsurfaces) {
+	// we don't have any intersections
+	if(intRes.m_intersections.empty())
+		return;
+
 	// construction element covers complete space surface
 	if(intRes.m_diffBaseMinusClip.empty()) {
 		spaceSurfaces.erase(spaceSurfaces.begin() + ssIndex);
@@ -171,6 +171,10 @@ std::vector<std::shared_ptr<SpaceBoundary>> Space::createSpaceBoundaries(const B
 				++loopCount;
 				Surface::IntersectionResult intersectionResult = surfaces[indices.m_spaceSurfaceIndex].
 																 intersect2(construction->surfaces()[indices.m_wallSurfaceIndex]);
+				// no intersections found
+				if(intersectionResult.m_intersections.empty())
+					break;
+
 				for(const Surface& surf : intersectionResult.m_intersections) {
 					std::shared_ptr<SpaceBoundary> sb = std::shared_ptr<SpaceBoundary>(new SpaceBoundary(GUID_maker::instance().guid()));
 					std::string name = m_name + ":" + construction->m_name + " - " +
