@@ -26,6 +26,10 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OU
 
 #include "IFCC_TessellatedItemConverter.h"
 #include "IFCC_SolidModelConverter.h"
+#include "IFCC_FaceConverter.h"
+#include "IFCC_SolidModelConverter.h"
+#include "IFCC_CurveConverter.h"
+#include "IFCC_ProfileCache.h"
 
 namespace IFCC {
 

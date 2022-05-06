@@ -31,6 +31,7 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OU
 #include <ifcpp/IFC4/include/IfcWindow.h>
 #include <ifcpp/IFC4/include/IfcWall.h>
 #include <ifcpp/IFC4/include/IfcDoor.h>
+#include <ifcpp/IFC4/include/IfcLocalPlacement.h>
 
 #include <carve/carve.hpp>
 

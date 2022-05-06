@@ -56,17 +56,15 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OU
 #include <ifcpp/IFC4/include/IfcTessellatedItem.h>
 #include <ifcpp/IFC4/include/IfcTextLiteral.h>
 #include <ifcpp/IFC4/include/IfcAdvancedBrep.h>
+#include <ifcpp/IFC4/include/IfcEdge.h>
+#include <ifcpp/IFC4/include/IfcFaceBound.h>
+#include <ifcpp/IFC4/include/IfcBoolean.h>
 
 #include <ifcpp/geometry/Carve/IncludeCarveHeaders.h>
 #include <ifcpp/geometry/Carve/GeometryInputData.h>
 #include <ifcpp/geometry/Carve/Sweeper.h>
 #include <ifcpp/geometry/Carve/SplineConverter.h>
 #include <ifcpp/geometry/Carve/PointConverter.h>
-#include <ifcpp/geometry/Carve/CurveConverter.h>
-#include <ifcpp/geometry/Carve/FaceConverter.h>
-#include <ifcpp/geometry/Carve/ProfileCache.h>
-
-#include "IFCC_SolidModelConverter.h"
 
 namespace IFCC {
 

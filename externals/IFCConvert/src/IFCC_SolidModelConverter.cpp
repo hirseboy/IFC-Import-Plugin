@@ -17,50 +17,39 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OU
 
 #include "IFCC_SolidModelConverter.h"
 
-#include <ifcpp/geometry/GeometrySettings.h>
-#include <ifcpp/model/BasicTypes.h>
-#include <ifcpp/model/StatusCallback.h>
-#include <ifcpp/model/UnitConverter.h>
-
 #include <ifcpp/IFC4/include/IfcAdvancedBrepWithVoids.h>
 #include <ifcpp/IFC4/include/IfcBlock.h>
-#include <ifcpp/IFC4/include/IfcBooleanResult.h>
 #include <ifcpp/IFC4/include/IfcBooleanOperand.h>
 #include <ifcpp/IFC4/include/IfcBooleanOperator.h>
 #include <ifcpp/IFC4/include/IfcBooleanClippingResult.h>
 #include <ifcpp/IFC4/include/IfcBoxedHalfSpace.h>
 #include <ifcpp/IFC4/include/IfcBoundingBox.h>
-#include <ifcpp/IFC4/include/IfcCsgPrimitive3D.h>
 #include <ifcpp/IFC4/include/IfcCsgSolid.h>
-#include <ifcpp/IFC4/include/IfcExtrudedAreaSolid.h>
 #include <ifcpp/IFC4/include/IfcFacetedBrep.h>
 #include <ifcpp/IFC4/include/IfcFixedReferenceSweptAreaSolid.h>
-#include <ifcpp/IFC4/include/IfcHalfSpaceSolid.h>
 #include <ifcpp/IFC4/include/IfcManifoldSolidBrep.h>
 #include <ifcpp/IFC4/include/IfcPolygonalBoundedHalfSpace.h>
 #include <ifcpp/IFC4/include/IfcRectangularPyramid.h>
-#include <ifcpp/IFC4/include/IfcRevolvedAreaSolid.h>
 #include <ifcpp/IFC4/include/IfcRightCircularCone.h>
 #include <ifcpp/IFC4/include/IfcRightCircularCylinder.h>
-#include <ifcpp/IFC4/include/IfcSectionedSpine.h>
-#include <ifcpp/IFC4/include/IfcSolidModel.h>
 #include <ifcpp/IFC4/include/IfcSphere.h>
 #include <ifcpp/IFC4/include/IfcSurfaceCurveSweptAreaSolid.h>
 #include <ifcpp/IFC4/include/IfcSweptDiskSolid.h>
 #include <ifcpp/IFC4/include/IfcClosedShell.h>
+#include <ifcpp/IFC4/include/IfcPositiveLengthMeasure.h>
+#include <ifcpp/IFC4/include/IfcPlaneAngleMeasure.h>
+#include <ifcpp/IFC4/include/IfcDirection.h>
+#include <ifcpp/IFC4/include/IfcPlaneAngleMeasure.h>
+#include <ifcpp/IFC4/include/IfcAxis1Placement.h>
+#include <ifcpp/IFC4/include/IfcElementarySurface.h>
+#include <ifcpp/IFC4/include/IfcCompositeCurve.h>
+#include <ifcpp/IFC4/include/IfcBoolean.h>
 
-#include <ifcpp/geometry/Carve/GeomDebugDump.h>
-#include <ifcpp/geometry/Carve/GeometryInputData.h>
-#include <ifcpp/geometry/Carve/GeomUtils.h>
+
 #include <ifcpp/geometry/Carve/PointConverter.h>
-#include <ifcpp/geometry/Carve/ProfileCache.h>
-#include <ifcpp/geometry/Carve/FaceConverter.h>
-#include <ifcpp/geometry/Carve/CurveConverter.h>
-#include <ifcpp/geometry/Carve/Sweeper.h>
-#include <ifcpp/geometry/Carve/CSG_Adapter.h>
-#include <ifcpp/geometry/Carve/IncludeCarveHeaders.h>
 
 #include <fstream>
+
 
 namespace IFCC {
 

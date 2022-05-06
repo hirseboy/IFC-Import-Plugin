@@ -18,11 +18,6 @@ FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTH
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-#include <ifcpp/geometry/GeometrySettings.h>
-#include <ifcpp/model/BasicTypes.h>
-#include <ifcpp/model/StatusCallback.h>
-#include <ifcpp/model/UnitConverter.h>
-
 #include <ifcpp/IFC4/include/IfcBooleanResult.h>
 #include <ifcpp/IFC4/include/IfcCsgPrimitive3D.h>
 #include <ifcpp/IFC4/include/IfcExtrudedAreaSolid.h>
@@ -31,10 +26,9 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OU
 #include <ifcpp/IFC4/include/IfcSectionedSpine.h>
 #include <ifcpp/IFC4/include/IfcSolidModel.h>
 
-#include <ifcpp/geometry/Carve/PointConverter.h>
-#include <ifcpp/geometry/Carve/ProfileCache.h>
-#include <ifcpp/geometry/Carve/FaceConverter.h>
-#include <ifcpp/geometry/Carve/CurveConverter.h>
+#include "IFCC_ProfileCache.h"
+#include "IFCC_FaceConverter.h"
+#include "IFCC_CurveConverter.h"
 
 namespace IFCC {
 
