@@ -69,6 +69,9 @@ private:
 
 	/*! Vector of original IFC building storey objects.*/
 	std::vector<std::shared_ptr<IfcBuildingStorey>>	m_storeysOriginal;
+
+	/*! Vector of original IFC space objects.*/
+	std::vector<std::shared_ptr<IfcSpace>>	m_spacesOriginal;
 };
 
 } // namespace IFCC

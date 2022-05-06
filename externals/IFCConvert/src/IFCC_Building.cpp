@@ -18,7 +18,6 @@ bool Building::set(std::shared_ptr<IfcSpatialStructureElement> ifcElement) {
 
 	const std::vector<weak_ptr<IfcRelAggregates> >& vec_decomposedBy = ifcElement->m_IsDecomposedBy_inverse;
 	for(const auto& contentElement : vec_decomposedBy) {
-		// weak pointer contentElement valid?
 		if( contentElement.expired() ) {
 			continue;
 		}
@@ -30,6 +29,10 @@ bool Building::set(std::shared_ptr<IfcSpatialStructureElement> ifcElement) {
 					shared_ptr<IfcBuildingStorey> storey = std::dynamic_pointer_cast<IfcBuildingStorey>(contObj);
 					if(storey != nullptr)
 						m_storeysOriginal.push_back(storey);
+
+					shared_ptr<IfcSpace> space = std::dynamic_pointer_cast<IfcSpace>(contObj);
+					if(space != nullptr)
+						m_spacesOriginal.push_back(space);
 				}
 			}
 		}
@@ -41,9 +44,17 @@ bool Building::set(std::shared_ptr<IfcSpatialStructureElement> ifcElement) {
 void Building::fetchStoreys(const objectShapeGUIDMap_t& storeys, const objectShapeGUIDMap_t& spaces) {
 	if(storeys.empty()) {
 		std::shared_ptr<BuildingStorey> storey = std::shared_ptr<BuildingStorey>(new BuildingStorey(GUID_maker::instance().guid()));
-		if(storey->set(spaces)) {
-			storey->m_name = "Only one storey";
-			m_storeys.push_back(storey);
+		if(m_spacesOriginal.empty()) {
+			if(storey->set(spaces)) {
+				storey->m_name = "Only one storey";
+				m_storeys.push_back(storey);
+			}
+		}
+		else {
+			if(storey->set(m_spacesOriginal)) {
+				storey->m_name = "Only one storey";
+				m_storeys.push_back(storey);
+			}
 		}
 	}
 	else {
