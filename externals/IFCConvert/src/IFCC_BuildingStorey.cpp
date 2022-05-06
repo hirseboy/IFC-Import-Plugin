@@ -49,7 +49,15 @@ bool BuildingStorey::set(const objectShapeGUIDMap_t& spaces) {
 				m_spacesOriginal.push_back(space);
 		}
 	}
-	return !m_spacesOriginal.empty();
+	return true;
+}
+
+bool BuildingStorey::set(const std::vector<std::shared_ptr<IfcSpace>>& spaces) {
+	for(const auto& space : spaces) {
+		if(space != nullptr)
+			m_spacesOriginal.push_back(space);
+	}
+	return true;
 }
 
 

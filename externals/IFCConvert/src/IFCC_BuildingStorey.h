@@ -32,7 +32,11 @@ public:
 	*/
 	bool set(std::shared_ptr<IfcSpatialStructureElement> ifcElement);
 
+	/*! Set a storeys which contains all spaces in project.*/
 	bool set(const objectShapeGUIDMap_t& spaces);
+
+	/*! Set a storeys which contains all spaces contained in a building.*/
+	bool set(const std::vector<std::shared_ptr<IfcSpace>>& spaces);
 
 	/*! Create spaces vector from original vector and given shapes.
 		\param shapes Product shape for all spaces in project.
