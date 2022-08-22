@@ -148,7 +148,7 @@ void MainWindow::loadPlugins() {
 	}
 	if(!m_importer.empty()) {
 		QMenu* importMenu = ui->menuPlugins;
-		for(auto name : m_importer.keys()) {
+		for(const auto& name : m_importer.keys()) {
 //			QIcon icon(m_importer.value(name)->icon());
 			QAction* act = importMenu->addAction(name);
 			connect(act, &QAction::triggered,
