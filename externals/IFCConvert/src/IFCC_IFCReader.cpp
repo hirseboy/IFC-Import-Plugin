@@ -38,6 +38,8 @@
 
 #include <tinyxml.h>
 
+#include "IFCC_Logger.h"
+
 namespace IFCC {
 
 const std::string VERSION = "1.0";
@@ -55,6 +57,10 @@ IFCReader::IFCReader() :
 	m_geometryConverter.resetModel();
 	m_geometryConverter.getGeomSettings()->setNumVerticesPerCircle(16);
 	m_geometryConverter.getGeomSettings()->setMinNumVerticesPerArc(4);
+
+	Logger::instance().set("ifc_convert.log");
+
+	Logger::instance() << "IFCReader constructor";
 }
 
 void IFCReader::clear() {
@@ -73,6 +79,8 @@ void IFCReader::clear() {
 	m_readCompletedSuccessfully = false;
 
 	clearConvertData();
+
+	Logger::instance() << "IFCReader clear";
 }
 
 void IFCReader::clearConvertData() {
@@ -99,6 +107,8 @@ void IFCReader::clearConvertData() {
 bool IFCReader::read(const IBK::Path& filename, bool ignoreReadError) {
 	clear();
 
+	Logger::instance() << "IFCReader read start";
+
 	m_filename = filename;
 	m_readCompletedSuccessfully = true;
 	try {
@@ -108,6 +118,8 @@ bool IFCReader::read(const IBK::Path& filename, bool ignoreReadError) {
 		if(!ignoreReadError && m_hasError) {
 			m_readCompletedSuccessfully = false;
 		}
+
+		Logger::instance() << "IFCReader read return with success";
 		return !m_hasError;
 	}
 	catch (std::exception& e) {
@@ -116,6 +128,8 @@ bool IFCReader::read(const IBK::Path& filename, bool ignoreReadError) {
 			m_readCompletedSuccessfully = false;
 			m_hasError = true;
 		}
+
+		Logger::instance() << "IFCReader read return with error";
 		return false;
 	}
 	return true;
@@ -123,6 +137,8 @@ bool IFCReader::read(const IBK::Path& filename, bool ignoreReadError) {
 
 void IFCReader::splitShapeData() {
 	const std::map<std::string,shared_ptr<ProductShapeData>>& shapeDataMap = m_geometryConverter.getShapeInputData();
+
+	Logger::instance() << "IFCReader splitShapeData start";
 
 	for(const auto& shapeData : shapeDataMap) {
 		const shared_ptr<ProductShapeData>& data = shapeData.second;
@@ -256,6 +272,13 @@ void IFCReader::splitShapeData() {
 			m_unknownEntitesShape[guid] = data;
 		}
 	}
+
+	Logger::instance() << "IFCReader splitShapeData end";
+	Logger::instance() << std::to_string(m_elementEntitesShape[OT_Wall].size()) + " walls.";
+	Logger::instance() << std::to_string(m_elementEntitesShape[OT_Window].size()) + " windows.";
+	Logger::instance() << std::to_string(m_buildingsShape.size()) + " buildings.";
+	Logger::instance() << std::to_string(m_storeysShape.size()) + " storeys.";
+	Logger::instance() << std::to_string(m_spaceEntitesShape.size()) + " spaces.";
 }
 
 void IFCReader::IFCReader::updateSpaceConnections() {
@@ -268,6 +291,8 @@ bool IFCReader::convert(bool useSpaceBoundaries) {
 		m_errorText = "Cannot convert data because file not readed";
 		return false;
 	}
+
+	Logger::instance() << "IFCReader convert start";
 
 	clearConvertData();
 
@@ -289,6 +314,8 @@ bool IFCReader::convert(bool useSpaceBoundaries) {
 			m_hasError = true;
 		}
 
+		Logger::instance() << "IFCReader convert init";
+
 		splitShapeData();
 
 		m_openings.clear();
@@ -303,6 +330,8 @@ bool IFCReader::convert(bool useSpaceBoundaries) {
 				m_openings.back().update(openShape.second);
 			}
 		}
+
+		Logger::instance() << "IFCReader convert openings set";
 
 		m_buildingElements.clear();
 		for(auto& elems : m_elementEntitesShape) {
@@ -343,11 +372,15 @@ bool IFCReader::convert(bool useSpaceBoundaries) {
 			}
 		}
 
+		Logger::instance() << "IFCReader convert building elements set";
+
 		for(std::shared_ptr<BuildingElement>& openingElement : m_buildingElements.m_openingElements) {
 			openingElement->setContainingElements(m_openings);
 			openingElement->setContainedConstructionThickesses(m_buildingElements.m_constructionElements);
 			openingElement->setContainedConstructionThickesses(m_buildingElements.m_constructionSimilarElements);
 		}
+
+		Logger::instance() << "IFCReader convert opening elements set";
 
 		for(const auto& elem : m_buildingElements.m_elementsWithoutSurfaces) {
 			qDebug() << QString::fromStdString(objectTypeToString(elem->type()));
@@ -356,6 +389,8 @@ bool IFCReader::convert(bool useSpaceBoundaries) {
 
 
 		m_database.collectData(m_buildingElements);
+
+		Logger::instance() << "IFCReader convert collect database elements";
 
 		if(m_siteShape != nullptr) {
 			std::shared_ptr<IfcSpatialStructureElement> se = std::dynamic_pointer_cast<IfcSpatialStructureElement>(m_siteShape->m_ifc_object_definition.lock());
@@ -372,6 +407,8 @@ bool IFCReader::convert(bool useSpaceBoundaries) {
 			return false;
 		}
 
+		Logger::instance() << "IFCReader convert building structure set";
+
 		int failures = m_instances.collectComponentInstances(m_buildingElements, m_database, m_site);
 		if(failures > 0) {
 			m_errorText += "\nNot all surface can be matched to a component. failures: " + std::to_string(failures);
@@ -380,20 +417,28 @@ bool IFCReader::convert(bool useSpaceBoundaries) {
 		}
 
 		m_convertCompletedSuccessfully = true;
+
+		Logger::instance() << "IFCReader convert successful";
 		return true;
 
 	}
 	catch (std::exception& e) {
 		m_errorText = e.what();
 		m_hasError = true;
+
+		Logger::instance() << "IFCReader convert exception";
 		return false;
 	}
+
+	Logger::instance() << "IFCReader convert error at end";
 
 	return false;
 }
 
 bool IFCReader::setVicusProject(VICUS::Project* project) {
 	IBK_ASSERT(project != nullptr);
+
+	Logger::instance() << "IFCReader setVicusProject start";
 
 	std::map<int,int> idConversionMap;
 
@@ -406,11 +451,17 @@ bool IFCReader::setVicusProject(VICUS::Project* project) {
 		project->m_buildings.emplace_back(building->getVicusObject(idConversionMap, nextId));
 	}
 
+	Logger::instance() << "IFCReader setVicusProject building structure added";
+
 	// add databases
 	m_database.addToVicusProject(project, idConversionMap);
 
+	Logger::instance() << "IFCReader setVicusProject database added";
+
 	// add component instances
 	m_instances.addToVicusProject(project, idConversionMap);
+
+	Logger::instance() << "IFCReader setVicusProject component instances added";
 
 	return true;
 }

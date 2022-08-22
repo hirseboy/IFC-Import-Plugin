@@ -41,14 +41,18 @@ SOURCES +=  \
 	../../src/IFCC_Component.cpp \
 	../../src/IFCC_ComponentInstance.cpp \
 	../../src/IFCC_Construction.cpp \
+	../../src/IFCC_CurveConverter.cpp \
 	../../src/IFCC_Database.cpp \
 	../../src/IFCC_EntityBase.cpp \
+	../../src/IFCC_FaceConverter.cpp \
 	../../src/IFCC_GeometricHelperClasses.cpp \
 	../../src/IFCC_Helper.cpp \
 	../../src/IFCC_IFCReader.cpp \
 	../../src/IFCC_Instances.cpp \
 	../../src/IFCC_Material.cpp \
 	../../src/IFCC_Opening.cpp \
+	../../src/IFCC_ProfileCache.cpp \
+	../../src/IFCC_ProfileConverter.cpp \
 	../../src/IFCC_Property.cpp \
 	../../src/IFCC_Site.cpp \
 	../../src/IFCC_Space.cpp \
@@ -72,14 +76,19 @@ HEADERS +=  \
 	../../src/IFCC_Component.h \
 	../../src/IFCC_ComponentInstance.h \
 	../../src/IFCC_Construction.h \
+	../../src/IFCC_CurveConverter.h \
 	../../src/IFCC_Database.h \
 	../../src/IFCC_EntityBase.h \
+	../../src/IFCC_FaceConverter.h \
 	../../src/IFCC_GeometricHelperClasses.h \
 	../../src/IFCC_Helper.h \
 	../../src/IFCC_IFCReader.h \
 	../../src/IFCC_Instances.h \
+	../../src/IFCC_Logger.h \
 	../../src/IFCC_Material.h \
 	../../src/IFCC_Opening.h \
+	../../src/IFCC_ProfileCache.h \
+	../../src/IFCC_ProfileConverter.h \
 	../../src/IFCC_Property.h \
 	../../src/IFCC_Site.h \
 	../../src/IFCC_Space.h \
