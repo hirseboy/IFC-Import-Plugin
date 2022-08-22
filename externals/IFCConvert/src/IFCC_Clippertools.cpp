@@ -231,8 +231,8 @@ static void dividePolyTree(const ClipperLib::PolyTree& polytree, std::vector<pol
 		outerPolygons[i] = polygon3DFromPath(node->Contour, plane);
 		// collect holes
 		if(node->ChildCount() > 0) {
-			for(int j=0; j<childCount; ++j) {
-				ClipperLib::PolyNode* holeNode = node->Childs[i];
+			for(int j=0; j<node->ChildCount(); ++j) {
+				ClipperLib::PolyNode* holeNode = node->Childs[j];
 				IBK_ASSERT(holeNode != nullptr);
 				if(holeNode->IsHole())
 					holes[i].push_back(polygon3DFromPath(holeNode->Contour, plane));
