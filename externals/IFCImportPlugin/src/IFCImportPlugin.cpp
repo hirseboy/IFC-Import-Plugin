@@ -17,7 +17,7 @@ bool IFCImportPlugin::import(QWidget * parent, VICUS::Project& prj) {
 		return false;
 
 	if(m_reader.m_convertCompletedSuccessfully) {
-		m_reader.setVicusProject(&prj);
+//		m_reader.setVicusProject(&prj);
 		return true;
 	}
 
