@@ -55,8 +55,6 @@ else {
 LIBS += -L../../../submodules/SIM-VICUS/externals/lib_x64
 
 LIBS += \
-	-lNandrad \
-	-lVicus \
 	-lTiCPP \
 	-lDataIO \
 	-lCCM \
@@ -68,9 +66,7 @@ INCLUDEPATH = \
 	../../../submodules/SIM-VICUS/externals/IBK/src \
 	../../../submodules/SIM-VICUS/externals/IBKMK/src \
 	../../../submodules/SIM-VICUS/externals/TiCPP/src \
-	../../../externals/IFCImportPlugin/src \
-	../../../submodules/SIM-VICUS/externals/Nandrad/src \
-	../../../submodules/SIM-VICUS/externals/Vicus/src
+	../../../externals/IFCImportPlugin/src
 
 DEPENDPATH = $${INCLUDEPATH}
 
