@@ -633,23 +633,23 @@ TiXmlElement * Space::writeXML(TiXmlElement * parent) const {
 	return e;
 }
 
-VICUS::Room Space::getVicusObject(std::map<int,int>& idMap, int& nextid) const {
-	VICUS::Room res;
-	int newId = nextid++;
-	if (!m_longName.empty())
-		res.m_displayName = QString::fromUtf8(m_longName.c_str());
-	else
-		res.m_displayName = QString::fromUtf8(m_name.c_str());
-	res.m_id = newId;
-	res.m_ifcGUID = m_guid;
-	idMap[m_id] = newId;
+//VICUS::Room Space::getVicusObject(std::map<int,int>& idMap, int& nextid) const {
+//	VICUS::Room res;
+//	int newId = nextid++;
+//	if (!m_longName.empty())
+//		res.m_displayName = QString::fromUtf8(m_longName.c_str());
+//	else
+//		res.m_displayName = QString::fromUtf8(m_name.c_str());
+//	res.m_id = newId;
+//	res.m_ifcGUID = m_guid;
+//	idMap[m_id] = newId;
 
-	for(const auto& surface : m_surfaces) {
-		res.m_surfaces.emplace_back(surface.getVicusObject(idMap, nextid));
-	}
+//	for(const auto& surface : m_surfaces) {
+//		res.m_surfaces.emplace_back(surface.getVicusObject(idMap, nextid));
+//	}
 
-	return res;
-}
+//	return res;
+//}
 
 Space::SurfaceConnectionVectors Space::surfaceConnectionVectors() const {
 	return m_connectionVectors;

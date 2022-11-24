@@ -10,7 +10,10 @@
 
 #include <ifcpp/IFC4/include/IfcSpaceTypeEnum.h>
 
-#include <VICUS_Project.h>
+#include <QCoreApplication>
+#include <QStringList>
+
+//#include <VICUS_Project.h>
 
 #include "IFCC_GeometryConverter.h"
 #include "IFCC_Types.h"
@@ -53,10 +56,10 @@ public:
 	*/
 	bool convert(bool useSpaceBoundaries);
 
-	/*! Convert the data into vicus format and add it to the given project.
-		Read and convert must be called before.
-	*/
-	bool setVicusProject(VICUS::Project* project);
+//	/*! Convert the data into vicus format and add it to the given project.
+//		Read and convert must be called before.
+//	*/
+//	bool setVicusProject(VICUS::Project* project);
 
 	/*! Return the total number of IFC entities. Call read before use.*/
 	int totalNumberOfIFCEntities() const;

@@ -29,19 +29,19 @@ TiXmlElement * WindowGlazing::writeXML(TiXmlElement * parent) const {
 	return e;
 }
 
-VICUS::WindowGlazingSystem WindowGlazing::getVicusObject(std::map<int,int>& idMap, int idOffset) const {
-	VICUS::WindowGlazingSystem vwg;
-	vwg.m_id = m_id + idOffset;
-	idMap[m_id] = vwg.m_id;
-	vwg.m_displayName.setString(m_name,"de");
-	vwg.m_dataSource.setString(m_dataSource,"de");
-	vwg.m_manufacturer.setString(m_manufacturer,"de");
-	vwg.m_notes.setString(m_notes,"de");
-	vwg.m_modelType = static_cast<VICUS::WindowGlazingSystem::modelType_t>(m_modelType);
-	if(m_thermalTransmittance > 0)
-		vwg.m_para[VICUS::WindowGlazingSystem::P_ThermalTransmittance].set("ThermalTransmittance", m_thermalTransmittance, "W/m2K");
+//VICUS::WindowGlazingSystem WindowGlazing::getVicusObject(std::map<int,int>& idMap, int idOffset) const {
+//	VICUS::WindowGlazingSystem vwg;
+//	vwg.m_id = m_id + idOffset;
+//	idMap[m_id] = vwg.m_id;
+//	vwg.m_displayName.setString(m_name,"de");
+//	vwg.m_dataSource.setString(m_dataSource,"de");
+//	vwg.m_manufacturer.setString(m_manufacturer,"de");
+//	vwg.m_notes.setString(m_notes,"de");
+//	vwg.m_modelType = static_cast<VICUS::WindowGlazingSystem::modelType_t>(m_modelType);
+//	if(m_thermalTransmittance > 0)
+//		vwg.m_para[VICUS::WindowGlazingSystem::P_ThermalTransmittance].set("ThermalTransmittance", m_thermalTransmittance, "W/m2K");
 
-	return vwg;
-}
+//	return vwg;
+//}
 
 } // namespace IFCC

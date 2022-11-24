@@ -7,7 +7,7 @@
 
 #include <tinyxml.h>
 
-#include <VICUS_Building.h>
+//#include <VICUS_Building.h>
 
 #include "IFCC_EntityBase.h"
 #include "IFCC_BuildingStorey.h"
@@ -51,11 +51,11 @@ public:
 	/*! Write the building in vicus xml format including storeys.*/
 	TiXmlElement * writeXML(TiXmlElement * parent) const;
 
-	/*! Create a VICUS building object and return this.
-		The returned object contains all transferable data.
-		\param idMap Used for mapping current ids to VICUS ids.
-	*/
-	VICUS::Building getVicusObject(std::map<int,int>& idMap, int& nextid) const;
+//	/*! Create a VICUS building object and return this.
+//		The returned object contains all transferable data.
+//		\param idMap Used for mapping current ids to VICUS ids.
+//	*/
+//	VICUS::Building getVicusObject(std::map<int,int>& idMap, int& nextid) const;
 
 	/*! Return vector of building storeys.*/
 	const std::vector<std::shared_ptr<BuildingStorey>>& storeys() const {

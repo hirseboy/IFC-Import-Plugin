@@ -5,7 +5,7 @@
 
 #include <map>
 
-#include <VICUS_Material.h>
+//#include <VICUS_Material.h>
 
 #include "IFCC_Property.h"
 
@@ -39,10 +39,10 @@ public:
 		Non valid properties from the map were not be included.*/
 	void setPropertiesFromPropertyMap(const std::map<std::string,std::map<std::string,Property>>& pmap);
 
-	/*! Create a VICUS material object and return this.
-		The returned object contains all transferable data.
-	*/
-	VICUS::Material getVicusObject(std::map<int,int>& idMap, int idOffset) const;
+//	/*! Create a VICUS material object and return this.
+//		The returned object contains all transferable data.
+//	*/
+//	VICUS::Material getVicusObject(std::map<int,int>& idMap, int idOffset) const;
 
 	std::string m_name;				///< Material name
 	int			m_id;				///< Material object id

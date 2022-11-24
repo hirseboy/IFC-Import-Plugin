@@ -11,9 +11,9 @@
 #include "IFCC_Component.h"
 #include "IFCC_SubSurfaceComponent.h"
 
-namespace VICUS {
-	class Project;
-}
+//namespace VICUS {
+//	class Project;
+//}
 
 namespace IFCC {
 
@@ -35,12 +35,12 @@ public:
 	*/
 	void collectData(BuildingElementsCollector& elements);
 
-	/*! Add all database items to the embedded database of the given vicus project.
-		\param project Vicus project
-		\param idMap Map for mapping current ids to new VICUS ids.
-		It adds the elements only if they are not already included. Otherwise only the id mapping will be added.
-	*/
-	void addToVicusProject(VICUS::Project* project, std::map<int,int>& idMap);
+//	/*! Add all database items to the embedded database of the given vicus project.
+//		\param project Vicus project
+//		\param idMap Map for mapping current ids to new VICUS ids.
+//		It adds the elements only if they are not already included. Otherwise only the id mapping will be added.
+//	*/
+//	void addToVicusProject(VICUS::Project* project, std::map<int,int>& idMap);
 
 	std::map<int, Material>				m_materials;			///< Material database as map of id and material object
 	std::map<int, Construction>			m_constructions;		///< Construction database as map of id and construction object

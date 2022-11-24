@@ -8,7 +8,7 @@
 
 #include <tinyxml.h>
 
-#include <VICUS_Room.h>
+//#include <VICUS_Room.h>
 
 #include "IFCC_BuildingElement.h"
 #include "IFCC_Helper.h"
@@ -162,10 +162,10 @@ public:
 	/*! Write the space in vicus xml format including space boundaries.*/
 	TiXmlElement * writeXML(TiXmlElement * parent) const;
 
-	/*! Create a VICUS room object and return this.
-		The returned object contains all transferable data.
-	*/
-	VICUS::Room getVicusObject(std::map<int,int>& idMap, int& nextid) const;
+//	/*! Create a VICUS room object and return this.
+//		The returned object contains all transferable data.
+//	*/
+//	VICUS::Room getVicusObject(std::map<int,int>& idMap, int& nextid) const;
 
 	/*! Return the surface connection vectors. It only makes sense if the following function are called before:
 		- updateSpaceConnections

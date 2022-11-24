@@ -1,6 +1,6 @@
 #include "IFCC_Database.h"
 
-#include <VICUS_Project.h>
+//#include <VICUS_Project.h>
 
 #include "IFCC_Helper.h"
 
@@ -192,14 +192,14 @@ void addItems(std::vector<T>& dbVect, const std::map<int,U>& sourceVect, std::ma
 	}
 }
 
-void Database::addToVicusProject(VICUS::Project* project, std::map<int,int>& idMap) {
-	addItems(project->m_embeddedDB.m_materials, m_materials, idMap);
-	addItems(project->m_embeddedDB.m_constructions, m_constructions, idMap);
-	addItems(project->m_embeddedDB.m_windowGlazingSystems, m_windowGlazings, idMap);
-	addItems(project->m_embeddedDB.m_windows, m_windows, idMap);
-	addItems(project->m_embeddedDB.m_components, m_components, idMap);
-	addItems(project->m_embeddedDB.m_subSurfaceComponents, m_subSurfaceComponents, idMap);
-}
+//void Database::addToVicusProject(VICUS::Project* project, std::map<int,int>& idMap) {
+//	addItems(project->m_embeddedDB.m_materials, m_materials, idMap);
+//	addItems(project->m_embeddedDB.m_constructions, m_constructions, idMap);
+//	addItems(project->m_embeddedDB.m_windowGlazingSystems, m_windowGlazings, idMap);
+//	addItems(project->m_embeddedDB.m_windows, m_windows, idMap);
+//	addItems(project->m_embeddedDB.m_components, m_components, idMap);
+//	addItems(project->m_embeddedDB.m_subSurfaceComponents, m_subSurfaceComponents, idMap);
+//}
 
 
 void Database::collectComponents(std::vector<std::shared_ptr<BuildingElement>>& elements) {

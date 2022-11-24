@@ -1,7 +1,7 @@
 #include "IFCC_Instances.h"
 
 
-#include <VICUS_Project.h>
+//#include <VICUS_Project.h>
 
 #include "IFCC_Helper.h"
 #include "IFCC_Site.h"
@@ -134,14 +134,14 @@ int Instances::collectComponentInstances(std::vector<std::shared_ptr<BuildingEle
 	return failedSurfaces.size() + failedSubSurfaces.size();
 }
 
-void Instances::addToVicusProject(VICUS::Project* project, std::map<int,int>& idMap) {
-	for(const auto& ci : m_componentInstances) {
-		project->m_componentInstances.emplace_back(ci.second.getVicusComponentInstance(idMap));
-	}
-	for(const auto& sci : m_subSurfaceComponentInstances) {
-		project->m_subSurfaceComponentInstances.emplace_back(sci.second.getVicusSubSurfaceComponentInstance(idMap));
-	}
-}
+//void Instances::addToVicusProject(VICUS::Project* project, std::map<int,int>& idMap) {
+//	for(const auto& ci : m_componentInstances) {
+//		project->m_componentInstances.emplace_back(ci.second.getVicusComponentInstance(idMap));
+//	}
+//	for(const auto& sci : m_subSurfaceComponentInstances) {
+//		project->m_subSurfaceComponentInstances.emplace_back(sci.second.getVicusSubSurfaceComponentInstance(idMap));
+//	}
+//}
 
 
 } // namespace IFCC

@@ -6,9 +6,9 @@
 #include "IFCC_BuildingElement.h"
 #include "IFCC_ComponentInstance.h"
 
-namespace VICUS {
-	class Project;
-}
+//namespace VICUS {
+//	class Project;
+//}
 
 namespace IFCC {
 
@@ -36,10 +36,10 @@ public:
 	*/
 	int collectComponentInstances(BuildingElementsCollector& elements, Database& database, const Site& site);
 
-	/*! Add all component instances and sub surface component instances to the given vicus project.
-		\param idMap Map for mapping current ids to new VICUS ids.
-	*/
-	void addToVicusProject(VICUS::Project* project, std::map<int,int>& idMap);
+//	/*! Add all component instances and sub surface component instances to the given vicus project.
+//		\param idMap Map for mapping current ids to new VICUS ids.
+//	*/
+//	void addToVicusProject(VICUS::Project* project, std::map<int,int>& idMap);
 
 private:
 

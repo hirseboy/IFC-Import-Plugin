@@ -54,18 +54,18 @@ TiXmlElement * SubSurfaceComponent::writeXML(TiXmlElement * parent) const {
 	return e;
 }
 
-VICUS::SubSurfaceComponent SubSurfaceComponent::getVicusObject(std::map<int,int>& idMap, int idOffset) const {
-	VICUS::SubSurfaceComponent vscomp;
-	vscomp.m_id = m_id + idOffset;
-	idMap[m_id] = vscomp.m_id;
+//VICUS::SubSurfaceComponent SubSurfaceComponent::getVicusObject(std::map<int,int>& idMap, int idOffset) const {
+//	VICUS::SubSurfaceComponent vscomp;
+//	vscomp.m_id = m_id + idOffset;
+//	idMap[m_id] = vscomp.m_id;
 
-	vscomp.m_displayName.setString(m_name,"de");
-	vscomp.m_idConstruction = idMap[m_constructionId];
-	vscomp.m_idWindow = idMap[m_windowId];
-	vscomp.m_type = static_cast<VICUS::SubSurfaceComponent::SubSurfaceComponentType>(m_type);
+//	vscomp.m_displayName.setString(m_name,"de");
+//	vscomp.m_idConstruction = idMap[m_constructionId];
+//	vscomp.m_idWindow = idMap[m_windowId];
+//	vscomp.m_type = static_cast<VICUS::SubSurfaceComponent::SubSurfaceComponentType>(m_type);
 
-	return vscomp;
-}
+//	return vscomp;
+//}
 
 std::string SubSurfaceComponent::type2String(SubSurfaceComponentType type) const {
 	switch(type) {

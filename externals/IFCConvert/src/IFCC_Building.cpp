@@ -110,19 +110,19 @@ TiXmlElement * Building::writeXML(TiXmlElement * parent) const {
 	return e;
 }
 
-VICUS::Building Building::getVicusObject(std::map<int,int>& idMap, int& nextid) const {
-	VICUS::Building res;
-	int newId = nextid++;
+//VICUS::Building Building::getVicusObject(std::map<int,int>& idMap, int& nextid) const {
+//	VICUS::Building res;
+//	int newId = nextid++;
 
-	res.m_displayName = QString::fromUtf8(m_name.c_str());
-	res.m_id = newId;
-	res.m_ifcGUID = m_guid;
-	idMap[m_id] = newId;
-	for(const auto& storey : m_storeys) {
-		res.m_buildingLevels.emplace_back(storey->getVicusObject(idMap, nextid));
-	}
+//	res.m_displayName = QString::fromUtf8(m_name.c_str());
+//	res.m_id = newId;
+//	res.m_ifcGUID = m_guid;
+//	idMap[m_id] = newId;
+//	for(const auto& storey : m_storeys) {
+//		res.m_buildingLevels.emplace_back(storey->getVicusObject(idMap, nextid));
+//	}
 
-	return res;
-}
+//	return res;
+//}
 
 } // namespace IFCC

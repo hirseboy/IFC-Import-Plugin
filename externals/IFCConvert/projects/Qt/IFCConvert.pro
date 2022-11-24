@@ -29,9 +29,7 @@ INCLUDEPATH += \
 				../../../../submodules/SIM-VICUS/externals/TiCPP/src \
 				../../../ifcplusplus/src/external/Carve/src/include \
 				../../../ifcplusplus/src/external \
-				../../../ifcplusplus/src/external/Carve/src/common \
-				../../../../submodules/SIM-VICUS/externals/Vicus/src \
-				../../../../submodules/SIM-VICUS/externals/Nandrad/src
+				../../../ifcplusplus/src/external/Carve/src/common
 
 SOURCES +=  \
 	../../src/IFCC_Building.cpp \

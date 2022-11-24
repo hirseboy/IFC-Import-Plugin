@@ -64,27 +64,27 @@ void Material::setPropertiesFromPropertyMap(const std::map<std::string,std::map<
 		m_thermalConductivity = value;
 }
 
-VICUS::Material Material::getVicusObject(std::map<int,int>& idMap, int idOffset) const {
-	VICUS::Material vmat;
-	vmat.m_id = m_id + idOffset;
-	idMap[m_id] = vmat.m_id;
-	vmat.m_displayName.setString(m_name,"de");
-	vmat.m_dataSource.setString(m_dataSource,"de");
-	vmat.m_manufacturer.setString(m_manufacturer,"de");
-	vmat.m_notes.setString(m_notes,"de");
-	if(m_density > 0)
-		vmat.m_para[VICUS::Material::P_Density].set("Density", m_density, m_densityUnit);
-	if(m_heatCapacity > 0)
-		vmat.m_para[VICUS::Material::P_HeatCapacity].set("HeatCapacity", m_heatCapacity, m_heatCapacityUnit);
-	if(m_thermalConductivity > 0)
-		vmat.m_para[VICUS::Material::P_Conductivity].set("Conductivity", m_thermalConductivity, m_thermalConductivityUnit);
-	if(m_upperMyValue > 0)
-		vmat.m_para[VICUS::Material::P_Mu].set("Mu", m_upperMyValue, m_upperMyValueUnit);
-	if(m_porosity > 0)
-		vmat.m_para[VICUS::Material::P_Wsat].set("Wsat", m_porosity, m_porosityUnit);
+//VICUS::Material Material::getVicusObject(std::map<int,int>& idMap, int idOffset) const {
+//	VICUS::Material vmat;
+//	vmat.m_id = m_id + idOffset;
+//	idMap[m_id] = vmat.m_id;
+//	vmat.m_displayName.setString(m_name,"de");
+//	vmat.m_dataSource.setString(m_dataSource,"de");
+//	vmat.m_manufacturer.setString(m_manufacturer,"de");
+//	vmat.m_notes.setString(m_notes,"de");
+//	if(m_density > 0)
+//		vmat.m_para[VICUS::Material::P_Density].set("Density", m_density, m_densityUnit);
+//	if(m_heatCapacity > 0)
+//		vmat.m_para[VICUS::Material::P_HeatCapacity].set("HeatCapacity", m_heatCapacity, m_heatCapacityUnit);
+//	if(m_thermalConductivity > 0)
+//		vmat.m_para[VICUS::Material::P_Conductivity].set("Conductivity", m_thermalConductivity, m_thermalConductivityUnit);
+//	if(m_upperMyValue > 0)
+//		vmat.m_para[VICUS::Material::P_Mu].set("Mu", m_upperMyValue, m_upperMyValueUnit);
+//	if(m_porosity > 0)
+//		vmat.m_para[VICUS::Material::P_Wsat].set("Wsat", m_porosity, m_porosityUnit);
 
-	return vmat;
-}
+//	return vmat;
+//}
 
 
 } // namespace IFCC

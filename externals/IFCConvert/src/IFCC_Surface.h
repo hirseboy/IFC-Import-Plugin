@@ -5,7 +5,7 @@
 
 #include <tinyxml.h>
 
-#include <VICUS_Surface.h>
+//#include <VICUS_Surface.h>
 
 #include <ifcpp/IFC4/include/IfcInternalOrExternalEnum.h>
 
@@ -137,10 +137,10 @@ public:
 	/*! Return if the object is valid.*/
 	bool isValid() const;
 
-	/*! Create a VICUS surface object and return this.
-		The returned object contains all transferable data.
-	*/
-	VICUS::Surface getVicusObject(std::map<int,int>& idMap, int& nextid) const;
+//	/*! Create a VICUS surface object and return this.
+//		The returned object contains all transferable data.
+//	*/
+//	VICUS::Surface getVicusObject(std::map<int,int>& idMap, int& nextid) const;
 
 	/*! Return name of the object.*/
 	std::string name() const {

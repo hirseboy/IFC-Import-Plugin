@@ -2,6 +2,8 @@
 
 #include "IFCC_Helper.h"
 
+#include <QDebug>
+
 #include <ifcpp/IFC4/include/IfcRelSpaceBoundary.h>
 #include <ifcpp/IFC4/include/IfcWall.h>
 #include <ifcpp/IFC4/include/IfcBeam.h>
@@ -435,36 +437,36 @@ bool IFCReader::convert(bool useSpaceBoundaries) {
 	return false;
 }
 
-bool IFCReader::setVicusProject(VICUS::Project* project) {
-	IBK_ASSERT(project != nullptr);
+//bool IFCReader::setVicusProject(VICUS::Project* project) {
+//	IBK_ASSERT(project != nullptr);
 
-	Logger::instance() << "IFCReader setVicusProject start";
+//	Logger::instance() << "IFCReader setVicusProject start";
 
-	std::map<int,int> idConversionMap;
+//	std::map<int,int> idConversionMap;
 
-	// add building structure
-	int nextId = project->nextUnusedID();
+//	// add building structure
+//	int nextId = project->nextUnusedID();
 
-	project->m_ifcFilePath = m_filename;
+//	project->m_ifcFilePath = m_filename;
 
-	for(auto& building : m_site.m_buildings) {
-		project->m_buildings.emplace_back(building->getVicusObject(idConversionMap, nextId));
-	}
+//	for(auto& building : m_site.m_buildings) {
+//		project->m_buildings.emplace_back(building->getVicusObject(idConversionMap, nextId));
+//	}
 
-	Logger::instance() << "IFCReader setVicusProject building structure added";
+//	Logger::instance() << "IFCReader setVicusProject building structure added";
 
-	// add databases
-	m_database.addToVicusProject(project, idConversionMap);
+//	// add databases
+//	m_database.addToVicusProject(project, idConversionMap);
 
-	Logger::instance() << "IFCReader setVicusProject database added";
+//	Logger::instance() << "IFCReader setVicusProject database added";
 
-	// add component instances
-	m_instances.addToVicusProject(project, idConversionMap);
+//	// add component instances
+//	m_instances.addToVicusProject(project, idConversionMap);
 
-	Logger::instance() << "IFCReader setVicusProject component instances added";
+//	Logger::instance() << "IFCReader setVicusProject component instances added";
 
-	return true;
-}
+//	return true;
+//}
 
 int IFCReader::totalNumberOfIFCEntities() const {
 	if(!m_readCompletedSuccessfully)
