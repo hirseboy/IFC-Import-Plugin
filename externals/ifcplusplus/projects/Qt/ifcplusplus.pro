@@ -29,7 +29,8 @@ win32-msvc* {
 DEFINES += IFCQUERY_LIB
 
 INCLUDEPATH += ../../src/IfcPlusPlus/src \
-				../../src/external/Carve/src/include /carve
+				../../src/external/Carve/src/include \
+				../../src/external \
 				../../src/external/Carve/src/common
 
 SOURCES += \
