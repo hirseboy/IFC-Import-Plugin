@@ -169,11 +169,11 @@ void MainWindow::runImport()
 	}
 	QString name = action->text();
 	SVImportPluginInterface* exp = m_importer.value(name);
-//	VICUS::Project project;
-//	if( exp ) {
-//		bool res = exp->import(this, project);
-//		if(res) {
+	if( exp ) {
+		QString project;
+		bool res = exp->import(this, project);
+		if(res) {
 
-//		}
-//	}
+		}
+	}
 }

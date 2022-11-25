@@ -29,9 +29,7 @@ INCLUDEPATH = \
 	../../../ifcplusplus/src/external/Carve/src/include \
 	../../../ifcplusplus/src/external \
 	../../../../submodules/SIM-VICUS/SIM-VICUS/src/plugins \
-	../../../../submodules/SIM-VICUS/externals/CCM/src \
-	../../../../submodules/SIM-VICUS/externals/Vicus/src \
-	../../../../submodules/SIM-VICUS/externals/Nandrad/src
+	../../../../submodules/SIM-VICUS/externals/CCM/src
 
 CONFIG(debug, debug|release) {
 	OBJECTS_DIR = debug$${DIR_PREFIX}
@@ -73,8 +71,6 @@ QMAKE_LIBDIR += ../../../../externals/lib$${DIR_PREFIX}
 LIBS += -L../../../../submodules/SIM-VICUS/externals/lib$${DIR_PREFIX}
 
 LIBS += \
-	-lNandrad \
-	-lVicus \
 	-lclipper \
 	-lIFCPlusPlus \
 	-lIFCConvert \
