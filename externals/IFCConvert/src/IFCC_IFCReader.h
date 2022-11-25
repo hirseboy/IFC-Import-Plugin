@@ -70,6 +70,8 @@ public:
 	/*! Write converted data as vicus file.*/
 	void writeXML(const IBK::Path & filename) const;
 
+	void setVicusProjectText(QString& projectText);
+
 	QStringList messages() const;
 
 	QStringList statistic() const;

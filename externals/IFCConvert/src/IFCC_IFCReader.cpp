@@ -515,6 +515,39 @@ void IFCReader::writeXML(const IBK::Path & filename) const {
 }
 
 
+void IFCReader::setVicusProjectText(QString& projectText) {
+	TiXmlDocument doc;
+	TiXmlDeclaration * decl = new TiXmlDeclaration( "1.0", "UTF-8", "" );
+	doc.LinkEndChild( decl );
+
+	TiXmlElement * root = new TiXmlElement( "VicusProject" );
+	doc.LinkEndChild(root);
+
+	root->SetAttribute("fileVersion", VERSION);
+
+	TiXmlElement * e = new TiXmlElement("Project");
+	root->LinkEndChild(e);
+
+	m_site.writeXML(e);
+
+	m_instances.writeXML(e);
+
+	m_database.writeXML(e);
+
+	// other files
+
+	// Declare a printer
+	TiXmlPrinter printer;
+
+	// attach it to the document you want to convert in to a std::string
+	doc.Accept(&printer);
+
+	// Create a std::string and copy your document data in to the string
+	std::string str = printer.CStr();
+	projectText = QString::fromStdString(str);
+}
+
+
 struct SpaceBoundaryEvaluation {
 	enum Type {
 		Construction,
@@ -688,6 +721,5 @@ bool IFCReader::typeByGuid(const std::string& guid, std::pair<ObjectTypes,std::s
 	}
 	return false;
 }
-
 
 } // end namespace
