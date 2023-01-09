@@ -26,6 +26,7 @@
 #include "IFCC_Construction.h"
 #include "IFCC_Database.h"
 #include "IFCC_Instances.h"
+#include "IFCC_BuildingElementsCollector.h"
 
 
 namespace IFCC {
@@ -121,6 +122,8 @@ public:
 	Database											m_database;
 	/*! Handler class for all component instances. Such a instance is a connection of components and surfaces from spaces.*/
 	Instances											m_instances;
+	/*! Vector of errors while converting.*/
+	std::vector<ConvertError>							m_convertErrors;
 
 
 private:
@@ -142,7 +145,7 @@ private:
 		\param guid IFC element GUID as string
 		\param res Resulting pair of element pointer and its type.
 	*/
-	bool typeByGuid(const std::string& guid, std::pair<ObjectTypes,std::shared_ptr<ProductShapeData>>& res);
+	bool typeByGuid(const std::string& guid, std::pair<BuildingElementTypes,std::shared_ptr<ProductShapeData>>& res);
 
 	bool		m_useSpaceBoundaries = true;
 };

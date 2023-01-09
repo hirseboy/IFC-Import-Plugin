@@ -26,7 +26,7 @@ namespace IFCC {
 SpaceBoundary::SpaceBoundary(int id) :
 	EntityBase(id),
 	m_elementEntityId(-1),
-	m_typeRelatedElement(OT_All),
+	m_typeRelatedElement(BET_All),
 	m_physicalOrVirtual(IfcPhysicalOrVirtualEnum::ENUM_NOTDEFINED),
 	m_internalOrExternal(IfcInternalOrExternalEnum::ENUM_NOTDEFINED),
 	m_type(CT_Unknown),
@@ -118,7 +118,7 @@ bool SpaceBoundary::setFromBuildingElement(const std::string& name, const std::s
 
 void SpaceBoundary::setForMissingElement(const std::string& name, const Space& space) {
 	m_name = name;
-	m_typeRelatedElement = OT_None;
+	m_typeRelatedElement = BET_None;
 	m_type = CT_Others;
 	m_spaceBoundaryType = SBT_Unknown;
 	m_levelType = SBLT_NoLevel;
@@ -132,7 +132,7 @@ void SpaceBoundary::setForMissingElement(const std::string& name, const Space& s
 
 void SpaceBoundary::setForVirtualElement(const std::string& name, const Space& space) {
 	m_name = name;
-	m_typeRelatedElement = OT_None;
+	m_typeRelatedElement = BET_None;
 	m_type = CT_Others;
 	m_spaceBoundaryType = SBT_Unknown;
 	m_levelType = SBLT_NoLevel;
@@ -144,7 +144,7 @@ void SpaceBoundary::setForVirtualElement(const std::string& name, const Space& s
 	m_nameRelatedSpace = space.m_name;
 }
 
-void SpaceBoundary::setRelatingElementType(ObjectTypes type) {
+void SpaceBoundary::setRelatingElementType(BuildingElementTypes type) {
 	m_typeRelatedElement = type;
 	if(isConstructionType(type))
 		m_type = CT_ConstructionElement;

@@ -358,7 +358,7 @@ GeometryConverter::~GeometryConverter() {}
 #endif
 			for( int i = 0; i < num_object_definitions; ++i ) {
 				shared_ptr<IfcObjectDefinition> object_def = vec_object_definitions[i];
-				ObjectTypes type = getObjectType(object_def);
+				BuildingElementTypes type = getObjectType(object_def);
 				bool geometricObject = isConstructionType(type) || isOpeningType(type) || isConstructionSimilarType(type);
 
 				const int entity_id = object_def->m_entity_id;

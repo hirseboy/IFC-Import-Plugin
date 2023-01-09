@@ -12,6 +12,7 @@
 #include "IFCC_EntityBase.h"
 #include "IFCC_Space.h"
 #include "IFCC_Types.h"
+#include "IFCC_BuildingElementsCollector.h"
 
 namespace IFCC {
 
@@ -56,7 +57,7 @@ public:
 	void updateSpaces(const objectShapeTypeVector_t& shapes,
 					  shared_ptr<UnitConverter>& unit_converter,
 					  const BuildingElementsCollector& buildingElements,
-					  const std::vector<Opening>& openings,
+					  std::vector<Opening>& openings,
 					  bool useSpaceBoundaries);
 
 	/*! Update spaces and related space boundaries.

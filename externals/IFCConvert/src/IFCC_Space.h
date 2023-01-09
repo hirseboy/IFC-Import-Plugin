@@ -16,6 +16,7 @@
 #include "IFCC_EntityBase.h"
 #include "IFCC_SpaceBoundary.h"
 #include "IFCC_Opening.h"
+#include "IFCC_BuildingElementsCollector.h"
 
 namespace IFCC {
 
@@ -137,11 +138,12 @@ public:
 		\param openingElements Vector of all opening elements (window, door)
 		\param openings Vector of openings with connections to opening elements and construction elements
 		\return If false no space boundaries with connected building elements can be found (\sa m_spaceBoundaryErrors).
+		In case of evaluated space boundaries for openings a connection will be set in the corresponding opening.
 	*/
 	bool updateSpaceBoundaries(const objectShapeTypeVector_t& shapes,
 							   shared_ptr<UnitConverter>& unit_converter,
 							   const BuildingElementsCollector& buildingElements,
-							   const std::vector<Opening>& openings,
+							   std::vector<Opening>& openings,
 							   bool useSpaceBoundaries);
 
 	/*! Updates the type and content (surfaces) of the space boundaries. Also the connection to building elements will be set.
@@ -220,7 +222,7 @@ private:
 		\param openings Vector of all openings
 	*/
 	bool evaluateSpaceBoundaries(const BuildingElementsCollector& buildingElements,
-								 const std::vector<Opening>& openings);
+								 std::vector<Opening>& openings);
 
 	/*! Try to find space boundaries for construction elements by test of surface properties (parallel, distance, intersections).
 		Function will be called from evaluateSpaceBoundaries.
@@ -237,6 +239,11 @@ private:
 	void createSpaceBoundariesForOpeningsFromOpenings(std::vector<std::shared_ptr<SpaceBoundary>>& spaceBoundaries,
 													  const BuildingElementsCollector& buildingElements,
 													  const std::vector<Opening>& openings);
+
+	/*! Create opening space boundaries by matching openings to existing space boundaries.*/
+	void createSpaceBoundariesForOpeningsFromSpaceBoundaries(std::vector<std::shared_ptr<SpaceBoundary>>& spaceBoundaries,
+															 const BuildingElementsCollector& buildingElements,
+															 std::vector<Opening>& openings);
 
 	/*! Update space surfaces from existing space boundaries.
 		It fills the surface and the subsurface vectors.

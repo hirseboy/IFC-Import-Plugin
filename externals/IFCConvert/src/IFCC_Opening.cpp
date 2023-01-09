@@ -50,6 +50,10 @@ void Opening::fetchGeometry(std::shared_ptr<ProductShapeData> productShape) {
 	surfacesFromRepresentation(productShape, m_surfaces);
 }
 
+const std::vector<int>& Opening::openingElementIds() const {
+	return m_openingElementIds;
+}
+
 const std::vector<Surface>& Opening::surfaces() const {
 	return m_surfaces;
 }
@@ -70,6 +74,14 @@ void Opening::insertContainingElementId(std::vector<int>& other) const {
 	if(!m_containedInElementIds.empty()) {
 		other.insert(other.end(), m_containedInElementIds.begin(), m_containedInElementIds.end());
 	}
+}
+
+void Opening::setSpaceBoundary(std::shared_ptr<SpaceBoundary> sb) {
+	m_spaceBoundary = sb;
+}
+
+bool Opening::hasSpaceBoundary() const {
+	return m_spaceBoundary.get() != nullptr;
 }
 
 } // namespace IFCC

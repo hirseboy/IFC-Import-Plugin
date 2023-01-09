@@ -11,6 +11,7 @@
 
 #include "IFCC_EntityBase.h"
 #include "IFCC_BuildingStorey.h"
+#include "IFCC_BuildingElementsCollector.h"
 
 namespace IFCC {
 
@@ -45,7 +46,7 @@ public:
 					   const objectShapeGUIDMap_t& spaceShapes,
 					   shared_ptr<UnitConverter>& unit_converter,
 					   const BuildingElementsCollector& buildingElements,
-					   const std::vector<Opening>& openings,
+					   std::vector<Opening>& openings,
 					   bool useSpaceBoundaries);
 
 	/*! Write the building in vicus xml format including storeys.*/

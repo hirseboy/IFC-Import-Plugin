@@ -69,7 +69,7 @@ void BuildingElement::WallProperties::update(std::shared_ptr<IfcWall>& ifcWall) 
 BuildingElement::BuildingElement(int id) :
 	EntityBase(id),
 	m_constructionId(-1),
-	m_type(OT_All),
+	m_type(BET_All),
 	m_surfaceComponent(false),
 	m_subSurfaceComponent(false)
 
@@ -77,7 +77,7 @@ BuildingElement::BuildingElement(int id) :
 
 }
 
-bool BuildingElement::set(std::shared_ptr<IfcElement> ifcElement, ObjectTypes type) {
+bool BuildingElement::set(std::shared_ptr<IfcElement> ifcElement, BuildingElementTypes type) {
 	if(!EntityBase::set(dynamic_pointer_cast<IfcRoot>(ifcElement)))
 		return false;
 
@@ -88,7 +88,7 @@ bool BuildingElement::set(std::shared_ptr<IfcElement> ifcElement, ObjectTypes ty
 	}
 	if(isConstructionType(m_type) || isConstructionSimilarType(m_type))
 		m_surfaceComponent = true;
-	else if(m_type == OT_Window || m_type == OT_Door)
+	else if(m_type == BET_Window || m_type == BET_Door)
 		m_subSurfaceComponent = true;
 
 	// look for properties
@@ -122,7 +122,7 @@ bool BuildingElement::set(std::shared_ptr<IfcElement> ifcElement, ObjectTypes ty
 		for(const auto& relop : ifcElement->m_FillsVoids_inverse) {
 			m_isUsedFromOpeningsOriginal.push_back(relop.lock()->m_RelatingOpeningElement);
 		}
-		if(m_type == OT_Window) {
+		if(m_type == BET_Window) {
 			shared_ptr<IfcWindow> window = dynamic_pointer_cast<IfcWindow>(ifcElement);
 			if(window != nullptr) {
 				m_openingProperties.m_isWindow = true;
@@ -202,7 +202,7 @@ bool BuildingElement::set(std::shared_ptr<IfcElement> ifcElement, ObjectTypes ty
 		}
 	}
 
-	if(m_type == OT_Wall) {
+	if(m_type == BET_Wall) {
 		shared_ptr<IfcWall> wall = dynamic_pointer_cast<IfcWall>(ifcElement);
 		m_wallProperties.update(wall);
 
@@ -463,11 +463,11 @@ void BuildingElement::setContainedConstructionThickesses(const std::vector<std::
 
 void BuildingElement::setThermalTransmittance() {
 	double tt = 0;
-	if(m_type == OT_Wall && getDoubleProperty(m_propertyMap, "Pset_WallCommon", "ThermalTransmittance", tt))
+	if(m_type == BET_Wall && getDoubleProperty(m_propertyMap, "Pset_WallCommon", "ThermalTransmittance", tt))
 		m_thermalTransmittance = tt;
-	if(m_type == OT_Window && getDoubleProperty(m_propertyMap, "Pset_WindowCommon", "ThermalTransmittance", tt))
+	if(m_type == BET_Window && getDoubleProperty(m_propertyMap, "Pset_WindowCommon", "ThermalTransmittance", tt))
 		m_thermalTransmittance = tt;
-	if(m_type == OT_Door && getDoubleProperty(m_propertyMap, "Pset_DoorCommon", "ThermalTransmittance", tt))
+	if(m_type == BET_Door && getDoubleProperty(m_propertyMap, "Pset_DoorCommon", "ThermalTransmittance", tt))
 		m_thermalTransmittance = tt;
 }
 

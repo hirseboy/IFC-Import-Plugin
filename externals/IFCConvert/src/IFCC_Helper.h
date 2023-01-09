@@ -37,16 +37,16 @@ private:
 
 // check functions
 
-inline bool isConstructionType(ObjectTypes type) {
-	return type == OT_Wall || type == OT_Roof || type == OT_Slab;
+inline bool isConstructionType(BuildingElementTypes type) {
+	return type == BET_Wall || type == BET_Roof || type == BET_Slab;
 }
 
-inline bool isConstructionSimilarType(ObjectTypes type) {
-	return type == OT_Beam || type == OT_Covering || type == OT_Column || type == OT_CurtainWall || type == OT_Footing;
+inline bool isConstructionSimilarType(BuildingElementTypes type) {
+	return type == BET_Beam || type == BET_Covering || type == BET_Column || type == BET_CurtainWall || type == BET_Footing;
 }
 
-inline bool isOpeningType(ObjectTypes type) {
-	return type == OT_Window || type == OT_Door;
+inline bool isOpeningType(BuildingElementTypes type) {
+	return type == BET_Window || type == BET_Door;
 }
 
 // conversion functions
@@ -109,10 +109,10 @@ bool nearEqual(const IBKMK::Vector3D& v1, const IBKMK::Vector3D& v2);
 double areaPolygon(const std::vector<IBKMK::Vector3D>& poly);
 
 /*! Return a string for the given object type.*/
-std::string objectTypeToString(ObjectTypes type);
+std::string objectTypeToString(BuildingElementTypes type);
 
 /*! Evaluate object type of given object definition.*/
-ObjectTypes getObjectType(const std::shared_ptr<IfcObjectDefinition>& od);
+BuildingElementTypes getObjectType(const std::shared_ptr<IfcObjectDefinition>& od);
 
 } // end namespace
 

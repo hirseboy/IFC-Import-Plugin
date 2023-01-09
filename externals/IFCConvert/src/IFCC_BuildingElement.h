@@ -123,7 +123,7 @@ public:
 		\param ifcElement Original IFC building element
 		\param type type from ObjectTypes evaluated from concrete IFC class type
 	*/
-	bool set(std::shared_ptr<IfcElement> ifcElement, ObjectTypes type);
+	bool set(std::shared_ptr<IfcElement> ifcElement, BuildingElementTypes type);
 
 	/*! get and transform geometry and set first opening properties.
 		\param Shape data of a building element.
@@ -174,7 +174,7 @@ public:
 	}
 
 	/*! Return type of the building element.*/
-	ObjectTypes type() const {
+	BuildingElementTypes type() const {
 		return m_type;
 	}
 
@@ -229,7 +229,7 @@ private:
 
 	void setThermalTransmittance();
 
-	ObjectTypes													m_type;					///< Type of the building element
+	BuildingElementTypes													m_type;					///< Type of the building element
 	bool														m_surfaceComponent;		///< If true its a construction element usable as surface
 	bool														m_subSurfaceComponent;	///< If true its a opening element usable as subsurface.
 	std::vector<Surface>										m_surfaces;				///< Vector of all surfaces

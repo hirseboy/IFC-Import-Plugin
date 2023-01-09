@@ -77,7 +77,7 @@ void Building::updateStoreys(const objectShapeTypeVector_t& elementShapes,
 							 const objectShapeGUIDMap_t& spaceShapes,
 							 shared_ptr<UnitConverter>& unit_converter,
 							 const BuildingElementsCollector& buildingElements,
-							 const std::vector<Opening>& openings,
+							 std::vector<Opening>& openings,
 							 bool useSpaceBoundaries) {
 
 	for(auto& storey : m_storeys) {

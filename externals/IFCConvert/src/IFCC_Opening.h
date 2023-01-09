@@ -5,11 +5,13 @@
 #include <ifcpp/IFC4/include/IfcFeatureElementSubtraction.h>
 
 
-//#include "IFCC_Types.h"
+//#include "IFCC_SpaceBoundary.h"
 #include "IFCC_Surface.h"
 #include "IFCC_EntityBase.h"
 
 namespace IFCC {
+
+class SpaceBoundary;
 
 /*! Class represents a opening.
 	This mainly a geometric object which have connections to a construction element and an opening element.
@@ -52,6 +54,9 @@ public:
 	/*! Add all ids from the containing element ids vector to the end of the given one.*/
 	void insertContainingElementId(std::vector<int>& other) const;
 
+	/*! Set the connected space boundary.*/
+	void setSpaceBoundary(std::shared_ptr<SpaceBoundary> sb);
+
 	/*! Map store the surface indices which are connected to a space given by ID.
 		Map key is id of space.
 		First value is index if space surface.
@@ -59,6 +64,11 @@ public:
 	*/
 	std::map<int,std::vector<std::pair<size_t,size_t>>>	m_spaceSurfaceConnection;
 
+	/*! Return true if the opening is already connected to a space boundary.*/
+	bool hasSpaceBoundary() const;
+
+	/*! Get the vector of opening construction ids connected to this opening.*/
+	const std::vector<int>& openingElementIds() const;
 
 private:
 
@@ -76,6 +86,8 @@ private:
 	std::vector<int>		m_openingElementIds;
 	/*! Vector of ids of construction elements (wall, roof or slab) which contains this opening (should only be one).*/
 	std::vector<int>		m_containedInElementIds;
+	/*! Connected space boundary.*/
+	std::shared_ptr<SpaceBoundary>	m_spaceBoundary;
 };
 
 } // namespace IFCC

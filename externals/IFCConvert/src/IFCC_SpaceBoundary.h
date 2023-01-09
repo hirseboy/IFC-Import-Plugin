@@ -80,7 +80,7 @@ public:
 	void setForVirtualElement(const std::string& name, const Space& space);
 
 	/*! Set connection base type from building element type.*/
-	void setRelatingElementType(ObjectTypes type);
+	void setRelatingElementType(BuildingElementTypes type);
 
 	/*! Get geometry from IFC basic geometry and fill the surface vector.
 		\param unit_converter Unit converter from geometry converter
@@ -118,7 +118,7 @@ public:
 		return m_nameRelatedSpace;
 	}
 
-	ObjectTypes typeRelatedElement() const {
+	BuildingElementTypes typeRelatedElement() const {
 		return m_typeRelatedElement;
 	}
 
@@ -152,7 +152,7 @@ private:
 	std::string													m_guidCorrespondingBoundary;	///< GUID of the corresponding space boundary
 	std::string													m_nameRelatedElement;	///< Name of the related building element
 	std::string													m_nameRelatedSpace;	///< Name of the related space
-	ObjectTypes													m_typeRelatedElement;	///< Object type of the related element
+	BuildingElementTypes													m_typeRelatedElement;	///< Object type of the related element
 	/*! Defines if the space boundary is a physical or a virtual boundary.
 		Possible types:
 		\li ENUM_PHYSICAL - a physical object (wall, slab, door ...)

@@ -199,105 +199,105 @@ std::string guidFromObject(IfcRoot* object) {
 	return converterX.to_bytes(object->m_GlobalId->m_value);
 }
 
-std::string objectTypeToString(ObjectTypes type) {
+std::string objectTypeToString(BuildingElementTypes type) {
 	switch(type) {
-		case OT_Beam:					return "beam";
-		case OT_Chimney:				return "chimney";
-		case OT_Column:					return "column";
-		case OT_Covering:				return "covering";
-		case OT_CurtainWall:			return "curtain wall";
-		case OT_Door:					return "door";
-		case OT_Footing:				return "footing";
-		case OT_Member:					return "member";
-		case OT_Pile:					return "pile";
-		case OT_Plate:					return "plate";
-		case OT_Railing:				return "railing";
-		case OT_Ramp:					return "ramp";
-		case OT_RampFlight:				return "ramp flight";
-		case OT_Roof:					return "roof";
-		case OT_ShadingDevice:			return "shading device";
-		case OT_Slab:					return "slab";
-		case OT_Stair:					return "stair";
-		case OT_StairFlight:			return "stair flight";
-		case OT_Wall:					return "wall";
-		case OT_Window:					return "window";
-		case OT_CivilElement:			return "civil element";
-		case OT_DistributionElement:	return "distribution element";
-		case OT_ElementAssembly:		return "element assembly";
-		case OT_ElementComponent:		return "element component";
-		case OT_FeatureElement:			return "feature element";
-		case OT_FurnishingElement:		return "furnishing element";
-		case OT_GeographicalElement:	return "geographical element";
-		case OT_TransportElement:		return "transport element";
-		case OT_VirtualElement:			return "virtual element";
-		case OT_All:					return "not defined";
-		case OT_None:					return "not defined";
+		case BET_Beam:					return "beam";
+		case BET_Chimney:				return "chimney";
+		case BET_Column:					return "column";
+		case BET_Covering:				return "covering";
+		case BET_CurtainWall:			return "curtain wall";
+		case BET_Door:					return "door";
+		case BET_Footing:				return "footing";
+		case BET_Member:					return "member";
+		case BET_Pile:					return "pile";
+		case BET_Plate:					return "plate";
+		case BET_Railing:				return "railing";
+		case BET_Ramp:					return "ramp";
+		case BET_RampFlight:				return "ramp flight";
+		case BET_Roof:					return "roof";
+		case BET_ShadingDevice:			return "shading device";
+		case BET_Slab:					return "slab";
+		case BET_Stair:					return "stair";
+		case BET_StairFlight:			return "stair flight";
+		case BET_Wall:					return "wall";
+		case BET_Window:					return "window";
+		case BET_CivilElement:			return "civil element";
+		case BET_DistributionElement:	return "distribution element";
+		case BET_ElementAssembly:		return "element assembly";
+		case BET_ElementComponent:		return "element component";
+		case BET_FeatureElement:			return "feature element";
+		case BET_FurnishingElement:		return "furnishing element";
+		case BET_GeographicalElement:	return "geographical element";
+		case BET_TransportElement:		return "transport element";
+		case BET_VirtualElement:			return "virtual element";
+		case BET_All:					return "not defined";
+		case BET_None:					return "not defined";
 	}
 	return "not defined";
 }
 
-ObjectTypes getObjectType(const std::shared_ptr<IfcObjectDefinition>& od) {
+BuildingElementTypes getObjectType(const std::shared_ptr<IfcObjectDefinition>& od) {
 	if(dynamic_pointer_cast<IfcElement>(od) == nullptr)
-		return OT_None;
+		return BET_None;
 
 	if(dynamic_pointer_cast<IfcWall>(od) != nullptr)
-		return OT_Wall;
+		return BET_Wall;
 	if(dynamic_pointer_cast<IfcBeam>(od) != nullptr)
-		return OT_Beam;
+		return BET_Beam;
 	if(dynamic_pointer_cast<IfcChimney>(od) != nullptr)
-		return OT_Chimney;
+		return BET_Chimney;
 	if(dynamic_pointer_cast<IfcCovering>(od) != nullptr)
-		return OT_Covering;
+		return BET_Covering;
 	if(dynamic_pointer_cast<IfcCurtainWall>(od) != nullptr)
-		return OT_CurtainWall;
+		return BET_CurtainWall;
 	if(dynamic_pointer_cast<IfcDoor>(od) != nullptr)
-		return OT_Door;
+		return BET_Door;
 	if(dynamic_pointer_cast<IfcFooting>(od) != nullptr)
-		return OT_Footing;
+		return BET_Footing;
 	if(dynamic_pointer_cast<IfcMember>(od) != nullptr)
-		return OT_Member;
+		return BET_Member;
 	if(dynamic_pointer_cast<IfcPile>(od) != nullptr)
-		return OT_Pile;
+		return BET_Pile;
 	if(dynamic_pointer_cast<IfcPlate>(od) != nullptr)
-		return OT_Plate;
+		return BET_Plate;
 	if(dynamic_pointer_cast<IfcRailing>(od) != nullptr)
-		return OT_Railing;
+		return BET_Railing;
 	if(dynamic_pointer_cast<IfcRamp>(od) != nullptr)
-		return OT_Ramp;
+		return BET_Ramp;
 	if(dynamic_pointer_cast<IfcRampFlight>(od) != nullptr)
-		return OT_RampFlight;
+		return BET_RampFlight;
 	if(dynamic_pointer_cast<IfcRoof>(od) != nullptr)
-		return OT_Roof;
+		return BET_Roof;
 	if(dynamic_pointer_cast<IfcShadingDevice>(od) != nullptr)
-		return OT_ShadingDevice;
+		return BET_ShadingDevice;
 	if(dynamic_pointer_cast<IfcSlab>(od) != nullptr)
-		return OT_Slab;
+		return BET_Slab;
 	if(dynamic_pointer_cast<IfcStair>(od) != nullptr)
-		return OT_Stair;
+		return BET_Stair;
 	if(dynamic_pointer_cast<IfcStairFlight>(od) != nullptr)
-		return OT_StairFlight;
+		return BET_StairFlight;
 	if(dynamic_pointer_cast<IfcWindow>(od) != nullptr)
-		return OT_Window;
+		return BET_Window;
 	if(dynamic_pointer_cast<IfcFeatureElement>(od) != nullptr)
-		return OT_FeatureElement;
+		return BET_FeatureElement;
 	if(dynamic_pointer_cast<IfcCivilElement>(od) != nullptr)
-		return OT_CivilElement;
+		return BET_CivilElement;
 	if(dynamic_pointer_cast<IfcDistributionElement>(od) != nullptr)
-		return OT_DistributionElement;
+		return BET_DistributionElement;
 	if(dynamic_pointer_cast<IfcElementAssembly>(od) != nullptr)
-		return OT_ElementAssembly;
+		return BET_ElementAssembly;
 	if(dynamic_pointer_cast<IfcElementComponent>(od) != nullptr)
-		return OT_ElementComponent;
+		return BET_ElementComponent;
 	if(dynamic_pointer_cast<IfcFurnishingElement>(od) != nullptr)
-		return OT_FurnishingElement;
+		return BET_FurnishingElement;
 	if(dynamic_pointer_cast<IfcGeographicElement>(od) != nullptr)
-		return OT_GeographicalElement;
+		return BET_GeographicalElement;
 	if(dynamic_pointer_cast<IfcTransportElement>(od) != nullptr)
-		return OT_TransportElement;
+		return BET_TransportElement;
 	if(dynamic_pointer_cast<IfcVirtualElement>(od) != nullptr)
-		return OT_VirtualElement;
+		return BET_VirtualElement;
 
-	return OT_All;
+	return BET_All;
 
 }
 

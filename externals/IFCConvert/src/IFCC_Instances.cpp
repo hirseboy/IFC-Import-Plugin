@@ -41,17 +41,15 @@ TiXmlElement * Instances::writeXML(TiXmlElement * parent) const {
 	return parent;
 }
 
-int Instances::collectComponentInstances(BuildingElementsCollector& elements, Database& database, const Site& site) {
-	int res = collectComponentInstances(elements.m_constructionElements, database, site);
-	res += collectComponentInstances(elements.m_constructionSimilarElements, database, site);
-	res += collectComponentInstances(elements.m_openingElements, database, site);
-	return res;
+void Instances::collectComponentInstances(BuildingElementsCollector& elements, Database& database, const Site& site,
+										 std::vector<ConvertError>& errors) {
+	collectComponentInstances(elements.m_constructionElements, database, site, errors);
+	collectComponentInstances(elements.m_constructionSimilarElements, database, site, errors);
+	collectComponentInstances(elements.m_openingElements, database, site, errors);
 }
 
-int Instances::collectComponentInstances(std::vector<std::shared_ptr<BuildingElement>>& elements, Database& database, const Site& site) {
-	std::vector<int> failedSurfaces;
-	std::vector<int> failedSubSurfaces;
-
+void Instances::collectComponentInstances(std::vector<std::shared_ptr<BuildingElement>>& elements, Database& database,
+										 const Site& site, std::vector<ConvertError>& errors) {
 	for(const auto& building : site.m_buildings) {
 		for(const auto& storey : building->storeys()) {
 			for(const auto& space : storey->spaces()) {
@@ -90,11 +88,19 @@ int Instances::collectComponentInstances(std::vector<std::shared_ptr<BuildingEle
 								m_componentInstances[ci.m_id] = ci;
 							}
 							else {
-								failedSurfaces.push_back(surf.id());
+								ConvertError err;
+								err.m_objectType = OT_Instance;
+								err.m_objectID = surf.id();
+								err.m_errorText = "Element for surface not found in components list";
+								errors.push_back(err);
 							}
 						}
 						else {
-							failedSurfaces.push_back(surf.id());
+							ConvertError err;
+							err.m_objectType = OT_Instance;
+							err.m_objectID = surf.id();
+							err.m_errorText = "Element ID in surface not found in element list";
+							errors.push_back(err);
 						}
 					}
 				}
@@ -120,18 +126,25 @@ int Instances::collectComponentInstances(std::vector<std::shared_ptr<BuildingEle
 								m_subSurfaceComponentInstances[ci.m_id] = ci;
 							}
 							else {
-								failedSubSurfaces.push_back(subSurf.id());
+								ConvertError err;
+								err.m_objectType = OT_Instance;
+								err.m_objectID = subSurf.id();
+								err.m_errorText = "Element for subsurface not found in components list";
+								errors.push_back(err);
 							}
 						}
 						else {
-							failedSubSurfaces.push_back(subSurf.id());
+							ConvertError err;
+							err.m_objectType = OT_Instance;
+							err.m_objectID = subSurf.id();
+							err.m_errorText = "Element ID in subsurface not found in element list";
+							errors.push_back(err);
 						}
 					}
 				}
 			}
 		}
 	}
-	return failedSurfaces.size() + failedSubSurfaces.size();
 }
 
 //void Instances::addToVicusProject(VICUS::Project* project, std::map<int,int>& idMap) {

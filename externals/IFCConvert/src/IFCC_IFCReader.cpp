@@ -149,61 +149,61 @@ void IFCReader::splitShapeData() {
 		const std::shared_ptr<IfcObjectDefinition> od = data->m_ifc_object_definition.lock();
 		if(dynamic_pointer_cast<IfcElement>(od) != nullptr) {
 			if(dynamic_pointer_cast<IfcWall>(od) != nullptr) {
-				m_elementEntitesShape[OT_Wall].push_back(data);
+				m_elementEntitesShape[BET_Wall].push_back(data);
 			}
 			else if(dynamic_pointer_cast<IfcBeam>(od) != nullptr) {
-				m_elementEntitesShape[OT_Beam].push_back(data);
+				m_elementEntitesShape[BET_Beam].push_back(data);
 			}
 			else if(dynamic_pointer_cast<IfcChimney>(od) != nullptr) {
-				m_elementEntitesShape[OT_Chimney].push_back(data);
+				m_elementEntitesShape[BET_Chimney].push_back(data);
 			}
 			else if(dynamic_pointer_cast<IfcCovering>(od) != nullptr) {
-				m_elementEntitesShape[OT_Covering].push_back(data);
+				m_elementEntitesShape[BET_Covering].push_back(data);
 			}
 			else if(dynamic_pointer_cast<IfcCurtainWall>(od) != nullptr) {
-				m_elementEntitesShape[OT_CurtainWall].push_back(data);
+				m_elementEntitesShape[BET_CurtainWall].push_back(data);
 			}
 			else if(dynamic_pointer_cast<IfcDoor>(od) != nullptr) {
-				m_elementEntitesShape[OT_Door].push_back(data);
+				m_elementEntitesShape[BET_Door].push_back(data);
 			}
 			else if(dynamic_pointer_cast<IfcFooting>(od) != nullptr) {
-				m_elementEntitesShape[OT_Footing].push_back(data);
+				m_elementEntitesShape[BET_Footing].push_back(data);
 			}
 			else if(dynamic_pointer_cast<IfcMember>(od) != nullptr) {
-				m_elementEntitesShape[OT_Member].push_back(data);
+				m_elementEntitesShape[BET_Member].push_back(data);
 			}
 			else if(dynamic_pointer_cast<IfcPile>(od) != nullptr) {
-				m_elementEntitesShape[OT_Pile].push_back(data);
+				m_elementEntitesShape[BET_Pile].push_back(data);
 			}
 			else if(dynamic_pointer_cast<IfcPlate>(od) != nullptr) {
-				m_elementEntitesShape[OT_Plate].push_back(data);
+				m_elementEntitesShape[BET_Plate].push_back(data);
 			}
 			else if(dynamic_pointer_cast<IfcRailing>(od) != nullptr) {
-				m_elementEntitesShape[OT_Railing].push_back(data);
+				m_elementEntitesShape[BET_Railing].push_back(data);
 			}
 			else if(dynamic_pointer_cast<IfcRamp>(od) != nullptr) {
-				m_elementEntitesShape[OT_Ramp].push_back(data);
+				m_elementEntitesShape[BET_Ramp].push_back(data);
 			}
 			else if(dynamic_pointer_cast<IfcRampFlight>(od) != nullptr) {
-				m_elementEntitesShape[OT_RampFlight].push_back(data);
+				m_elementEntitesShape[BET_RampFlight].push_back(data);
 			}
 			else if(dynamic_pointer_cast<IfcRoof>(od) != nullptr) {
-				m_elementEntitesShape[OT_Roof].push_back(data);
+				m_elementEntitesShape[BET_Roof].push_back(data);
 			}
 			else if(dynamic_pointer_cast<IfcShadingDevice>(od) != nullptr) {
-				m_elementEntitesShape[OT_ShadingDevice].push_back(data);
+				m_elementEntitesShape[BET_ShadingDevice].push_back(data);
 			}
 			else if(dynamic_pointer_cast<IfcSlab>(od) != nullptr) {
-				m_elementEntitesShape[OT_Slab].push_back(data);
+				m_elementEntitesShape[BET_Slab].push_back(data);
 			}
 			else if(dynamic_pointer_cast<IfcStair>(od) != nullptr) {
-				m_elementEntitesShape[OT_Stair].push_back(data);
+				m_elementEntitesShape[BET_Stair].push_back(data);
 			}
 			else if(dynamic_pointer_cast<IfcStairFlight>(od) != nullptr) {
-				m_elementEntitesShape[OT_StairFlight].push_back(data);
+				m_elementEntitesShape[BET_StairFlight].push_back(data);
 			}
 			else if(dynamic_pointer_cast<IfcWindow>(od) != nullptr) {
-				m_elementEntitesShape[OT_Window].push_back(data);
+				m_elementEntitesShape[BET_Window].push_back(data);
 			}
 			else if(dynamic_pointer_cast<IfcFeatureElement>(od) != nullptr) {
 				if(dynamic_pointer_cast<IfcOpeningElement>(od) != nullptr) {
@@ -211,34 +211,34 @@ void IFCReader::splitShapeData() {
 					m_openingsShape[guid] = data;
 				}
 
-				m_elementEntitesShape[OT_FeatureElement].push_back(data);
+				m_elementEntitesShape[BET_FeatureElement].push_back(data);
 			}
 			else if(dynamic_pointer_cast<IfcCivilElement>(od) != nullptr) {
-				m_elementEntitesShape[OT_CivilElement].push_back(data);
+				m_elementEntitesShape[BET_CivilElement].push_back(data);
 			}
 			else if(dynamic_pointer_cast<IfcDistributionElement>(od) != nullptr) {
-				m_elementEntitesShape[OT_DistributionElement].push_back(data);
+				m_elementEntitesShape[BET_DistributionElement].push_back(data);
 			}
 			else if(dynamic_pointer_cast<IfcElementAssembly>(od) != nullptr) {
-				m_elementEntitesShape[OT_ElementAssembly].push_back(data);
+				m_elementEntitesShape[BET_ElementAssembly].push_back(data);
 			}
 			else if(dynamic_pointer_cast<IfcElementComponent>(od) != nullptr) {
-				m_elementEntitesShape[OT_ElementComponent].push_back(data);
+				m_elementEntitesShape[BET_ElementComponent].push_back(data);
 			}
 			else if(dynamic_pointer_cast<IfcFurnishingElement>(od) != nullptr) {
-				m_elementEntitesShape[OT_FurnishingElement].push_back(data);
+				m_elementEntitesShape[BET_FurnishingElement].push_back(data);
 			}
 			else if(dynamic_pointer_cast<IfcGeographicElement>(od) != nullptr) {
-				m_elementEntitesShape[OT_GeographicalElement].push_back(data);
+				m_elementEntitesShape[BET_GeographicalElement].push_back(data);
 			}
 			else if(dynamic_pointer_cast<IfcTransportElement>(od) != nullptr) {
-				m_elementEntitesShape[OT_TransportElement].push_back(data);
+				m_elementEntitesShape[BET_TransportElement].push_back(data);
 			}
 			else if(dynamic_pointer_cast<IfcVirtualElement>(od) != nullptr) {
-				m_elementEntitesShape[OT_VirtualElement].push_back(data);
+				m_elementEntitesShape[BET_VirtualElement].push_back(data);
 			}
 			else {
-				m_elementEntitesShape[OT_All].push_back(data);
+				m_elementEntitesShape[BET_All].push_back(data);
 			}
 		}
 		else if(dynamic_pointer_cast<IfcSpatialStructureElement>(od) != nullptr) {
@@ -276,8 +276,8 @@ void IFCReader::splitShapeData() {
 	}
 
 	Logger::instance() << "IFCReader splitShapeData end";
-	Logger::instance() << std::to_string(m_elementEntitesShape[OT_Wall].size()) + " walls.";
-	Logger::instance() << std::to_string(m_elementEntitesShape[OT_Window].size()) + " windows.";
+	Logger::instance() << std::to_string(m_elementEntitesShape[BET_Wall].size()) + " walls.";
+	Logger::instance() << std::to_string(m_elementEntitesShape[BET_Window].size()) + " windows.";
 	Logger::instance() << std::to_string(m_buildingsShape.size()) + " buildings.";
 	Logger::instance() << std::to_string(m_storeysShape.size()) + " storeys.";
 	Logger::instance() << std::to_string(m_spaceEntitesShape.size()) + " spaces.";
@@ -411,9 +411,9 @@ bool IFCReader::convert(bool useSpaceBoundaries) {
 
 		Logger::instance() << "IFCReader convert building structure set";
 
-		int failures = m_instances.collectComponentInstances(m_buildingElements, m_database, m_site);
-		if(failures > 0) {
-			m_errorText += "\nNot all surface can be matched to a component. failures: " + std::to_string(failures);
+		m_instances.collectComponentInstances(m_buildingElements, m_database, m_site, m_convertErrors);
+
+		if(!m_convertErrors.empty()) {
 			m_hasError = true;
 //			return false;
 		}
@@ -425,7 +425,10 @@ bool IFCReader::convert(bool useSpaceBoundaries) {
 
 	}
 	catch (std::exception& e) {
-		m_errorText = e.what();
+		ConvertError err;
+		err.m_objectType = OT_Unknown;
+		err.m_errorText = "Exception: '" + std::string(e.what()) + "' while converting ifc file.";
+		m_convertErrors.push_back(err);
 		m_hasError = true;
 
 		Logger::instance() << "IFCReader convert exception";
@@ -560,7 +563,7 @@ struct SpaceBoundaryEvaluation {
 	QString	m_name;
 	QString	m_nameRelatedElement;
 	QString	m_nameRelatedSpace;
-	ObjectTypes	m_typeRelatedElement;
+	BuildingElementTypes	m_typeRelatedElement;
 
 	static QString typeString(Type type) {
 		switch(type) {
@@ -710,11 +713,11 @@ void IFCReader::messageTarget( void* ptr, shared_ptr<StatusCallback::Message> m 
 	}
 }
 
-bool IFCReader::typeByGuid(const std::string& guid, std::pair<ObjectTypes,std::shared_ptr<ProductShapeData>>& res) {
+bool IFCReader::typeByGuid(const std::string& guid, std::pair<BuildingElementTypes,std::shared_ptr<ProductShapeData>>& res) {
 	for(const auto& elemType : m_elementEntitesShape) {
 		for(const auto& elem : elemType.second) {
 			if(guid == ws2s(elem->m_entity_guid)) {
-				res = std::pair<ObjectTypes,std::shared_ptr<ProductShapeData>>(elemType.first,elem);
+				res = std::pair<BuildingElementTypes,std::shared_ptr<ProductShapeData>>(elemType.first,elem);
 				return true;
 			}
 		}

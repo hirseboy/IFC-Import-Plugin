@@ -80,7 +80,7 @@ void BuildingStorey::fetchSpaces(const std::map<std::string,shared_ptr<ProductSh
 void BuildingStorey::updateSpaces(const objectShapeTypeVector_t& shapes,
 								  shared_ptr<UnitConverter>& unit_converter,
 								  const BuildingElementsCollector& buildingElements,
-								  const std::vector<Opening>& openings,
+								  std::vector<Opening>& openings,
 								  bool useSpaceBoundaries) {
 
 	for(auto& space : m_spaces) {
