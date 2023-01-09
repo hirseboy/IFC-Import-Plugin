@@ -14,13 +14,6 @@
    <string>WizardPage</string>
   </property>
   <layout class="QGridLayout" name="gridLayout" columnstretch="0,0,0">
-   <item row="0" column="0">
-    <widget class="QPushButton" name="pushButtonConvert">
-     <property name="text">
-      <string>Convert</string>
-     </property>
-    </widget>
-   </item>
    <item row="0" column="1" colspan="2">
     <spacer name="horizontalSpacer">
      <property name="orientation">
@@ -34,7 +27,21 @@
      </property>
     </spacer>
    </item>
-   <item row="2" column="0" colspan="3">
+   <item row="1" column="1" colspan="2">
+    <widget class="QLabel" name="labelSBDescription">
+     <property name="text">
+      <string>TextLabel</string>
+     </property>
+    </widget>
+   </item>
+   <item row="0" column="0">
+    <widget class="QPushButton" name="pushButtonConvert">
+     <property name="text">
+      <string>Convert</string>
+     </property>
+    </widget>
+   </item>
+   <item row="3" column="0" colspan="3">
     <widget class="QTextEdit" name="textEdit"/>
    </item>
    <item row="1" column="0">
@@ -44,10 +51,10 @@
      </property>
     </widget>
    </item>
-   <item row="1" column="1" colspan="2">
-    <widget class="QLabel" name="labelSBDescription">
+   <item row="2" column="0">
+    <widget class="QCheckBox" name="checkBoxFlipSurfacePolygons">
      <property name="text">
-      <string>TextLabel</string>
+      <string>Flip surface polygons</string>
      </property>
     </widget>
    </item>
