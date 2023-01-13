@@ -116,23 +116,23 @@ std::vector<std::shared_ptr<Space>> Site::allSpaces() const {
 	return res;
 }
 
-/*! Return a vector of all space connection in project.*/
-std::vector<Space::SurfaceConnectionVectors> Site::allSurfaceConnectionVectors() const {
-	std::vector<Space::SurfaceConnectionVectors> res;
-	for(const std::shared_ptr<Building>& building : m_buildings) {
-		const std::vector<std::shared_ptr<BuildingStorey>>& storeys = building->storeys();
-		for(const std::shared_ptr<BuildingStorey>& storey : storeys) {
-			const std::vector<std::shared_ptr<Space>>& spaces = storey->spaces();
-			for(const std::shared_ptr<Space>& space : spaces) {
-				res.push_back(space->surfaceConnectionVectors());
-			}
-		}
-	}
-	return res;
-}
+///*! Return a vector of all space connection in project.*/
+//std::vector<Space::SurfaceConnectionVectors> Site::allSurfaceConnectionVectors() const {
+//	std::vector<Space::SurfaceConnectionVectors> res;
+//	for(const std::shared_ptr<Building>& building : m_buildings) {
+//		const std::vector<std::shared_ptr<BuildingStorey>>& storeys = building->storeys();
+//		for(const std::shared_ptr<BuildingStorey>& storey : storeys) {
+//			const std::vector<std::shared_ptr<Space>>& spaces = storey->spaces();
+//			for(const std::shared_ptr<Space>& space : spaces) {
+//				res.push_back(space->surfaceConnectionVectors());
+//			}
+//		}
+//	}
+//	return res;
+//}
 
 
-TiXmlElement * Site::writeXML(TiXmlElement * parent) const {
+TiXmlElement * Site::writeXML(TiXmlElement * parent, bool flipPolygons) const {
 	if(m_buildings.empty())
 		return nullptr;
 
@@ -140,7 +140,7 @@ TiXmlElement * Site::writeXML(TiXmlElement * parent) const {
 	parent->LinkEndChild(e);
 
 	for( const std::shared_ptr<Building>& building : m_buildings) {
-		building->writeXML(e);
+		building->writeXML(e, flipPolygons);
 	}
 	return e;
 }

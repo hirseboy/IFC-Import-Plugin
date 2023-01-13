@@ -78,16 +78,17 @@ void Building::updateStoreys(const objectShapeTypeVector_t& elementShapes,
 							 shared_ptr<UnitConverter>& unit_converter,
 							 const BuildingElementsCollector& buildingElements,
 							 std::vector<Opening>& openings,
-							 bool useSpaceBoundaries) {
+							 bool useSpaceBoundaries,
+							 std::vector<ConvertError>& errors) {
 
 	for(auto& storey : m_storeys) {
 		storey->fetchSpaces(spaceShapes, unit_converter);
-		storey->updateSpaces(elementShapes, unit_converter, buildingElements, openings, useSpaceBoundaries);
+		storey->updateSpaces(elementShapes, unit_converter, buildingElements, openings, useSpaceBoundaries, errors);
 	}
 }
 
 
-TiXmlElement * Building::writeXML(TiXmlElement * parent) const {
+TiXmlElement * Building::writeXML(TiXmlElement * parent, bool flipPolygons) const {
 	if (m_id == -1)
 		return nullptr;
 
@@ -104,7 +105,7 @@ TiXmlElement * Building::writeXML(TiXmlElement * parent) const {
 		e->LinkEndChild(child);
 
 		for( const auto& storey : m_storeys) {
-			storey->writeXML(child);
+			storey->writeXML(child, flipPolygons);
 		}
 	}
 	return e;

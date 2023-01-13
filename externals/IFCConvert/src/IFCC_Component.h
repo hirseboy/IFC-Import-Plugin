@@ -14,6 +14,7 @@ class TiXmlElement;
 namespace IFCC {
 
 class Surface;
+class SpaceBoundary;
 
 /*! Class contains all informations for a component.
 	A component connects a construction with boundary conditions and further informations.
@@ -62,6 +63,9 @@ public:
 
 	/*! Refining of type based on basic type (CT_OutsideWall, CT_SlopedRoof and CT_FloorToAir) and surface type.*/
 	void updateComponentType(const Surface& surf);
+
+	/*! Refining of type based on basic type (CT_OutsideWall, CT_SlopedRoof and CT_FloorToAir) and space boundary type.*/
+	void updateComponentType(const SpaceBoundary& sb);
 
 	/*! Comparison operator.*/
 	friend bool operator==(const Component& left, const Component& right) {

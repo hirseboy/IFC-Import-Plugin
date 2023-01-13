@@ -95,22 +95,22 @@ public:
 		int m_openingSurfaceIndex;	///< Index of surface in opening
 	};
 
-	/*! Store connections of surfaces with there distance.
-		Two surfaces can be connected if both normal vectors are the same and the distance is lower than a certain value.
-	*/
-	struct SurfaceConnection {
-		int m_spaceSurfaceIndex = -1;
-		int m_otherEntityId = -1;
-		int m_otherSurfaceIndex = -1;
-		double dist = 1e30;
-	};
+//	/*! Store connections of surfaces with there distance.
+//		Two surfaces can be connected if both normal vectors are the same and the distance is lower than a certain value.
+//	*/
+//	struct SurfaceConnection {
+//		int m_spaceSurfaceIndex = -1;
+//		int m_otherEntityId = -1;
+//		int m_otherSurfaceIndex = -1;
+//		double dist = 1e30;
+//	};
 
-	struct SurfaceConnectionVectors {
-		std::vector<SurfaceConnection>				m_spaceBoundaryConnections;			///< Space boundaries with connections to space
-		std::vector<SurfaceConnection>				m_constructionElementConnections;	///< Construction elements with connections to space
-		std::vector<SurfaceConnection>				m_openingElementConnections;		///< Opening elements with connections to space
-		std::vector<SurfaceConnection>				m_openingConnections;				///< Openings with connections to space
-	};
+//	struct SurfaceConnectionVectors {
+//		std::vector<SurfaceConnection>				m_spaceBoundaryConnections;			///< Space boundaries with connections to space
+//		std::vector<SurfaceConnection>				m_constructionElementConnections;	///< Construction elements with connections to space
+//		std::vector<SurfaceConnection>				m_openingElementConnections;		///< Opening elements with connections to space
+//		std::vector<SurfaceConnection>				m_openingConnections;				///< Openings with connections to space
+//	};
 
 	/*! Standard constructor.
 		\param id Unique id for using in project.
@@ -140,40 +140,40 @@ public:
 		\return If false no space boundaries with connected building elements can be found (\sa m_spaceBoundaryErrors).
 		In case of evaluated space boundaries for openings a connection will be set in the corresponding opening.
 	*/
-	bool updateSpaceBoundaries(const objectShapeTypeVector_t& shapes,
+	void updateSpaceBoundaries(const objectShapeTypeVector_t& shapes,
 							   shared_ptr<UnitConverter>& unit_converter,
 							   const BuildingElementsCollector& buildingElements,
 							   std::vector<Opening>& openings,
-							   bool useSpaceBoundaries);
+							   bool useSpaceBoundaries, std::vector<ConvertError>& errors);
 
-	/*! Updates the type and content (surfaces) of the space boundaries. Also the connection to building elements will be set.
-		If the IFC model doesn't contain space boundaries the function try to evaluate these from construction elements and openings.
-		\param constructionElements Vector of all construction elements (wall, roof, slab)
-		\param openingElements Vector of all opening elements (window, door)
-		\param openings Vector of openings with connections to opening elements and construction elements
-	*/
-	void updateSpaceConnections(BuildingElementsCollector& buildingElements,
-								std::vector<Opening>& openings);
+//	/*! Updates the type and content (surfaces) of the space boundaries. Also the connection to building elements will be set.
+//		If the IFC model doesn't contain space boundaries the function try to evaluate these from construction elements and openings.
+//		\param constructionElements Vector of all construction elements (wall, roof, slab)
+//		\param openingElements Vector of all opening elements (window, door)
+//		\param openings Vector of openings with connections to opening elements and construction elements
+//	*/
+//	void updateSpaceConnections(BuildingElementsCollector& buildingElements,
+//								std::vector<Opening>& openings);
 
-	/*! Return all surfaces of this space.*/
-	const std::vector<Surface>& surfaces() const;
+//	/*! Return all surfaces of this space.*/
+//	const std::vector<Surface>& surfaces() const;
 
 	/*! Return all space boundaries of this space.*/
 	const std::vector<std::shared_ptr<SpaceBoundary>>& spaceBoundaries() const;
 
 	/*! Write the space in vicus xml format including space boundaries.*/
-	TiXmlElement * writeXML(TiXmlElement * parent) const;
+	TiXmlElement * writeXML(TiXmlElement * parent, bool flipPolygons) const;
 
 //	/*! Create a VICUS room object and return this.
 //		The returned object contains all transferable data.
 //	*/
 //	VICUS::Room getVicusObject(std::map<int,int>& idMap, int& nextid) const;
 
-	/*! Return the surface connection vectors. It only makes sense if the following function are called before:
-		- updateSpaceConnections
-		- updateSpaceBoundaries
-	*/
-	SurfaceConnectionVectors surfaceConnectionVectors() const;
+//	/*! Return the surface connection vectors. It only makes sense if the following function are called before:
+//		- updateSpaceConnections
+//		- updateSpaceBoundaries
+//	*/
+//	SurfaceConnectionVectors surfaceConnectionVectors() const;
 
 	std::string									m_longName;			///< More detailed name of the space
 	/*! IFC space type. It can be:
@@ -188,8 +188,8 @@ public:
 	IfcSpaceTypeEnum::IfcSpaceTypeEnumEnum		m_spaceType;
 	/*! Some remarkes to the space. Can contain notes from space boundary evaluation.*/
 	std::string									m_notes;
-	/*! Contain error messages from space boundary evaluation function. Will be set from updateSpaceBoundaries if returns false.*/
-	std::string									m_spaceBoundaryErrors;
+//	/*! Contain error messages from space boundary evaluation function. Will be set from updateSpaceBoundaries if returns false.*/
+//	std::string									m_spaceBoundaryErrors;
 
 private:
 
@@ -211,18 +211,50 @@ private:
 		\param constructionElements Vector of all construction elements (wall, roof, slab)
 		\param openingElements Vector of all opening elements (window, door)
 	*/
-	bool evaluateSpaceBoundaryTypes(const objectShapeTypeVector_t& shapes,
+	bool evaluateSpaceBoundaryTypes_old(const objectShapeTypeVector_t& shapes,
 									 shared_ptr<UnitConverter>& unit_converter,
+									 const BuildingElementsCollector& buildingElements,
+									std::vector<ConvertError>& errors);
+
+	/*! Is called from evaluateSpaceBoundaryFromIFC.
+		It set the the space boundary type and the id of the connected building element.
+		\param shapes Vector of element shaps with type
+		\param buildingElements Vector of all building elements (wall, roof, slab, window, door etc.)
+	*/
+	void evaluateSpaceBoundaryTypes(const objectShapeTypeVector_t& shapes,
 									 const BuildingElementsCollector& buildingElements);
+
+	/*! Is called from evaluateSpaceBoundaryFromIFC.
+		It get geometry for space boundaries and fill their temporary surface vector.
+		\param unit_converter Unit converter from geometry converter
+		\param errors Vector of all conversion errors which occures here
+	*/
+	bool evaluateSpaceBoundaryGeometry(shared_ptr<UnitConverter>& unit_converter,
+									   std::vector<ConvertError>& errors);
+
+	/*! Is called from updateSpaceBoundaries in case space boundaries could be evaluated from IFC model.
+		It set the the space boundary type and the id of the connected building element (evaluateSpaceBoundaryTypes).
+		It get geometry for space boundaries and fill their temporary surface vector (evaluateSpaceBoundaryGeometry).
+		It splits all space boundaries which have more than one surface and adds the result to the space vector.
+		It set the connections between construction space boundaries and opening space boundaries.
+		\param shapes Vector of element shaps with type
+		\param buildingElements Vector of all building elements (wall, roof, slab, window, door etc.)
+		\param unit_converter Unit converter from geometry converter
+		\param errors Vector of all conversion errors which occures here
+	*/
+	bool evaluateSpaceBoundaryFromIFC(const objectShapeTypeVector_t& shapes,
+									  const BuildingElementsCollector& buildingElements,
+									  shared_ptr<UnitConverter>& unit_converter,
+									  std::vector<ConvertError>& errors);
 
 	/*! Is called from updateSpaceBoundaries in case IFC model doesn't contain space boundaries.
 		It try to evaluate space boundaries from construction elements and openings.
-		\param constructionElements Vector of all construction elements (wall, roof, slab)
-		\param openingElements Vector of all opening elements (window, door)
+		\param buildingElements Vector of all building elements (wall, roof, slab, window, door etc.)
 		\param openings Vector of all openings
+		\param errors Vector of all conversion errors which occures here
 	*/
-	bool evaluateSpaceBoundaries(const BuildingElementsCollector& buildingElements,
-								 std::vector<Opening>& openings);
+	bool evaluateSpaceBoundariesFromConstruction(const BuildingElementsCollector& buildingElements,
+												 std::vector<Opening>& openings, std::vector<ConvertError>& errors);
 
 	/*! Try to find space boundaries for construction elements by test of surface properties (parallel, distance, intersections).
 		Function will be called from evaluateSpaceBoundaries.
@@ -245,22 +277,22 @@ private:
 															 const BuildingElementsCollector& buildingElements,
 															 std::vector<Opening>& openings);
 
-	/*! Update space surfaces from existing space boundaries.
-		It fills the surface and the subsurface vectors.
-		Then it evaluates which subsurface is part of a surface.
-		If a surface is already intersected by a subsurface (has holes) the holes will be removed.
-		At the end the subsurfaces will be added to the corresponding surfaces.
-		The given building elements will be used in order to get intersection ranges from the element thicknesses.
-		\param elems Vector of construction elements
-	*/
-	void updateSurfaces(const BuildingElementsCollector& buildingElements);
+//	/*! Update space surfaces from existing space boundaries.
+//		It fills the surface and the subsurface vectors.
+//		Then it evaluates which subsurface is part of a surface.
+//		If a surface is already intersected by a subsurface (has holes) the holes will be removed.
+//		At the end the subsurfaces will be added to the corresponding surfaces.
+//		The given building elements will be used in order to get intersection ranges from the element thicknesses.
+//		\param elems Vector of construction elements
+//	*/
+//	void updateSurfaces(const BuildingElementsCollector& buildingElements);
 
 	std::vector<std::shared_ptr<SpaceBoundary>>	m_spaceBoundaries;	///< Space boundaries of the space
-	std::vector<Surface>						m_surfaces;			///< Surfaces of the space
+//	std::vector<Surface>						m_surfaces;			///< Surfaces of the space
 	carve::math::Matrix							m_transformMatrix;	///< Matrix for geometry transformation from local to global coordinates
 	std::vector<Surface>						m_surfacesOrg;		///< Original surfaces from the IFC model converted into global coordinates
-	std::vector<SurfaceConnection>				m_parallelSpaceSurfaces;			///< vector of parallel space surfaces with distances
-	SurfaceConnectionVectors					m_connectionVectors;
+//	std::vector<SurfaceConnection>				m_parallelSpaceSurfaces;			///< vector of parallel space surfaces with distances
+//	SurfaceConnectionVectors					m_connectionVectors;
 };
 
 } // namespace IFCC

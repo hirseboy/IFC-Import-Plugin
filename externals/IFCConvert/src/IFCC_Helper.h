@@ -11,6 +11,9 @@
 #include <ifcpp/IFC4/include/IfcLabel.h>
 #include <ifcpp/IFC4/include/IfcText.h>
 #include <ifcpp/IFC4/include/IfcIdentifier.h>
+#include <ifcpp/IFC4/include/IfcConnectionGeometry.h>
+
+#include <ifcpp/model/UnitConverter.h>
 
 #include "IFCC_Types.h"
 
@@ -113,6 +116,20 @@ std::string objectTypeToString(BuildingElementTypes type);
 
 /*! Evaluate object type of given object definition.*/
 BuildingElementTypes getObjectType(const std::shared_ptr<IfcObjectDefinition>& od);
+
+/*! Convert geometry given by IfcConnectionGeometry object into a polyVector.
+	\param connectionGeometry Geometry object
+	\param unit_converter Unit convert for geometry conversions
+	\param spaceTransformation Space transformation matrix for current object
+	\param objectId Id of the object. Only used for error messages.
+	\param errors Vector of errors while conversion
+	\return Vector of created polylines or empty in case of errors.
+*/
+polyVector_t polylinesFromConnectionGeometry(std::shared_ptr<IfcConnectionGeometry> connectionGeometry,
+										  shared_ptr<UnitConverter>& unit_converter,
+										  const carve::math::Matrix& spaceTransformation,
+										  int objectId,
+										  std::vector<ConvertError>& errors);
 
 } // end namespace
 

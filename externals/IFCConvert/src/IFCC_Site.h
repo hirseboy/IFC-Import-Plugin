@@ -47,11 +47,11 @@ public:
 	/*! Return a vector of all spaces in project.*/
 	std::vector<std::shared_ptr<Space>> allSpaces() const;
 
-	/*! Return a vector of all space connection in project.*/
-	std::vector<Space::SurfaceConnectionVectors> allSurfaceConnectionVectors() const;
+//	/*! Return a vector of all space connection in project.*/
+//	std::vector<Space::SurfaceConnectionVectors> allSurfaceConnectionVectors() const;
 
 	/*! Write the site in vicus xml format including buildings.*/
-	TiXmlElement * writeXML(TiXmlElement * parent) const;
+	TiXmlElement * writeXML(TiXmlElement * parent, bool flipPolygons) const;
 
 	std::vector<std::shared_ptr<Building>>	m_buildings;	///< vector of pointers to building objects
 

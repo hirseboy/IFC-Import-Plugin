@@ -75,10 +75,21 @@ enum ObjectType {
 	OT_Component,
 	OT_SubComponent,
 	OT_Instance,
+	OT_GeometryConvert,
 	OT_Unknown
 };
 
 struct ConvertError {
+	ConvertError() :
+		m_objectType(OT_Unknown),
+		m_objectID(-1)
+	{}
+	ConvertError(ObjectType type, int id, std::string txt) :
+		m_objectType(type),
+		m_objectID(id),
+		m_errorText(txt)
+	{}
+
 	ObjectType	m_objectType;
 	int			m_objectID;
 	std::string	m_errorText;

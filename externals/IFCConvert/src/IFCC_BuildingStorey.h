@@ -58,17 +58,18 @@ public:
 					  shared_ptr<UnitConverter>& unit_converter,
 					  const BuildingElementsCollector& buildingElements,
 					  std::vector<Opening>& openings,
-					  bool useSpaceBoundaries);
+					  bool useSpaceBoundaries,
+					  std::vector<ConvertError>& errors);
 
-	/*! Update spaces and related space boundaries.
-		\param constructionElements Vector for all construction elements (wall, slab, roof)
-		\param openingElements Vector for all opening elements (window, door)
-		\param openings Vector for all openings (based on IfcOpeningElement)
-	*/
-	void updateSpaceConnections(BuildingElementsCollector& buildingElements, std::vector<Opening>& openings);
+//	/*! Update spaces and related space boundaries.
+//		\param constructionElements Vector for all construction elements (wall, slab, roof)
+//		\param openingElements Vector for all opening elements (window, door)
+//		\param openings Vector for all openings (based on IfcOpeningElement)
+//	*/
+//	void updateSpaceConnections(BuildingElementsCollector& buildingElements, std::vector<Opening>& openings);
 
 	/*! Write the storey in vicus xml format including spaces.*/
-	TiXmlElement * writeXML(TiXmlElement * parent) const;
+	TiXmlElement * writeXML(TiXmlElement * parent, bool flipPolygons) const;
 
 //	/*! Create a VICUS building level object and return this.
 //		The returned object contains all transferable data.

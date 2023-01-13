@@ -26,6 +26,8 @@ namespace IFCC {
 SpaceBoundary::SpaceBoundary(int id) :
 	EntityBase(id),
 	m_elementEntityId(-1),
+	m_openingId(-1),
+	m_componentInstanceId(-1),
 	m_typeRelatedElement(BET_All),
 	m_physicalOrVirtual(IfcPhysicalOrVirtualEnum::ENUM_NOTDEFINED),
 	m_internalOrExternal(IfcInternalOrExternalEnum::ENUM_NOTDEFINED),
@@ -116,6 +118,26 @@ bool SpaceBoundary::setFromBuildingElement(const std::string& name, const std::s
 	return true;
 }
 
+void SpaceBoundary::setFromSpaceBoundary(const SpaceBoundary& sb, size_t surfaceIndex) {
+	m_name = sb.m_name;
+	m_description = sb.m_description;
+	m_elementEntityId = sb.m_elementEntityId;
+	m_guidRelatedElement = sb.m_guidRelatedElement;
+	m_guidRelatedSpace = sb.m_guidRelatedSpace;
+	m_guidCorrespondingBoundary = sb.m_guidCorrespondingBoundary;
+	m_nameRelatedElement = sb.m_nameRelatedElement;
+	m_nameRelatedSpace = sb.m_nameRelatedSpace;
+	m_typeRelatedElement = sb.m_typeRelatedElement;
+	m_physicalOrVirtual = sb.m_physicalOrVirtual;
+	m_internalOrExternal = sb.m_internalOrExternal;
+	m_type = sb.m_type;
+	m_spaceBoundaryType = sb.m_spaceBoundaryType;
+	m_levelType = sb.m_levelType;
+	IBK_ASSERT(surfaceIndex > 0);
+	IBK_ASSERT(surfaceIndex < sb.m_surfaces.size());
+	m_surface = sb.m_surfaces[surfaceIndex];
+}
+
 void SpaceBoundary::setForMissingElement(const std::string& name, const Space& space) {
 	m_name = name;
 	m_typeRelatedElement = BET_None;
@@ -155,118 +177,45 @@ void SpaceBoundary::setRelatingElementType(BuildingElementTypes type) {
 	else m_type = CT_Others;
 }
 
-bool SpaceBoundary::fetchGeometryFromIFC(shared_ptr<UnitConverter>& unit_converter, const carve::math::Matrix& spaceTransformation, std::string& errmsg) {
-	// connection geometry is set from IFCSpaceBoundary
-	if(m_connectionGeometry != nullptr) {
-		// get geometry data from connection geometry by conversion via ItemShapeData
-		shared_ptr<ItemShapeData> item_data(new ItemShapeData);
-		std::shared_ptr<IfcConnectionCurveGeometry> curveGeom = std::dynamic_pointer_cast<IfcConnectionCurveGeometry>(m_connectionGeometry);
-		if(curveGeom != nullptr) {
-			errmsg = "IfcConnectionCurveGeometry not implemented";
-			return false;
-			///< \todo Implement
-		}
-		std::shared_ptr<IfcConnectionPointEccentricity> pointEccGeom = std::dynamic_pointer_cast<IfcConnectionPointEccentricity>(m_connectionGeometry);
-		if(pointEccGeom != nullptr) {
-			errmsg = "IfcConnectionPointEccentricity not implemented";
-			return false;
-			///< \todo Implement
-		}
-		std::shared_ptr<IfcConnectionPointGeometry> pointGeom = std::dynamic_pointer_cast<IfcConnectionPointGeometry>(m_connectionGeometry);
-		if(pointGeom != nullptr) {
-			errmsg = "IfcConnectionPointGeometry not implemented";
-			return false;
-			///< \todo Implement
-		}
-		std::shared_ptr<IfcConnectionSurfaceGeometry> surfaceGeom = std::dynamic_pointer_cast<IfcConnectionSurfaceGeometry>(m_connectionGeometry);
-		if(surfaceGeom != nullptr) {
-			shared_ptr<IfcSurfaceOrFaceSurface> surface = surfaceGeom->m_SurfaceOnRelatingElement;
-			if(surface != nullptr) {
-				std::shared_ptr<IfcFaceBasedSurfaceModel> fbSurface = std::dynamic_pointer_cast<IfcFaceBasedSurfaceModel>(surface);
-				if(fbSurface != nullptr) {
-					errmsg = "IfcFaceBasedSurfaceModel not implemented";
-					return false;
-					///< \todo Implement
-				}
-				std::shared_ptr<IfcFaceSurface> fSurface = std::dynamic_pointer_cast<IfcFaceSurface>(surface);
-				if(fSurface != nullptr) {
-					errmsg = "IfcFaceSurface not implemented";
-					return false;
-					///< \todo Implement
-				}
-				std::shared_ptr<IfcSurface> nSurface = std::dynamic_pointer_cast<IfcSurface>(surface);
-				if(nSurface != nullptr) {
-					shared_ptr<GeometrySettings> geom_settings = shared_ptr<GeometrySettings>( new GeometrySettings() );
-					RepresentationConverter repConvert(geom_settings, unit_converter);
-					bool res = repConvert.convertIfcGeometricRepresentationItem(nSurface,item_data, errmsg);
-					if(!res)
-						return false;
+bool SpaceBoundary::fetchGeometryFromIFC(shared_ptr<UnitConverter>& unit_converter,
+										 const carve::math::Matrix& spaceTransformation, std::vector<ConvertError>& errors) {
 
-					if(spaceTransformation != carve::math::Matrix::IDENT()) {
-						item_data->applyTransformToItem(spaceTransformation);
-					}
-				}
-			}
-		}
-		std::shared_ptr<IfcConnectionVolumeGeometry> volumeGeom = std::dynamic_pointer_cast<IfcConnectionVolumeGeometry>(m_connectionGeometry);
-		if(volumeGeom != nullptr) {
-			errmsg = "IfcConnectionVolumeGeometry not implemented";
-			return false;
-			///< \todo Implement
-		}
-
-		// geometry is converted and transformed into carve::MeshSet<3>
-		// now transform it into IBKMK::Vector3D
-		meshVector_t meshSetClosedFinal = item_data->m_meshsets;
-		meshVector_t meshSetOpenFinal = item_data->m_meshsets_open;
-		if(meshSetClosedFinal.empty() && meshSetOpenFinal.empty())
-			return false;
-
-		// try to simplify meshes by merging all coplanar faces
-		meshVector_t& currentMeshSets =  meshSetClosedFinal.empty() ? meshSetOpenFinal : meshSetClosedFinal;
-		if(!currentMeshSets.empty()) {
-			simplifyMesh(currentMeshSets, false);
-		}
-
-		polyVector_t polylines;
-		if(!meshSetClosedFinal.empty()) {
-			int msCount = meshSetClosedFinal.size();
-			for(int i=0; i<msCount; ++i) {
-				polylines.push_back(std::vector<std::vector<std::vector<IBKMK::Vector3D>>>());
-				const carve::mesh::MeshSet<3>& currMeshSet = *meshSetClosedFinal[i];
-				convert(currMeshSet, polylines.back());
-			}
-		}
-		if(!meshSetOpenFinal.empty()) {
-			int msCount = meshSetOpenFinal.size();
-			for(int i=0; i<msCount; ++i) {
-				polylines.push_back(std::vector<std::vector<std::vector<IBKMK::Vector3D>>>());
-				const carve::mesh::MeshSet<3>& currMeshSet = *meshSetOpenFinal[i];
-				convert(currMeshSet, polylines.back());
-			}
-		}
-		createSurfaceVect(polylines);
-		return true;
-	}
-
-	// no geometry from IFC element
-	// geometry must be set from related building element and space
-	// use other fetchGeometry function
-	else {
+	polyVector_t polylines = polylinesFromConnectionGeometry(m_connectionGeometry, unit_converter, spaceTransformation,
+															 m_id, errors);
+	if(polylines.empty())
 		return false;
-	}
+
+	createSurfaceVect(polylines);
+	return true;
 }
 
 bool SpaceBoundary::fetchGeometryFromBuildingElement(const Surface& surface) {
-	polyVector_t polylines;
+	m_surfaces.clear();
 	if(surface.isValid()) {
-		polylines.emplace_back(std::vector<std::vector<std::vector<IBKMK::Vector3D>>>());
-		polylines.back().emplace_back(std::vector<std::vector<IBKMK::Vector3D>>());
-		polylines.back().back().emplace_back(surface.polygon());
-		createSurfaceVect(polylines);
+		std::string name = m_nameRelatedElement;
+		if(name.empty())
+			name = std::to_string(m_id);
+		m_surface = surface;
+		m_surface.set(GUID_maker::instance().guid(), m_elementEntityId, name,
+							  m_physicalOrVirtual == IfcPhysicalOrVirtualEnum::ENUM_VIRTUAL);
+		m_surface.setSurfaceType(m_internalOrExternal);
 		return true;
 	}
 	return false;
+}
+
+std::vector<std::shared_ptr<SpaceBoundary>> SpaceBoundary::splitBySurfaces() {
+	std::vector<std::shared_ptr<SpaceBoundary>> res;
+	if(m_surfaces.empty())
+		return res;
+
+	for(size_t i=1; i<m_surfaces.size(); ++i) {
+		res.emplace_back(std::shared_ptr<SpaceBoundary>(new SpaceBoundary(GUID_maker::instance().guid())));
+		res.back()->setFromSpaceBoundary(*this, i);
+	}
+	m_surface = m_surfaces.front();
+	m_surfaces.clear();
+	return res;
 }
 
 void SpaceBoundary::createSurfaceVect(const polyVector_t& polylines) {
@@ -288,5 +237,12 @@ void SpaceBoundary::createSurfaceVect(const polyVector_t& polylines) {
 	}
 }
 
+const std::vector<std::shared_ptr<SpaceBoundary> >& SpaceBoundary::containedOpeningSpaceBoundaries() const {
+	return m_containedOpeningSpaceBoundaries;
+}
+
+void SpaceBoundary::addContainedOpeningSpaceBoundaries(const std::shared_ptr<SpaceBoundary>& newContainedOpeningSpaceBoundaries) {
+	m_containedOpeningSpaceBoundaries.push_back(newContainedOpeningSpaceBoundaries);
+}
 
 } // namespace IFCC

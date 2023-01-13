@@ -81,24 +81,22 @@ void BuildingStorey::updateSpaces(const objectShapeTypeVector_t& shapes,
 								  shared_ptr<UnitConverter>& unit_converter,
 								  const BuildingElementsCollector& buildingElements,
 								  std::vector<Opening>& openings,
-								  bool useSpaceBoundaries) {
+								  bool useSpaceBoundaries,
+								  std::vector<ConvertError>& errors) {
 
 	for(auto& space : m_spaces) {
-		bool res = space->updateSpaceBoundaries(shapes, unit_converter,	buildingElements, openings, useSpaceBoundaries);
-		if(!res) {
-			std::string errstr = space->m_spaceBoundaryErrors;
-		}
+		space->updateSpaceBoundaries(shapes, unit_converter,	buildingElements, openings, useSpaceBoundaries, errors);
 	}
 }
 
-void BuildingStorey::updateSpaceConnections(BuildingElementsCollector& buildingElements, std::vector<Opening>& openings) {
-	for(auto& space : m_spaces) {
-		space->updateSpaceConnections(buildingElements, openings);
-	}
-}
+//void BuildingStorey::updateSpaceConnections(BuildingElementsCollector& buildingElements, std::vector<Opening>& openings) {
+//	for(auto& space : m_spaces) {
+//		space->updateSpaceConnections(buildingElements, openings);
+//	}
+//}
 
 
-TiXmlElement * BuildingStorey::writeXML(TiXmlElement * parent) const {
+TiXmlElement * BuildingStorey::writeXML(TiXmlElement * parent, bool flipPolygons) const {
 	if (m_id == -1)
 		return nullptr;
 
@@ -117,7 +115,7 @@ TiXmlElement * BuildingStorey::writeXML(TiXmlElement * parent) const {
 		e->LinkEndChild(child);
 
 		for( const auto& space : m_spaces) {
-			space->writeXML(child);
+			space->writeXML(child, flipPolygons);
 		}
 	}
 	return e;

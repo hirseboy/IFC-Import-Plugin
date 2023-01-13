@@ -38,10 +38,22 @@
 #include <ifcpp/IFC4/include/IfcWindow.h>
 #include <ifcpp/IFC4/include/IfcFeatureElement.h>
 
+#include <ifcpp/IFC4/include/IfcConnectionCurveGeometry.h>
+#include <ifcpp/IFC4/include/IfcConnectionPointGeometry.h>
+#include <ifcpp/IFC4/include/IfcConnectionPointEccentricity.h>
+#include <ifcpp/IFC4/include/IfcConnectionSurfaceGeometry.h>
+#include <ifcpp/IFC4/include/IfcConnectionVolumeGeometry.h>
+#include <ifcpp/IFC4/include/IfcFaceBasedSurfaceModel.h>
+#include <ifcpp/IFC4/include/IfcFaceSurface.h>
+#include <ifcpp/IFC4/include/IfcSurface.h>
+
 #include <carve/mesh_simplify.hpp>
 
 #include <IBK_math.h>
 #include <IBK_assert.h>
+
+#include "IFCC_Surface.h"
+#include "IFCC_RepresentationConverter.h"
 
 namespace IFCC {
 
@@ -299,6 +311,107 @@ BuildingElementTypes getObjectType(const std::shared_ptr<IfcObjectDefinition>& o
 
 	return BET_All;
 
+}
+
+polyVector_t polylinesFromConnectionGeometry(std::shared_ptr<IfcConnectionGeometry> connectionGeometry,
+										  shared_ptr<UnitConverter>& unit_converter,
+										  const carve::math::Matrix& spaceTransformation,
+										  int objectId,
+										  std::vector<ConvertError>& errors) {
+	polyVector_t res;
+
+	// connection geometry is set from IFCSpaceBoundary
+	if(connectionGeometry == nullptr)
+		return res;
+
+	// get geometry data from connection geometry by conversion via ItemShapeData
+	shared_ptr<ItemShapeData> item_data(new ItemShapeData);
+	std::shared_ptr<IfcConnectionCurveGeometry> curveGeom = std::dynamic_pointer_cast<IfcConnectionCurveGeometry>(connectionGeometry);
+	if(curveGeom != nullptr) {
+		errors.push_back({OT_SpaceBoundary, objectId, "IfcConnectionCurveGeometry not implemented"});
+		return res;
+		///< \todo Implement
+	}
+	std::shared_ptr<IfcConnectionPointEccentricity> pointEccGeom = std::dynamic_pointer_cast<IfcConnectionPointEccentricity>(connectionGeometry);
+	if(pointEccGeom != nullptr) {
+		errors.push_back({OT_SpaceBoundary, objectId, "IfcConnectionPointEccentricity not implemented"});
+		return res;
+		///< \todo Implement
+	}
+	std::shared_ptr<IfcConnectionPointGeometry> pointGeom = std::dynamic_pointer_cast<IfcConnectionPointGeometry>(connectionGeometry);
+	if(pointGeom != nullptr) {
+		errors.push_back({OT_SpaceBoundary, objectId, "IfcConnectionPointGeometry not implemented"});
+		return res;
+		///< \todo Implement
+	}
+	std::shared_ptr<IfcConnectionSurfaceGeometry> surfaceGeom = std::dynamic_pointer_cast<IfcConnectionSurfaceGeometry>(connectionGeometry);
+	if(surfaceGeom != nullptr) {
+		shared_ptr<IfcSurfaceOrFaceSurface> surface = surfaceGeom->m_SurfaceOnRelatingElement;
+		if(surface != nullptr) {
+			std::shared_ptr<IfcFaceBasedSurfaceModel> fbSurface = std::dynamic_pointer_cast<IfcFaceBasedSurfaceModel>(surface);
+			if(fbSurface != nullptr) {
+				errors.push_back({OT_SpaceBoundary, objectId, "IfcFaceBasedSurfaceModel not implemented"});
+				return res;
+				///< \todo Implement
+			}
+			std::shared_ptr<IfcFaceSurface> fSurface = std::dynamic_pointer_cast<IfcFaceSurface>(surface);
+			if(fSurface != nullptr) {
+				errors.push_back({OT_SpaceBoundary, objectId, "IfcFaceSurface not implemented"});
+				return res;
+				///< \todo Implement
+			}
+			std::shared_ptr<IfcSurface> nSurface = std::dynamic_pointer_cast<IfcSurface>(surface);
+			if(nSurface != nullptr) {
+				shared_ptr<GeometrySettings> geom_settings = shared_ptr<GeometrySettings>( new GeometrySettings() );
+				RepresentationConverter repConvert(geom_settings, unit_converter);
+				bool resConv = repConvert.convertIfcGeometricRepresentationItem(nSurface,item_data, errors);
+				if(!resConv)
+					return res;
+
+				if(spaceTransformation != carve::math::Matrix::IDENT()) {
+					item_data->applyTransformToItem(spaceTransformation);
+				}
+			}
+		}
+	}
+	std::shared_ptr<IfcConnectionVolumeGeometry> volumeGeom = std::dynamic_pointer_cast<IfcConnectionVolumeGeometry>(connectionGeometry);
+	if(volumeGeom != nullptr) {
+		errors.push_back({OT_SpaceBoundary, objectId, "IfcConnectionVolumeGeometry not implemented"});
+		return res;
+		///< \todo Implement
+	}
+
+	// geometry is converted and transformed into carve::MeshSet<3>
+	// now transform it into IBKMK::Vector3D
+	meshVector_t meshSetClosedFinal = item_data->m_meshsets;
+	meshVector_t meshSetOpenFinal = item_data->m_meshsets_open;
+	if(meshSetClosedFinal.empty() && meshSetOpenFinal.empty())
+		return res;
+
+	// try to simplify meshes by merging all coplanar faces
+	meshVector_t& currentMeshSets =  meshSetClosedFinal.empty() ? meshSetOpenFinal : meshSetClosedFinal;
+	if(!currentMeshSets.empty()) {
+		simplifyMesh(currentMeshSets, false);
+	}
+
+	if(!meshSetClosedFinal.empty()) {
+		int msCount = meshSetClosedFinal.size();
+		for(int i=0; i<msCount; ++i) {
+			res.push_back(std::vector<std::vector<std::vector<IBKMK::Vector3D>>>());
+			const carve::mesh::MeshSet<3>& currMeshSet = *meshSetClosedFinal[i];
+			convert(currMeshSet, res.back());
+		}
+	}
+	if(!meshSetOpenFinal.empty()) {
+		int msCount = meshSetOpenFinal.size();
+		for(int i=0; i<msCount; ++i) {
+			res.push_back(std::vector<std::vector<std::vector<IBKMK::Vector3D>>>());
+			const carve::mesh::MeshSet<3>& currMeshSet = *meshSetOpenFinal[i];
+			convert(currMeshSet, res.back());
+		}
+	}
+
+	return res;
 }
 
 } // end namespace

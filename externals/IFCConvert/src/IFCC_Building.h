@@ -47,10 +47,11 @@ public:
 					   shared_ptr<UnitConverter>& unit_converter,
 					   const BuildingElementsCollector& buildingElements,
 					   std::vector<Opening>& openings,
-					   bool useSpaceBoundaries);
+					   bool useSpaceBoundaries,
+					   std::vector<ConvertError>& errors);
 
 	/*! Write the building in vicus xml format including storeys.*/
-	TiXmlElement * writeXML(TiXmlElement * parent) const;
+	TiXmlElement * writeXML(TiXmlElement * parent, bool flipPolygons) const;
 
 //	/*! Create a VICUS building object and return this.
 //		The returned object contains all transferable data.

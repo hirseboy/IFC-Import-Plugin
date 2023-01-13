@@ -108,6 +108,9 @@ public:
 	/*! Return the area of the surface.*/
 	double area() const;
 
+	/*! Flip the surfrace polygone.*/
+	void flip();
+
 	/*! Write the surface in vicus xml format including all subsurfaces.*/
 	TiXmlElement * writeXML(TiXmlElement * parent) const;
 

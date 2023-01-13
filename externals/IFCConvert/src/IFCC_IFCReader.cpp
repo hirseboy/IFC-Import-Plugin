@@ -307,14 +307,13 @@ bool IFCReader::convert(bool useSpaceBoundaries) {
 		// convert IFC geometric representations into Carve geometry
 		const double length_in_meter = m_geometryConverter.getBuildingModel()->getUnitConverter()->getLengthInMeterFactor();
 		m_geometryConverter.setCsgEps(1.5e-08 * length_in_meter);
-		std::vector<std::string> errmsgs;
-		m_geometryConverter.convertGeometry(subtractOpenings,errmsgs);
-		if(!errmsgs.empty()) {
-			for(const std::string& str : errmsgs) {
-				m_errorText += str + "\n";
-			}
-			m_hasError = true;
-		}
+		m_geometryConverter.convertGeometry(subtractOpenings, m_convertErrors);
+//		if(!errmsgs.empty()) {
+//			for(const std::string& str : errmsgs) {
+//				m_errorText += str + "\n";
+//			}
+//			m_hasError = true;
+//		}
 
 		Logger::instance() << "IFCReader convert init";
 
@@ -400,10 +399,11 @@ bool IFCReader::convert(bool useSpaceBoundaries) {
 			for(auto& building : m_site.m_buildings) {
 				building->fetchStoreys(m_storeysShape, m_spaceEntitesShape);
 				building->updateStoreys(m_elementEntitesShape, m_spaceEntitesShape, m_geometryConverter.getBuildingModel()->getUnitConverter(),
-									   m_buildingElements, m_openings, m_useSpaceBoundaries);
+									   m_buildingElements, m_openings, m_useSpaceBoundaries, m_convertErrors);
 			}
 		}
 		else {
+			m_convertErrors.push_back({OT_Site, -1, "No site"});
 			m_errorText = "No site";
 			m_hasError = true;
 			return false;
@@ -440,37 +440,6 @@ bool IFCReader::convert(bool useSpaceBoundaries) {
 	return false;
 }
 
-//bool IFCReader::setVicusProject(VICUS::Project* project) {
-//	IBK_ASSERT(project != nullptr);
-
-//	Logger::instance() << "IFCReader setVicusProject start";
-
-//	std::map<int,int> idConversionMap;
-
-//	// add building structure
-//	int nextId = project->nextUnusedID();
-
-//	project->m_ifcFilePath = m_filename;
-
-//	for(auto& building : m_site.m_buildings) {
-//		project->m_buildings.emplace_back(building->getVicusObject(idConversionMap, nextId));
-//	}
-
-//	Logger::instance() << "IFCReader setVicusProject building structure added";
-
-//	// add databases
-//	m_database.addToVicusProject(project, idConversionMap);
-
-//	Logger::instance() << "IFCReader setVicusProject database added";
-
-//	// add component instances
-//	m_instances.addToVicusProject(project, idConversionMap);
-
-//	Logger::instance() << "IFCReader setVicusProject component instances added";
-
-//	return true;
-//}
-
 int IFCReader::totalNumberOfIFCEntities() const {
 	if(!m_readCompletedSuccessfully)
 		return 0;
@@ -492,6 +461,13 @@ int IFCReader::numberOfIFCSpaceBoundaries() const {
 	return count;
 }
 
+bool IFCReader::flipPolygons() const {
+	return m_flipPolygons;
+}
+
+void IFCReader::setFlipPolygons(bool flipPolygons) {
+	m_flipPolygons = flipPolygons;
+}
 
 void IFCReader::writeXML(const IBK::Path & filename) const {
 	TiXmlDocument doc;
@@ -506,7 +482,7 @@ void IFCReader::writeXML(const IBK::Path & filename) const {
 	TiXmlElement * e = new TiXmlElement("Project");
 	root->LinkEndChild(e);
 
-	m_site.writeXML(e);
+	m_site.writeXML(e, m_flipPolygons);
 
 	m_instances.writeXML(e);
 
@@ -531,7 +507,7 @@ void IFCReader::setVicusProjectText(QString& projectText) {
 	TiXmlElement * e = new TiXmlElement("Project");
 	root->LinkEndChild(e);
 
-	m_site.writeXML(e);
+	m_site.writeXML(e, m_flipPolygons);
 
 	m_instances.writeXML(e);
 
@@ -624,18 +600,19 @@ QStringList IFCReader::statistic() const {
 			result << tr("\tStorey %1 with %2 spaces.").arg(QString::fromStdString(storey->m_name))
 					.arg(storey->spaces().size());
 			for(const auto& space : storey->spaces()) {
-				result << tr("\t\tSpace %1 with %2 space boundaries and %3 surfaces.").arg(QString::fromStdString(space->m_name+" - "+space->m_longName))
-						.arg(space->spaceBoundaries().size()).arg(space->surfaces().size());
-				for(const auto& surf : space->surfaces()) {
-					if(surf.isMissing()) {
-						result << tr("\t\t\tSurface %1 with missing connection.").arg(QString::fromStdString(surf.name()));
+				result << tr("\t\tSpace %1 with %2 space boundaries.")
+						  .arg(QString::fromStdString(space->m_name+" - "+space->m_longName))
+						  .arg(space->spaceBoundaries().size());
+				for(const auto& sb : space->spaceBoundaries()) {
+					if(sb->isMissing()) {
+						result << tr("\t\tSpace boundary %1 with missing connection.").arg(QString::fromStdString(sb->m_name));
 					}
-					else if(surf.isVirtual()) {
-						result << tr("\t\t\tSurface %1 is virtual.").arg(QString::fromStdString(surf.name()));
+					else if(sb->isVirtual()) {
+						result << tr("\t\tSpace boundary %1 is virtual.").arg(QString::fromStdString(sb->m_name));
 					}
 					else {
-						result << tr("\t\t\tSurface %1 with %2 subsurfaces.").arg(QString::fromStdString(surf.name()))
-								.arg(surf.subSurfaces().size());
+						result << tr("\t\tSpace boundary %1 with %2 subsurfaces.").arg(QString::fromStdString(sb->m_name))
+								.arg(sb->containedOpeningSpaceBoundaries().size());
 					}
 				}
 			}
@@ -687,6 +664,10 @@ QStringList IFCReader::statistic() const {
 	}
 
 	return result;
+}
+
+const std::vector<ConvertError>& IFCReader::convertErrors() const {
+	return m_convertErrors;
 }
 
 void IFCReader::messageTarget( void* ptr, shared_ptr<StatusCallback::Message> m ) {

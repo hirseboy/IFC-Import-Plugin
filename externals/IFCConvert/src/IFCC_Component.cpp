@@ -5,6 +5,7 @@
 #include <tinyxml.h>
 
 #include "IFCC_Surface.h"
+#include "IFCC_SpaceBoundary.h"
 
 namespace IFCC {
 
@@ -54,6 +55,27 @@ void Component::updateComponentType(const Surface& surf) {
 		if(surf.positionType() == Surface::PT_Internal)
 			m_type = CT_Ceiling;
 		else if(surf.positionType() == Surface::PT_External_Ground)
+			m_type = CT_FloorToGround;
+	}
+	else if(m_type == NUM_CT) {
+		m_type = CT_Miscellaneous;
+	}
+}
+
+void Component::updateComponentType(const SpaceBoundary& sb) {
+	if(m_type == CT_OutsideWall) {
+		if(sb.isInternal())
+			m_type = CT_InsideWall;
+		else if(sb.isExternalToGround())
+			m_type = CT_OutsideWallToGround;
+	}
+	else if(m_type == CT_SlopedRoof) {
+		// nothing to do
+	}
+	else if(m_type == CT_FloorToAir) {
+		if(sb.isInternal())
+			m_type = CT_Ceiling;
+		else if(sb.isExternalToGround())
 			m_type = CT_FloorToGround;
 	}
 	else if(m_type == NUM_CT) {

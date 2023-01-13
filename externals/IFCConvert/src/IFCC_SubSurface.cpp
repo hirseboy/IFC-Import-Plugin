@@ -26,6 +26,10 @@ void SubSurface::set(int id, const std::string& name, int elementId) {
 	m_elementEntityId = elementId;
 }
 
+void SubSurface::flip() {
+	std::reverse(m_polyVect.begin(), m_polyVect.end());
+}
+
 
 TiXmlElement * SubSurface::writeXML(TiXmlElement * parent) const {
 	if (m_id == -1)

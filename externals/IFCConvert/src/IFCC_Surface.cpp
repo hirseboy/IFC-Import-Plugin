@@ -246,13 +246,20 @@ bool Surface::addSubSurface(const Surface& subsurface) {
 	if(!sub.isValid())
 		return false;
 
-	sub.set(GUID_maker::instance().guid(), subsurface.m_name, subsurface.m_elementEntityId);
+	sub.set(subsurface.id(), subsurface.m_name, subsurface.m_elementEntityId);
 	m_subSurfaces.push_back(sub);
 	return true;
 }
 
 double Surface::area() const {
 	return areaPolygon(m_polyVect);
+}
+
+void Surface::flip() {
+	std::reverse(m_polyVect.begin(), m_polyVect.end());
+	for(auto& sub : m_subSurfaces) {
+		sub.flip();
+	}
 }
 
 TiXmlElement * Surface::writeXML(TiXmlElement * parent) const {

@@ -68,6 +68,9 @@ public:
 	/*! Return the total number of IFC space boundaries. Call read before use.*/
 	int numberOfIFCSpaceBoundaries() const;
 
+	bool flipPolygons() const;
+	void setFlipPolygons(bool flipPolygons);
+
 	/*! Write converted data as vicus file.*/
 	void writeXML(const IBK::Path & filename) const;
 
@@ -77,9 +80,6 @@ public:
 
 	QStringList statistic() const;
 
-	IBK::Path						m_filename;				///< IFC file
-	std::shared_ptr<BuildingModel>	m_model;				///< IFC model created from file
-	GeometryConverter				m_geometryConverter;	///< Geometry converter for converting local to global coordinates.
 	bool							m_hasError;				///< If true an error while reading IFC file was occured
 	bool							m_hasWarning;			///< If true an warning while reading IFC file was occured
 	std::string						m_errorText;			///< Text of error messages
@@ -88,6 +88,14 @@ public:
 	bool							m_readCompletedSuccessfully;
 	bool							m_convertCompletedSuccessfully;
 
+	const std::vector<ConvertError>& convertErrors() const;
+
+private:
+
+	IBK::Path						m_filename;				///< IFC file
+	std::shared_ptr<BuildingModel>	m_model;				///< IFC model created from file
+	bool							m_flipPolygons;
+	GeometryConverter				m_geometryConverter;	///< Geometry converter for converting local to global coordinates.
 	/*! Vector for shapes of building element entities with type.*/
 	objectShapeTypeVector_t			m_elementEntitesShape;
 	/*! Map with GUID as key and corresponding shape of spatial entity (except site, building, storey and space).*/
@@ -125,8 +133,6 @@ public:
 	/*! Vector of errors while converting.*/
 	std::vector<ConvertError>							m_convertErrors;
 
-
-private:
 
 	/*! Function for collecting messages from IFC reading process (error, warning, progress).*/
 	static void messageTarget( void* obj_ptr, shared_ptr<StatusCallback::Message> t );

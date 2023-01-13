@@ -51,9 +51,18 @@ private:
 		\param site Building site which contains all geometric data (including space boundaries)
 		\param errors Global convert error list
 	*/
-	void collectComponentInstances(std::vector<std::shared_ptr<BuildingElement>>& elements, Database& database,
+	void collectNormalComponentInstances(BuildingElementsCollector& elements, Database& database,
 								  const Site& site, std::vector<ConvertError>& errors);
 
+
+	/*! Collect subsurface component instances from opening elements and component database.
+		\param elements Building element vector
+		\param database Collection of all databases
+		\param site Building site which contains all geometric data (including space boundaries)
+		\param errors Global convert error list
+	*/
+	void collectSubSurfaceComponentInstances(BuildingElementsCollector& elements, Database& database,
+											 const Site& site, std::vector<ConvertError>& errors);
 	std::map<int, ComponentInstance>		m_componentInstances;			///< Map of id and component instance
 	std::map<int, ComponentInstance>		m_subSurfaceComponentInstances;	///< map of id and subsurface component instance
 };

@@ -27,6 +27,7 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OU
 #include <ifcpp/model/BuildingModel.h>
 
 #include "IFCC_RepresentationConverter.h"
+#include "IFCC_Types.h"
 
 namespace IFCC {
 
@@ -61,17 +62,17 @@ public:
 
 	/*\brief method convertGeometry: Creates geometry for Carve from previously loaded BuildingModel model.
 	**/
-	void convertGeometry(bool performSubtractOpenings, std::vector<std::string>& errmsgs);
+	void convertGeometry(bool performSubtractOpenings, std::vector<ConvertError>& errors);
 
 	void addVector3D(const vec3& point, std::vector<float>& target_array);
 
 	//\brief method convertIfcProduct: Creates geometry objects (meshset with connected vertex-edge-face graph) from an IfcProduct object
 	// caution: when using OpenMP, this method runs in parallel threads, so every write access to member variables needs a write lock
-	void convertIfcProductShape( shared_ptr<ProductShapeData>& product_shape, bool performSubtractOpenings, std::string& errmsg );
+	void convertIfcProductShape( shared_ptr<ProductShapeData>& product_shape, bool performSubtractOpenings, std::vector<ConvertError>& errors );
 
 	bool hasRelatedOpenings(shared_ptr<ProductShapeData>& product_shape);
 
-	void subtractOpeningsInRelatedObjects(shared_ptr<ProductShapeData>& product_shape, std::string& errmsg);
+	void subtractOpeningsInRelatedObjects(shared_ptr<ProductShapeData>& product_shape, std::vector<ConvertError>& errors);
 
 	virtual void messageTarget( void* ptr, shared_ptr<StatusCallback::Message> m );
 

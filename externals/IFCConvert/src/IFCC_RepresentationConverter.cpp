@@ -16,6 +16,7 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OU
 */
 
 #include "IFCC_RepresentationConverter.h"
+#include "IFCC_Types.h"
 
 #include <unordered_set>
 #include <ifcpp/geometry/StylesConverter.h>
@@ -173,7 +174,7 @@ RepresentationConverter::RepresentationConverter( shared_ptr<GeometrySettings> g
 	}
 
 	bool RepresentationConverter::convertIfcRepresentation( const shared_ptr<IfcRepresentation>& ifc_representation,
-															shared_ptr<RepresentationData>& representation_data, std::string& errmsg )
+															shared_ptr<RepresentationData>& representation_data, std::vector<ConvertError>& errors )
 	{
 		if( ifc_representation->m_RepresentationIdentifier )
 		{
@@ -241,7 +242,7 @@ RepresentationConverter::RepresentationConverter( shared_ptr<GeometrySettings> g
 				geom_item_data->m_ifc_item = geom_item;
 
 				try {
-					bool res = convertIfcGeometricRepresentationItem( geom_item, geom_item_data, errmsg );
+					bool res = convertIfcGeometricRepresentationItem( geom_item, geom_item_data, errors );
 					if(!res)
 						return false;
 				}
@@ -250,12 +251,12 @@ RepresentationConverter::RepresentationConverter( shared_ptr<GeometrySettings> g
 				}
 				catch( BuildingException& e ) {
 					messageCallback( e.what(), StatusCallback::MESSAGE_TYPE_ERROR, "", representation_item.get() );
-					errmsg = e.what();
+					errors.push_back({OT_GeometryConvert, -1, std::string(e.what()) + std::to_string(geom_item->m_entity_id) });
 					return false;
 				}
 				catch( std::exception& e ) {
 					messageCallback( e.what(), StatusCallback::MESSAGE_TYPE_ERROR, __FUNC__, representation_item.get() );
-					errmsg = e.what();
+					errors.push_back({OT_GeometryConvert, -1, std::string(e.what()) + std::to_string(geom_item->m_entity_id)});
 					return false;
 				}
 				continue;
@@ -308,7 +309,7 @@ RepresentationConverter::RepresentationConverter( shared_ptr<GeometrySettings> g
 
 				try
 				{
-					bool res = convertIfcRepresentation( mapped_representation, mapped_input_data, errmsg );
+					bool res = convertIfcRepresentation( mapped_representation, mapped_input_data, errors );
 					if(!res)
 						return false;
 				}
@@ -319,13 +320,13 @@ RepresentationConverter::RepresentationConverter( shared_ptr<GeometrySettings> g
 				catch( BuildingException& e )
 				{
 					messageCallback( e.what(), StatusCallback::MESSAGE_TYPE_ERROR, "" );
-					errmsg = e.what();
+					errors.push_back({OT_GeometryConvert, -1, std::string(e.what()) + std::to_string(geom_item->m_entity_id)});
 					return false;
 				}
 				catch( std::exception& e )
 				{
 					messageCallback( e.what(), StatusCallback::MESSAGE_TYPE_ERROR, __FUNC__ );
-					errmsg = e.what();
+					errors.push_back({OT_GeometryConvert, -1, std::string(e.what()) + std::to_string(geom_item->m_entity_id)});
 					return false;
 				}
 
@@ -402,7 +403,7 @@ RepresentationConverter::RepresentationConverter( shared_ptr<GeometrySettings> g
 			}
 
 			messageCallback( "unhandled representation", StatusCallback::MESSAGE_TYPE_WARNING, __FUNC__, representation_item.get() );
-			errmsg = "unhandled representation";
+			errors.push_back({OT_GeometryConvert, -1, "unhandled representation"+ std::to_string(geom_item->m_entity_id)});
 			return false;
 		}
 
@@ -439,7 +440,7 @@ RepresentationConverter::RepresentationConverter( shared_ptr<GeometrySettings> g
 	}
 
 	bool RepresentationConverter::convertIfcGeometricRepresentationItem( const shared_ptr<IfcGeometricRepresentationItem>& geom_item,
-																		 shared_ptr<ItemShapeData> item_data, std::string& errmsg )
+																		 shared_ptr<ItemShapeData> item_data, std::vector<ConvertError>& errors )
 	{
 		//ENTITY IfcGeometricRepresentationItem
 		//ABSTRACT SUPERTYPE OF(ONEOF(IfcAnnotationFillArea, IfcBooleanResult, IfcBoundingBox, IfcCartesianPointList, IfcCartesianTransformationOperator,
@@ -491,7 +492,7 @@ RepresentationConverter::RepresentationConverter( shared_ptr<GeometrySettings> g
 		{
 			shared_ptr<IfcAdvancedBrep> advanced_brep = dynamic_pointer_cast<IfcAdvancedBrep>( solid_model );
 			if(advanced_brep) {
-				errmsg = "Advanced brep not implemented";
+				errors.push_back({OT_GeometryConvert, -1, "Advanced brep not implemented in " + std::to_string(item_data->m_ifc_item->m_entity_id)});
 				return false;
 			}
 			m_solid_converter->convertIfcSolidModel( solid_model, item_data );
@@ -758,7 +759,7 @@ RepresentationConverter::RepresentationConverter( shared_ptr<GeometrySettings> g
 
 		messageCallback( "Unhandled IFC Representation", StatusCallback::MESSAGE_TYPE_WARNING, __FUNC__, geom_item.get() );
 
-		errmsg = "Unknown IFC representation";
+		errors.push_back({OT_GeometryConvert, -1, "Unknown IFC representation" + std::to_string(item_data->m_ifc_item->m_entity_id)});
 		return false;
 	}
 
@@ -961,7 +962,7 @@ RepresentationConverter::RepresentationConverter( shared_ptr<GeometrySettings> g
 	}
 
 	bool RepresentationConverter::subtractOpenings( const shared_ptr<IfcElement>& ifc_element, shared_ptr<ProductShapeData>& product_shape,
-													std::string& errmsg )
+													std::vector<ConvertError>& errors )
 	{
 		std::vector<shared_ptr<ProductShapeData> > vec_opening_data;
 		std::vector<weak_ptr<IfcRelVoidsElement> > vec_rel_voids( ifc_element->m_HasOpenings_inverse );
@@ -1016,7 +1017,7 @@ RepresentationConverter::RepresentationConverter( shared_ptr<GeometrySettings> g
 				// TODO: Representation caching, one element could be used for several openings
 				try
 				{
-					bool res = convertIfcRepresentation( ifc_opening_representation, opening_representation_data, errmsg );
+					bool res = convertIfcRepresentation( ifc_opening_representation, opening_representation_data, errors );
 					if(!res)
 						return false;
 				}
@@ -1027,13 +1028,13 @@ RepresentationConverter::RepresentationConverter( shared_ptr<GeometrySettings> g
 				catch( BuildingException& e )
 				{
 					messageCallback( e.what(), StatusCallback::MESSAGE_TYPE_ERROR, "", ifc_element.get() );
-					errmsg = e.what();
+					errors.push_back({OT_GeometryConvert, -1, e.what() + std::to_string(ifc_element->m_entity_id)});
 					return false;
 				}
 				catch( std::exception& e )
 				{
 					messageCallback( e.what(), StatusCallback::MESSAGE_TYPE_ERROR, "", ifc_element.get() );
-					errmsg = e.what();
+					errors.push_back({OT_GeometryConvert, -1, e.what() + std::to_string(ifc_element->m_entity_id)});
 					return false;
 				}
 
