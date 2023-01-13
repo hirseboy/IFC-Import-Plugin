@@ -41,6 +41,7 @@ void ImportWPConvert::initializePage() {
 
 
 bool ImportWPConvert::isComplete() const {
+	m_reader->setFlipPolygons(ui->checkBoxFlipSurfacePolygons->isChecked());
 	return m_convertSuccessfully;
 }
 
@@ -58,6 +59,14 @@ void ImportWPConvert::on_pushButtonConvert_clicked() {
 			QString errTxt = QString::fromStdString(m_reader->m_errorText);
 			text << errTxt.split("\n");
 			text << "";
+		}
+		const std::vector<IFCC::ConvertError>& errors = m_reader->convertErrors();
+		if(!errors.empty()) {
+			text << tr("Conversion errors:");
+			for( const auto& err : errors) {
+				text << QString("%1 with id: %2").arg(QString::fromStdString(err.m_errorText)).arg(err.m_objectID);
+			}
+			text << " ";
 		}
 		text << tr("File converted successfully.");
 		text << m_reader->messages();

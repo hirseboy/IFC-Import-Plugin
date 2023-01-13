@@ -4,6 +4,8 @@
 #include <QFileDialog>
 #include <QPluginLoader>
 
+#include <fstream>
+
 #include <IBK_messages.h>
 
 #if defined(Q_OS_WIN32)
@@ -173,7 +175,9 @@ void MainWindow::runImport()
 		QString project;
 		bool res = exp->import(this, project);
 		if(res) {
-
+			std::ofstream out("g:\\temp\\VicusProject.vicus");
+			out << project.toStdString();
+			out.close();
 		}
 	}
 }
