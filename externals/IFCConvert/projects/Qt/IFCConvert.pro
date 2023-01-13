@@ -34,6 +34,7 @@ INCLUDEPATH += \
 SOURCES +=  \
 	../../src/IFCC_Building.cpp \
 	../../src/IFCC_BuildingElement.cpp \
+	../../src/IFCC_BuildingElementsCollector.cpp \
 	../../src/IFCC_BuildingStorey.cpp \
 	../../src/IFCC_Clippertools.cpp \
 	../../src/IFCC_Component.cpp \
@@ -69,6 +70,7 @@ SOURCES +=  \
 HEADERS +=  \
 	../../src/IFCC_Building.h \
 	../../src/IFCC_BuildingElement.h \
+	../../src/IFCC_BuildingElementsCollector.h \
 	../../src/IFCC_BuildingStorey.h \
 	../../src/IFCC_Clippertools.h \
 	../../src/IFCC_Component.h \
