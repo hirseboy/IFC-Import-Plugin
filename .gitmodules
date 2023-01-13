@@ -1,3 +1,12 @@
 [submodule "submodules/SIM-VICUS"]
 	path = submodules/SIM-VICUS
 	url = ../SIM-VICUS.git
+[submodule "externals/TiCPP"]
+	path = externals/TiCPP
+	url = 141.30.43.38:/srv/git/TiCPP.git
+[submodule "externals/IBK"]
+	path = externals/IBK
+	url = 141.30.43.38:/srv/git/IBK.git
+[submodule "externals/IBKMK"]
+	path = externals/IBKMK
+	url = 141.30.43.38:/srv/git/IBKMK.git
