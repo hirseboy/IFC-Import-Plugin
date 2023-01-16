@@ -5,6 +5,10 @@
 
 class QWidget;
 
+namespace VICUS {
+	class Project;
+}
+
 /*! Interface for a plugin that populates VICUS project data from some
 	external source, typically by reading some external BIM data format and
 	converting the data (interactively) to VICUS data.
@@ -18,7 +22,7 @@ public:
 	/*! This is the central import function, that is executed when the user
 		selects the respective menu action.
 		\param parent Parent widget pointer, to be used as parent for modal dialogs.
-		\param p The VICUS project data as text.
+		\param p The VICUS project data to be populated.
 
 		\return Returns true if the import was succcessful and SIM-VICUS shall use the populated VICUS-project
 			data (either as new project or merged into/added to the existing project). If false is returned,
@@ -28,7 +32,7 @@ public:
 
 		\note Do not allow exceptions to leave this function, so wrap everything into a try-catch clause!
 	*/
-	virtual bool import(QWidget * parent, QString & p) = 0;
+	virtual bool import(QWidget * parent, VICUS::Project & p) = 0;
 };
 
 

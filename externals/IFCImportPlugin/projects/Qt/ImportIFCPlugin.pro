@@ -20,16 +20,14 @@ contains(QT_ARCH, i386): {
 
 INCLUDEPATH = \
 	../../src \
-	../../../../submodules/SIM-VICUS/externals/IBK/src \
-	../../../../submodules/SIM-VICUS/externals/IBKMK/src \
-	../../../../submodules/SIM-VICUS/externals/TiCPP/src \
+	../../../../externals/IBK/src \
+	../../../../externals/IBKMK/src \
+	../../../../externals/TiCPP/src \
 	../../../IFCConvert/src \
 	../../../ifcplusplus/src/IfcPlusPlus/src/ifcpp/reader \
 	../../../ifcplusplus/src/IfcPlusPlus/src \
 	../../../ifcplusplus/src/external/Carve/src/include \
 	../../../ifcplusplus/src/external \
-	../../../../submodules/SIM-VICUS/SIM-VICUS/src/plugins \
-	../../../../submodules/SIM-VICUS/externals/CCM/src
 
 CONFIG(debug, debug|release) {
 	OBJECTS_DIR = debug$${DIR_PREFIX}
@@ -56,8 +54,8 @@ SOURCES += \
 	../../src/ImportWizard.cpp
 
 HEADERS += \
-	../../../../submodules/SIM-VICUS/SIM-VICUS/src/plugins/SVCommonPluginInterface.h \
-	../../../../submodules/SIM-VICUS/SIM-VICUS/src/plugins/SVImportPluginInterface.h \
+	../../src/SVCommonPluginInterface.h \
+	../../src/SVImportPluginInterface.h \
 	../../src/IFCImportPlugin.h \
 	../../src/ImportWPConvert.h \
 	../../src/ImportWPRead.h \
@@ -68,15 +66,13 @@ TRANSLATIONS += \
 
 QMAKE_LIBDIR += ../../../../externals/lib$${DIR_PREFIX}
 
-LIBS += -L../../../../submodules/SIM-VICUS/externals/lib$${DIR_PREFIX}
+LIBS += -L../../../../externals/lib$${DIR_PREFIX}
 
 LIBS += \
 	-lclipper \
 	-lIFCPlusPlus \
 	-lIFCConvert \
 	-lCarve \
-	-lDataIO \
-	-lCCM \
 	-lTiCPP \
 	-lIBKMK \
 	-lIBK

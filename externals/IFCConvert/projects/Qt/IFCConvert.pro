@@ -24,9 +24,9 @@ INCLUDEPATH += \
 				../../../ifcplusplus/src/IfcPlusPlus/src \
 				../../../ifcplusplus/src/IfcPlusPlus/src/ifcpp/reader \
 				../../../clipper/src \
-				../../../../submodules/SIM-VICUS/externals/IBK/src \
-				../../../../submodules/SIM-VICUS/externals/IBKMK/src \
-				../../../../submodules/SIM-VICUS/externals/TiCPP/src \
+				../../../../externals/IBK/src \
+				../../../../externals/IBKMK/src \
+				../../../../externals/TiCPP/src \
 				../../../ifcplusplus/src/external/Carve/src/include \
 				../../../ifcplusplus/src/external \
 				../../../ifcplusplus/src/external/Carve/src/common
