@@ -248,6 +248,29 @@ std::string objectTypeToString(BuildingElementTypes type) {
 	return "not defined";
 }
 
+std::string objectTypeToString(ObjectType type) {
+	switch(type) {
+		case OT_BuildingElement:		return "Building element";
+		case OT_Opening:				return "Opening";
+		case OT_Space:					return "Space";
+		case OT_SpaceBoundary:			return "Space boundary";
+		case OT_Site:					return "Site";
+		case OT_Building:				return "Building";
+		case OT_Storey:					return "Storey";
+		case OT_Material:				return "Material";
+		case OT_Construction:			return "Construction";
+		case OT_Window:					return "Window";
+		case OT_Glazing:				return "Glazing";
+		case OT_Component:				return "Component";
+		case OT_SubComponent:			return "Subsurface component";
+		case OT_Instance:				return "Component instance";
+		case OT_GeometryConvert:		return "Any object";
+		case OT_Unknown:				return "Unkown object";
+	}
+	return "not defined";
+}
+
+
 BuildingElementTypes getObjectType(const std::shared_ptr<IfcObjectDefinition>& od) {
 	if(dynamic_pointer_cast<IfcElement>(od) == nullptr)
 		return BET_None;
@@ -413,5 +436,21 @@ polyVector_t polylinesFromConnectionGeometry(std::shared_ptr<IfcConnectionGeomet
 
 	return res;
 }
+
+bool isIntersected(carve::mesh::MeshSet<3>* a, carve::mesh::MeshSet<3>* b) {
+	carve::csg::CSG csg;
+
+	if(a == nullptr || b == nullptr)
+		return false;
+
+	try {
+		meshset_t* res = csg.compute(a, b, carve::csg::CSG::INTERSECTION);
+		return !res->meshes.empty();
+	}
+	catch(...) {
+		return false;
+	}
+}
+
 
 } // end namespace

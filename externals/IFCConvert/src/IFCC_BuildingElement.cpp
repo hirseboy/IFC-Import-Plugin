@@ -300,9 +300,9 @@ bool BuildingElement::set(std::shared_ptr<IfcElement> ifcElement, BuildingElemen
 	return true;
 }
 
-void BuildingElement::update(std::shared_ptr<ProductShapeData> productShape, std::vector<Opening>& openings) {
+void BuildingElement::update(std::shared_ptr<ProductShapeData> productShape, std::vector<Opening>& openings, std::vector<ConvertError>& errors) {
 	transform(productShape);
-	fetchGeometry(productShape);
+	fetchGeometry(productShape, errors);
 	fetchOpenings(openings);
 }
 
@@ -317,7 +317,7 @@ void BuildingElement::transform(std::shared_ptr<ProductShapeData> productShape) 
 	}
 }
 
-void BuildingElement::fetchGeometry(std::shared_ptr<ProductShapeData> productShape) {
+void BuildingElement::fetchGeometry(std::shared_ptr<ProductShapeData> productShape, std::vector<ConvertError>& errors) {
 	if(productShape == nullptr)
 		return;
 
@@ -325,7 +325,7 @@ void BuildingElement::fetchGeometry(std::shared_ptr<ProductShapeData> productSha
 		int g = 0;
 	}
 
-	surfacesFromRepresentation(productShape, m_surfaces);
+	surfacesFromRepresentation(productShape, m_surfaces, errors, OT_BuildingElement, m_id);
 
 	findSurfacePairs();
 }

@@ -27,9 +27,9 @@ bool Opening::set(std::shared_ptr<IfcFeatureElementSubtraction> ifcElement) {
 	return true;
 }
 
-void Opening::update(std::shared_ptr<ProductShapeData> productShape) {
+void Opening::update(std::shared_ptr<ProductShapeData> productShape, std::vector<ConvertError>& errors) {
 	transform(productShape);
-	fetchGeometry(productShape);
+	fetchGeometry(productShape, errors);
 }
 
 
@@ -43,11 +43,11 @@ void Opening::transform(std::shared_ptr<ProductShapeData> productShape) {
 	}
 }
 
-void Opening::fetchGeometry(std::shared_ptr<ProductShapeData> productShape) {
+void Opening::fetchGeometry(std::shared_ptr<ProductShapeData> productShape, std::vector<ConvertError>& errors) {
 	if(productShape == nullptr)
 		return;
 
-	surfacesFromRepresentation(productShape, m_surfaces);
+	surfacesFromRepresentation(productShape, m_surfaces, errors, OT_Opening, m_id);
 }
 
 const std::vector<int>& Opening::openingElementIds() const {

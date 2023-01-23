@@ -33,7 +33,7 @@ public:
 	/*! Get and transform geometry and fill surface vector.
 		\param Shape data of a opening.
 	*/
-	void update(std::shared_ptr<ProductShapeData> productShape);
+	void update(std::shared_ptr<ProductShapeData> productShape, std::vector<ConvertError>& errors);
 
 	/*! Return all surfaces of this opening.*/
 	const std::vector<Surface>& surfaces() const;
@@ -78,7 +78,7 @@ private:
 	void transform(std::shared_ptr<ProductShapeData> productShape);
 
 	/*! Take geometry from shape data and convert it into a list of surfaces.*/
-	void fetchGeometry(std::shared_ptr<ProductShapeData> productShape);
+	void fetchGeometry(std::shared_ptr<ProductShapeData> productShape, std::vector<ConvertError>& errors);
 
 	std::string				m_guid;						///< GUID of original IFC object.
 	std::vector<Surface>	m_surfaces;

@@ -13,8 +13,6 @@
 #include <QCoreApplication>
 #include <QStringList>
 
-//#include <VICUS_Project.h>
-
 #include "IFCC_GeometryConverter.h"
 #include "IFCC_Types.h"
 #include "IFCC_Space.h"
@@ -37,6 +35,16 @@ class IFCReader {
 Q_DECLARE_TR_FUNCTIONS( IFCReader );
 
 public:
+
+	/*! Struct contains flags or parameter for controlling conversion.
+		It should repair possible IFC problems.
+	*/
+	struct RepairFlags {
+		bool	m_flipPolygons		= false;		///< if true all polygones will be flipped before writing to xml
+		bool	m_removeDoubledSBs	= false;		///< remove space boundaries which contains the same surface
+
+	};
+
 	/*! Standard constructor. Initializes geometry converter.*/
 	IFCReader();
 
@@ -57,19 +65,27 @@ public:
 	*/
 	bool convert(bool useSpaceBoundaries);
 
-//	/*! Convert the data into vicus format and add it to the given project.
-//		Read and convert must be called before.
-//	*/
-//	bool setVicusProject(VICUS::Project* project);
-
 	/*! Return the total number of IFC entities. Call read before use.*/
 	int totalNumberOfIFCEntities() const;
 
 	/*! Return the total number of IFC space boundaries. Call read before use.*/
 	int numberOfIFCSpaceBoundaries() const;
 
+	/*! Check if the essential IFC objects are present after reading.
+		Read must be done before and successful.
+	*/
+	bool checkEssentialIFCs(QString& errmsg, int& buildings, int& spaces);
+
+	int checkForEqualSpaceBoundaries(std::vector<std::pair<int,int>>& equalSBs) const;
+
+	int checkForUniqueSubSurfacesInSpaces(std::vector<std::pair<int,std::vector<int>>>& res) const;
+
+	int checkForIntersectedSpace() const;
+
 	bool flipPolygons() const;
 	void setFlipPolygons(bool flipPolygons);
+	bool removeDoubledSBs() const;
+	void setRemoveDoubledSBs(bool removeDoubledSBs);
 
 	/*! Write converted data as vicus file.*/
 	void writeXML(const IBK::Path & filename) const;
@@ -94,7 +110,7 @@ private:
 
 	IBK::Path						m_filename;				///< IFC file
 	std::shared_ptr<BuildingModel>	m_model;				///< IFC model created from file
-	bool							m_flipPolygons;
+	RepairFlags						m_repairFlags;			///< Contains all flags and parameter for IFC repair
 	GeometryConverter				m_geometryConverter;	///< Geometry converter for converting local to global coordinates.
 	/*! Vector for shapes of building element entities with type.*/
 	objectShapeTypeVector_t			m_elementEntitesShape;
@@ -143,9 +159,6 @@ private:
 		This function must be called before convert or write can be performed.
 	*/
 	void splitShapeData();
-
-	/*! Update the connection maps of building elements and openings to spaces.*/
-	void updateSpaceConnections();
 
 	/*! It evaluates the object and their type from element shape vector from the given GUID.
 		\param guid IFC element GUID as string

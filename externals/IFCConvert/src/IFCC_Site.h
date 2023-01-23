@@ -36,7 +36,7 @@ public:
 		\param buildings Shape data of buildings
 	*/
 	bool set(std::shared_ptr<IfcSpatialStructureElement> ifcElement, std::shared_ptr<ProductShapeData> productShape,
-			 const std::map<std::string,shared_ptr<ProductShapeData>>& buildings);
+			 const std::map<std::string,shared_ptr<ProductShapeData>>& buildings, std::vector<ConvertError>& errors);
 
 	/*! Return the internal surface vector.*/
 	const std::vector<Surface>& surfaces() const;
@@ -71,7 +71,7 @@ private:
 	/*! Get the geometry from the product shape.
 		It fills the surface vector m_surfaces.
 	*/
-	void fetchGeometry(std::shared_ptr<ProductShapeData> productShape);
+	void fetchGeometry(std::shared_ptr<ProductShapeData> productShape, std::vector<ConvertError>& errors);
 
 	/*! Fill the buildings vector from original buildings vector and given building shapes.
 		\param buildings Shapes for all buildings in project.

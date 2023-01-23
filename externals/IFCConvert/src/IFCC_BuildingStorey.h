@@ -44,7 +44,7 @@ public:
 		\param unit_converter Unit converter is necessary for create geometries.
 	*/
 	void fetchSpaces(const objectShapeGUIDMap_t& shapes,
-					 shared_ptr<UnitConverter>& unit_converter);
+					 shared_ptr<UnitConverter>& unit_converter, std::vector<ConvertError>& errors);
 
 	/*! Update spaces and related space boundaries.
 		\param shapes Product shape vector for all IfcElement based objects in project.

@@ -220,7 +220,7 @@ std::vector<std::shared_ptr<SpaceBoundary>> SpaceBoundary::splitBySurfaces() {
 
 void SpaceBoundary::createSurfaceVect(const polyVector_t& polylines) {
 	m_surfaces.clear();
-	std::string name = m_nameRelatedElement;
+	std::string name = "E:" + m_nameRelatedElement + "_S:" + m_nameRelatedSpace;
 	if(name.empty())
 		name = std::to_string(m_id);
 	for(const auto& polyvect3 : polylines) {
@@ -241,8 +241,8 @@ const std::vector<std::shared_ptr<SpaceBoundary> >& SpaceBoundary::containedOpen
 	return m_containedOpeningSpaceBoundaries;
 }
 
-void SpaceBoundary::addContainedOpeningSpaceBoundaries(const std::shared_ptr<SpaceBoundary>& newContainedOpeningSpaceBoundaries) {
-	m_containedOpeningSpaceBoundaries.push_back(newContainedOpeningSpaceBoundaries);
+void SpaceBoundary::addContainedOpeningSpaceBoundaries(const std::shared_ptr<SpaceBoundary>& containedOpeningSpaceBoundaries) {
+	m_containedOpeningSpaceBoundaries.push_back(containedOpeningSpaceBoundaries);
 }
 
 } // namespace IFCC

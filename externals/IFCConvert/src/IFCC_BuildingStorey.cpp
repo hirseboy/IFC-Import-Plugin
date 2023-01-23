@@ -62,14 +62,14 @@ bool BuildingStorey::set(const std::vector<std::shared_ptr<IfcSpace>>& spaces) {
 
 
 void BuildingStorey::fetchSpaces(const std::map<std::string,shared_ptr<ProductShapeData>>& shapes,
-								 shared_ptr<UnitConverter>& unit_converter) {
+								 shared_ptr<UnitConverter>& unit_converter, std::vector<ConvertError>& errors) {
 	for(const auto& shape : shapes) {
 		for(const auto& opOrg : m_spacesOriginal) {
 			if(shape.first == guidFromObject(opOrg.get())) {
 				std::shared_ptr<Space> space = std::shared_ptr<Space>(new Space(GUID_maker::instance().guid()));
 				if(space->set(opOrg)) {
 					m_spaces.push_back(space);
-					m_spaces.back()->update(shape.second);
+					m_spaces.back()->update(shape.second, errors);
 				}
 				break;
 			}

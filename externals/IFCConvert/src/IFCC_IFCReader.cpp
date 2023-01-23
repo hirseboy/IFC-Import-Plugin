@@ -40,29 +40,23 @@
 
 #include <tinyxml.h>
 
-#include "IFCC_Logger.h"
-
 namespace IFCC {
 
 const std::string VERSION = "1.0";
 
 IFCReader::IFCReader() :
-	m_model(new BuildingModel),
-	m_geometryConverter(m_model),
 	m_hasError(false),
 	m_hasWarning(false),
 	m_readCompletedSuccessfully(false),
 	m_convertCompletedSuccessfully(false),
+	m_model(new BuildingModel),
+	m_geometryConverter(m_model),
 	m_site(0)
 {
 	m_geometryConverter.clearMessagesCallback();
 	m_geometryConverter.resetModel();
 	m_geometryConverter.getGeomSettings()->setNumVerticesPerCircle(16);
 	m_geometryConverter.getGeomSettings()->setMinNumVerticesPerArc(4);
-
-	Logger::instance().set("ifc_convert.log");
-
-	Logger::instance() << "IFCReader constructor";
 }
 
 void IFCReader::clear() {
@@ -81,8 +75,6 @@ void IFCReader::clear() {
 	m_readCompletedSuccessfully = false;
 
 	clearConvertData();
-
-	Logger::instance() << "IFCReader clear";
 }
 
 void IFCReader::clearConvertData() {
@@ -109,8 +101,6 @@ void IFCReader::clearConvertData() {
 bool IFCReader::read(const IBK::Path& filename, bool ignoreReadError) {
 	clear();
 
-	Logger::instance() << "IFCReader read start";
-
 	m_filename = filename;
 	m_readCompletedSuccessfully = true;
 	try {
@@ -121,7 +111,6 @@ bool IFCReader::read(const IBK::Path& filename, bool ignoreReadError) {
 			m_readCompletedSuccessfully = false;
 		}
 
-		Logger::instance() << "IFCReader read return with success";
 		return !m_hasError;
 	}
 	catch (std::exception& e) {
@@ -131,7 +120,6 @@ bool IFCReader::read(const IBK::Path& filename, bool ignoreReadError) {
 			m_hasError = true;
 		}
 
-		Logger::instance() << "IFCReader read return with error";
 		return false;
 	}
 	return true;
@@ -139,8 +127,6 @@ bool IFCReader::read(const IBK::Path& filename, bool ignoreReadError) {
 
 void IFCReader::splitShapeData() {
 	const std::map<std::string,shared_ptr<ProductShapeData>>& shapeDataMap = m_geometryConverter.getShapeInputData();
-
-	Logger::instance() << "IFCReader splitShapeData start";
 
 	for(const auto& shapeData : shapeDataMap) {
 		const shared_ptr<ProductShapeData>& data = shapeData.second;
@@ -274,17 +260,6 @@ void IFCReader::splitShapeData() {
 			m_unknownEntitesShape[guid] = data;
 		}
 	}
-
-	Logger::instance() << "IFCReader splitShapeData end";
-	Logger::instance() << std::to_string(m_elementEntitesShape[BET_Wall].size()) + " walls.";
-	Logger::instance() << std::to_string(m_elementEntitesShape[BET_Window].size()) + " windows.";
-	Logger::instance() << std::to_string(m_buildingsShape.size()) + " buildings.";
-	Logger::instance() << std::to_string(m_storeysShape.size()) + " storeys.";
-	Logger::instance() << std::to_string(m_spaceEntitesShape.size()) + " spaces.";
-}
-
-void IFCReader::IFCReader::updateSpaceConnections() {
-
 }
 
 bool IFCReader::convert(bool useSpaceBoundaries) {
@@ -293,8 +268,6 @@ bool IFCReader::convert(bool useSpaceBoundaries) {
 		m_errorText = "Cannot convert data because file not readed";
 		return false;
 	}
-
-	Logger::instance() << "IFCReader convert start";
 
 	clearConvertData();
 
@@ -308,14 +281,6 @@ bool IFCReader::convert(bool useSpaceBoundaries) {
 		const double length_in_meter = m_geometryConverter.getBuildingModel()->getUnitConverter()->getLengthInMeterFactor();
 		m_geometryConverter.setCsgEps(1.5e-08 * length_in_meter);
 		m_geometryConverter.convertGeometry(subtractOpenings, m_convertErrors);
-//		if(!errmsgs.empty()) {
-//			for(const std::string& str : errmsgs) {
-//				m_errorText += str + "\n";
-//			}
-//			m_hasError = true;
-//		}
-
-		Logger::instance() << "IFCReader convert init";
 
 		splitShapeData();
 
@@ -328,11 +293,9 @@ bool IFCReader::convert(bool useSpaceBoundaries) {
 			Opening opening(GUID_maker::instance().guid());
 			if(opening.set(o)) {
 				m_openings.push_back(opening);
-				m_openings.back().update(openShape.second);
+				m_openings.back().update(openShape.second, m_convertErrors);
 			}
 		}
-
-		Logger::instance() << "IFCReader convert openings set";
 
 		m_buildingElements.clear();
 		for(auto& elems : m_elementEntitesShape) {
@@ -345,25 +308,25 @@ bool IFCReader::convert(bool useSpaceBoundaries) {
 				if(bElem->set(e, elems.first)) {
 					if(isConstructionType(elems.first)) {
 						m_buildingElements.m_constructionElements.push_back( bElem);
-						m_buildingElements.m_constructionElements.back()->update(elem, m_openings);
+						m_buildingElements.m_constructionElements.back()->update(elem, m_openings, m_convertErrors);
 						if(m_buildingElements.m_constructionElements.back()->surfaces().empty())
 							m_buildingElements.m_elementsWithoutSurfaces.push_back(m_buildingElements.m_constructionElements.back());
 					}
 					else if(isConstructionSimilarType(elems.first)) {
 						m_buildingElements.m_constructionSimilarElements.push_back(bElem);
-						m_buildingElements.m_constructionSimilarElements.back()->update(elem, m_openings);
+						m_buildingElements.m_constructionSimilarElements.back()->update(elem, m_openings, m_convertErrors);
 						if(m_buildingElements.m_constructionSimilarElements.back()->surfaces().empty())
 							m_buildingElements.m_elementsWithoutSurfaces.push_back(m_buildingElements.m_constructionSimilarElements.back());
 					}
 					else if(isOpeningType(elems.first)) {
 						m_buildingElements.m_openingElements.push_back(bElem);
-						m_buildingElements.m_openingElements.back()->update(elem, m_openings);
+						m_buildingElements.m_openingElements.back()->update(elem, m_openings, m_convertErrors);
 						if(m_buildingElements.m_openingElements.back()->surfaces().empty())
 							m_buildingElements.m_elementsWithoutSurfaces.push_back(m_buildingElements.m_openingElements.back());
 					}
 					else {
 						m_buildingElements.m_otherElements.push_back(bElem);
-						m_buildingElements.m_otherElements.back()->update(elem, m_openings);
+						m_buildingElements.m_otherElements.back()->update(elem, m_openings, m_convertErrors);
 //						if(m_buildingElements.m_otherElements.back()->surfaces().empty())
 //							m_buildingElements.m_elementsWithoutSurfaces.push_back(m_buildingElements.m_otherElements.back());
 					}
@@ -373,29 +336,22 @@ bool IFCReader::convert(bool useSpaceBoundaries) {
 			}
 		}
 
-		Logger::instance() << "IFCReader convert building elements set";
-
 		for(std::shared_ptr<BuildingElement>& openingElement : m_buildingElements.m_openingElements) {
 			openingElement->setContainingElements(m_openings);
 			openingElement->setContainedConstructionThickesses(m_buildingElements.m_constructionElements);
 			openingElement->setContainedConstructionThickesses(m_buildingElements.m_constructionSimilarElements);
 		}
 
-		Logger::instance() << "IFCReader convert opening elements set";
-
 		for(const auto& elem : m_buildingElements.m_elementsWithoutSurfaces) {
-			qDebug() << QString::fromStdString(objectTypeToString(elem->type()));
-			qDebug() << QString::fromStdString(elem->m_guid);
+			m_convertErrors.push_back({OT_BuildingElement, elem->m_id, "Building element has no surface"});
 		}
 
 
 		m_database.collectData(m_buildingElements);
 
-		Logger::instance() << "IFCReader convert collect database elements";
-
 		if(m_siteShape != nullptr) {
 			std::shared_ptr<IfcSpatialStructureElement> se = std::dynamic_pointer_cast<IfcSpatialStructureElement>(m_siteShape->m_ifc_object_definition.lock());
-			m_site.set(se, m_siteShape, m_buildingsShape);
+			m_site.set(se, m_siteShape, m_buildingsShape, m_convertErrors);
 			for(auto& building : m_site.m_buildings) {
 				building->fetchStoreys(m_storeysShape, m_spaceEntitesShape);
 				building->updateStoreys(m_elementEntitesShape, m_spaceEntitesShape, m_geometryConverter.getBuildingModel()->getUnitConverter(),
@@ -409,7 +365,13 @@ bool IFCReader::convert(bool useSpaceBoundaries) {
 			return false;
 		}
 
-		Logger::instance() << "IFCReader convert building structure set";
+		if(m_repairFlags.m_removeDoubledSBs) {
+			std::vector<std::shared_ptr<Space>> spaces = m_site.allSpaces();
+
+			for(auto space : spaces) {
+				space->removeDublicatedSpaceBoundaries();
+			}
+		}
 
 		m_instances.collectComponentInstances(m_buildingElements, m_database, m_site, m_convertErrors);
 
@@ -420,7 +382,6 @@ bool IFCReader::convert(bool useSpaceBoundaries) {
 
 		m_convertCompletedSuccessfully = true;
 
-		Logger::instance() << "IFCReader convert successful";
 		return true;
 
 	}
@@ -431,11 +392,8 @@ bool IFCReader::convert(bool useSpaceBoundaries) {
 		m_convertErrors.push_back(err);
 		m_hasError = true;
 
-		Logger::instance() << "IFCReader convert exception";
 		return false;
 	}
-
-	Logger::instance() << "IFCReader convert error at end";
 
 	return false;
 }
@@ -461,12 +419,89 @@ int IFCReader::numberOfIFCSpaceBoundaries() const {
 	return count;
 }
 
+bool IFCReader::checkEssentialIFCs(QString& errmsg, int& buildings, int& spaces) {
+	buildings = 0;
+	spaces = 0;
+	bool siteExist = false;
+	for(const auto& item : m_model->getMapIfcEntities()) {
+		if(dynamic_pointer_cast<IfcSpatialStructureElement>(item.second) != nullptr) {
+			if(dynamic_pointer_cast<IfcSite>(item.second) != nullptr) {
+				siteExist = true;
+			}
+			else if(dynamic_pointer_cast<IfcBuilding>(item.second) != nullptr) {
+				++buildings;
+			}
+			else if(dynamic_pointer_cast<IfcSpace>(item.second) != nullptr) {
+				++spaces;
+			}
+		}
+	}
+	if(!siteExist) {
+		errmsg = tr("No building site.");
+		return false;
+	}
+	if(buildings == 0) {
+		errmsg = tr("No buildings.");
+		return false;
+	}
+	if(spaces == 0) {
+		errmsg = tr("No spaces.");
+		return false;
+	}
+	return true;
+}
+
+int IFCReader::checkForEqualSpaceBoundaries(std::vector<std::pair<int,int>>& equalSBs) const {
+	equalSBs.clear();
+	std::vector<std::shared_ptr<Space>> spaces = m_site.allSpaces();
+
+	for(const auto& space : spaces) {
+		space->checkForEqualSpaceBoundaries(equalSBs);
+	}
+	return equalSBs.size();
+}
+
+int IFCReader::checkForUniqueSubSurfacesInSpaces(std::vector<std::pair<int,std::vector<int>>>& res) const {
+	res.clear();
+	std::vector<std::shared_ptr<Space>> spaces = m_site.allSpaces();
+
+	for(const auto& space : spaces) {
+		std::vector<int> subRes = space->checkUniqueSubSurfaces();
+		if(!subRes.empty())
+			res.push_back({space->m_id, subRes});
+	}
+	return res.size();
+}
+
+int IFCReader::checkForIntersectedSpace() const {
+	std::vector<std::shared_ptr<Space>> spaces = m_site.allSpaces();
+	if(spaces.size() < 2)
+		return 0;
+
+	int count = 0;
+	for(size_t i=0; i<spaces.size()-1; ++i) {
+		for(size_t j=i+1; j<spaces.size(); ++j) {
+			if(spaces[i]->isIntersected(*spaces[j]))
+				++count;
+		}
+	}
+	return count;
+}
+
 bool IFCReader::flipPolygons() const {
-	return m_flipPolygons;
+	return m_repairFlags.m_flipPolygons;
 }
 
 void IFCReader::setFlipPolygons(bool flipPolygons) {
-	m_flipPolygons = flipPolygons;
+	m_repairFlags.m_flipPolygons = flipPolygons;
+}
+
+bool IFCReader::removeDoubledSBs() const {
+	return m_repairFlags.m_removeDoubledSBs;
+}
+
+void IFCReader::setRemoveDoubledSBs(bool removeDoubledSBs) {
+	m_repairFlags.m_removeDoubledSBs = removeDoubledSBs;
 }
 
 void IFCReader::writeXML(const IBK::Path & filename) const {
@@ -482,7 +517,7 @@ void IFCReader::writeXML(const IBK::Path & filename) const {
 	TiXmlElement * e = new TiXmlElement("Project");
 	root->LinkEndChild(e);
 
-	m_site.writeXML(e, m_flipPolygons);
+	m_site.writeXML(e, m_repairFlags.m_flipPolygons);
 
 	m_instances.writeXML(e);
 
@@ -507,7 +542,7 @@ void IFCReader::setVicusProjectText(QString& projectText) {
 	TiXmlElement * e = new TiXmlElement("Project");
 	root->LinkEndChild(e);
 
-	m_site.writeXML(e, m_flipPolygons);
+	m_site.writeXML(e, m_repairFlags.m_flipPolygons);
 
 	m_instances.writeXML(e);
 
@@ -557,7 +592,7 @@ QStringList IFCReader::messages() const {
 	result << tr("Messages:");
 	std::vector<std::shared_ptr<SpaceBoundary>> spaceBoundaries = m_site.allSpaceBoundaries();
 
-	int sbCount = spaceBoundaries.size();
+	size_t sbCount = spaceBoundaries.size();
 	if(sbCount > 0) {
 		int sbConstruction = 0;
 		int sbOpenings = 0;
@@ -591,52 +626,52 @@ QStringList IFCReader::messages() const {
 
 QStringList IFCReader::statistic() const {
 	QStringList result;
-	result << tr("Statistic:");
-	result << tr("%1 buildings.").arg(m_site.m_buildings.size());
+	result << tr("Statistic:<br>");
+	result << tr("%1 buildings.<br>").arg(m_site.m_buildings.size());
 	for(const auto& building : m_site.m_buildings) {
-		result << tr("Building %1 with %2 storeys.").arg(QString::fromStdString(building->m_name))
+		result << tr("Building %1 with %2 storeys.<br>").arg(QString::fromStdString(building->m_name))
 				.arg(building->storeys().size());
 		for(const auto& storey : building->storeys()) {
-			result << tr("\tStorey %1 with %2 spaces.").arg(QString::fromStdString(storey->m_name))
+			result << tr("  Storey %1 with %2 spaces.<br>").arg(QString::fromStdString(storey->m_name))
 					.arg(storey->spaces().size());
 			for(const auto& space : storey->spaces()) {
-				result << tr("\t\tSpace %1 with %2 space boundaries.")
+				result << tr("    Space %1 with %2 space boundaries.<br>")
 						  .arg(QString::fromStdString(space->m_name+" - "+space->m_longName))
 						  .arg(space->spaceBoundaries().size());
 				for(const auto& sb : space->spaceBoundaries()) {
 					if(sb->isMissing()) {
-						result << tr("\t\tSpace boundary %1 with missing connection.").arg(QString::fromStdString(sb->m_name));
+						result << tr("    Space boundary %1 with missing connection.<br>").arg(QString::fromStdString(sb->m_name));
 					}
 					else if(sb->isVirtual()) {
-						result << tr("\t\tSpace boundary %1 is virtual.").arg(QString::fromStdString(sb->m_name));
+						result << tr("    Space boundary %1 is virtual.<br>").arg(QString::fromStdString(sb->m_name));
 					}
 					else {
-						result << tr("\t\tSpace boundary %1 with %2 subsurfaces.").arg(QString::fromStdString(sb->m_name))
+						result << tr("    Space boundary %1 with %2 subsurfaces.<br>").arg(QString::fromStdString(sb->m_name))
 								.arg(sb->containedOpeningSpaceBoundaries().size());
 					}
 				}
 			}
 		}
 	}
-	result << "\nDatabases\n";
-	result << tr("\t%1 materials").arg(m_database.m_materials.size());
+	result << "<br>Databases<br>";
+	result << tr("\t%1 materials<br>").arg(m_database.m_materials.size());
 	for(const auto& mat : m_database.m_materials) {
-		result << tr("\t\t%1 - id %2").arg(QString::fromStdString(mat.second.m_name)).arg(mat.first);
+		result << tr("    %1 - id %2<br>").arg(QString::fromStdString(mat.second.m_name)).arg(mat.first);
 	}
-	result << tr("\t%1 constructions").arg(m_database.m_constructions.size());
+	result << tr("  %1 constructions<br>").arg(m_database.m_constructions.size());
 	for(const auto& con : m_database.m_constructions) {
-		result << tr("\t\tConstruction id %1 with %2 layers").arg(con.first).arg(con.second.m_layers.size());
+		result << tr("    Construction id %1 with %2 layers<br>").arg(con.first).arg(con.second.m_layers.size());
 	}
-	result << tr("\t%1 windows").arg(m_database.m_windows.size());
+	result << tr("  %1 windows<br>").arg(m_database.m_windows.size());
 	for(const auto& win : m_database.m_windows) {
-		result << tr("\t\tWindow %1 id %2").arg(QString::fromStdString(win.second.m_name)).arg(win.first);
+		result << tr("    Window %1 id %2<br>").arg(QString::fromStdString(win.second.m_name)).arg(win.first);
 	}
-	result << tr("\t%1 windows").arg(m_database.m_windowGlazings.size());
+	result << tr("  %1 windows<br>").arg(m_database.m_windowGlazings.size());
 	for(const auto& wgl : m_database.m_windowGlazings) {
-		result << tr("\t\tWindow %1 id %2").arg(QString::fromStdString(wgl.second.m_name)).arg(wgl.first);
+		result << tr("    Window %1 id %2<br>").arg(QString::fromStdString(wgl.second.m_name)).arg(wgl.first);
 	}
 
-	result << QString() << tr("Space boundary list") << QString();
+	result << QString() << tr("Space boundary list <br>") << QString();
 
 	std::vector<std::shared_ptr<SpaceBoundary>> spaceBoundaries = m_site.allSpaceBoundaries();
 	std::vector<SpaceBoundaryEvaluation> sbEvals;
@@ -658,9 +693,9 @@ QStringList IFCReader::statistic() const {
 		sbEval.m_nameRelatedSpace = QString::fromStdString(sb->nameRelatedSpace());
 		sbEval.m_typeRelatedElement = sb->typeRelatedElement();
 		QString text = sbEval.m_name + "\tis a " + QString::fromStdString(objectTypeToString(sb->typeRelatedElement()));
-		text += "\tconnected with: " + sbEval.m_nameRelatedElement;
-		text += "\tcontained in: " + sbEval.m_nameRelatedSpace;
-		result << text;
+		text += "  connected with: " + sbEval.m_nameRelatedElement;
+		text += "  contained in: " + sbEval.m_nameRelatedSpace;
+		result << text + "<br>";
 	}
 
 	return result;

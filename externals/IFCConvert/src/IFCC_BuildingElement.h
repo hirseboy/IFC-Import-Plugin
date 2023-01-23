@@ -128,7 +128,7 @@ public:
 	/*! get and transform geometry and set first opening properties.
 		\param Shape data of a building element.
 	*/
-	void update(std::shared_ptr<ProductShapeData> productShape, std::vector<Opening>& openings);
+	void update(std::shared_ptr<ProductShapeData> productShape, std::vector<Opening>& openings, std::vector<ConvertError>& errors);
 
 	/*! Only for opening constructions.
 		Set also the ids for construction which contains opening elements
@@ -218,7 +218,7 @@ private:
 	/*! Get the geometry from the product shape.
 		It fills the surface vector m_surfaces.
 	*/
-	void fetchGeometry(std::shared_ptr<ProductShapeData> productShape);
+	void fetchGeometry(std::shared_ptr<ProductShapeData> productShape, std::vector<ConvertError>& errors);
 
 	/*! Find connections from this building element to openings.
 		It uses the IFC connection vectors m_isUsedFromOpeningsOriginal and m_containedOpeningsOriginal.

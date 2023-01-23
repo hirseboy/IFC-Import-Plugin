@@ -45,12 +45,12 @@ bool Site::set(std::shared_ptr<IfcSpatialStructureElement> ifcElement) {
 }
 
 bool Site::set(std::shared_ptr<IfcSpatialStructureElement> ifcElement, std::shared_ptr<ProductShapeData> productShape,
-			   const std::map<std::string,shared_ptr<ProductShapeData>>& buildings) {
+			   const std::map<std::string,shared_ptr<ProductShapeData>>& buildings, std::vector<ConvertError>& errors) {
 	if(!set(ifcElement))
 		return false;
 
 	transform(productShape);
-	fetchGeometry(productShape);
+	fetchGeometry(productShape, errors);
 	fetchBuildings(buildings);
 	return true;
 }
@@ -66,11 +66,11 @@ void Site::transform(std::shared_ptr<ProductShapeData> productShape) {
 	}
 }
 
-void Site::fetchGeometry(std::shared_ptr<ProductShapeData> productShape) {
+void Site::fetchGeometry(std::shared_ptr<ProductShapeData> productShape, std::vector<ConvertError>& errors) {
 	if(productShape == nullptr)
 		return;
 
-	surfacesFromRepresentation(productShape, m_surfaces);
+	surfacesFromRepresentation(productShape, m_surfaces, errors, OT_Site, m_id);
 }
 
 void Site::fetchBuildings(const std::map<std::string,shared_ptr<ProductShapeData>>& buildings) {

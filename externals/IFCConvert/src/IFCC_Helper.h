@@ -114,6 +114,9 @@ double areaPolygon(const std::vector<IBKMK::Vector3D>& poly);
 /*! Return a string for the given object type.*/
 std::string objectTypeToString(BuildingElementTypes type);
 
+/*! Return a string for the given object type.*/
+std::string objectTypeToString(ObjectType type);
+
 /*! Evaluate object type of given object definition.*/
 BuildingElementTypes getObjectType(const std::shared_ptr<IfcObjectDefinition>& od);
 
@@ -130,6 +133,8 @@ polyVector_t polylinesFromConnectionGeometry(std::shared_ptr<IfcConnectionGeomet
 										  const carve::math::Matrix& spaceTransformation,
 										  int objectId,
 										  std::vector<ConvertError>& errors);
+
+bool isIntersected(carve::mesh::MeshSet<3>* a, carve::mesh::MeshSet<3>* b);
 
 } // end namespace
 
