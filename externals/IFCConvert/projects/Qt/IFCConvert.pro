@@ -10,7 +10,7 @@ CONFIG += c++11
 
 # this pri must be sourced from all our libraries,
 # it contains all functions defined for casual libraries
-include( ../../../../submodules/SIM-VICUS/externals/IBK/projects/Qt/IBK.pri )
+include( ../../../../externals/IBK/projects/Qt/IBK.pri )
 
 #CONFIG += static
 QT       += core gui
@@ -68,6 +68,8 @@ SOURCES +=  \
 	../../src/IFCC_WindowGlazing.cpp
 
 HEADERS +=  \
+	../../../IFCImportPlugin/src/SVCommonPluginInterface.h \
+	../../../IFCImportPlugin/src/SVImportPluginInterface.h \
 	../../src/IFCC_Building.h \
 	../../src/IFCC_BuildingElement.h \
 	../../src/IFCC_BuildingElementsCollector.h \
