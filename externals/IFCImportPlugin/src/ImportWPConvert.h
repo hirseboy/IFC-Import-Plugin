@@ -28,6 +28,8 @@ private slots:
 
 	void on_pushButtonConvert_clicked();
 
+	void on_checkBoxRemoveDoubleSBs_clicked();
+
 private:
 	void initializePage() override;
 
