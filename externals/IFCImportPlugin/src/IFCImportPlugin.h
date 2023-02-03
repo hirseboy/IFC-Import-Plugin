@@ -15,9 +15,9 @@ class IFCImportPlugin : public QObject, public SVImportPluginInterface
 
 public:
 	explicit IFCImportPlugin(QObject *parent = nullptr);
-	virtual bool import(QWidget * parent, VICUS::Project & p);
-	virtual QString title() const;
-	virtual QString importMenuCaption() const;
+	virtual bool import(QWidget * parent, QString& projectText) override;
+	virtual QString title() const override;
+	virtual QString importMenuCaption() const override;
 
 private:
 	IFCC::IFCReader	m_reader;

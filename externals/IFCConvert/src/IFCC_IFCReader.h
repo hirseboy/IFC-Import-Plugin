@@ -10,7 +10,8 @@
 
 #include <ifcpp/IFC4/include/IfcSpaceTypeEnum.h>
 
-#include <VICUS_Project.h>
+#include <QCoreApplication>
+#include <QStringList>
 
 #include "IFCC_GeometryConverter.h"
 #include "IFCC_Types.h"
@@ -23,6 +24,7 @@
 #include "IFCC_Construction.h"
 #include "IFCC_Database.h"
 #include "IFCC_Instances.h"
+#include "IFCC_BuildingElementsCollector.h"
 
 
 namespace IFCC {
@@ -33,6 +35,16 @@ class IFCReader {
 Q_DECLARE_TR_FUNCTIONS( IFCReader );
 
 public:
+
+	/*! Struct contains flags or parameter for controlling conversion.
+		It should repair possible IFC problems.
+	*/
+	struct RepairFlags {
+		bool	m_flipPolygons		= false;		///< if true all polygones will be flipped before writing to xml
+		bool	m_removeDoubledSBs	= false;		///< remove space boundaries which contains the same surface
+
+	};
+
 	/*! Standard constructor. Initializes geometry converter.*/
 	IFCReader();
 
@@ -53,27 +65,37 @@ public:
 	*/
 	bool convert(bool useSpaceBoundaries);
 
-	/*! Convert the data into vicus format and add it to the given project.
-		Read and convert must be called before.
-	*/
-	bool setVicusProject(VICUS::Project* project);
-
 	/*! Return the total number of IFC entities. Call read before use.*/
 	int totalNumberOfIFCEntities() const;
 
 	/*! Return the total number of IFC space boundaries. Call read before use.*/
 	int numberOfIFCSpaceBoundaries() const;
 
+	/*! Check if the essential IFC objects are present after reading.
+		Read must be done before and successful.
+	*/
+	bool checkEssentialIFCs(QString& errmsg, int& buildings, int& spaces);
+
+	int checkForEqualSpaceBoundaries(std::vector<std::pair<int,int>>& equalSBs) const;
+
+	int checkForUniqueSubSurfacesInSpaces(std::vector<std::pair<int,std::vector<int>>>& res) const;
+
+	int checkForIntersectedSpace() const;
+
+	bool flipPolygons() const;
+	void setFlipPolygons(bool flipPolygons);
+	bool removeDoubledSBs() const;
+	void setRemoveDoubledSBs(bool removeDoubledSBs);
+
 	/*! Write converted data as vicus file.*/
 	void writeXML(const IBK::Path & filename) const;
+
+	void setVicusProjectText(QString& projectText);
 
 	QStringList messages() const;
 
 	QStringList statistic() const;
 
-	IBK::Path						m_filename;				///< IFC file
-	std::shared_ptr<BuildingModel>	m_model;				///< IFC model created from file
-	GeometryConverter				m_geometryConverter;	///< Geometry converter for converting local to global coordinates.
 	bool							m_hasError;				///< If true an error while reading IFC file was occured
 	bool							m_hasWarning;			///< If true an warning while reading IFC file was occured
 	std::string						m_errorText;			///< Text of error messages
@@ -82,6 +104,14 @@ public:
 	bool							m_readCompletedSuccessfully;
 	bool							m_convertCompletedSuccessfully;
 
+	const std::vector<ConvertError>& convertErrors() const;
+
+private:
+
+	IBK::Path						m_filename;				///< IFC file
+	std::shared_ptr<BuildingModel>	m_model;				///< IFC model created from file
+	RepairFlags						m_repairFlags;			///< Contains all flags and parameter for IFC repair
+	GeometryConverter				m_geometryConverter;	///< Geometry converter for converting local to global coordinates.
 	/*! Vector for shapes of building element entities with type.*/
 	objectShapeTypeVector_t			m_elementEntitesShape;
 	/*! Map with GUID as key and corresponding shape of spatial entity (except site, building, storey and space).*/
@@ -116,9 +146,9 @@ public:
 	Database											m_database;
 	/*! Handler class for all component instances. Such a instance is a connection of components and surfaces from spaces.*/
 	Instances											m_instances;
+	/*! Vector of errors while converting.*/
+	std::vector<ConvertError>							m_convertErrors;
 
-
-private:
 
 	/*! Function for collecting messages from IFC reading process (error, warning, progress).*/
 	static void messageTarget( void* obj_ptr, shared_ptr<StatusCallback::Message> t );
@@ -130,14 +160,11 @@ private:
 	*/
 	void splitShapeData();
 
-	/*! Update the connection maps of building elements and openings to spaces.*/
-	void updateSpaceConnections();
-
 	/*! It evaluates the object and their type from element shape vector from the given GUID.
 		\param guid IFC element GUID as string
 		\param res Resulting pair of element pointer and its type.
 	*/
-	bool typeByGuid(const std::string& guid, std::pair<ObjectTypes,std::shared_ptr<ProductShapeData>>& res);
+	bool typeByGuid(const std::string& guid, std::pair<BuildingElementTypes,std::shared_ptr<ProductShapeData>>& res);
 
 	bool		m_useSpaceBoundaries = true;
 };

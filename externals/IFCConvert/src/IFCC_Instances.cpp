@@ -1,7 +1,7 @@
 #include "IFCC_Instances.h"
 
 
-#include <VICUS_Project.h>
+//#include <VICUS_Project.h>
 
 #include "IFCC_Helper.h"
 #include "IFCC_Site.h"
@@ -41,41 +41,49 @@ TiXmlElement * Instances::writeXML(TiXmlElement * parent) const {
 	return parent;
 }
 
-int Instances::collectComponentInstances(BuildingElementsCollector& elements, Database& database, const Site& site) {
-	int res = collectComponentInstances(elements.m_constructionElements, database, site);
-	res += collectComponentInstances(elements.m_constructionSimilarElements, database, site);
-	res += collectComponentInstances(elements.m_openingElements, database, site);
-	return res;
+void Instances::collectComponentInstances(BuildingElementsCollector& elements, Database& database, const Site& site,
+										 std::vector<ConvertError>& errors) {
+	collectNormalComponentInstances(elements, database, site, errors);
+	collectSubSurfaceComponentInstances(elements, database, site, errors);
 }
 
-int Instances::collectComponentInstances(std::vector<std::shared_ptr<BuildingElement>>& elements, Database& database, const Site& site) {
-	std::vector<int> failedSurfaces;
-	std::vector<int> failedSubSurfaces;
-
+void Instances::collectNormalComponentInstances(BuildingElementsCollector& elements, Database& database,
+										 const Site& site, std::vector<ConvertError>& errors) {
+	std::vector<std::shared_ptr<BuildingElement>> constructionElements = elements.allConstructionElements();
 	for(const auto& building : site.m_buildings) {
 		for(const auto& storey : building->storeys()) {
 			for(const auto& space : storey->spaces()) {
-				for(const auto& surf : space->surfaces()) {
-					if(surf.isMissing()) {
+				for(const auto& sb : space->spaceBoundaries()) {
+					// first loop is only for normal component instances
+					if(sb->isOpeningElement())
+						continue;
+
+					// don't go further if the space boundary is already assigned
+					if(sb->m_componentInstanceId > -1)
+						continue;
+
+					if(sb->isMissing()) {
 						ComponentInstance ci;
 						ci.m_id = GUID_maker::instance().guid();
 						ci.m_componentId = Database::m_missingComponentId;
-						ci.m_sideASurfaceId = surf.id();
+						ci.m_sideASurfaceId = sb->surface().id();
 						m_componentInstances[ci.m_id] = ci;
+						sb->m_componentInstanceId = ci.m_id;
 					}
-					else if(surf.isVirtual()) {
+					else if(sb->isVirtual()) {
 						ComponentInstance ci;
 						ci.m_id = GUID_maker::instance().guid();
 						ci.m_componentId = Database::m_virtualComponentId;
-						ci.m_sideASurfaceId = surf.id();
+						ci.m_sideASurfaceId = sb->surface().id();
 						m_componentInstances[ci.m_id] = ci;
+						sb->m_componentInstanceId = ci.m_id;
 					}
 					else {
 						auto fitElem = std::find_if(
-										   elements.begin(),
-										   elements.end(),
-										   [surf](const auto& elem) {return elem->m_id == surf.elementId(); });
-						if(fitElem != elements.end()) {
+										   constructionElements.begin(),
+										   constructionElements.end(),
+										   [sb](const auto& elem) {return elem->m_id == sb->m_elementEntityId; });
+						if(fitElem != constructionElements.end()) {
 							const std::shared_ptr<BuildingElement>& elem = *fitElem;
 							auto fitComp = std::find_if(
 											   database.m_components.begin(),
@@ -85,27 +93,69 @@ int Instances::collectComponentInstances(std::vector<std::shared_ptr<BuildingEle
 								ComponentInstance ci;
 								ci.m_id = GUID_maker::instance().guid();
 								ci.m_componentId = fitComp->first;
-								ci.m_sideASurfaceId = surf.id();
-								fitComp->second.updateComponentType(surf);
+								ci.m_sideASurfaceId = sb->surface().id();
+								fitComp->second.updateComponentType(*sb);
 								m_componentInstances[ci.m_id] = ci;
+								sb->m_componentInstanceId = ci.m_id;
 							}
 							else {
-								failedSurfaces.push_back(surf.id());
+								ConvertError err;
+								err.m_objectType = OT_Component;
+								err.m_objectID = sb->m_id;
+								err.m_errorText = "Component of element for space boundary not found in components list";
+								errors.push_back(err);
 							}
 						}
 						else {
-							failedSurfaces.push_back(surf.id());
+							ConvertError err;
+							err.m_objectType = OT_Instance;
+							err.m_objectID = sb->m_id;
+							err.m_errorText = "Element ID in space boundary not found in element list";
+							errors.push_back(err);
 						}
 					}
 				}
+			}
+		}
+	}
+}
 
-				for(const auto& surf2 : space->surfaces()) {
-					for(const auto& subSurf : surf2.subSurfaces()) {
+void Instances::collectSubSurfaceComponentInstances(BuildingElementsCollector& elements, Database& database,
+										 const Site& site, std::vector<ConvertError>& errors) {
+	for(const auto& building : site.m_buildings) {
+		for(const auto& storey : building->storeys()) {
+			for(const auto& space : storey->spaces()) {
+				for(const auto& sb : space->spaceBoundaries()) {
+					if(!sb->isOpeningElement())
+						continue;
+
+					// don't go further if the space boundary is already assigned
+					if(sb->m_componentInstanceId > -1)
+						continue;
+
+
+					if(sb->isMissing()) {
+						ComponentInstance ci;
+						ci.m_id = GUID_maker::instance().guid();
+						ci.m_componentId = Database::m_missingComponentId;
+						ci.m_sideASurfaceId = sb->surface().id();
+						m_subSurfaceComponentInstances[ci.m_id] = ci;
+						sb->m_componentInstanceId = ci.m_id;
+					}
+					else if(sb->isVirtual()) {
+						ComponentInstance ci;
+						ci.m_id = GUID_maker::instance().guid();
+						ci.m_componentId = Database::m_virtualComponentId;
+						ci.m_sideASurfaceId = sb->surface().id();
+						m_subSurfaceComponentInstances[ci.m_id] = ci;
+						sb->m_componentInstanceId = ci.m_id;
+					}
+					else {
 						auto fitElem = std::find_if(
-										   elements.begin(),
-										   elements.end(),
-										   [subSurf](const auto& elem) {return elem->m_id == subSurf.elementId(); });
-						if(fitElem != elements.end()) {
+										   elements.m_openingElements.begin(),
+										   elements.m_openingElements.end(),
+										   [sb](const auto& elem) {return elem->m_id == sb->m_elementEntityId; });
+						if(fitElem != elements.m_openingElements.end()) {
 							const std::shared_ptr<BuildingElement>& elem = *fitElem;
 							auto fitComp = std::find_if(
 											   database.m_subSurfaceComponents.begin(),
@@ -116,32 +166,40 @@ int Instances::collectComponentInstances(std::vector<std::shared_ptr<BuildingEle
 								ci.m_id = GUID_maker::instance().guid();
 								ci.m_subSurface = true;
 								ci.m_componentId = fitComp->first;
-								ci.m_sideASurfaceId = subSurf.id();
+								ci.m_sideASurfaceId = sb->surface().id();
 								m_subSurfaceComponentInstances[ci.m_id] = ci;
+								sb->m_componentInstanceId = ci.m_id;
 							}
 							else {
-								failedSubSurfaces.push_back(subSurf.id());
+								ConvertError err;
+								err.m_objectType = OT_Instance;
+								err.m_objectID = sb->m_id;
+								err.m_errorText = "Element for opening space boundary not found in components list";
+								errors.push_back(err);
 							}
 						}
 						else {
-							failedSubSurfaces.push_back(subSurf.id());
+							ConvertError err;
+							err.m_objectType = OT_Instance;
+							err.m_objectID = sb->m_id;
+							err.m_errorText = "Element ID in opening space boundary not found in element list";
+							errors.push_back(err);
 						}
 					}
 				}
 			}
 		}
 	}
-	return failedSurfaces.size() + failedSubSurfaces.size();
 }
 
-void Instances::addToVicusProject(VICUS::Project* project, std::map<int,int>& idMap) {
-	for(const auto& ci : m_componentInstances) {
-		project->m_componentInstances.emplace_back(ci.second.getVicusComponentInstance(idMap));
-	}
-	for(const auto& sci : m_subSurfaceComponentInstances) {
-		project->m_subSurfaceComponentInstances.emplace_back(sci.second.getVicusSubSurfaceComponentInstance(idMap));
-	}
-}
+//void Instances::addToVicusProject(VICUS::Project* project, std::map<int,int>& idMap) {
+//	for(const auto& ci : m_componentInstances) {
+//		project->m_componentInstances.emplace_back(ci.second.getVicusComponentInstance(idMap));
+//	}
+//	for(const auto& sci : m_subSurfaceComponentInstances) {
+//		project->m_subSurfaceComponentInstances.emplace_back(sci.second.getVicusSubSurfaceComponentInstance(idMap));
+//	}
+//}
 
 
 } // namespace IFCC

@@ -52,25 +52,19 @@ else {
 # In order to do so, uncomment the following line.
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
-LIBS += -L../../../submodules/SIM-VICUS/externals/lib_x64
+LIBS += -L../../../externals/lib_x64
 
 LIBS += \
-	-lNandrad \
-	-lVicus \
 	-lTiCPP \
-	-lDataIO \
-	-lCCM \
 	-lIBKMK \
 	-lIBK
 
 INCLUDEPATH = \
 	../../src \
-	../../../submodules/SIM-VICUS/externals/IBK/src \
-	../../../submodules/SIM-VICUS/externals/IBKMK/src \
-	../../../submodules/SIM-VICUS/externals/TiCPP/src \
-	../../../externals/IFCImportPlugin/src \
-	../../../submodules/SIM-VICUS/externals/Nandrad/src \
-	../../../submodules/SIM-VICUS/externals/Vicus/src
+	../../../externals/IBK/src \
+	../../../externals/IBKMK/src \
+	../../../externals/TiCPP/src \
+	../../../externals/IFCImportPlugin/src
 
 DEPENDPATH = $${INCLUDEPATH}
 

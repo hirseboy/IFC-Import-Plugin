@@ -50,6 +50,8 @@ public:
 	*/
 	explicit SpaceBoundary(int id);
 
+	explicit SpaceBoundary(const SpaceBoundary&) = delete;
+
 	/*! Initialise space boundary from a IFC object.
 		It set a name, guid, related element, type and basic geometry.
 		\param ifcSpaceBoundary Original IFC space boundary element
@@ -64,6 +66,12 @@ public:
 	*/
 	bool setFromBuildingElement(const std::string& name, const std::shared_ptr<BuildingElement>& elem,
 								const IFCC::Space& space);
+
+	/*! Copy content (exept id) from given space boundary.
+		\param sb Other surface. All data except id and surface vector will be copied.
+		\param surfaceIndex Index of surface from surface vector which will be the only surface of this one.
+	*/
+	void setFromSpaceBoundary(const SpaceBoundary& sb, size_t surfaceIndex);
 
 	/*! Initialise space boundary which doesn't have a connection to a buiding element.
 		It set a name, related space and type. Geometry is not set.
@@ -80,22 +88,48 @@ public:
 	void setForVirtualElement(const std::string& name, const Space& space);
 
 	/*! Set connection base type from building element type.*/
-	void setRelatingElementType(ObjectTypes type);
+	void setRelatingElementType(BuildingElementTypes type);
 
 	/*! Get geometry from IFC basic geometry and fill the surface vector.
 		\param unit_converter Unit converter from geometry converter
 		\param spaceTransformation Coordinate transformation matrix
 	*/
-	bool fetchGeometryFromIFC(shared_ptr<UnitConverter>& unit_converter, const carve::math::Matrix& spaceTransformation, std::string& errmsg);
+	bool fetchGeometryFromIFC(shared_ptr<UnitConverter>& unit_converter, const carve::math::Matrix& spaceTransformation,
+							  std::vector<ConvertError>& errors);
 
 	/*! Get geomtry from given surface.
 		\param surface Surface for space boundary
 	*/
 	bool fetchGeometryFromBuildingElement(const Surface& surface);
 
+	/*! In case of more than one surface after calling fetchGeometryFromIFC create additional space boundaries so each of them has only one surface.
+		It uses the first surface in the vector for itself and clears the surface vector at the end.
+		The returning vector will be empty in case of only one or no surfaces in surface vector.
+	*/
+	std::vector<std::shared_ptr<SpaceBoundary>> splitBySurfaces();
+
 	/*! Return all surfaces of this space.*/
-	const std::vector<Surface>& surfaces() const {
-		return m_surfaces;
+//	const std::vector<Surface>& surfaces() const {
+//		return m_surfaces;
+//	}
+
+	/*! Return the surface of this space boundary.*/
+	const Surface& surface() const 	{
+		return m_surface;
+	}
+
+	/*! Return the surface of this space boundary.*/
+	Surface& surface() 	{
+		return m_surface;
+	}
+
+	/*! Return the surface of this space boundary.*/
+	Surface surfaceWithSubsurfaces() const 	{
+		Surface ts = m_surface;
+		for(auto sub : m_containedOpeningSpaceBoundaries) {
+			ts.addSubSurface(sub->surface());
+		}
+		return ts;
 	}
 
 	/*! Return GUID of the related building element.*/
@@ -118,7 +152,8 @@ public:
 		return m_nameRelatedSpace;
 	}
 
-	ObjectTypes typeRelatedElement() const {
+	/*! Return type of the related building element.*/
+	BuildingElementTypes typeRelatedElement() const {
 		return m_typeRelatedElement;
 	}
 
@@ -132,16 +167,45 @@ public:
 		return m_type == CT_OpeningElement;
 	}
 
+	/*! Return true if its a virtual space boundary (no real buildin element).*/
 	bool isVirtual() const {
 		return m_physicalOrVirtual == IfcPhysicalOrVirtualEnum::ENUM_VIRTUAL;
 	}
 
+	/*! Return true if the related building element could not be evaluated and a missing one is set.*/
 	bool isMissing() const {
 		return m_physicalOrVirtual == IfcPhysicalOrVirtualEnum::ENUM_PHYSICAL && m_elementEntityId == -1;
 	}
 
+	bool isInternal() const {
+		return !isVirtual() && m_internalOrExternal == IfcInternalOrExternalEnum::ENUM_INTERNAL;
+	}
+
+	bool isExternalToGround() const {
+		return !isVirtual() && m_internalOrExternal == IfcInternalOrExternalEnum::ENUM_EXTERNAL_EARTH;
+	}
+
+	bool isExternal() const {
+		return !isVirtual() && m_internalOrExternal == IfcInternalOrExternalEnum::ENUM_EXTERNAL;
+	}
+
+	/*! Return the vector of all contained opening space boundaries.*/
+	const std::vector<std::shared_ptr<SpaceBoundary> >& containedOpeningSpaceBoundaries() const;
+
+	/*! Add a opening space boundarie to the vector of the contained space boundaries.*/
+	void addContainedOpeningSpaceBoundaries(const std::shared_ptr<SpaceBoundary>& newContainedOpeningSpaceBoundaries);
+
 	/*! Unique ID of the related building element.*/
 	int															m_elementEntityId;
+
+	/*! Unique ID of the related opening if space boundary is for an opening.
+		Otherwise its -1;
+	*/
+	int															m_openingId;
+
+	/*! Id of the component instance which uses this space boundary.*/
+	int															m_componentInstanceId;
+
 
 private:
 	/*! Create the surface vector from given polylines and set surface types.*/
@@ -152,7 +216,7 @@ private:
 	std::string													m_guidCorrespondingBoundary;	///< GUID of the corresponding space boundary
 	std::string													m_nameRelatedElement;	///< Name of the related building element
 	std::string													m_nameRelatedSpace;	///< Name of the related space
-	ObjectTypes													m_typeRelatedElement;	///< Object type of the related element
+	BuildingElementTypes										m_typeRelatedElement;	///< Object type of the related element
 	/*! Defines if the space boundary is a physical or a virtual boundary.
 		Possible types:
 		\li ENUM_PHYSICAL - a physical object (wall, slab, door ...)
@@ -172,10 +236,16 @@ private:
 	*/
 	IfcInternalOrExternalEnum::IfcInternalOrExternalEnumEnum	m_internalOrExternal;
 	ConstructionType											m_type;					///< Type of connected construction
-	std::vector<Surface>										m_surfaces;				///< Surfaces of the space boundary
+	/*! Temporary vector used from fetchGeometryFromIFC. Should be splitted later.*/
+	std::vector<Surface>										m_surfaces;
+	Surface														m_surface;				///< Surface of the space boundary
 	std::shared_ptr<IfcConnectionGeometry>						m_connectionGeometry;	///< Geometry from IFC space boundary object
+	/*! Type of the space boundary (A, B, inner) evaluated only in case of derived IFC type.*/
 	SpaceBoundaryType											m_spaceBoundaryType;
+	/*! Level of the space boundary (1st, 2nd, 3rd) evaluated only in case of derived IFC type.*/
 	SpaceBoundaryLevelType										m_levelType;
+	/*! Vector of space boundaries for openings which are containd in this space boundary (subsurfaces).*/
+	std::vector<std::shared_ptr<SpaceBoundary>>					m_containedOpeningSpaceBoundaries;
 };
 
 } // namespace IFCC

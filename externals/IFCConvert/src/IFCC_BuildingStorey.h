@@ -7,11 +7,12 @@
 
 #include <tinyxml.h>
 
-#include <VICUS_BuildingLevel.h>
+//#include <VICUS_BuildingLevel.h>
 
 #include "IFCC_EntityBase.h"
 #include "IFCC_Space.h"
 #include "IFCC_Types.h"
+#include "IFCC_BuildingElementsCollector.h"
 
 namespace IFCC {
 
@@ -43,7 +44,7 @@ public:
 		\param unit_converter Unit converter is necessary for create geometries.
 	*/
 	void fetchSpaces(const objectShapeGUIDMap_t& shapes,
-					 shared_ptr<UnitConverter>& unit_converter);
+					 shared_ptr<UnitConverter>& unit_converter, std::vector<ConvertError>& errors);
 
 	/*! Update spaces and related space boundaries.
 		\param shapes Product shape vector for all IfcElement based objects in project.
@@ -56,23 +57,24 @@ public:
 	void updateSpaces(const objectShapeTypeVector_t& shapes,
 					  shared_ptr<UnitConverter>& unit_converter,
 					  const BuildingElementsCollector& buildingElements,
-					  const std::vector<Opening>& openings,
-					  bool useSpaceBoundaries);
+					  std::vector<Opening>& openings,
+					  bool useSpaceBoundaries,
+					  std::vector<ConvertError>& errors);
 
-	/*! Update spaces and related space boundaries.
-		\param constructionElements Vector for all construction elements (wall, slab, roof)
-		\param openingElements Vector for all opening elements (window, door)
-		\param openings Vector for all openings (based on IfcOpeningElement)
-	*/
-	void updateSpaceConnections(BuildingElementsCollector& buildingElements, std::vector<Opening>& openings);
+//	/*! Update spaces and related space boundaries.
+//		\param constructionElements Vector for all construction elements (wall, slab, roof)
+//		\param openingElements Vector for all opening elements (window, door)
+//		\param openings Vector for all openings (based on IfcOpeningElement)
+//	*/
+//	void updateSpaceConnections(BuildingElementsCollector& buildingElements, std::vector<Opening>& openings);
 
 	/*! Write the storey in vicus xml format including spaces.*/
-	TiXmlElement * writeXML(TiXmlElement * parent) const;
+	TiXmlElement * writeXML(TiXmlElement * parent, bool flipPolygons) const;
 
-	/*! Create a VICUS building level object and return this.
-		The returned object contains all transferable data.
-	*/
-	VICUS::BuildingLevel getVicusObject(std::map<int,int>& idMap, int& nextid) const;
+//	/*! Create a VICUS building level object and return this.
+//		The returned object contains all transferable data.
+//	*/
+//	VICUS::BuildingLevel getVicusObject(std::map<int,int>& idMap, int& nextid) const;
 
 	/*! Vector of spaces in the storey.*/
 	const std::vector<std::shared_ptr<Space>>& spaces() const {

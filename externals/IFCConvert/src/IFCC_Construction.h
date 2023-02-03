@@ -7,7 +7,7 @@
 
 #include <tinyxml.h>
 
-#include <VICUS_Construction.h>
+//#include <VICUS_Construction.h>
 
 #include "IFCC_Types.h"
 
@@ -34,10 +34,10 @@ public:
 	/*! Write the component in vicus xml format including storeys.*/
 	TiXmlElement * writeXML(TiXmlElement * parent) const;
 
-	/*! Create a VICUS construction object and return this.
-		The returned object contains all transferable data.
-	*/
-	VICUS::Construction getVicusObject(std::map<int,int>& idMap, int idOffset) const;
+//	/*! Create a VICUS construction object and return this.
+//		The returned object contains all transferable data.
+//	*/
+//	VICUS::Construction getVicusObject(std::map<int,int>& idMap, int idOffset) const;
 
 	/*! Comparison operator.*/
 	friend bool operator==(const Construction& left, const Construction& right) {

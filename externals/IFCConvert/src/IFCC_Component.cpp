@@ -5,6 +5,7 @@
 #include <tinyxml.h>
 
 #include "IFCC_Surface.h"
+#include "IFCC_SpaceBoundary.h"
 
 namespace IFCC {
 
@@ -61,20 +62,41 @@ void Component::updateComponentType(const Surface& surf) {
 	}
 }
 
-VICUS::Component Component::getVicusObject(std::map<int,int>& idMap, int idOffset) const {
-	VICUS::Component vcomp;
-	vcomp.m_id = m_id + idOffset;
-	idMap[m_id] = vcomp.m_id;
-
-	vcomp.m_displayName.setString(m_name,"de");
-	vcomp.m_dataSource.setString(m_dataSource,"de");
-	vcomp.m_manufacturer.setString(m_manufacturer,"de");
-	vcomp.m_notes.setString(m_notes,"de");
-	vcomp.m_idConstruction = idMap[m_constructionId];
-	vcomp.m_type = static_cast<VICUS::Component::ComponentType>(m_type);
-
-	return vcomp;
+void Component::updateComponentType(const SpaceBoundary& sb) {
+	if(m_type == CT_OutsideWall) {
+		if(sb.isInternal())
+			m_type = CT_InsideWall;
+		else if(sb.isExternalToGround())
+			m_type = CT_OutsideWallToGround;
+	}
+	else if(m_type == CT_SlopedRoof) {
+		// nothing to do
+	}
+	else if(m_type == CT_FloorToAir) {
+		if(sb.isInternal())
+			m_type = CT_Ceiling;
+		else if(sb.isExternalToGround())
+			m_type = CT_FloorToGround;
+	}
+	else if(m_type == NUM_CT) {
+		m_type = CT_Miscellaneous;
+	}
 }
+
+//VICUS::Component Component::getVicusObject(std::map<int,int>& idMap, int idOffset) const {
+//	VICUS::Component vcomp;
+//	vcomp.m_id = m_id + idOffset;
+//	idMap[m_id] = vcomp.m_id;
+
+//	vcomp.m_displayName.setString(m_name,"de");
+//	vcomp.m_dataSource.setString(m_dataSource,"de");
+//	vcomp.m_manufacturer.setString(m_manufacturer,"de");
+//	vcomp.m_notes.setString(m_notes,"de");
+//	vcomp.m_idConstruction = idMap[m_constructionId];
+//	vcomp.m_type = static_cast<VICUS::Component::ComponentType>(m_type);
+
+//	return vcomp;
+//}
 
 std::string Component::type2String(ComponentType type) const {
 	switch(type) {

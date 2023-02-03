@@ -4,11 +4,15 @@
 #include <QFileDialog>
 #include <QPluginLoader>
 
+#include <fstream>
+
+#include <IBK_messages.h>
+
 #if defined(Q_OS_WIN32)
 	#include <Windows.h>
 #endif
 
-#include <VICUS_Project.h>
+//#include <VICUS_Project.h>
 
 MainWindow::MainWindow(QWidget *parent)
 	: QMainWindow(parent)
@@ -167,11 +171,13 @@ void MainWindow::runImport()
 	}
 	QString name = action->text();
 	SVImportPluginInterface* exp = m_importer.value(name);
-	VICUS::Project project;
 	if( exp ) {
+		QString project;
 		bool res = exp->import(this, project);
 		if(res) {
-
+			std::ofstream out("g:\\temp\\VicusProject.vicus");
+			out << project.toStdString();
+			out.close();
 		}
 	}
 }

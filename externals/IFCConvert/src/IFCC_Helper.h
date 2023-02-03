@@ -11,6 +11,9 @@
 #include <ifcpp/IFC4/include/IfcLabel.h>
 #include <ifcpp/IFC4/include/IfcText.h>
 #include <ifcpp/IFC4/include/IfcIdentifier.h>
+#include <ifcpp/IFC4/include/IfcConnectionGeometry.h>
+
+#include <ifcpp/model/UnitConverter.h>
 
 #include "IFCC_Types.h"
 
@@ -37,16 +40,16 @@ private:
 
 // check functions
 
-inline bool isConstructionType(ObjectTypes type) {
-	return type == OT_Wall || type == OT_Roof || type == OT_Slab;
+inline bool isConstructionType(BuildingElementTypes type) {
+	return type == BET_Wall || type == BET_Roof || type == BET_Slab;
 }
 
-inline bool isConstructionSimilarType(ObjectTypes type) {
-	return type == OT_Beam || type == OT_Covering || type == OT_Column || type == OT_CurtainWall || type == OT_Footing;
+inline bool isConstructionSimilarType(BuildingElementTypes type) {
+	return type == BET_Beam || type == BET_Covering || type == BET_Column || type == BET_CurtainWall || type == BET_Footing;
 }
 
-inline bool isOpeningType(ObjectTypes type) {
-	return type == OT_Window || type == OT_Door;
+inline bool isOpeningType(BuildingElementTypes type) {
+	return type == BET_Window || type == BET_Door;
 }
 
 // conversion functions
@@ -109,10 +112,29 @@ bool nearEqual(const IBKMK::Vector3D& v1, const IBKMK::Vector3D& v2);
 double areaPolygon(const std::vector<IBKMK::Vector3D>& poly);
 
 /*! Return a string for the given object type.*/
-std::string objectTypeToString(ObjectTypes type);
+std::string objectTypeToString(BuildingElementTypes type);
+
+/*! Return a string for the given object type.*/
+std::string objectTypeToString(ObjectType type);
 
 /*! Evaluate object type of given object definition.*/
-ObjectTypes getObjectType(const std::shared_ptr<IfcObjectDefinition>& od);
+BuildingElementTypes getObjectType(const std::shared_ptr<IfcObjectDefinition>& od);
+
+/*! Convert geometry given by IfcConnectionGeometry object into a polyVector.
+	\param connectionGeometry Geometry object
+	\param unit_converter Unit convert for geometry conversions
+	\param spaceTransformation Space transformation matrix for current object
+	\param objectId Id of the object. Only used for error messages.
+	\param errors Vector of errors while conversion
+	\return Vector of created polylines or empty in case of errors.
+*/
+polyVector_t polylinesFromConnectionGeometry(std::shared_ptr<IfcConnectionGeometry> connectionGeometry,
+										  shared_ptr<UnitConverter>& unit_converter,
+										  const carve::math::Matrix& spaceTransformation,
+										  int objectId,
+										  std::vector<ConvertError>& errors);
+
+bool isIntersected(carve::mesh::MeshSet<3>* a, carve::mesh::MeshSet<3>* b);
 
 } // end namespace
 

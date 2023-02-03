@@ -10,7 +10,7 @@ CONFIG += c++11
 
 # this pri must be sourced from all our libraries,
 # it contains all functions defined for casual libraries
-include( ../../../../submodules/SIM-VICUS/externals/IBK/projects/Qt/IBK.pri )
+include( ../../../../externals/IBK/projects/Qt/IBK.pri )
 
 #CONFIG += static
 QT       += core gui
@@ -24,18 +24,17 @@ INCLUDEPATH += \
 				../../../ifcplusplus/src/IfcPlusPlus/src \
 				../../../ifcplusplus/src/IfcPlusPlus/src/ifcpp/reader \
 				../../../clipper/src \
-				../../../../submodules/SIM-VICUS/externals/IBK/src \
-				../../../../submodules/SIM-VICUS/externals/IBKMK/src \
-				../../../../submodules/SIM-VICUS/externals/TiCPP/src \
+				../../../../externals/IBK/src \
+				../../../../externals/IBKMK/src \
+				../../../../externals/TiCPP/src \
 				../../../ifcplusplus/src/external/Carve/src/include \
 				../../../ifcplusplus/src/external \
-				../../../ifcplusplus/src/external/Carve/src/common \
-				../../../../submodules/SIM-VICUS/externals/Vicus/src \
-				../../../../submodules/SIM-VICUS/externals/Nandrad/src
+				../../../ifcplusplus/src/external/Carve/src/common
 
 SOURCES +=  \
 	../../src/IFCC_Building.cpp \
 	../../src/IFCC_BuildingElement.cpp \
+	../../src/IFCC_BuildingElementsCollector.cpp \
 	../../src/IFCC_BuildingStorey.cpp \
 	../../src/IFCC_Clippertools.cpp \
 	../../src/IFCC_Component.cpp \
@@ -69,8 +68,11 @@ SOURCES +=  \
 	../../src/IFCC_WindowGlazing.cpp
 
 HEADERS +=  \
+	../../../IFCImportPlugin/src/SVCommonPluginInterface.h \
+	../../../IFCImportPlugin/src/SVImportPluginInterface.h \
 	../../src/IFCC_Building.h \
 	../../src/IFCC_BuildingElement.h \
+	../../src/IFCC_BuildingElementsCollector.h \
 	../../src/IFCC_BuildingStorey.h \
 	../../src/IFCC_Clippertools.h \
 	../../src/IFCC_Component.h \

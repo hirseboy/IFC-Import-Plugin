@@ -8,16 +8,14 @@ IFCImportPlugin::IFCImportPlugin(QObject *parent)
 {
 }
 
-bool IFCImportPlugin::import(QWidget * parent, VICUS::Project& prj) {
+bool IFCImportPlugin::import(QWidget * parent, QString& projectText) {
 	ImportWizard wz(parent, &m_reader);
-
-	wz.setProject(&prj);
 
 	if (wz.exec() == QDialog::Rejected)
 		return false;
 
 	if(m_reader.m_convertCompletedSuccessfully) {
-		m_reader.setVicusProject(&prj);
+		m_reader.setVicusProjectText(projectText);
 		return true;
 	}
 

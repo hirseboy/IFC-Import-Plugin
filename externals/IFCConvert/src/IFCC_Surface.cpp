@@ -159,6 +159,44 @@ bool Surface::isParallelTo(const Surface& other) const {
 	return false;
 }
 
+bool Surface::isEqualTo(const Surface& other) const {
+	const std::vector<IBKMK::Vector3D>& otherPoly = other.polygon();
+	if(m_polyVect.size() != otherPoly.size())
+		return false;
+
+	// search point in the other polygon which is equal to the first point of the current one
+	// store the position in start2nd
+	int start2nd = -1;
+	for(size_t i=0; i<otherPoly.size(); ++i) {
+		if(nearEqual(otherPoly[i],m_polyVect.front()))
+			start2nd = i;
+	}
+	// no equal point found - polygones are not equal
+	if(start2nd == -1)
+		return false;
+
+	// first point of both polygons is the same - perform normal search for all other points
+	if(start2nd == 0) {
+		for(size_t i=1; i<m_polyVect.size(); ++i) {
+			if(!nearEqual(m_polyVect[i], otherPoly[i]))
+				return false;
+		}
+	}
+	// first point of the current polygon is equal to a later point of the other one
+	else {
+		// copy the other point and rotate it so the first point is the same as in the current one
+		std::vector<IBKMK::Vector3D> otherCopy = other.polygon();
+		std::rotate(otherCopy.begin(), otherCopy.begin() + start2nd, otherCopy.end());
+		// check if all other points are equal
+		for(size_t i=1; i<m_polyVect.size(); ++i) {
+			if(!nearEqual(m_polyVect[i], otherCopy[i]))
+				return false;
+		}
+	}
+	return true;
+}
+
+
 std::vector<std::pair<size_t,size_t>> Surface::samePoints(const Surface& other) const {
 	std::vector<std::pair<size_t,size_t>> equalPoints;
 	const std::vector<IBKMK::Vector3D>& otherPoly = other.polygon();
@@ -246,13 +284,20 @@ bool Surface::addSubSurface(const Surface& subsurface) {
 	if(!sub.isValid())
 		return false;
 
-	sub.set(GUID_maker::instance().guid(), subsurface.m_name, subsurface.m_elementEntityId);
+	sub.set(subsurface.id(), subsurface.m_name, subsurface.m_elementEntityId);
 	m_subSurfaces.push_back(sub);
 	return true;
 }
 
 double Surface::area() const {
 	return areaPolygon(m_polyVect);
+}
+
+void Surface::flip() {
+	std::reverse(m_polyVect.begin(), m_polyVect.end());
+	for(auto& sub : m_subSurfaces) {
+		sub.flip();
+	}
 }
 
 TiXmlElement * Surface::writeXML(TiXmlElement * parent) const {
@@ -305,29 +350,6 @@ bool Surface::isValid() const {
 	return m_polyVect.size() > 2;
 }
 
-VICUS::Surface Surface::getVicusObject(std::map<int,int>& idMap, int& nextid) const {
-	VICUS::Surface res;
-	int newId = nextid++;
-	res.m_displayName = QString::fromUtf8(m_name.c_str());
-	res.setPolygon3D(m_polyVect);
-	res.m_id = newId;
-	idMap[m_id] = newId;
-
-	std::vector<VICUS::SubSurface> vicusSubs;
-	for(const auto& subsurf : m_subSurfaces) {
-		VICUS::SubSurface vs;
-		int newIdSub = nextid++;
-		vs.m_id = newIdSub;
-		idMap[subsurf.id()] = newIdSub;
-		vs.m_displayName = QString::fromUtf8(subsurf.name().c_str());
-		vs.m_polygon2D = subsurf.polygon();
-		vicusSubs.push_back(vs);
-	}
-	res.setSubSurfaces(vicusSubs);
-
-	return res;
-}
-
 void surfacesFromMeshSets(std::vector<shared_ptr<carve::mesh::MeshSet<3> > >& meshsets, std::vector<Surface>& surfaces) {
 	if(meshsets.empty())
 		return;
@@ -350,33 +372,45 @@ void surfacesFromMeshSets(std::vector<shared_ptr<carve::mesh::MeshSet<3> > >& me
 	}
 }
 
-void surfacesFromRepresentation(std::shared_ptr<ProductShapeData> productShape, std::vector<Surface>& surfaces) {
+void surfacesFromRepresentation(std::shared_ptr<ProductShapeData> productShape, std::vector<Surface>& surfaces,
+								std::vector<ConvertError>& errors, ObjectType objectType, int objectId) {
 
 	surfaces.clear();
 
 	int repCount = productShape->m_vec_representations.size();
 	std::shared_ptr<RepresentationData> currentRep;
 	std::shared_ptr<RepresentationData> bodyRep;
+	int bodyRepCount = 0;
 	std::shared_ptr<RepresentationData> referenceRep;
+	int referenceRepCount = 0;
 	std::shared_ptr<RepresentationData> surfaceRep;
+	int surfaceRepCount = 0;
 	std::shared_ptr<RepresentationData> profileRep;
+	int profileRepCount = 0;
 	for(int repi = 0; repi<repCount; ++repi) {
 		currentRep = productShape->m_vec_representations[repi];
 		if(currentRep->m_representation_identifier == L"Body") {
 			bodyRep = currentRep;
+			++bodyRepCount;
 		}
 		if(currentRep->m_representation_identifier == L"Reference") {
 			referenceRep = currentRep;
+			++referenceRepCount;
 		}
 		if(currentRep->m_representation_identifier == L"Surface") {
 			surfaceRep = currentRep;
+			++surfaceRepCount;
 		}
 		if(currentRep->m_representation_identifier == L"Profile") {
 			profileRep = currentRep;
+			++profileRepCount;
 		}
 	}
 
 	if(bodyRep) {
+		if(bodyRepCount > 1) {
+			errors.push_back({objectType, objectId, "more than one geometric representaion of type 'body' found"});
+		}
 		meshVector_t meshSetClosedFinal;
 		meshVector_t meshSetOpenFinal;
 		for(const auto& shapeData : bodyRep->m_vec_item_data) {
@@ -396,16 +430,61 @@ void surfacesFromRepresentation(std::shared_ptr<ProductShapeData> productShape, 
 
 	if(referenceRep) {
 		///< \todo Implement
+		if(!bodyRep)
+			errors.push_back({objectType, objectId, "Geometric representation of type 'reference' cannot be evaluated."});
 	}
 
 	if(surfaceRep) {
 		///< \todo Implement
+		if(!bodyRep)
+			errors.push_back({objectType, objectId, "Geometric representation of type 'surface' cannot be evaluated."});
 	}
 
 	if(profileRep) {
 		///< \todo Implement
+		if(!bodyRep)
+			errors.push_back({objectType, objectId, "Geometric representation of type 'profile' cannot be evaluated."});
 	}
 
+}
+
+static std::shared_ptr<RepresentationData> firstBodyRep(std::shared_ptr<ProductShapeData> productShape) {
+	for(auto rep : productShape->m_vec_representations) {
+		if(rep->m_representation_identifier == L"Body") {
+			return rep;
+		}
+	}
+
+	return std::shared_ptr<RepresentationData>();
+}
+
+meshVector_t meshSetsFromBodyRepresentation(std::shared_ptr<ProductShapeData> productShape) {
+
+	std::shared_ptr<RepresentationData> bodyRep = firstBodyRep(productShape);
+	if(!bodyRep)
+		return meshVector_t();
+
+	meshVector_t meshSetClosedFinal;
+	meshVector_t meshSetOpenFinal;
+	for(const auto& shapeData : bodyRep->m_vec_item_data) {
+		const std::vector<shared_ptr<carve::mesh::MeshSet<3> > >& mc = shapeData->m_meshsets;
+		if(!mc.empty()) {
+			meshSetClosedFinal.insert(meshSetClosedFinal.begin(), mc.begin(), mc.end());
+		}
+		const std::vector<shared_ptr<carve::mesh::MeshSet<3> > >& mo = shapeData->m_meshsets_open;
+		if(!mo.empty()) {
+			meshSetOpenFinal.insert(meshSetOpenFinal.begin(), mo.begin(), mo.end());
+		}
+	}
+
+	if(!meshSetClosedFinal.empty()) {
+		return meshSetClosedFinal;
+	}
+
+	if(!meshSetOpenFinal.empty()) {
+		return meshSetOpenFinal;
+	}
+	return meshVector_t();
 }
 
 

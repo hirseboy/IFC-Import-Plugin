@@ -7,7 +7,7 @@
 
 #include <tinyxml.h>
 
-#include <VICUS_SubSurfaceComponent.h>
+//#include <VICUS_SubSurfaceComponent.h>
 
 namespace IFCC {
 
@@ -76,10 +76,10 @@ public:
 		return true;
 	}
 
-	/*! Create a VICUS subsurface component object and return this.
-		The returned object contains all transferable data.
-	*/
-	VICUS::SubSurfaceComponent getVicusObject(std::map<int,int>& idMap, int idOffset) const;
+//	/*! Create a VICUS subsurface component object and return this.
+//		The returned object contains all transferable data.
+//	*/
+//	VICUS::SubSurfaceComponent getVicusObject(std::map<int,int>& idMap, int idOffset) const;
 
 private:
 	/*! Create name of subsurface component type for writing.*/

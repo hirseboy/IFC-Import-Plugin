@@ -33,19 +33,19 @@ TiXmlElement * Window::writeXML(TiXmlElement * parent) const {
 	return e;
 }
 
-VICUS::Window Window::getVicusObject(std::map<int,int>& idMap, int idOffset) const {
-	VICUS::Window vwin;
-	vwin.m_id = m_id + idOffset;
-	idMap[m_id] = vwin.m_id;
-	vwin.m_displayName.setString(m_name,"de");
-	vwin.m_idGlazingSystem = idMap[m_glazingSystemId];
-	vwin.m_dataSource = QString::fromStdString(m_dataSource);
-	vwin.m_notes = QString::fromStdString(m_notes);
-	vwin.m_methodFrame = static_cast<VICUS::Window::Method>(m_methodFrame);
-	vwin.m_methodDivider = static_cast<VICUS::Window::Method>(m_methodDivider);
+//VICUS::Window Window::getVicusObject(std::map<int,int>& idMap, int idOffset) const {
+//	VICUS::Window vwin;
+//	vwin.m_id = m_id + idOffset;
+//	idMap[m_id] = vwin.m_id;
+//	vwin.m_displayName.setString(m_name,"de");
+//	vwin.m_idGlazingSystem = idMap[m_glazingSystemId];
+//	vwin.m_dataSource = QString::fromStdString(m_dataSource);
+//	vwin.m_notes = QString::fromStdString(m_notes);
+//	vwin.m_methodFrame = static_cast<VICUS::Window::Method>(m_methodFrame);
+//	vwin.m_methodDivider = static_cast<VICUS::Window::Method>(m_methodDivider);
 
-	return vwin;
-}
+//	return vwin;
+//}
 
 
 } // namespace IFCC

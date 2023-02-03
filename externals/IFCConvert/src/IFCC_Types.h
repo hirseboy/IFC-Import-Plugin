@@ -15,78 +15,40 @@ namespace IFCC {
 
 class BuildingElement;
 
-/*! Struct collects all types of building elements.*/
-struct BuildingElementsCollector {
-	/*! Primary building elements which are part of the construction and can contain openings.
-		This can be: Wall, Roof, Slab
-	*/
-	std::vector<std::shared_ptr<BuildingElement>>		m_constructionElements;
-
-	/*! Secondary building elements which are part of the construction and can contain openings.
-		This can be: Beam, Column, Covering, Footing, CurtainWall
-	*/
-	std::vector<std::shared_ptr<BuildingElement>>		m_constructionSimilarElements;
-
-	/*! All building elements which can be a opening.
-		This can be: Window, Door
-	*/
-	std::vector<std::shared_ptr<BuildingElement>>		m_openingElements;
-
-	/*! All other building elements.*/
-	std::vector<std::shared_ptr<BuildingElement>>		m_otherElements;
-
-	/*! Building elements without surfaces.*/
-	std::vector<std::shared_ptr<BuildingElement>>		m_elementsWithoutSurfaces;
-
-	void clear() {
-		m_constructionElements.clear();
-		m_constructionSimilarElements.clear();
-		m_openingElements.clear();
-		m_otherElements.clear();
-		m_elementsWithoutSurfaces.clear();
-	}
-
-	std::vector<std::shared_ptr<BuildingElement>> allConstructionElements() const {
-		std::vector<std::shared_ptr<BuildingElement>> constructionElements(m_constructionElements);
-		constructionElements.insert(constructionElements.begin(), m_constructionSimilarElements.begin(),
-									m_constructionSimilarElements.end());
-		return constructionElements;
-	}
-};
 
 /*! Types of building elements.*/
-enum ObjectTypes {
-	OT_Beam,
-	OT_Chimney,
-	OT_Column,
-	OT_Covering,
-	OT_CurtainWall,
-	OT_Door,
-	OT_Footing,
-	OT_Member,
-	OT_Pile,
-	OT_Plate,
-	OT_Railing,
-	OT_Ramp,
-	OT_RampFlight,
-	OT_Roof,
-	OT_ShadingDevice,
-	OT_Slab,
-	OT_Stair,
-	OT_StairFlight,
-	OT_Wall,
-	OT_Window,
-	OT_CivilElement,
-	OT_DistributionElement,
-	OT_ElementAssembly,
-	OT_ElementComponent,
-	OT_FeatureElement,
-	OT_FurnishingElement,
-	OT_GeographicalElement,
-	OT_TransportElement,
-	OT_VirtualElement,
-	OT_All,
-	OT_None
+enum BuildingElementTypes {
+	BET_Beam,
+	BET_Chimney,
+	BET_Column,
+	BET_Covering,
+	BET_CurtainWall,
+	BET_Door,
+	BET_Footing,
+	BET_Member,
+	BET_Pile,
+	BET_Plate,
+	BET_Railing,
+	BET_Ramp,
+	BET_RampFlight,
+	BET_Roof,
+	BET_ShadingDevice,
+	BET_Slab,
+	BET_Stair,
+	BET_StairFlight,
+	BET_Wall,
+	BET_Window,
+	BET_CivilElement,
+	BET_DistributionElement,
+	BET_ElementAssembly,
+	BET_ElementComponent,
+	BET_FeatureElement,
+	BET_FurnishingElement,
+	BET_GeographicalElement,
+	BET_TransportElement,
+	BET_VirtualElement,
+	BET_All,
+	BET_None
 };
 
 
@@ -98,6 +60,41 @@ enum BasicType {
 	NUM_BT
 };
 
+enum ObjectType {
+	OT_BuildingElement,
+	OT_Opening,
+	OT_Space,
+	OT_SpaceBoundary,
+	OT_Site,
+	OT_Building,
+	OT_Storey,
+	OT_Material,
+	OT_Construction,
+	OT_Window,
+	OT_Glazing,
+	OT_Component,
+	OT_SubComponent,
+	OT_Instance,
+	OT_GeometryConvert,
+	OT_Unknown
+};
+
+struct ConvertError {
+	ConvertError() :
+		m_objectType(OT_Unknown),
+		m_objectID(-1)
+	{}
+	ConvertError(ObjectType type, int id, std::string txt) :
+		m_objectType(type),
+		m_objectID(id),
+		m_errorText(txt)
+	{}
+
+	ObjectType	m_objectType;
+	int			m_objectID;
+	std::string	m_errorText;
+};
+
 
 // some type definitions
 
@@ -107,7 +104,7 @@ using polygon3D_t = std::vector<IBKMK::Vector3D>;
 using polygon2D_t = std::vector<IBKMK::Vector2D>;
 using conversionVectors2D_t = std::pair<std::vector<IBKMK::Vector2D>,std::vector<IBKMK::Vector2D>>;
 
-using objectShapeTypeVector_t = std::map<ObjectTypes,std::vector<shared_ptr<ProductShapeData>>>;
+using objectShapeTypeVector_t = std::map<BuildingElementTypes,std::vector<shared_ptr<ProductShapeData>>>;
 using objectShapeGUIDMap_t = std::map<std::string,shared_ptr<ProductShapeData>>;
 
 } // end namespace

@@ -18,6 +18,7 @@ ImportWPRead::ImportWPRead(QWidget *parent, IFCC::IFCReader* reader) :
 	setSubTitle(tr("You can load an IFC file."));
 
 	ui->pushButtonRead->setEnabled(false);
+	ui->checkBoxIgnoreReadError->setChecked(true);
 
 }
 
@@ -54,20 +55,40 @@ void ImportWPRead::on_pushButtonRead_clicked() {
 	IBK::Path ifcfilename(ui->lineEditIFCFile->text().toStdString());
 	bool ignoreError = ui->checkBoxIgnoreReadError->isChecked();
 	bool res = m_reader->read(ifcfilename, ignoreError);
-	if(res) {
+	int buildings = 0;
+	int spaces = 0;
+	QString fatalError;
+	bool hasFatalErrors = !m_reader->checkEssentialIFCs(fatalError, buildings, spaces);
+	if(res && !hasFatalErrors) {
 		int number = m_reader->totalNumberOfIFCEntities();
 		ui->textEdit->clear();
-		ui->textEdit->setText(tr("File read successfully with %1 IFC entities.").arg(number));
+		QStringList text;
+		text << tr("File read successfully with %1 IFC entities.<br>").arg(number);
+		text << tr("Project contains %1 buildings and %2 spaces.<br>").arg(buildings).arg(spaces);
+		ui->textEdit->setHtml(text.join("\n"));
 	}
 	else {
 		QStringList text;
-		text << tr("Read not successful.");
-		text << tr("Error:");
-		text << QString::fromStdString(m_reader->m_errorText);
-		text << tr("Warnings:");
-		text << QString::fromStdString(m_reader->m_warningText);
-		ui->textEdit->setText(text.join("\n"));
-		if(!ignoreError)
+		if(hasFatalErrors) {
+			text << tr("<font color=\"#FF0000\">Fatal error</font><br>");
+			text << tr("Missing objects<br>");
+			text << fatalError << "<br>";
+		}
+		if(!res){
+			if(!m_reader->m_errorText.empty()) {
+				if(!ignoreError)
+					text << tr("<font color=\"#FF0000\">Read Errors:</font><br>");
+				else
+					text << tr("Read Errors:<br>");
+				text << QString::fromStdString(m_reader->m_errorText) << "<br>";
+			}
+			if(!m_reader->m_warningText.empty()) {
+				text << tr("Read Warnings:<br>");
+				text << QString::fromStdString(m_reader->m_warningText) << "<br>";
+			}
+		}
+		ui->textEdit->setHtml(text.join("\n"));
+		if(!ignoreError || hasFatalErrors)
 			m_readSuccessfully = false;
 	}
 	emit completeChanged();

@@ -5,7 +5,7 @@
 #include <string>
 #include <map>
 
-#include <VICUS_Component.h>
+//#include <VICUS_Component.h>
 
 #include "IFCC_Types.h"
 
@@ -14,6 +14,7 @@ class TiXmlElement;
 namespace IFCC {
 
 class Surface;
+class SpaceBoundary;
 
 /*! Class contains all informations for a component.
 	A component connects a construction with boundary conditions and further informations.
@@ -63,6 +64,9 @@ public:
 	/*! Refining of type based on basic type (CT_OutsideWall, CT_SlopedRoof and CT_FloorToAir) and surface type.*/
 	void updateComponentType(const Surface& surf);
 
+	/*! Refining of type based on basic type (CT_OutsideWall, CT_SlopedRoof and CT_FloorToAir) and space boundary type.*/
+	void updateComponentType(const SpaceBoundary& sb);
+
 	/*! Comparison operator.*/
 	friend bool operator==(const Component& left, const Component& right) {
 		if(left.m_constructionId != right.m_constructionId)
@@ -72,10 +76,10 @@ public:
 		return true;
 	}
 
-	/*! Create a VICUS component object and return this.
-		The returned object contains all transferable data.
-	*/
-	VICUS::Component getVicusObject(std::map<int,int>& idMap, int idOffset) const;
+//	/*! Create a VICUS component object and return this.
+//		The returned object contains all transferable data.
+//	*/
+//	VICUS::Component getVicusObject(std::map<int,int>& idMap, int idOffset) const;
 
 private:
 	/*! Create name of component type for writing.*/

@@ -27,9 +27,9 @@ bool Opening::set(std::shared_ptr<IfcFeatureElementSubtraction> ifcElement) {
 	return true;
 }
 
-void Opening::update(std::shared_ptr<ProductShapeData> productShape) {
+void Opening::update(std::shared_ptr<ProductShapeData> productShape, std::vector<ConvertError>& errors) {
 	transform(productShape);
-	fetchGeometry(productShape);
+	fetchGeometry(productShape, errors);
 }
 
 
@@ -43,11 +43,15 @@ void Opening::transform(std::shared_ptr<ProductShapeData> productShape) {
 	}
 }
 
-void Opening::fetchGeometry(std::shared_ptr<ProductShapeData> productShape) {
+void Opening::fetchGeometry(std::shared_ptr<ProductShapeData> productShape, std::vector<ConvertError>& errors) {
 	if(productShape == nullptr)
 		return;
 
-	surfacesFromRepresentation(productShape, m_surfaces);
+	surfacesFromRepresentation(productShape, m_surfaces, errors, OT_Opening, m_id);
+}
+
+const std::vector<int>& Opening::openingElementIds() const {
+	return m_openingElementIds;
 }
 
 const std::vector<Surface>& Opening::surfaces() const {
@@ -70,6 +74,14 @@ void Opening::insertContainingElementId(std::vector<int>& other) const {
 	if(!m_containedInElementIds.empty()) {
 		other.insert(other.end(), m_containedInElementIds.begin(), m_containedInElementIds.end());
 	}
+}
+
+void Opening::setSpaceBoundary(std::shared_ptr<SpaceBoundary> sb) {
+	m_spaceBoundary = sb;
+}
+
+bool Opening::hasSpaceBoundary() const {
+	return m_spaceBoundary.get() != nullptr;
 }
 
 } // namespace IFCC

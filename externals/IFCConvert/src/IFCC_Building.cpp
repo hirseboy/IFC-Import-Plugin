@@ -77,17 +77,18 @@ void Building::updateStoreys(const objectShapeTypeVector_t& elementShapes,
 							 const objectShapeGUIDMap_t& spaceShapes,
 							 shared_ptr<UnitConverter>& unit_converter,
 							 const BuildingElementsCollector& buildingElements,
-							 const std::vector<Opening>& openings,
-							 bool useSpaceBoundaries) {
+							 std::vector<Opening>& openings,
+							 bool useSpaceBoundaries,
+							 std::vector<ConvertError>& errors) {
 
 	for(auto& storey : m_storeys) {
-		storey->fetchSpaces(spaceShapes, unit_converter);
-		storey->updateSpaces(elementShapes, unit_converter, buildingElements, openings, useSpaceBoundaries);
+		storey->fetchSpaces(spaceShapes, unit_converter, errors);
+		storey->updateSpaces(elementShapes, unit_converter, buildingElements, openings, useSpaceBoundaries, errors);
 	}
 }
 
 
-TiXmlElement * Building::writeXML(TiXmlElement * parent) const {
+TiXmlElement * Building::writeXML(TiXmlElement * parent, bool flipPolygons) const {
 	if (m_id == -1)
 		return nullptr;
 
@@ -104,25 +105,25 @@ TiXmlElement * Building::writeXML(TiXmlElement * parent) const {
 		e->LinkEndChild(child);
 
 		for( const auto& storey : m_storeys) {
-			storey->writeXML(child);
+			storey->writeXML(child, flipPolygons);
 		}
 	}
 	return e;
 }
 
-VICUS::Building Building::getVicusObject(std::map<int,int>& idMap, int& nextid) const {
-	VICUS::Building res;
-	int newId = nextid++;
+//VICUS::Building Building::getVicusObject(std::map<int,int>& idMap, int& nextid) const {
+//	VICUS::Building res;
+//	int newId = nextid++;
 
-	res.m_displayName = QString::fromUtf8(m_name.c_str());
-	res.m_id = newId;
-	res.m_ifcGUID = m_guid;
-	idMap[m_id] = newId;
-	for(const auto& storey : m_storeys) {
-		res.m_buildingLevels.emplace_back(storey->getVicusObject(idMap, nextid));
-	}
+//	res.m_displayName = QString::fromUtf8(m_name.c_str());
+//	res.m_id = newId;
+//	res.m_ifcGUID = m_guid;
+//	idMap[m_id] = newId;
+//	for(const auto& storey : m_storeys) {
+//		res.m_buildingLevels.emplace_back(storey->getVicusObject(idMap, nextid));
+//	}
 
-	return res;
-}
+//	return res;
+//}
 
 } // namespace IFCC

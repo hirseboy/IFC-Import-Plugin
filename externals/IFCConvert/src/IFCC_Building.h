@@ -7,10 +7,11 @@
 
 #include <tinyxml.h>
 
-#include <VICUS_Building.h>
+//#include <VICUS_Building.h>
 
 #include "IFCC_EntityBase.h"
 #include "IFCC_BuildingStorey.h"
+#include "IFCC_BuildingElementsCollector.h"
 
 namespace IFCC {
 
@@ -45,17 +46,18 @@ public:
 					   const objectShapeGUIDMap_t& spaceShapes,
 					   shared_ptr<UnitConverter>& unit_converter,
 					   const BuildingElementsCollector& buildingElements,
-					   const std::vector<Opening>& openings,
-					   bool useSpaceBoundaries);
+					   std::vector<Opening>& openings,
+					   bool useSpaceBoundaries,
+					   std::vector<ConvertError>& errors);
 
 	/*! Write the building in vicus xml format including storeys.*/
-	TiXmlElement * writeXML(TiXmlElement * parent) const;
+	TiXmlElement * writeXML(TiXmlElement * parent, bool flipPolygons) const;
 
-	/*! Create a VICUS building object and return this.
-		The returned object contains all transferable data.
-		\param idMap Used for mapping current ids to VICUS ids.
-	*/
-	VICUS::Building getVicusObject(std::map<int,int>& idMap, int& nextid) const;
+//	/*! Create a VICUS building object and return this.
+//		The returned object contains all transferable data.
+//		\param idMap Used for mapping current ids to VICUS ids.
+//	*/
+//	VICUS::Building getVicusObject(std::map<int,int>& idMap, int& nextid) const;
 
 	/*! Return vector of building storeys.*/
 	const std::vector<std::shared_ptr<BuildingStorey>>& storeys() const {

@@ -33,9 +33,6 @@ public:
 		return m_polyVect;
 	}
 
-	/*! Write the subsurface in vicus xml format.*/
-	TiXmlElement * writeXML(TiXmlElement * parent) const;
-
 	/*! Return if the object is valid.*/
 	bool isValid() const {
 		return m_valid;
@@ -55,6 +52,12 @@ public:
 	std::string name() const {
 		return m_name;
 	}
+
+	/*! Flip the surfrace polygone.*/
+	void flip();
+
+	/*! Write the subsurface in vicus xml format.*/
+	TiXmlElement * writeXML(TiXmlElement * parent) const;
 
 private:
 	int										m_id;				///< Unique id of the object

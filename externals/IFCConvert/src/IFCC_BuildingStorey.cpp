@@ -62,14 +62,14 @@ bool BuildingStorey::set(const std::vector<std::shared_ptr<IfcSpace>>& spaces) {
 
 
 void BuildingStorey::fetchSpaces(const std::map<std::string,shared_ptr<ProductShapeData>>& shapes,
-								 shared_ptr<UnitConverter>& unit_converter) {
+								 shared_ptr<UnitConverter>& unit_converter, std::vector<ConvertError>& errors) {
 	for(const auto& shape : shapes) {
 		for(const auto& opOrg : m_spacesOriginal) {
 			if(shape.first == guidFromObject(opOrg.get())) {
 				std::shared_ptr<Space> space = std::shared_ptr<Space>(new Space(GUID_maker::instance().guid()));
 				if(space->set(opOrg)) {
 					m_spaces.push_back(space);
-					m_spaces.back()->update(shape.second);
+					m_spaces.back()->update(shape.second, errors);
 				}
 				break;
 			}
@@ -80,25 +80,23 @@ void BuildingStorey::fetchSpaces(const std::map<std::string,shared_ptr<ProductSh
 void BuildingStorey::updateSpaces(const objectShapeTypeVector_t& shapes,
 								  shared_ptr<UnitConverter>& unit_converter,
 								  const BuildingElementsCollector& buildingElements,
-								  const std::vector<Opening>& openings,
-								  bool useSpaceBoundaries) {
+								  std::vector<Opening>& openings,
+								  bool useSpaceBoundaries,
+								  std::vector<ConvertError>& errors) {
 
 	for(auto& space : m_spaces) {
-		bool res = space->updateSpaceBoundaries(shapes, unit_converter,	buildingElements, openings, useSpaceBoundaries);
-		if(!res) {
-			std::string errstr = space->m_spaceBoundaryErrors;
-		}
+		space->updateSpaceBoundaries(shapes, unit_converter,	buildingElements, openings, useSpaceBoundaries, errors);
 	}
 }
 
-void BuildingStorey::updateSpaceConnections(BuildingElementsCollector& buildingElements, std::vector<Opening>& openings) {
-	for(auto& space : m_spaces) {
-		space->updateSpaceConnections(buildingElements, openings);
-	}
-}
+//void BuildingStorey::updateSpaceConnections(BuildingElementsCollector& buildingElements, std::vector<Opening>& openings) {
+//	for(auto& space : m_spaces) {
+//		space->updateSpaceConnections(buildingElements, openings);
+//	}
+//}
 
 
-TiXmlElement * BuildingStorey::writeXML(TiXmlElement * parent) const {
+TiXmlElement * BuildingStorey::writeXML(TiXmlElement * parent, bool flipPolygons) const {
 	if (m_id == -1)
 		return nullptr;
 
@@ -117,25 +115,25 @@ TiXmlElement * BuildingStorey::writeXML(TiXmlElement * parent) const {
 		e->LinkEndChild(child);
 
 		for( const auto& space : m_spaces) {
-			space->writeXML(child);
+			space->writeXML(child, flipPolygons);
 		}
 	}
 	return e;
 }
 
-VICUS::BuildingLevel BuildingStorey::getVicusObject(std::map<int,int>& idMap, int& nextid) const {
-	VICUS::BuildingLevel res;
-	int newId = nextid++;
-	res.m_displayName = QString::fromUtf8(m_name.c_str());
-	res.m_id = newId;
-	res.m_ifcGUID = m_guid;
-	idMap[m_id] = newId;
-	for(const auto& space : m_spaces) {
-		res.m_rooms.emplace_back(space->getVicusObject(idMap, nextid));
-	}
+//VICUS::BuildingLevel BuildingStorey::getVicusObject(std::map<int,int>& idMap, int& nextid) const {
+//	VICUS::BuildingLevel res;
+//	int newId = nextid++;
+//	res.m_displayName = QString::fromUtf8(m_name.c_str());
+//	res.m_id = newId;
+//	res.m_ifcGUID = m_guid;
+//	idMap[m_id] = newId;
+//	for(const auto& space : m_spaces) {
+//		res.m_rooms.emplace_back(space->getVicusObject(idMap, nextid));
+//	}
 
-	return res;
-}
+//	return res;
+//}
 
 
 } // namespace IFCC

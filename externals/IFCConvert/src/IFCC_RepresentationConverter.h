@@ -30,6 +30,7 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OU
 #include "IFCC_SolidModelConverter.h"
 #include "IFCC_CurveConverter.h"
 #include "IFCC_ProfileCache.h"
+#include "IFCC_Types.h"
 
 namespace IFCC {
 
@@ -59,13 +60,13 @@ public:
 
 	void convertRepresentationStyle( const shared_ptr<IfcRepresentationItem>& representation_item, std::vector<shared_ptr<AppearanceData> >& vec_appearance_data );
 
-	bool convertIfcRepresentation( const shared_ptr<IfcRepresentation>& ifc_representation, shared_ptr<RepresentationData>& representation_data, std::string& errmsg );
+	bool convertIfcRepresentation( const shared_ptr<IfcRepresentation>& ifc_representation, shared_ptr<RepresentationData>& representation_data, std::vector<ConvertError>& errors );
 
-	bool convertIfcGeometricRepresentationItem( const shared_ptr<IfcGeometricRepresentationItem>& geom_item, shared_ptr<ItemShapeData> item_data, std::string& errmsg );
+	bool convertIfcGeometricRepresentationItem( const shared_ptr<IfcGeometricRepresentationItem>& geom_item, shared_ptr<ItemShapeData> item_data, std::vector<ConvertError>& errors );
 
 	void convertTopologicalRepresentationItem( const shared_ptr<IfcTopologicalRepresentationItem>& topological_item, shared_ptr<ItemShapeData> topo_item_data );
 
-	bool subtractOpenings( const shared_ptr<IfcElement>& ifc_element, shared_ptr<ProductShapeData>& product_shape, std::string& errmsg );
+	bool subtractOpenings( const shared_ptr<IfcElement>& ifc_element, shared_ptr<ProductShapeData>& product_shape, std::vector<ConvertError>& errors );
 
 protected:
 	shared_ptr<GeometrySettings>		m_geom_settings;

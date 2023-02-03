@@ -123,12 +123,12 @@ public:
 		\param ifcElement Original IFC building element
 		\param type type from ObjectTypes evaluated from concrete IFC class type
 	*/
-	bool set(std::shared_ptr<IfcElement> ifcElement, ObjectTypes type);
+	bool set(std::shared_ptr<IfcElement> ifcElement, BuildingElementTypes type);
 
 	/*! get and transform geometry and set first opening properties.
 		\param Shape data of a building element.
 	*/
-	void update(std::shared_ptr<ProductShapeData> productShape, std::vector<Opening>& openings);
+	void update(std::shared_ptr<ProductShapeData> productShape, std::vector<Opening>& openings, std::vector<ConvertError>& errors);
 
 	/*! Only for opening constructions.
 		Set also the ids for construction which contains opening elements
@@ -174,7 +174,7 @@ public:
 	}
 
 	/*! Return type of the building element.*/
-	ObjectTypes type() const {
+	BuildingElementTypes type() const {
 		return m_type;
 	}
 
@@ -218,7 +218,7 @@ private:
 	/*! Get the geometry from the product shape.
 		It fills the surface vector m_surfaces.
 	*/
-	void fetchGeometry(std::shared_ptr<ProductShapeData> productShape);
+	void fetchGeometry(std::shared_ptr<ProductShapeData> productShape, std::vector<ConvertError>& errors);
 
 	/*! Find connections from this building element to openings.
 		It uses the IFC connection vectors m_isUsedFromOpeningsOriginal and m_containedOpeningsOriginal.
@@ -229,7 +229,7 @@ private:
 
 	void setThermalTransmittance();
 
-	ObjectTypes													m_type;					///< Type of the building element
+	BuildingElementTypes													m_type;					///< Type of the building element
 	bool														m_surfaceComponent;		///< If true its a construction element usable as surface
 	bool														m_subSurfaceComponent;	///< If true its a opening element usable as subsurface.
 	std::vector<Surface>										m_surfaces;				///< Vector of all surfaces

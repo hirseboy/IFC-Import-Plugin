@@ -36,7 +36,7 @@ public:
 		\param buildings Shape data of buildings
 	*/
 	bool set(std::shared_ptr<IfcSpatialStructureElement> ifcElement, std::shared_ptr<ProductShapeData> productShape,
-			 const std::map<std::string,shared_ptr<ProductShapeData>>& buildings);
+			 const std::map<std::string,shared_ptr<ProductShapeData>>& buildings, std::vector<ConvertError>& errors);
 
 	/*! Return the internal surface vector.*/
 	const std::vector<Surface>& surfaces() const;
@@ -47,11 +47,11 @@ public:
 	/*! Return a vector of all spaces in project.*/
 	std::vector<std::shared_ptr<Space>> allSpaces() const;
 
-	/*! Return a vector of all space connection in project.*/
-	std::vector<Space::SurfaceConnectionVectors> allSurfaceConnectionVectors() const;
+//	/*! Return a vector of all space connection in project.*/
+//	std::vector<Space::SurfaceConnectionVectors> allSurfaceConnectionVectors() const;
 
 	/*! Write the site in vicus xml format including buildings.*/
-	TiXmlElement * writeXML(TiXmlElement * parent) const;
+	TiXmlElement * writeXML(TiXmlElement * parent, bool flipPolygons) const;
 
 	std::vector<std::shared_ptr<Building>>	m_buildings;	///< vector of pointers to building objects
 
@@ -71,7 +71,7 @@ private:
 	/*! Get the geometry from the product shape.
 		It fills the surface vector m_surfaces.
 	*/
-	void fetchGeometry(std::shared_ptr<ProductShapeData> productShape);
+	void fetchGeometry(std::shared_ptr<ProductShapeData> productShape, std::vector<ConvertError>& errors);
 
 	/*! Fill the buildings vector from original buildings vector and given building shapes.
 		\param buildings Shapes for all buildings in project.

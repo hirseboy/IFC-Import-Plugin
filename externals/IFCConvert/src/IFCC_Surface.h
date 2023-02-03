@@ -5,8 +5,6 @@
 
 #include <tinyxml.h>
 
-#include <VICUS_Surface.h>
-
 #include <ifcpp/IFC4/include/IfcInternalOrExternalEnum.h>
 
 #include "IFCC_Types.h"
@@ -53,6 +51,9 @@ public:
 
 	/*! Return true if both surfaces are parallel.*/
 	bool isParallelTo(const Surface& other) const;
+
+	/*! Return true if both surfaces are equal.*/
+	bool isEqualTo(const Surface& other) const;
 
 	/*! Return the internal polygon.*/
 	const std::vector<IBKMK::Vector3D>& polygon() const {
@@ -108,6 +109,9 @@ public:
 	/*! Return the area of the surface.*/
 	double area() const;
 
+	/*! Flip the surfrace polygone.*/
+	void flip();
+
 	/*! Write the surface in vicus xml format including all subsurfaces.*/
 	TiXmlElement * writeXML(TiXmlElement * parent) const;
 
@@ -136,11 +140,6 @@ public:
 
 	/*! Return if the object is valid.*/
 	bool isValid() const;
-
-	/*! Create a VICUS surface object and return this.
-		The returned object contains all transferable data.
-	*/
-	VICUS::Surface getVicusObject(std::map<int,int>& idMap, int& nextid) const;
 
 	/*! Return name of the object.*/
 	std::string name() const {
@@ -200,7 +199,10 @@ struct Surface::IntersectionResult {
 	std::vector<std::vector<Surface>>	m_holesClipMinusBase;
 };
 
-void surfacesFromRepresentation(std::shared_ptr<ProductShapeData> productShape, std::vector<Surface>& surfaces);
+void surfacesFromRepresentation(std::shared_ptr<ProductShapeData> productShape, std::vector<Surface>& surfaces,
+								std::vector<ConvertError>& errors, ObjectType objectType, int objectId);
+
+meshVector_t meshSetsFromBodyRepresentation(std::shared_ptr<ProductShapeData> productShape);
 
 } // namespace IFCC
 

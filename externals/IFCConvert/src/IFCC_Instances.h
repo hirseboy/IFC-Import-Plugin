@@ -5,10 +5,11 @@
 
 #include "IFCC_BuildingElement.h"
 #include "IFCC_ComponentInstance.h"
+#include "IFCC_BuildingElementsCollector.h"
 
-namespace VICUS {
-	class Project;
-}
+//namespace VICUS {
+//	class Project;
+//}
 
 namespace IFCC {
 
@@ -32,14 +33,15 @@ public:
 		\param elements Collection of all building element vectors
 		\param database Collection of all databases
 		\param site Building site which contains all geometric data (including space boundaries)
-		\return The number of surfaces from space boundaries which cannot be connected with a component
+		\param errors Global convert error list
 	*/
-	int collectComponentInstances(BuildingElementsCollector& elements, Database& database, const Site& site);
+	void collectComponentInstances(BuildingElementsCollector& elements, Database& database,
+								  const Site& site, std::vector<ConvertError>& errors);
 
-	/*! Add all component instances and sub surface component instances to the given vicus project.
-		\param idMap Map for mapping current ids to new VICUS ids.
-	*/
-	void addToVicusProject(VICUS::Project* project, std::map<int,int>& idMap);
+//	/*! Add all component instances and sub surface component instances to the given vicus project.
+//		\param idMap Map for mapping current ids to new VICUS ids.
+//	*/
+//	void addToVicusProject(VICUS::Project* project, std::map<int,int>& idMap);
 
 private:
 
@@ -47,10 +49,20 @@ private:
 		\param elements Building element vector
 		\param database Collection of all databases
 		\param site Building site which contains all geometric data (including space boundaries)
-		\return The number of surfaces from space boundaries which cannot be connected with a component
+		\param errors Global convert error list
 	*/
-	int collectComponentInstances(std::vector<std::shared_ptr<BuildingElement>>& elements, Database& database, const Site& site);
+	void collectNormalComponentInstances(BuildingElementsCollector& elements, Database& database,
+								  const Site& site, std::vector<ConvertError>& errors);
 
+
+	/*! Collect subsurface component instances from opening elements and component database.
+		\param elements Building element vector
+		\param database Collection of all databases
+		\param site Building site which contains all geometric data (including space boundaries)
+		\param errors Global convert error list
+	*/
+	void collectSubSurfaceComponentInstances(BuildingElementsCollector& elements, Database& database,
+											 const Site& site, std::vector<ConvertError>& errors);
 	std::map<int, ComponentInstance>		m_componentInstances;			///< Map of id and component instance
 	std::map<int, ComponentInstance>		m_subSurfaceComponentInstances;	///< map of id and subsurface component instance
 };

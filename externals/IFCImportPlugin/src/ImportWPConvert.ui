@@ -34,9 +34,6 @@
      </property>
     </spacer>
    </item>
-   <item row="2" column="0" colspan="3">
-    <widget class="QTextEdit" name="textEdit"/>
-   </item>
    <item row="1" column="0">
     <widget class="QCheckBox" name="checkBoxUseSpaceBoundaries">
      <property name="text">
@@ -44,11 +41,37 @@
      </property>
     </widget>
    </item>
+   <item row="3" column="0" colspan="3">
+    <widget class="QTextEdit" name="textEdit"/>
+   </item>
    <item row="1" column="1" colspan="2">
     <widget class="QLabel" name="labelSBDescription">
      <property name="text">
       <string>TextLabel</string>
      </property>
+    </widget>
+   </item>
+   <item row="2" column="0" colspan="3">
+    <widget class="QGroupBox" name="groupBox">
+     <property name="title">
+      <string>Repair flags</string>
+     </property>
+     <layout class="QGridLayout" name="gridLayout_2">
+      <item row="0" column="0">
+       <widget class="QCheckBox" name="checkBoxFlipSurfacePolygons">
+        <property name="text">
+         <string>Flip surface polygons</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="1">
+       <widget class="QCheckBox" name="checkBoxRemoveDoubleSBs">
+        <property name="text">
+         <string>Remove doubled space boundaries</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
     </widget>
    </item>
   </layout>

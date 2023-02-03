@@ -7,7 +7,6 @@
 ImportWizard::ImportWizard(QWidget *parent, IFCC::IFCReader* reader) :
 	QWizard(parent),
 	ui(new Ui::ImportWizard),
-	m_project(nullptr),
 	m_pageRead(new ImportWPRead(this, reader)),
 	m_pageConvert(new ImportWPConvert(this, reader)),
 	m_reader(reader)
@@ -27,9 +26,5 @@ ImportWizard::ImportWizard(QWidget *parent, IFCC::IFCReader* reader) :
 
 ImportWizard::~ImportWizard() {
 	delete ui;
-}
-
-void ImportWizard::setProject(VICUS::Project* project) {
-	m_project = project;
 }
 

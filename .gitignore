@@ -5975,3 +5975,31 @@ Makefile.*
 /externals/ifcplusplus/projects/build-ifcplusplus-Desktop Qt 5.15.2 MSVC2019 64bit neu-Debug/.qtc_clangd/.cache/clangd/index/IfcCylindricalSurface.h.E548298E9831FED0.idx.tmp.f8424695
 /externals/ifcplusplus/projects/build-ifcplusplus-Desktop Qt 5.15.2 MSVC2019 64bit neu-Debug/.qtc_clangd/compile_commands.json
 /Kopie.gitmodules
+/externals/lib_x64/
+/externals/clipper/projects/build-Clipper-Desktop-Qt-5.15.2-MSVC2019-64bit-neu-Debug/
+/externals/clipper/projects/build-Clipper-Desktop-Qt-5.15.2-MSVC2019-64bit-neu-Release/
+/externals/clipper/projects/build-Clipper-Desktop Qt 5.15.2 MSVC2019 64bit neu-Debug/.qtc_clangd/
+/externals/clipper/projects/build-Clipper-Desktop Qt 5.15.2 MSVC2019 64bit neu-Debug/debug/
+/externals/clipper/projects/build-Clipper-Desktop Qt 5.15.2 MSVC2019 64bit neu-Debug/debug_x64/
+/externals/IFCImportPlugin/projects/build-ImportIFCPlugin-Desktop-Qt-5.15.2-MSVC2019-64bit-neu-Debug/
+/externals/IFCImportPlugin/projects/build-ImportIFCPlugin-Desktop-Qt-5.15.2-MSVC2019-64bit-neu-Release/
+/externals/IFCImportPlugin/projects/build-ImportIFCPlugin-Desktop Qt 5.15.2 MSVC2019 64bit neu-Debug/release/
+/externals/IFCImportPlugin/projects/build-ImportIFCPlugin-Desktop Qt 5.15.2 MSVC2019 64bit neu-Debug/.qtc_clangd/
+/externals/IFCImportPlugin/projects/build-ImportIFCPlugin-Desktop Qt 5.15.2 MSVC2019 64bit neu-Debug/debug/
+/externals/IFCImportPlugin/projects/build-ImportIFCPlugin-Desktop Qt 5.15.2 MSVC2019 64bit neu-Debug/.gitignore
+/externals/IFCImportPlugin/projects/build-ImportIFCPlugin-Desktop Qt 5.15.2 MSVC2019 64bit neu-Debug/.qmake.stash
+/externals/IFCImportPlugin/projects/build-ImportIFCPlugin-Desktop Qt 5.15.2 MSVC2019 64bit neu-Debug/Makefile
+/externals/IFCImportPlugin/projects/build-ImportIFCPlugin-Desktop Qt 5.15.2 MSVC2019 64bit neu-Debug/debug_x64/.gitignore
+/externals/IFCImportPlugin/projects/build-ImportIFCPlugin-Desktop Qt 5.15.2 MSVC2019 64bit neu-Debug/debug_x64/ImportIFCPlugin.vc.pdb
+/externals/IFCImportPlugin/projects/build-ImportIFCPlugin-Desktop Qt 5.15.2 MSVC2019 64bit neu-Debug/moc/.gitignore
+/externals/IFCImportPlugin/projects/build-ImportIFCPlugin-Desktop Qt 5.15.2 MSVC2019 64bit neu-Debug/moc/moc_IFCImportPlugin.cpp
+/externals/IFCImportPlugin/projects/build-ImportIFCPlugin-Desktop Qt 5.15.2 MSVC2019 64bit neu-Debug/moc/moc_ImportWPConvert.cpp
+/externals/IFCImportPlugin/projects/build-ImportIFCPlugin-Desktop Qt 5.15.2 MSVC2019 64bit neu-Debug/moc/moc_ImportWPRead.cpp
+/externals/IFCImportPlugin/projects/build-ImportIFCPlugin-Desktop Qt 5.15.2 MSVC2019 64bit neu-Debug/moc/moc_ImportWizard.cpp
+/externals/IFCImportPlugin/projects/build-ImportIFCPlugin-Desktop Qt 5.15.2 MSVC2019 64bit neu-Debug/moc/moc_predefs.h
+/externals/IFCImportPlugin/projects/build-ImportIFCPlugin-Desktop Qt 5.15.2 MSVC2019 64bit neu-Debug/ui/.gitignore
+/externals/IFCImportPlugin/projects/build-ImportIFCPlugin-Desktop Qt 5.15.2 MSVC2019 64bit neu-Debug/ui/ui_ImportWPConvert.h
+/externals/IFCImportPlugin/projects/build-ImportIFCPlugin-Desktop Qt 5.15.2 MSVC2019 64bit neu-Debug/ui/ui_ImportWPRead.h
+/externals/IFCImportPlugin/projects/build-ImportIFCPlugin-Desktop Qt 5.15.2 MSVC2019 64bit neu-Debug/ui/ui_ImportWizard.h
+/externals/clipper/projects/build-Clipper-Desktop Qt 5.15.2 MSVC2019 64bit neu-Debug/release/
+/externals/clipper/projects/build-Clipper-Desktop Qt 5.15.2 MSVC2019 64bit neu-Debug/release_x64/
