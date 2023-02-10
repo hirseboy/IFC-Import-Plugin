@@ -87,7 +87,7 @@ void ImportWPConvert::on_pushButtonConvert_clicked() {
 	else {
 		text << tr("<font color=\"#FF0000\">Error while converting IFC file.</font><br>");
 		if(spaceIntersectCount > 0) {
-			text << tr("%1 spaces are intersected to other spaces.<br>").arg(spaceIntersectCount);
+			text << tr("%1 spaces intersections found.<br>").arg(spaceIntersectCount);
 		}
 		else if(equalSBCount > 0) {
 			text << tr("%1 space boundaries with identical surfaces found.<br>").arg(equalSBCount);
