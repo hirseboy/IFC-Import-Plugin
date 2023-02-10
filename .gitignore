@@ -6003,3 +6003,22 @@ Makefile.*
 /externals/IFCImportPlugin/projects/build-ImportIFCPlugin-Desktop Qt 5.15.2 MSVC2019 64bit neu-Debug/ui/ui_ImportWizard.h
 /externals/clipper/projects/build-Clipper-Desktop Qt 5.15.2 MSVC2019 64bit neu-Debug/release/
 /externals/clipper/projects/build-Clipper-Desktop Qt 5.15.2 MSVC2019 64bit neu-Debug/release_x64/
+/externals/clipper/projects/Qt/.qmake.stash
+/externals/IFCConvert/projects/Qt/debug/
+/externals/IFCConvert/projects/Qt/debug_x64/
+/externals/IFCConvert/projects/Qt/moc/
+/externals/IFCConvert/projects/Qt/release/
+/externals/IFCConvert/projects/Qt/release_x64/
+/externals/IFCConvert/projects/Qt/.qmake.stash
+/externals/IFCImportPlugin/projects/Qt/debug/
+/externals/IFCImportPlugin/projects/Qt/debug_x64/
+/externals/IFCImportPlugin/projects/Qt/moc/
+/externals/IFCImportPlugin/projects/Qt/release/
+/externals/IFCImportPlugin/projects/Qt/ui/
+/externals/IFCImportPlugin/projects/Qt/.qmake.stash
+/IFC2BESTest/projects/Qt/debug/
+/IFC2BESTest/projects/Qt/debug_x64/
+/IFC2BESTest/projects/Qt/moc/
+/IFC2BESTest/projects/Qt/release/
+/IFC2BESTest/projects/Qt/release_x64/
+/IFC2BESTest/projects/Qt/ui/
