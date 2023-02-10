@@ -7,6 +7,8 @@
 
 #include <IBK_math.h>
 
+#include <IBKMK_3DCalculations.h>
+
 #include "IFCC_Helper.h"
 
 namespace IFCC {
@@ -673,6 +675,12 @@ bool Space::isIntersected(const Space& other) {
 	for(const auto& p1 : m_meshSets) {
 		for(const auto& p2 : other.m_meshSets) {
 			if(IFCC::isIntersected(p1.get(), p2.get()))
+				return true;
+		}
+	}
+	for(const auto& p1 : m_spaceBoundaries) {
+		for(const auto& p2 : other.m_spaceBoundaries) {
+			if(IBKMK::polyIntersect(p1->surface().polygon(), p2->surface().polygon()))
 				return true;
 		}
 	}
