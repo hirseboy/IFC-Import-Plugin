@@ -57,6 +57,13 @@
       <string>Repair flags</string>
      </property>
      <layout class="QGridLayout" name="gridLayout_2">
+      <item row="0" column="1">
+       <widget class="QCheckBox" name="checkBoxRemoveDoubleSBs">
+        <property name="text">
+         <string>Remove doubled space boundaries</string>
+        </property>
+       </widget>
+      </item>
       <item row="0" column="0">
        <widget class="QCheckBox" name="checkBoxFlipSurfacePolygons">
         <property name="text">
@@ -64,10 +71,10 @@
         </property>
        </widget>
       </item>
-      <item row="0" column="1">
-       <widget class="QCheckBox" name="checkBoxRemoveDoubleSBs">
+      <item row="1" column="0">
+       <widget class="QCheckBox" name="checkBoxIgnorErrors">
         <property name="text">
-         <string>Remove doubled space boundaries</string>
+         <string>Ignore convert errors</string>
         </property>
        </widget>
       </item>

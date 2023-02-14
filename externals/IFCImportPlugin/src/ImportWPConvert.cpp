@@ -43,6 +43,10 @@ void ImportWPConvert::initializePage() {
 
 bool ImportWPConvert::isComplete() const {
 	m_reader->setFlipPolygons(ui->checkBoxFlipSurfacePolygons->isChecked());
+	bool ignoreErrors = ui->checkBoxIgnorErrors->isChecked();
+	if(ignoreErrors)
+		return true;
+
 	return m_convertSuccessfully;
 }
 
@@ -56,7 +60,12 @@ void ImportWPConvert::on_pushButtonConvert_clicked() {
 	int equalSBCount = m_reader->checkForEqualSpaceBoundaries(equalSBs);
 	std::vector<std::pair<int,std::vector<int>>> multiSubsurfaces;
 	int multiSubCount = m_reader->checkForUniqueSubSurfacesInSpaces(multiSubsurfaces);
-	int spaceIntersectCount = m_reader->checkForIntersectedSpace();
+	std::set<std::pair<int,int>> intersectedSpaceIds = m_reader->checkForIntersectedSpace();
+	std::map<int,size_t> instersectionCounts;
+	for(auto isId : intersectedSpaceIds) {
+		++instersectionCounts[isId.first];
+	}
+	int spaceIntersectCount = intersectedSpaceIds.size();
 	if(res && (equalSBCount > 0 || multiSubCount > 0 || spaceIntersectCount)) {
 		res = false;
 	}
@@ -88,6 +97,9 @@ void ImportWPConvert::on_pushButtonConvert_clicked() {
 		text << tr("<font color=\"#FF0000\">Error while converting IFC file.</font><br>");
 		if(spaceIntersectCount > 0) {
 			text << tr("%1 spaces intersections found.<br>").arg(spaceIntersectCount);
+			for(const auto& it : instersectionCounts) {
+				text << tr("Space %1 with %2 spaces intersected.<br>").arg(it.first).arg(it.second);
+			}
 		}
 		else if(equalSBCount > 0) {
 			text << tr("%1 space boundaries with identical surfaces found.<br>").arg(equalSBCount);
@@ -106,5 +118,10 @@ void ImportWPConvert::on_pushButtonConvert_clicked() {
 
 void ImportWPConvert::on_checkBoxRemoveDoubleSBs_clicked() {
 	m_reader->setRemoveDoubledSBs(ui->checkBoxRemoveDoubleSBs->isChecked());
+}
+
+
+void ImportWPConvert::on_checkBoxIgnorErrors_toggled(bool checked) {
+	emit completeChanged();
 }
 

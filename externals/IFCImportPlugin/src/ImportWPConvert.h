@@ -30,6 +30,8 @@ private slots:
 
 	void on_checkBoxRemoveDoubleSBs_clicked();
 
+	void on_checkBoxIgnorErrors_toggled(bool checked);
+
 private:
 	void initializePage() override;
 
