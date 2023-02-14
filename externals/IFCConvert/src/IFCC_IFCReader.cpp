@@ -473,19 +473,19 @@ int IFCReader::checkForUniqueSubSurfacesInSpaces(std::vector<std::pair<int,std::
 	return res.size();
 }
 
-int IFCReader::checkForIntersectedSpace() const {
+std::set<std::pair<int,int>> IFCReader::checkForIntersectedSpace() const {
+	std::set<std::pair<int,int>> res;
 	std::vector<std::shared_ptr<Space>> spaces = m_site.allSpaces();
 	if(spaces.size() < 2)
-		return 0;
+		return res;
 
-	int count = 0;
 	for(size_t i=0; i<spaces.size()-1; ++i) {
 		for(size_t j=i+1; j<spaces.size(); ++j) {
 			if(spaces[i]->isIntersected(*spaces[j]))
-				++count;
+				res.insert({spaces[i]->m_id,spaces[j]->m_id});
 		}
 	}
-	return count;
+	return res;
 }
 
 bool IFCReader::flipPolygons() const {

@@ -76,15 +76,38 @@ public:
 	*/
 	bool checkEssentialIFCs(QString& errmsg, int& buildings, int& spaces);
 
+	/*! Check if a space contains equal space boundaries.
+		\param equalSBs Contain ids of equal space boundaries
+		\return Number of qual space boundaries
+	*/
 	int checkForEqualSpaceBoundaries(std::vector<std::pair<int,int>>& equalSBs) const;
 
+	/*! Check if a subsurface space boundary is contained more than once in construction space boundaries of a space.
+		\param res Vector of space ids with corresponding multiple used subsurface space boundary ids
+		\return Number of spaces with equal subsurfaces
+	*/
 	int checkForUniqueSubSurfacesInSpaces(std::vector<std::pair<int,std::vector<int>>>& res) const;
 
-	int checkForIntersectedSpace() const;
+	/*! Check if the surfaces of two spaces are intersected. If this is the case two spaces have a common volume.
+		This should never be the case and is an index for a faulty IFC file.
+		\return Set of pairs of intersected spaces given by their ids
+	*/
+	std::set<std::pair<int,int>> checkForIntersectedSpace() const;
 
+	/*! Return state of flip polygon.*/
 	bool flipPolygons() const;
+
+	/*! Set the state of flip polygon flag.
+		If this is true all polygons of the space boundaries will be flipped before they are saved.
+	*/
 	void setFlipPolygons(bool flipPolygons);
+
+	/*! Return state of remove doubled space boundaries flag.*/
 	bool removeDoubledSBs() const;
+
+	/*! Set the state of the remove doubled space boundaries flag.
+		If true one of the two doubled space boundaries will be removed before the space is saved.
+	*/
 	void setRemoveDoubledSBs(bool removeDoubledSBs);
 
 	/*! Write converted data as vicus file.*/
