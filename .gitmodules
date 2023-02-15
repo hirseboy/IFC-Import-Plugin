@@ -7,3 +7,6 @@
 [submodule "externals/IBKMK"]
 	path = externals/IBKMK
 	url = 141.30.43.38:/srv/git/IBKMK.git
+[submodule "externals/QtExt"]
+	path = externals/QtExt
+	url = 141.30.43.38:/srv/git/QtExt.git
