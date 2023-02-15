@@ -7,15 +7,12 @@
 #include <QtExt_Directories.h>
 #include <QtExt_LanguageHandler.h>
 
+#include <QDir>
+
 #include "ImportWizard.h"
-#include "ImportIFCMessageHandler.h"
 
 IFCImportPlugin::IFCImportPlugin(QObject *parent)
 {
-	ImportIFCMessageHandler msgHandler;
-	IBK::MessageHandlerRegistry::instance().setMessageHandler( &msgHandler );
-	std::string errmsg;
-	msgHandler.openLogFile(QtExt::Directories::globalLogFile().toStdString(), false, errmsg);
 }
 
 bool IFCImportPlugin::import(QWidget * parent, QString& projectText) {
@@ -40,7 +37,26 @@ QString IFCImportPlugin::importMenuCaption() const {
 	return tr("Import IFC file");
 }
 
-void IFCImportPlugin::setLanguage(QString langId) {
+void IFCImportPlugin::setLanguage(QString langId, QString appname) {
+	QtExt::Directories::appname = appname;
+	QtExt::Directories::devdir = appname;
+
+	// initialize resources in dependent libraries
+	Q_INIT_RESOURCE(QtExt);
+
+	// *** Create log file directory and setup message handler ***
+	QDir baseDir;
+	baseDir.mkpath(QtExt::Directories::userDataDir());
+
+	IBK::MessageHandlerRegistry::instance().setMessageHandler( &m_msgHandler );
+	std::string errmsg;
+	std::string logfile = QtExt::Directories::userDataDir().toStdString();
+	logfile += "/IFCImportPlugin.log";
+	m_msgHandler.openLogFile(logfile, false, errmsg);
+
+	// adjust log file verbosity
+	m_msgHandler.setLogfileVerbosityLevel( IBK::VL_DEVELOPER );
+
 	QtExt::LanguageHandler::instance().installTranslator(langId);
 }
 
