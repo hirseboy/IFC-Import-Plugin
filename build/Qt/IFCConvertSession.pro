@@ -10,6 +10,7 @@ SUBDIRS += ImportIFCPlugin \
 	IFC2BESTest \
 	Carve \
 	Clipper \
+	QtExt \
 	IBK \
 	IBKMK \
 	TiCPP
@@ -24,11 +25,13 @@ Clipper.file = ../../externals/Clipper/projects/Qt/Clipper.pro
 IBK.file = ../../externals/IBK/projects/Qt/IBK.pro
 IBKMK.file = ../../externals/IBKMK/projects/Qt/IBKMK.pro
 TiCPP.file = ../../externals/TiCPP/projects/Qt/TiCPP.pro
+QtExt.file = ../../externals/QtExt/projects/Qt/QtExt.pro
 
 # dependencies
 IFC2BESTest.depends = ImportIFCPlugin IBK IBKMK TiCPP
 
-ImportIFCPlugin.depends = IBK IBKMK TiCPP Carve Clipper IFCConvert
+QtExt.depends = IBK
+ImportIFCPlugin.depends = IBK IBKMK TiCPP QtExt Carve Clipper IFCConvert
 IFCConvert.depends = IBK IBKMK TiCPP Carve Clipper
 IBKMK.depends = IBK
 

@@ -78,3 +78,6 @@ HEADERS += \
 FORMS += \
 	../../src/mainwindow.ui
 
+TRANSLATIONS += ../../resources/translations/IFC2BESTest_de.ts
+CODECFORSRC = UTF-8
+

@@ -141,6 +141,7 @@ void MainWindow::loadPlugins() {
 		if(loader.instance() != nullptr) {
 			if(SVImportPluginInterface* import = dynamic_cast<SVImportPluginInterface*>(loader.instance())) {
 				m_importer.insert(import->title(), import);
+				import->setLanguage("de");
 			}
 		}
 		else {
