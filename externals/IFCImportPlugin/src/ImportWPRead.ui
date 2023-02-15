@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>WizardPage</string>
+   <string>Read IFC file</string>
   </property>
   <layout class="QGridLayout" name="gridLayout" columnstretch="0,1,0">
    <item row="3" column="0" colspan="3">
@@ -35,6 +35,9 @@
    </item>
    <item row="2" column="0">
     <widget class="QPushButton" name="pushButtonRead">
+     <property name="toolTip">
+      <string>Read the given IFC file</string>
+     </property>
      <property name="text">
       <string>Read</string>
      </property>
@@ -49,6 +52,9 @@
    </item>
    <item row="1" column="0">
     <widget class="QCheckBox" name="checkBoxIgnoreReadError">
+     <property name="toolTip">
+      <string>If checked read errors will be ignored and one can go further to convert</string>
+     </property>
      <property name="text">
       <string>Ignore read error</string>
      </property>

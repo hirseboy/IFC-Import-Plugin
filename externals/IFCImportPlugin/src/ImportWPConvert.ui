@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>WizardPage</string>
+   <string>Convert IFC into VICUS</string>
   </property>
   <layout class="QGridLayout" name="gridLayout" columnstretch="0,0,0">
    <item row="0" column="0">
@@ -73,6 +73,9 @@
       </item>
       <item row="1" column="0">
        <widget class="QCheckBox" name="checkBoxIgnorErrors">
+        <property name="toolTip">
+         <string>If checked all errors will be ignored and the finish button will be enabled</string>
+        </property>
         <property name="text">
          <string>Ignore convert errors</string>
         </property>

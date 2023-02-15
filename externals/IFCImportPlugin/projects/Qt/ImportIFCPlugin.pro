@@ -1,3 +1,10 @@
+# Project file for ImportIFCPlugin
+#
+# remember to set DYLD_FALLBACK_LIBRARY_PATH on MacOSX
+# set LD_LIBRARY_PATH on Linux
+
+TARGET = ImportIFCPlugin
+
 QT += gui
 greaterThan(QT_MAJOR_VERSION, 4):  QT += widgets
 
@@ -23,6 +30,7 @@ INCLUDEPATH = \
 	../../../../externals/IBK/src \
 	../../../../externals/IBKMK/src \
 	../../../../externals/TiCPP/src \
+	../../../../externals/QtExt/src \
 	../../../IFCConvert/src \
 	../../../ifcplusplus/src/IfcPlusPlus/src/ifcpp/reader \
 	../../../ifcplusplus/src/IfcPlusPlus/src \
@@ -49,20 +57,19 @@ UI_DIR = ui
 
 SOURCES += \
 	../../src/IFCImportPlugin.cpp \
+	../../src/ImportIFCMessageHandler.cpp \
 	../../src/ImportWPConvert.cpp \
 	../../src/ImportWPRead.cpp \
 	../../src/ImportWizard.cpp
 
 HEADERS += \
+	../../src/ImportIFCMessageHandler.h \
 	../../src/SVCommonPluginInterface.h \
 	../../src/SVImportPluginInterface.h \
 	../../src/IFCImportPlugin.h \
 	../../src/ImportWPConvert.h \
 	../../src/ImportWPRead.h \
 	../../src/ImportWizard.h
-
-TRANSLATIONS += \
-	ImportIFCPlugin_de_DE.ts
 
 QMAKE_LIBDIR += ../../../../externals/lib$${DIR_PREFIX}
 
@@ -73,6 +80,7 @@ LIBS += \
 	-lIFCPlusPlus \
 	-lIFCConvert \
 	-lCarve \
+	-lQtExt \
 	-lTiCPP \
 	-lIBKMK \
 	-lIBK
@@ -90,3 +98,6 @@ FORMS += \
 	../../src/ImportWPConvert.ui \
 	../../src/ImportWPRead.ui \
 	../../src/ImportWizard.ui
+
+TRANSLATIONS += ../../resources/translations/ImportIFCPlugin_de.ts
+CODECFORSRC = UTF-8

@@ -1,11 +1,21 @@
 #include "IFCImportPlugin.h"
 
+#include <IBK_messages.h>
+
 #include <IFCC_IFCReader.h>
 
+#include <QtExt_Directories.h>
+#include <QtExt_LanguageHandler.h>
+
 #include "ImportWizard.h"
+#include "ImportIFCMessageHandler.h"
 
 IFCImportPlugin::IFCImportPlugin(QObject *parent)
 {
+	ImportIFCMessageHandler msgHandler;
+	IBK::MessageHandlerRegistry::instance().setMessageHandler( &msgHandler );
+	std::string errmsg;
+	msgHandler.openLogFile(QtExt::Directories::globalLogFile().toStdString(), false, errmsg);
 }
 
 bool IFCImportPlugin::import(QWidget * parent, QString& projectText) {
@@ -29,3 +39,8 @@ QString IFCImportPlugin::title() const {
 QString IFCImportPlugin::importMenuCaption() const {
 	return tr("Import IFC file");
 }
+
+void IFCImportPlugin::setLanguage(QString langId) {
+	QtExt::LanguageHandler::instance().installTranslator(langId);
+}
+

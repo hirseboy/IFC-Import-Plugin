@@ -18,6 +18,7 @@ public:
 	virtual bool import(QWidget * parent, QString& projectText) override;
 	virtual QString title() const override;
 	virtual QString importMenuCaption() const override;
+	virtual void setLanguage(QString langId) override;
 
 private:
 	IFCC::IFCReader	m_reader;
