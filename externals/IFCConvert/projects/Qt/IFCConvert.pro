@@ -113,3 +113,6 @@ unix|mac {
 	VER_PAT = 0
 	VERSION = $${VER_MAJ}.$${VER_MIN}.$${VER_PAT}
 }
+
+TRANSLATIONS += ../../resources/translations/IFCConvert_de.ts
+CODECFORSRC = UTF-8
