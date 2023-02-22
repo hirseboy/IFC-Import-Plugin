@@ -22,14 +22,17 @@ QT       += core gui
 INCLUDEPATH += \
 				../../src \
 				../../../ifcplusplus/src/IfcPlusPlus/src \
+				../../../ifcplusplus/src/IfcPlusPlus/src/ifcpp/IFC4X3/include \
 				../../../ifcplusplus/src/IfcPlusPlus/src/ifcpp/reader \
 				../../../clipper/src \
 				../../../../externals/IBK/src \
 				../../../../externals/IBKMK/src \
 				../../../../externals/TiCPP/src \
-				../../../ifcplusplus/src/external/Carve/src/include \
-				../../../ifcplusplus/src/external \
-				../../../ifcplusplus/src/external/Carve/src/common
+				../../../ifcplusplus/src/IfcPlusPlus/src/external/Carve/src/include \
+				../../../ifcplusplus/src/IfcPlusPlus/src/external \
+				../../../ifcplusplus/src/IfcPlusPlus/src/external/glm \
+				../../../ifcplusplus/src/IfcPlusPlus/src/external/manifold/src/utilities/include \
+				../../../ifcplusplus/src/IfcPlusPlus/src/external/Carve/src/common
 
 SOURCES +=  \
 	../../src/IFCC_Building.cpp \
@@ -50,12 +53,14 @@ SOURCES +=  \
 	../../src/IFCC_Instances.cpp \
 	../../src/IFCC_Material.cpp \
 	../../src/IFCC_Opening.cpp \
+	../../src/IFCC_PointConverter.cpp \
 	../../src/IFCC_ProfileCache.cpp \
 	../../src/IFCC_ProfileConverter.cpp \
 	../../src/IFCC_Property.cpp \
 	../../src/IFCC_Site.cpp \
 	../../src/IFCC_Space.cpp \
 	../../src/IFCC_SpaceBoundary.cpp \
+	../../src/IFCC_SplineConverter.cpp \
 	../../src/IFCC_SubSurface.cpp \
 	../../src/IFCC_SubSurfaceComponent.cpp \
 	../../src/IFCC_Surface.cpp \
@@ -89,12 +94,14 @@ HEADERS +=  \
 	../../src/IFCC_Logger.h \
 	../../src/IFCC_Material.h \
 	../../src/IFCC_Opening.h \
+	../../src/IFCC_PointConverter.h \
 	../../src/IFCC_ProfileCache.h \
 	../../src/IFCC_ProfileConverter.h \
 	../../src/IFCC_Property.h \
 	../../src/IFCC_Site.h \
 	../../src/IFCC_Space.h \
 	../../src/IFCC_SpaceBoundary.h \
+	../../src/IFCC_SplineConverter.h \
 	../../src/IFCC_SubSurface.h \
 	../../src/IFCC_SubSurfaceComponent.h \
 	../../src/IFCC_Surface.h \

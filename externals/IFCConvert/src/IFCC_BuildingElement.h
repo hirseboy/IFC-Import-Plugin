@@ -2,18 +2,18 @@
 #define IFCC_BuildingElementH
 
 
-#include <ifcpp/IFC4/include/IfcElement.h>
-#include <ifcpp/IFC4/include/IfcWall.h>
-#include <ifcpp/IFC4/include/IfcOpeningElement.h>
-#include <ifcpp/IFC4/include/IfcWindow.h>
-#include <ifcpp/IFC4/include/IfcWindowTypeEnum.h>
-#include <ifcpp/IFC4/include/IfcDoor.h>
-#include <ifcpp/IFC4/include/IfcDoorTypeEnum.h>
-#include <ifcpp/IFC4/include/IfcDoorTypeOperationEnum.h>
-#include <ifcpp/IFC4/include/IfcWindowTypePartitioningEnum.h>
-#include <ifcpp/IFC4/include/IfcWallTypeEnum.h>
-#include <ifcpp/IFC4/include/IfcWallType.h>
-#include <ifcpp/geometry/Carve/GeometryInputData.h>
+#include <ifcpp/IFC4X3/include/IfcElement.h>
+#include <ifcpp/IFC4X3/include/IfcWall.h>
+#include <ifcpp/IFC4X3/include/IfcOpeningElement.h>
+#include <ifcpp/IFC4X3/include/IfcWindow.h>
+#include <ifcpp/IFC4X3/include/IfcWindowTypeEnum.h>
+#include <ifcpp/IFC4X3/include/IfcDoor.h>
+#include <ifcpp/IFC4X3/include/IfcDoorTypeEnum.h>
+#include <ifcpp/IFC4X3/include/IfcDoorTypeOperationEnum.h>
+#include <ifcpp/IFC4X3/include/IfcWindowTypePartitioningEnum.h>
+#include <ifcpp/IFC4X3/include/IfcWallTypeEnum.h>
+#include <ifcpp/IFC4X3/include/IfcWallType.h>
+#include <ifcpp/geometry/GeometryInputData.h>
 
 #include "IFCC_Types.h"
 #include "IFCC_Surface.h"
@@ -53,7 +53,7 @@ public:
 			\li ENUM_USERDEFINED
 			\li ENUM_NOTDEFINED
 		*/
-		IfcWindowTypeEnum::IfcWindowTypeEnumEnum m_windowType = IfcWindowTypeEnum::ENUM_NOTDEFINED;
+		IFC4X3::IfcWindowTypeEnum::IfcWindowTypeEnumEnum m_windowType = IFC4X3::IfcWindowTypeEnum::ENUM_NOTDEFINED;
 		/*! Window partition type enum. Following is possible:
 			\li ENUM_SINGLE_PANEL,
 			\li ENUM_DOUBLE_PANEL_VERTICAL,
@@ -67,8 +67,8 @@ public:
 			\li ENUM_USERDEFINED,
 			\li ENUM_NOTDEFINED
 		*/
-		IfcWindowTypePartitioningEnum::IfcWindowTypePartitioningEnumEnum m_windowPartitionType =
-				IfcWindowTypePartitioningEnum::ENUM_NOTDEFINED;
+		IFC4X3::IfcWindowTypePartitioningEnum::IfcWindowTypePartitioningEnumEnum m_windowPartitionType =
+				IFC4X3::IfcWindowTypePartitioningEnum::ENUM_NOTDEFINED;
 		// Door properties
 		double						m_doorHeight;
 		double						m_doorWidth;
@@ -79,7 +79,7 @@ public:
 			\li ENUM_USERDEFINED,
 			\li ENUM_NOTDEFINED
 		*/
-		IfcDoorTypeEnum::IfcDoorTypeEnumEnum	m_doorType;
+		IFC4X3::IfcDoorTypeEnum::IfcDoorTypeEnumEnum	m_doorType;
 		/*! Door operation type enum. Following is possible:
 			\li ENUM_SINGLE_SWING_LEFT,
 			\li ENUM_SINGLE_SWING_RIGHT,
@@ -102,15 +102,15 @@ public:
 			\li ENUM_USERDEFINED,
 			\li ENUM_NOTDEFINED
 		*/
-		IfcDoorTypeOperationEnum::IfcDoorTypeOperationEnumEnum	m_doorOperationType;
+		IFC4X3::IfcDoorTypeOperationEnum::IfcDoorTypeOperationEnumEnum	m_doorOperationType;
 		/*! Name of the user defined operation type.*/
 		std::string					m_doorUserDefinedOperationType;
 	};
 
 	struct WallProperties {
-		void update(std::shared_ptr<IfcWall>& ifcWall);
+		void update(std::shared_ptr<IFC4X3::IfcWall>& ifcWall);
 
-		IfcWallTypeEnum::IfcWallTypeEnumEnum	m_wallType = IfcWallTypeEnum::ENUM_USERDEFINED;
+		IFC4X3::IfcWallTypeEnum::IfcWallTypeEnumEnum	m_wallType = IFC4X3::IfcWallTypeEnum::ENUM_USERDEFINED;
 	};
 
 	/*! Standard constructor.
@@ -123,7 +123,7 @@ public:
 		\param ifcElement Original IFC building element
 		\param type type from ObjectTypes evaluated from concrete IFC class type
 	*/
-	bool set(std::shared_ptr<IfcElement> ifcElement, BuildingElementTypes type);
+	bool set(std::shared_ptr<IFC4X3::IfcElement> ifcElement, BuildingElementTypes type);
 
 	/*! get and transform geometry and set first opening properties.
 		\param Shape data of a building element.
@@ -234,9 +234,9 @@ private:
 	bool														m_subSurfaceComponent;	///< If true its a opening element usable as subsurface.
 	std::vector<Surface>										m_surfaces;				///< Vector of all surfaces
 	/*! Vector of IFC opening object which uses this element.*/
-	std::vector<std::shared_ptr<IfcOpeningElement>>				m_isUsedFromOpeningsOriginal;
+	std::vector<std::shared_ptr<IFC4X3::IfcOpeningElement>>				m_isUsedFromOpeningsOriginal;
 	/*! Vector of IFC opening objects which are contained in this building element.*/
-	std::vector<std::shared_ptr<IfcFeatureElementSubtraction>>	m_containedOpeningsOriginal;
+	std::vector<std::shared_ptr<IFC4X3::IfcFeatureElementSubtraction>>	m_containedOpeningsOriginal;
 	double														m_thermalTransmittance;
 	std::map<std::string,std::map<std::string,Property>>		m_propertyMap;
 };

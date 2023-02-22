@@ -21,30 +21,32 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OU
 #include <unordered_set>
 #include <ifcpp/model/BasicTypes.h>
 #include <ifcpp/model/UnitConverter.h>
-#include <ifcpp/IFC4/include/IfcAxis1Placement.h>
-#include <ifcpp/IFC4/include/IfcAxis2Placement2D.h>
-#include <ifcpp/IFC4/include/IfcAxis2Placement3D.h>
-#include <ifcpp/IFC4/include/IfcCartesianPoint.h>
-#include <ifcpp/IFC4/include/IfcCartesianTransformationOperator.h>
-#include <ifcpp/IFC4/include/IfcCartesianTransformationOperator2DnonUniform.h>
-#include <ifcpp/IFC4/include/IfcCartesianTransformationOperator3DnonUniform.h>
-#include <ifcpp/IFC4/include/IfcDimensionCount.h>
-#include <ifcpp/IFC4/include/IfcDirection.h>
-#include <ifcpp/IFC4/include/IfcGeometricRepresentationContext.h>
-#include <ifcpp/IFC4/include/IfcGeometricRepresentationSubContext.h>
-#include <ifcpp/IFC4/include/IfcGridAxis.h>
-#include <ifcpp/IFC4/include/IfcGridPlacement.h>
-#include <ifcpp/IFC4/include/IfcLengthMeasure.h>
-#include <ifcpp/IFC4/include/IfcLocalPlacement.h>
-#include <ifcpp/IFC4/include/IfcObjectPlacement.h>
-#include <ifcpp/IFC4/include/IfcPlacement.h>
-#include <ifcpp/IFC4/include/IfcRepresentationContext.h>
-#include <ifcpp/IFC4/include/IfcReal.h>
-#include <ifcpp/IFC4/include/IfcVirtualGridIntersection.h>
+#include <ifcpp/IFC4X3/include/IfcAxis1Placement.h>
+#include <ifcpp/IFC4X3/include/IfcAxis2Placement2D.h>
+#include <ifcpp/IFC4X3/include/IfcAxis2Placement3D.h>
+#include <ifcpp/IFC4X3/include/IfcCartesianPoint.h>
+#include <ifcpp/IFC4X3/include/IfcCartesianTransformationOperator.h>
+#include <ifcpp/IFC4X3/include/IfcCartesianTransformationOperator2DnonUniform.h>
+#include <ifcpp/IFC4X3/include/IfcCartesianTransformationOperator3DnonUniform.h>
+#include <ifcpp/IFC4X3/include/IfcDimensionCount.h>
+#include <ifcpp/IFC4X3/include/IfcDirection.h>
+#include <ifcpp/IFC4X3/include/IfcGeometricRepresentationContext.h>
+#include <ifcpp/IFC4X3/include/IfcGeometricRepresentationSubContext.h>
+#include <ifcpp/IFC4X3/include/IfcGridAxis.h>
+#include <ifcpp/IFC4X3/include/IfcGridPlacement.h>
+#include <ifcpp/IFC4X3/include/IfcLengthMeasure.h>
+#include <ifcpp/IFC4X3/include/IfcLocalPlacement.h>
+#include <ifcpp/IFC4X3/include/IfcObjectPlacement.h>
+#include <ifcpp/IFC4X3/include/IfcPlacement.h>
+#include <ifcpp/IFC4X3/include/IfcRepresentationContext.h>
+#include <ifcpp/IFC4X3/include/IfcReal.h>
+#include <ifcpp/IFC4X3/include/IfcVirtualGridIntersection.h>
 
-#include <ifcpp/geometry/Carve/GeomUtils.h>
-#include <ifcpp/geometry/Carve/GeometryInputData.h>
-#include <ifcpp/geometry/Carve/IncludeCarveHeaders.h>
+#include <ifcpp/geometry/GeomUtils.h>
+#include <ifcpp/geometry/GeometryInputData.h>
+#include <ifcpp/geometry/IncludeCarveHeaders.h>
+#include <Carve/src/include/carve/carve.hpp>
+#include <ifcpp/geometry/MeshUtils.h>
 
 namespace IFCC {
 
@@ -52,7 +54,7 @@ namespace IFCC {
 		m_unit_converter( uc )
 	{}
 
-	void PlacementConverter::convertIfcAxis2Placement2D( const shared_ptr<IfcAxis2Placement2D>& axis2placement2d, shared_ptr<TransformData>& resulting_matrix, bool only_rotation )
+	void PlacementConverter::convertIfcAxis2Placement2D( const shared_ptr<IFC4X3::IfcAxis2Placement2D>& axis2placement2d, shared_ptr<TransformData>& resulting_matrix, bool only_rotation )
 	{
 		const double length_factor = m_unit_converter->getLengthInMeterFactor();
 		vec3  translate( carve::geom::VECTOR( 0.0, 0.0, 0.0 ) );
@@ -65,10 +67,13 @@ namespace IFCC {
 		{
 			if( axis2placement2d->m_Location )
 			{
-				std::vector<shared_ptr<IfcLengthMeasure> >& coords = axis2placement2d->m_Location->m_Coordinates;
-				if( coords.size() > 1 )
+				shared_ptr<IFC4X3::IfcCartesianPoint> cartesianPoint = dynamic_pointer_cast<IFC4X3::IfcCartesianPoint>(axis2placement2d->m_Location);
+				if( cartesianPoint )
 				{
-					translate = carve::geom::VECTOR( coords[0]->m_value*length_factor, coords[1]->m_value*length_factor, 0.0 );
+					translate = carve::geom::VECTOR(cartesianPoint->m_Coordinates[0] * length_factor, cartesianPoint->m_Coordinates[1] * length_factor, 0.0);
+				}
+				else
+				{
 				}
 			}
 		}
@@ -109,10 +114,10 @@ namespace IFCC {
 			local_x.z, local_y.z, local_z.z, translate.z,
 			0, 0, 0, 1 );
 		resulting_matrix->m_placement_entity = axis2placement2d;
-		resulting_matrix->m_placement_entity_id = axis2placement2d->m_entity_id;
+		resulting_matrix->m_placement_tag = axis2placement2d->m_tag;
 	}
 
-	void PlacementConverter::convertIfcAxis2Placement3D( const shared_ptr<IfcAxis2Placement3D>& axis2placement3d, shared_ptr<TransformData>& resulting_matrix, bool only_rotation )
+	void PlacementConverter::convertIfcAxis2Placement3D( const shared_ptr<IFC4X3::IfcAxis2Placement3D>& axis2placement3d, shared_ptr<TransformData>& resulting_matrix, bool only_rotation )
 	{
 		const double length_factor = m_unit_converter->getLengthInMeterFactor();
 		vec3  translate( carve::geom::VECTOR( 0.0, 0.0, 0.0 ) );
@@ -125,14 +130,23 @@ namespace IFCC {
 		{
 			if( axis2placement3d->m_Location )
 			{
-				std::vector<shared_ptr<IfcLengthMeasure> >& coords = axis2placement3d->m_Location->m_Coordinates;
-				if( coords.size() > 2 )
+				shared_ptr<IFC4X3::IfcCartesianPoint> cartesian_point = dynamic_pointer_cast<IFC4X3::IfcCartesianPoint>(axis2placement3d->m_Location);
+				if( cartesian_point )
 				{
-					translate = carve::geom::VECTOR( coords[0]->m_value*length_factor, coords[1]->m_value*length_factor, coords[2]->m_value*length_factor );
+					if( !std::isnan(cartesian_point->m_Coordinates[2]) )
+					{
+						translate = carve::geom::VECTOR(cartesian_point->m_Coordinates[0] * length_factor, cartesian_point->m_Coordinates[1] * length_factor, cartesian_point->m_Coordinates[2] * length_factor);
+					}
+					else
+					{
+						translate = carve::geom::VECTOR(cartesian_point->m_Coordinates[0] * length_factor, cartesian_point->m_Coordinates[1] * length_factor, 0.0);
+					}
 				}
-				else if( coords.size() > 1 )
+				else
 				{
-					translate = carve::geom::VECTOR( coords[0]->m_value*length_factor, coords[1]->m_value*length_factor, 0.0 );
+#ifdef _DEBUG
+					std::cout << "IfcAxis2Placement3D.Location != IfcCartesianPoint" << std::endl;
+#endif
 				}
 			}
 		}
@@ -140,7 +154,7 @@ namespace IFCC {
 		if( axis2placement3d->m_Axis )
 		{
 			// local z-axis
-			std::vector<shared_ptr<IfcReal> >& axis = axis2placement3d->m_Axis->m_DirectionRatios;
+			std::vector<shared_ptr<IFC4X3::IfcReal> >& axis = axis2placement3d->m_Axis->m_DirectionRatios;
 			if( axis.size() > 2 )
 			{
 				local_z = carve::geom::VECTOR( axis[0]->m_value, axis[1]->m_value, axis[2]->m_value );
@@ -176,10 +190,10 @@ namespace IFCC {
 			local_x.z, local_y.z, local_z.z, translate.z,
 			0, 0, 0, 1 );
 		resulting_matrix->m_placement_entity = axis2placement3d;
-		resulting_matrix->m_placement_entity_id = axis2placement3d->m_entity_id;
+		resulting_matrix->m_placement_tag = axis2placement3d->m_tag;
 	}
 
-	void PlacementConverter::getPlane( const shared_ptr<IfcAxis2Placement3D>& axis2placement3d, carve::geom::plane<3>& plane, vec3& translate )
+	void PlacementConverter::getPlane( const shared_ptr<IFC4X3::IfcAxis2Placement3D>& axis2placement3d, carve::geom::plane<3>& plane, vec3& translate )
 	{
 		const double length_factor = m_unit_converter->getLengthInMeterFactor();
 		vec3  location( carve::geom::VECTOR( 0.0, 0.0, 0.0 ) );
@@ -190,21 +204,30 @@ namespace IFCC {
 
 		if( axis2placement3d->m_Location )
 		{
-			std::vector<shared_ptr<IfcLengthMeasure> >& coords = axis2placement3d->m_Location->m_Coordinates;
-			if( coords.size() > 2 )
+			shared_ptr<IFC4X3::IfcCartesianPoint> cartesian_point = dynamic_pointer_cast<IFC4X3::IfcCartesianPoint>(axis2placement3d->m_Location);
+			if( cartesian_point )
 			{
-				location = carve::geom::VECTOR( coords[0]->m_value*length_factor, coords[1]->m_value*length_factor, coords[2]->m_value*length_factor );
+				if( !std::isnan(cartesian_point->m_Coordinates[2]) )
+				{
+					location = carve::geom::VECTOR(cartesian_point->m_Coordinates[0] * length_factor, cartesian_point->m_Coordinates[1] * length_factor, cartesian_point->m_Coordinates[2] * length_factor);
+				}
+				else
+				{
+					location = carve::geom::VECTOR(cartesian_point->m_Coordinates[0] * length_factor, cartesian_point->m_Coordinates[1] * length_factor, 0.0);
+				}
 			}
-			else if( coords.size() > 1 )
+			else
 			{
-				location = carve::geom::VECTOR( coords[0]->m_value*length_factor, coords[1]->m_value*length_factor, 0.0 );
+#ifdef _DEBUG
+				std::cout << "IfcAxis2Placement3D.Location != IfcCartesianPoint" << std::endl;
+#endif
 			}
 		}
 
 		if( axis2placement3d->m_Axis )
 		{
 			// local z-axis
-			std::vector<shared_ptr<IfcReal> >& axis = axis2placement3d->m_Axis->m_DirectionRatios;
+			std::vector<shared_ptr<IFC4X3::IfcReal> >& axis = axis2placement3d->m_Axis->m_DirectionRatios;
 			if( axis.size() > 2 )
 			{
 				local_z = carve::geom::VECTOR( axis[0]->m_value, axis[1]->m_value, axis[2]->m_value );
@@ -218,15 +241,15 @@ namespace IFCC {
 		translate = location;
 	}
 
-	void PlacementConverter::convertMatrix( const carve::math::Matrix& matrix, shared_ptr<IfcAxis2Placement3D>& axis2placement3d, int& entity_id, std::vector<shared_ptr<BuildingEntity> >& vec_new_entities )
+	void PlacementConverter::convertMatrix( const carve::math::Matrix& matrix, shared_ptr<IFC4X3::IfcAxis2Placement3D>& axis2placement3d, int& tag, std::vector<shared_ptr<BuildingEntity> >& vec_new_entities )
 	{
 		const double length_factor = m_unit_converter->getLengthInMeterFactor();
 		if( !axis2placement3d )
 		{
-			axis2placement3d = shared_ptr<IfcAxis2Placement3D>( new IfcAxis2Placement3D() );
-			if( entity_id > 0 )
+			axis2placement3d = shared_ptr<IFC4X3::IfcAxis2Placement3D>( new IFC4X3::IfcAxis2Placement3D() );
+			if( tag > 0 )
 			{
-				axis2placement3d->m_entity_id = entity_id++;
+				axis2placement3d->m_tag = tag++;
 			}
 			vec_new_entities.push_back( axis2placement3d );
 		}
@@ -258,64 +281,64 @@ namespace IFCC {
 
 		if( !axis2placement3d->m_Location )
 		{
-			axis2placement3d->m_Location = shared_ptr<IfcCartesianPoint>( new IfcCartesianPoint() );
-			if( entity_id > 0 )
+			axis2placement3d->m_Location = shared_ptr<IFC4X3::IfcCartesianPoint>( new IFC4X3::IfcCartesianPoint() );
+			if( tag > 0 )
 			{
-				axis2placement3d->m_Location->m_entity_id = entity_id++;
+				axis2placement3d->m_Location->m_tag = tag++;
 			}
 			vec_new_entities.push_back( axis2placement3d->m_Location );
 		}
-		axis2placement3d->m_Location->m_Coordinates.clear();
-		axis2placement3d->m_Location->m_Coordinates.push_back( shared_ptr<IfcLengthMeasure>( new IfcLengthMeasure( translate.x / length_factor ) ) );
-		axis2placement3d->m_Location->m_Coordinates.push_back( shared_ptr<IfcLengthMeasure>( new IfcLengthMeasure( translate.y / length_factor ) ) );
-		axis2placement3d->m_Location->m_Coordinates.push_back( shared_ptr<IfcLengthMeasure>( new IfcLengthMeasure( translate.z / length_factor ) ) );
+		axis2placement3d->m_Axis->m_DirectionRatios.clear();
+		axis2placement3d->m_Axis->m_DirectionRatios.push_back( shared_ptr<IFC4X3::IfcReal>( new IFC4X3::IfcReal( local_z.x ) ) );
+		axis2placement3d->m_Axis->m_DirectionRatios.push_back( shared_ptr<IFC4X3::IfcReal>( new IFC4X3::IfcReal( local_z.y ) ) );
+		axis2placement3d->m_Axis->m_DirectionRatios.push_back( shared_ptr<IFC4X3::IfcReal>( new IFC4X3::IfcReal( local_z.z ) ) );
 
 		if( !axis2placement3d->m_Axis )
 		{
-			axis2placement3d->m_Axis = shared_ptr<IfcDirection>( new IfcDirection() );
-			if( entity_id > 0 )
+			axis2placement3d->m_Axis = shared_ptr<IFC4X3::IfcDirection>( new IFC4X3::IfcDirection() );
+			if( tag > 0 )
 			{
-				axis2placement3d->m_Axis->m_entity_id = entity_id++;
+				axis2placement3d->m_Axis->m_tag = tag++;
 			}
 			vec_new_entities.push_back( axis2placement3d->m_Axis );
 		}
 		axis2placement3d->m_Axis->m_DirectionRatios.clear();
-		axis2placement3d->m_Axis->m_DirectionRatios.push_back( shared_ptr<IfcReal>( new IfcReal( local_z.x ) ) );
-		axis2placement3d->m_Axis->m_DirectionRatios.push_back( shared_ptr<IfcReal>( new IfcReal( local_z.y ) ) );
-		axis2placement3d->m_Axis->m_DirectionRatios.push_back( shared_ptr<IfcReal>( new IfcReal( local_z.z ) ) );
+		axis2placement3d->m_Axis->m_DirectionRatios.push_back( shared_ptr<IFC4X3::IfcReal>( new IFC4X3::IfcReal( local_z.x ) ) );
+		axis2placement3d->m_Axis->m_DirectionRatios.push_back( shared_ptr<IFC4X3::IfcReal>( new IFC4X3::IfcReal( local_z.y ) ) );
+		axis2placement3d->m_Axis->m_DirectionRatios.push_back( shared_ptr<IFC4X3::IfcReal>( new IFC4X3::IfcReal( local_z.z ) ) );
 
 		if( !axis2placement3d->m_RefDirection )
 		{
-			axis2placement3d->m_RefDirection = shared_ptr<IfcDirection>( new IfcDirection() );
-			if( entity_id > 0 )
+			axis2placement3d->m_RefDirection = shared_ptr<IFC4X3::IfcDirection>( new IFC4X3::IfcDirection() );
+			if( tag > 0 )
 			{
-				axis2placement3d->m_RefDirection->m_entity_id = entity_id++;
+				axis2placement3d->m_RefDirection->m_tag = tag++;
 			}
 			vec_new_entities.push_back( axis2placement3d->m_RefDirection );
 		}
 
 		axis2placement3d->m_RefDirection->m_DirectionRatios.clear();
-		axis2placement3d->m_RefDirection->m_DirectionRatios.push_back( shared_ptr<IfcReal>( new IfcReal( local_x.x ) ) );
-		axis2placement3d->m_RefDirection->m_DirectionRatios.push_back( shared_ptr<IfcReal>( new IfcReal( local_x.y ) ) );
-		axis2placement3d->m_RefDirection->m_DirectionRatios.push_back( shared_ptr<IfcReal>( new IfcReal( local_x.z ) ) );
+		axis2placement3d->m_RefDirection->m_DirectionRatios.push_back( shared_ptr<IFC4X3::IfcReal>( new IFC4X3::IfcReal( local_x.x ) ) );
+		axis2placement3d->m_RefDirection->m_DirectionRatios.push_back( shared_ptr<IFC4X3::IfcReal>( new IFC4X3::IfcReal( local_x.y ) ) );
+		axis2placement3d->m_RefDirection->m_DirectionRatios.push_back( shared_ptr<IFC4X3::IfcReal>( new IFC4X3::IfcReal( local_x.z ) ) );
 	}
 
-	void PlacementConverter::convertIfcPlacement( const shared_ptr<IfcPlacement>& placement, shared_ptr<TransformData>& resulting_matrix, bool only_rotation )
+	void PlacementConverter::convertIfcPlacement( const shared_ptr<IFC4X3::IfcPlacement>& placement, shared_ptr<TransformData>& resulting_matrix, bool only_rotation )
 	{
 		const double length_factor = m_unit_converter->getLengthInMeterFactor();
-		if( dynamic_pointer_cast<IfcAxis1Placement>( placement ) )
+		if( dynamic_pointer_cast<IFC4X3::IfcAxis1Placement>( placement ) )
 		{
 			messageCallback( "IfcAxis1Placement not implemented", StatusCallback::MESSAGE_TYPE_ERROR, __FUNC__, placement.get() );
 			return;
 		}
-		else if( dynamic_pointer_cast<IfcAxis2Placement2D>( placement ) )
+		else if( dynamic_pointer_cast<IFC4X3::IfcAxis2Placement2D>( placement ) )
 		{
-			shared_ptr<IfcAxis2Placement2D> axis2placement2d = dynamic_pointer_cast<IfcAxis2Placement2D>( placement );
+			shared_ptr<IFC4X3::IfcAxis2Placement2D> axis2placement2d = dynamic_pointer_cast<IFC4X3::IfcAxis2Placement2D>( placement );
 			convertIfcAxis2Placement2D( axis2placement2d, resulting_matrix, only_rotation );
 		}
-		else if( dynamic_pointer_cast<IfcAxis2Placement3D>( placement ) )
+		else if( dynamic_pointer_cast<IFC4X3::IfcAxis2Placement3D>( placement ) )
 		{
-			shared_ptr<IfcAxis2Placement3D> axis2placement3d = dynamic_pointer_cast<IfcAxis2Placement3D>( placement );
+			shared_ptr<IFC4X3::IfcAxis2Placement3D> axis2placement3d = dynamic_pointer_cast<IFC4X3::IfcAxis2Placement3D>( placement );
 			convertIfcAxis2Placement3D( axis2placement3d, resulting_matrix, only_rotation );
 		}
 		else
@@ -324,30 +347,30 @@ namespace IFCC {
 		}
 	}
 
-	void PlacementConverter::getWorldCoordinateSystem( const shared_ptr<IfcRepresentationContext>& context, shared_ptr<TransformData>& resulting_matrix, std::unordered_set<IfcRepresentationContext*>& already_applied )
+	void PlacementConverter::getWorldCoordinateSystem( const shared_ptr<IFC4X3::IfcRepresentationContext>& context, shared_ptr<TransformData>& resulting_matrix, std::unordered_set<IFC4X3::IfcRepresentationContext*>& already_applied )
 	{
 		if( !context )
 		{
 			return;
 		}
 
-		shared_ptr<IfcGeometricRepresentationContext> geom_context = dynamic_pointer_cast<IfcGeometricRepresentationContext>( context );
+		shared_ptr<IFC4X3::IfcGeometricRepresentationContext> geom_context = dynamic_pointer_cast<IFC4X3::IfcGeometricRepresentationContext>( context );
 		if( !geom_context )
 		{
 			return;
 		}
 
 		// prevent cyclic relative placement
-		IfcRepresentationContext* context_ptr = context.get();
+		IFC4X3::IfcRepresentationContext* context_ptr = context.get();
 		if( already_applied.find( context_ptr ) != already_applied.end() )
 		{
 			return;
 		}
 		already_applied.insert( context_ptr );
 
-		shared_ptr<IfcAxis2Placement>& world_coords_select = geom_context->m_WorldCoordinateSystem;
+		shared_ptr<IFC4X3::IfcAxis2Placement>& world_coords_select = geom_context->m_WorldCoordinateSystem;
 		shared_ptr<TransformData> world_coords_matrix( new TransformData() );
-		shared_ptr<IfcAxis2Placement3D> world_coords_3d = dynamic_pointer_cast<IfcAxis2Placement3D>( world_coords_select );
+		shared_ptr<IFC4X3::IfcAxis2Placement3D> world_coords_3d = dynamic_pointer_cast<IFC4X3::IfcAxis2Placement3D>( world_coords_select );
 		if( world_coords_3d )
 		{
 			convertIfcAxis2Placement3D( world_coords_3d, world_coords_matrix );
@@ -359,10 +382,10 @@ namespace IFCC {
 		}
 		resulting_matrix->m_matrix = resulting_matrix->m_matrix*world_coords_matrix->m_matrix;
 
-		shared_ptr<IfcGeometricRepresentationSubContext> geom_sub_context = dynamic_pointer_cast<IfcGeometricRepresentationSubContext>( geom_context );
+		shared_ptr<IFC4X3::IfcGeometricRepresentationSubContext> geom_sub_context = dynamic_pointer_cast<IFC4X3::IfcGeometricRepresentationSubContext>( geom_context );
 		if( geom_sub_context )
 		{
-			shared_ptr<IfcGeometricRepresentationContext>& parent_context = geom_sub_context->m_ParentContext;
+			shared_ptr<IFC4X3::IfcGeometricRepresentationContext>& parent_context = geom_sub_context->m_ParentContext;
 			//shared_ptr<IfcPositiveRatioMeasure>& target_scale = geom_sub_context->m_TargetScale;				//optional
 			//shared_ptr<IfcGeometricProjectionEnum>& target_view = geom_sub_context->m_TargetView;
 			//shared_ptr<IfcLabel>& user_target_view = geom_sub_context->m_UserDefinedTargetView;	//optional
@@ -375,8 +398,8 @@ namespace IFCC {
 	}
 
 	//\brief translates an IfcObjectPlacement (or subtype) to carve Matrix
-	void PlacementConverter::convertIfcObjectPlacement( const shared_ptr<IfcObjectPlacement>& ifc_object_placement, shared_ptr<ProductShapeData>& product_data,
-		std::unordered_set<IfcObjectPlacement*>& placement_already_applied, bool only_rotation )
+	void PlacementConverter::convertIfcObjectPlacement( const shared_ptr<IFC4X3::IfcObjectPlacement>& ifc_object_placement, shared_ptr<ProductShapeData>& product_data,
+		std::unordered_set<IFC4X3::IfcObjectPlacement*>& placement_already_applied, bool only_rotation )
 	{
 		if( !ifc_object_placement )
 		{
@@ -387,28 +410,28 @@ namespace IFCC {
 			return;
 		}
 		// prevent cyclic relative placement
-		IfcObjectPlacement* placement_ptr = ifc_object_placement.get();
+		IFC4X3::IfcObjectPlacement* placement_ptr = ifc_object_placement.get();
 		if( placement_already_applied.find( placement_ptr ) != placement_already_applied.end() )
 		{
 			return;
 		}
 		placement_already_applied.insert( placement_ptr );
 
-		shared_ptr<IfcLocalPlacement> local_placement = dynamic_pointer_cast<IfcLocalPlacement>( ifc_object_placement );
+		shared_ptr<IFC4X3::IfcLocalPlacement> local_placement = dynamic_pointer_cast<IFC4X3::IfcLocalPlacement>( ifc_object_placement );
 		if( local_placement )
 		{
 			if( local_placement->m_PlacementRelTo )
 			{
 				// placement is relative to other placement
-				shared_ptr<IfcObjectPlacement> rel_to_placement = local_placement->m_PlacementRelTo;
+				shared_ptr<IFC4X3::IfcObjectPlacement> rel_to_placement = local_placement->m_PlacementRelTo;
 				convertIfcObjectPlacement( rel_to_placement, product_data, placement_already_applied, only_rotation );
 			}
 
-			shared_ptr<IfcAxis2Placement> relative_axis2placement_select = local_placement->m_RelativePlacement;
+			shared_ptr<IFC4X3::IfcAxis2Placement> relative_axis2placement_select = local_placement->m_RelativePlacement;
 			if( relative_axis2placement_select )
 			{
 				// IfcAxis2Placement = SELECT(IfcAxis2Placement2D,IfcAxis2Placement3D)
-				shared_ptr<IfcPlacement> relative_placement = dynamic_pointer_cast<IfcPlacement>( relative_axis2placement_select );
+				shared_ptr<IFC4X3::IfcPlacement> relative_placement = dynamic_pointer_cast<IFC4X3::IfcPlacement>( relative_axis2placement_select );
 				if( relative_placement )
 				{
 					shared_ptr<TransformData> relative_placement_matrix;
@@ -421,11 +444,11 @@ namespace IFCC {
 				}
 			}
 		}
-		else if( dynamic_pointer_cast<IfcGridPlacement>( ifc_object_placement ) )
+		else if( dynamic_pointer_cast<IFC4X3::IfcGridPlacement>( ifc_object_placement ) )
 		{
-			shared_ptr<IfcGridPlacement> grid_placement = dynamic_pointer_cast<IfcGridPlacement>( ifc_object_placement );
+			shared_ptr<IFC4X3::IfcGridPlacement> grid_placement = dynamic_pointer_cast<IFC4X3::IfcGridPlacement>( ifc_object_placement );
 
-			shared_ptr<IfcVirtualGridIntersection> grid_intersection = grid_placement->m_PlacementLocation;
+			shared_ptr<IFC4X3::IfcVirtualGridIntersection> grid_intersection = grid_placement->m_PlacementLocation;
 			if( grid_intersection )
 			{
 				//std::vector<shared_ptr<IfcGridAxis> >& vec_grid_axis = grid_intersection->m_IntersectingAxes;
@@ -439,7 +462,7 @@ namespace IFCC {
 		}
 	}
 
-	void PlacementConverter::convertTransformationOperator( const shared_ptr<IfcCartesianTransformationOperator>& transform_operator, shared_ptr<TransformData>& resulting_matrix )
+	void PlacementConverter::convertTransformationOperator( const shared_ptr<IFC4X3::IfcCartesianTransformationOperator>& transform_operator, shared_ptr<TransformData>& resulting_matrix )
 	{
 		// ENTITY IfcCartesianTransformationOperator  ABSTRACT SUPERTYPE OF(ONEOF(IfcCartesianTransformationOperator2D, IfcCartesianTransformationOperator3D))
 		vec3  translate( carve::geom::VECTOR( 0.0, 0.0, 0.0 ) );
@@ -452,7 +475,7 @@ namespace IFCC {
 		double scale_z = 1.0;
 		const double length_factor = m_unit_converter->getLengthInMeterFactor();
 
-		shared_ptr<IfcCartesianTransformationOperator2D> trans_operator_2d = dynamic_pointer_cast<IfcCartesianTransformationOperator2D>( transform_operator );
+		shared_ptr<IFC4X3::IfcCartesianTransformationOperator2D> trans_operator_2d = dynamic_pointer_cast<IFC4X3::IfcCartesianTransformationOperator2D>( transform_operator );
 		if( trans_operator_2d )
 		{
 			// ENTITY IfcCartesianTransformationOperator2D SUPERTYPE OF(IfcCartesianTransformationOperator2DnonUniform)
@@ -461,13 +484,13 @@ namespace IFCC {
 				messageCallback( "LocalOrigin not given", StatusCallback::MESSAGE_TYPE_ERROR, __FUNC__, trans_operator_2d.get() );
 				return;
 			}
-			if( trans_operator_2d->m_LocalOrigin->m_Coordinates.size() < 2 )
+			if( std::isnan(trans_operator_2d->m_LocalOrigin->m_Coordinates[1]) )
 			{
 				messageCallback( "LocalOrigin is not valid", StatusCallback::MESSAGE_TYPE_ERROR, __FUNC__, trans_operator_2d.get() );
 				return;
 			}
-			double x = trans_operator_2d->m_LocalOrigin->m_Coordinates[0]->m_value*length_factor;
-			double y = trans_operator_2d->m_LocalOrigin->m_Coordinates[1]->m_value*length_factor;
+			double x = trans_operator_2d->m_LocalOrigin->m_Coordinates[0]*length_factor;
+			double y = trans_operator_2d->m_LocalOrigin->m_Coordinates[1]*length_factor;
 			translate = carve::geom::VECTOR( x, y, 0.0 );
 
 			if( trans_operator_2d->m_Scale )
@@ -496,7 +519,7 @@ namespace IFCC {
 				local_y.y = trans_operator_2d->m_Axis2->m_DirectionRatios[1]->m_value;
 			}
 
-			shared_ptr<IfcCartesianTransformationOperator2DnonUniform> non_uniform = dynamic_pointer_cast<IfcCartesianTransformationOperator2DnonUniform>( transform_operator );
+			shared_ptr<IFC4X3::IfcCartesianTransformationOperator2DnonUniform> non_uniform = dynamic_pointer_cast<IFC4X3::IfcCartesianTransformationOperator2DnonUniform>( transform_operator );
 			if( non_uniform )
 			{
 				if( non_uniform->m_Scale2 )
@@ -508,7 +531,7 @@ namespace IFCC {
 		else
 		{
 			// ENTITY IfcCartesianTransformationOperator3D SUPERTYPE OF(IfcCartesianTransformationOperator3DnonUniform)
-			shared_ptr<IfcCartesianTransformationOperator3D> trans_operator_3d = dynamic_pointer_cast<IfcCartesianTransformationOperator3D>( transform_operator );
+			shared_ptr<IFC4X3::IfcCartesianTransformationOperator3D> trans_operator_3d = dynamic_pointer_cast<IFC4X3::IfcCartesianTransformationOperator3D>( transform_operator );
 			if( !trans_operator_3d )
 			{
 				messageCallback( "IfcCartesianTransformationOperator is not valid", StatusCallback::MESSAGE_TYPE_ERROR, __FUNC__, trans_operator_3d.get() );
@@ -519,17 +542,16 @@ namespace IFCC {
 				messageCallback( "LocalOrigin not given", StatusCallback::MESSAGE_TYPE_ERROR, __FUNC__, trans_operator_3d.get() );
 				return;
 			}
-			if( trans_operator_3d->m_LocalOrigin->m_Coordinates.size() < 3 )
+			if( std::isnan(trans_operator_3d->m_LocalOrigin->m_Coordinates[2]) )
 			{
 				messageCallback( "LocalOrigin is not valid", StatusCallback::MESSAGE_TYPE_ERROR, __FUNC__, trans_operator_3d.get() );
 				return;
 			}
-			if( GeomUtils::allPointersValid( trans_operator_3d->m_LocalOrigin->m_Coordinates ) )
-			{
-				translate.x = trans_operator_3d->m_LocalOrigin->m_Coordinates[0]->m_value*length_factor;
-				translate.y = trans_operator_3d->m_LocalOrigin->m_Coordinates[1]->m_value*length_factor;
-				translate.z = trans_operator_3d->m_LocalOrigin->m_Coordinates[2]->m_value*length_factor;
-			}
+
+			translate.x = trans_operator_3d->m_LocalOrigin->m_Coordinates[0]*length_factor;
+			translate.y = trans_operator_3d->m_LocalOrigin->m_Coordinates[1]*length_factor;
+			translate.z = trans_operator_3d->m_LocalOrigin->m_Coordinates[2]*length_factor;
+
 			if( trans_operator_3d->m_Scale )
 			{
 				scale = trans_operator_3d->m_Scale->m_value;
@@ -538,9 +560,9 @@ namespace IFCC {
 			scale_z = scale;
 			if( trans_operator_3d->m_Axis1 && trans_operator_3d->m_Axis2 && trans_operator_3d->m_Axis3 )
 			{
-				shared_ptr<IfcDirection> axis1 = trans_operator_3d->m_Axis1;
-				shared_ptr<IfcDirection> axis2 = trans_operator_3d->m_Axis2;
-				shared_ptr<IfcDirection> axis3 = trans_operator_3d->m_Axis3;
+				shared_ptr<IFC4X3::IfcDirection> axis1 = trans_operator_3d->m_Axis1;
+				shared_ptr<IFC4X3::IfcDirection> axis2 = trans_operator_3d->m_Axis2;
+				shared_ptr<IFC4X3::IfcDirection> axis3 = trans_operator_3d->m_Axis3;
 				if( axis1->m_DirectionRatios.size() < 2 )
 				{
 					messageCallback( "Axis1 is not valid", StatusCallback::MESSAGE_TYPE_ERROR, __FUNC__, trans_operator_3d.get() );
@@ -569,7 +591,7 @@ namespace IFCC {
 				local_z.z = axis3->m_DirectionRatios[2]->m_value;
 			}
 
-			shared_ptr<IfcCartesianTransformationOperator3DnonUniform> non_uniform = dynamic_pointer_cast<IfcCartesianTransformationOperator3DnonUniform>( transform_operator );
+			shared_ptr<IFC4X3::IfcCartesianTransformationOperator3DnonUniform> non_uniform = dynamic_pointer_cast<IFC4X3::IfcCartesianTransformationOperator3DnonUniform>( transform_operator );
 			if( non_uniform )
 			{
 				if( non_uniform->m_Scale2 )
@@ -597,7 +619,7 @@ namespace IFCC {
 			0, 0, 0, 1 );
 		resulting_matrix->m_matrix = rotate_translate*carve::math::Matrix::SCALE( scale, scale_y, scale_z ); // scale is applied first, rotate second
 		resulting_matrix->m_placement_entity = transform_operator;
-		resulting_matrix->m_placement_entity_id = transform_operator->m_entity_id;
+		resulting_matrix->m_placement_tag = transform_operator->m_tag;
 	}
 
 } // end namespace

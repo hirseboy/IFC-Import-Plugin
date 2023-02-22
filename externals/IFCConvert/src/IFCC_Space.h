@@ -1,8 +1,8 @@
 #ifndef IFCC_SpaceH
 #define IFCC_SpaceH
 
-#include <ifcpp/IFC4/include/IfcSpaceTypeEnum.h>
-#include <ifcpp/IFC4/include/IfcSpace.h>
+#include <ifcpp/IFC4X3/include/IfcSpaceTypeEnum.h>
+#include <ifcpp/IFC4X3/include/IfcSpace.h>
 
 #include <IBKMK_Vector3D.h>
 
@@ -105,7 +105,7 @@ public:
 		Space boundaries will be created if the IFC data include some.
 		\param ifcSpace Original IFC space element
 	*/
-	bool set(std::shared_ptr<IfcSpace> ifcSpace);
+	bool set(std::shared_ptr<IFC4X3::IfcSpace> ifcSpace);
 
 	/*! Updates the space geometry from shape by calling fetchGeometry and transform.
 		Set the transformation matrix.
@@ -162,7 +162,7 @@ public:
 		\li ENUM_USERDEFINED - user defined space type
 		\li ENUM_NOTDEFINED - undefined space type
 	*/
-	IfcSpaceTypeEnum::IfcSpaceTypeEnumEnum		m_spaceType;
+	IFC4X3::IfcSpaceTypeEnum::IfcSpaceTypeEnumEnum		m_spaceType;
 	/*! Some remarkes to the space. Can contain notes from space boundary evaluation.*/
 	std::string									m_notes;
 

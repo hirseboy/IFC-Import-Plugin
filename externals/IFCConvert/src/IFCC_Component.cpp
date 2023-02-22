@@ -4,6 +4,9 @@
 
 #include <tinyxml.h>
 
+#include <Carve/src/include/carve/carve.hpp>
+#include <ifcpp/geometry/MeshUtils.h>
+
 #include "IFCC_Surface.h"
 #include "IFCC_SpaceBoundary.h"
 

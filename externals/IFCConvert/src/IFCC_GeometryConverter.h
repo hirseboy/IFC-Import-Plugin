@@ -21,8 +21,8 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OU
 
 #include <unordered_set>
 
-#include <ifcpp/IFC4/include/IfcWindow.h>
-#include <ifcpp/IFC4/include/IfcSite.h>
+#include <ifcpp/IFC4X3/include/IfcWindow.h>
+#include <ifcpp/IFC4X3/include/IfcSite.h>
 
 #include <ifcpp/model/BuildingModel.h>
 
@@ -43,6 +43,14 @@ public:
 	shared_ptr<GeometrySettings>&					getGeomSettings();
 	std::map<std::string, shared_ptr<ProductShapeData> >&	getShapeInputData();
 	std::map<std::string, shared_ptr<BuildingObject> >&		getObjectsOutsideSpatialStructure();
+	bool m_clear_memory_immedeately = true;
+	bool m_set_model_to_origin = false;
+
+	//\brief Pointer to the object on which the message callback function is called.
+	void* m_callback_object_geometry_converted = nullptr;
+	void (*m_callback_func_geometry_converted)(void*, shared_ptr<ProductShapeData> t) = nullptr;
+
+	void setIfcSiteToOrigin(shared_ptr<IfcSite>& ifc_site);
 
 	void resetModel();
 
@@ -58,7 +66,7 @@ public:
 
 	void readAppearanceFromPropertySet( const shared_ptr<IfcPropertySet>& prop_set, shared_ptr<ProductShapeData>& product_shape );
 
-	void resetIfcSiteLargeCoords(shared_ptr<IfcSite>& ifc_site);
+//	void resetIfcSiteLargeCoords(shared_ptr<IfcSite>& ifc_site);
 
 	/*\brief method convertGeometry: Creates geometry for Carve from previously loaded BuildingModel model.
 	**/
@@ -76,6 +84,8 @@ public:
 
 	virtual void messageTarget( void* ptr, shared_ptr<StatusCallback::Message> m );
 
+	void fixModelHierarchy();
+
 protected:
 	shared_ptr<BuildingModel>											m_ifc_model;
 	shared_ptr<GeometrySettings>										m_geom_settings;
@@ -83,6 +93,8 @@ protected:
 
 	std::map<std::string, shared_ptr<ProductShapeData> >				m_product_shape_data;
 	std::map<std::string, shared_ptr<BuildingObject> >					m_map_outside_spatial_structure;
+	std::set<std::string>												m_setResolvedProjectStructure;
+	vec3																m_siteOffset;
 	double m_recent_progress = 0;
 	double m_csg_eps = 1.5e-05;
 	std::map<int, std::vector<shared_ptr<StatusCallback::Message> > >	m_messages;

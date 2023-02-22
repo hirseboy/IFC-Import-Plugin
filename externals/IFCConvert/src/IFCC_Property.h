@@ -3,8 +3,8 @@
 
 #include <string>
 
-#include <ifcpp/IFC4/include/IfcProperty.h>
-#include <ifcpp/IFC4/include/IfcMaterial.h>
+#include <ifcpp/IFC4X3/include/IfcProperty.h>
+#include <ifcpp/IFC4X3/include/IfcMaterial.h>
 
 
 
@@ -37,9 +37,9 @@ public:
 bool getDoubleProperty(const std::map<std::string,std::map<std::string,Property>>& pmap,
 								 const std::string& setName, const std::string& name, double& value );
 
-bool getProperty(shared_ptr<IfcProperty> property, const std::string& pset_name, Property& prop);
+bool getProperty(shared_ptr<IFC4X3::IfcProperty> property, const std::string& pset_name, Property& prop);
 
-void getMaterialProperties(const shared_ptr<IfcMaterial>& mat, std::map<std::string,std::map<std::string,Property>>& propItem);
+void getMaterialProperties(const shared_ptr<IFC4X3::IfcMaterial>& mat, std::map<std::string,std::map<std::string,Property>>& propItem);
 
 } // namespace IFCC
 

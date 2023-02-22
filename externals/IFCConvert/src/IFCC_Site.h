@@ -2,9 +2,9 @@
 #define IFCC_SiteH
 
 
-#include <ifcpp/IFC4/include/IfcSpatialStructureElement.h>
-#include <ifcpp/geometry/Carve/GeometryInputData.h>
-#include <ifcpp/IFC4/include/IfcBuilding.h>
+#include <ifcpp/IFC4X3/include/IfcSpatialStructureElement.h>
+#include <ifcpp/geometry/GeometryInputData.h>
+#include <ifcpp/IFC4X3/include/IfcBuilding.h>
 
 #include <tinyxml.h>
 
@@ -35,7 +35,7 @@ public:
 		\param productShape Shape data of site
 		\param buildings Shape data of buildings
 	*/
-	bool set(std::shared_ptr<IfcSpatialStructureElement> ifcElement, std::shared_ptr<ProductShapeData> productShape,
+	bool set(std::shared_ptr<IFC4X3::IfcSpatialStructureElement> ifcElement, std::shared_ptr<ProductShapeData> productShape,
 			 const std::map<std::string,shared_ptr<ProductShapeData>>& buildings, std::vector<ConvertError>& errors);
 
 	/*! Return the internal surface vector.*/
@@ -46,6 +46,12 @@ public:
 
 	/*! Return a vector of all spaces in project.*/
 	std::vector<std::shared_ptr<Space>> allSpaces() const;
+
+	/*! Return a const reference of the space with the given id.*/
+	const Space* spaceWithId(int id) const;
+
+	/*! Return a const reference of the space boundary with the given id.*/
+	const SpaceBoundary* spaceBoundaryWithId(int id) const;
 
 //	/*! Return a vector of all space connection in project.*/
 //	std::vector<Space::SurfaceConnectionVectors> allSurfaceConnectionVectors() const;
@@ -61,7 +67,7 @@ private:
 		It set a name and fills the original building vector.
 		\param ifcElement IFC object for a site. It uses the base class of IfcBuildingStorey.
 	*/
-	bool set(std::shared_ptr<IfcSpatialStructureElement> ifcElement);
+	bool set(std::shared_ptr<IFC4X3::IfcSpatialStructureElement> ifcElement);
 
 	/*! Transforms the site geometry by using transformation matrix from productShape.
 		It transforms all coordinates from local system into global system.
@@ -78,9 +84,9 @@ private:
 	*/
 	void fetchBuildings(const std::map<std::string,shared_ptr<ProductShapeData>>& buildings);
 
-	std::vector<Surface>						m_surfaces;				///< Vector of all surfaces
+	std::vector<Surface>								m_surfaces;				///< Vector of all surfaces
 
-	std::vector<std::shared_ptr<IfcBuilding>>	m_buildingsOriginal;	///< Vector of original IFC building objects
+	std::vector<std::shared_ptr<IFC4X3::IfcBuilding>>	m_buildingsOriginal;	///< Vector of original IFC building objects
 };
 
 } // namespace IFCC

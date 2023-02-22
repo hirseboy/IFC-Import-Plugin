@@ -4,37 +4,40 @@
 
 #include <QDebug>
 
-#include <ifcpp/IFC4/include/IfcRelSpaceBoundary.h>
-#include <ifcpp/IFC4/include/IfcWall.h>
-#include <ifcpp/IFC4/include/IfcBeam.h>
-#include <ifcpp/IFC4/include/IfcChimney.h>
-#include <ifcpp/IFC4/include/IfcColumn.h>
-#include <ifcpp/IFC4/include/IfcCovering.h>
-#include <ifcpp/IFC4/include/IfcCurtainWall.h>
-#include <ifcpp/IFC4/include/IfcDoor.h>
-#include <ifcpp/IFC4/include/IfcFooting.h>
-#include <ifcpp/IFC4/include/IfcMember.h>
-#include <ifcpp/IFC4/include/IfcPile.h>
-#include <ifcpp/IFC4/include/IfcPlate.h>
-#include <ifcpp/IFC4/include/IfcRailing.h>
-#include <ifcpp/IFC4/include/IfcRamp.h>
-#include <ifcpp/IFC4/include/IfcRampFlight.h>
-#include <ifcpp/IFC4/include/IfcRoof.h>
-#include <ifcpp/IFC4/include/IfcShadingDevice.h>
-#include <ifcpp/IFC4/include/IfcSlab.h>
-#include <ifcpp/IFC4/include/IfcStair.h>
-#include <ifcpp/IFC4/include/IfcStairFlight.h>
-#include <ifcpp/IFC4/include/IfcWall.h>
-#include <ifcpp/IFC4/include/IfcCivilElement.h>
-#include <ifcpp/IFC4/include/IfcDistributionElement.h>
-#include <ifcpp/IFC4/include/IfcElementAssembly.h>
-#include <ifcpp/IFC4/include/IfcElementComponent.h>
-#include <ifcpp/IFC4/include/IfcFurnishingElement.h>
-#include <ifcpp/IFC4/include/IfcGeographicElement.h>
-#include <ifcpp/IFC4/include/IfcTransportElement.h>
-#include <ifcpp/IFC4/include/IfcVirtualElement.h>
-#include <ifcpp/IFC4/include/IfcExternalSpatialElement.h>
-#include <ifcpp/IFC4/include/IfcSpatialZone.h>
+#include <ifcpp/IFC4X3/include/IfcRelSpaceBoundary.h>
+#include <ifcpp/IFC4X3/include/IfcWall.h>
+#include <ifcpp/IFC4X3/include/IfcBeam.h>
+#include <ifcpp/IFC4X3/include/IfcChimney.h>
+#include <ifcpp/IFC4X3/include/IfcColumn.h>
+#include <ifcpp/IFC4X3/include/IfcCovering.h>
+#include <ifcpp/IFC4X3/include/IfcCurtainWall.h>
+#include <ifcpp/IFC4X3/include/IfcDoor.h>
+#include <ifcpp/IFC4X3/include/IfcFooting.h>
+#include <ifcpp/IFC4X3/include/IfcMember.h>
+#include <ifcpp/IFC4X3/include/IfcPile.h>
+#include <ifcpp/IFC4X3/include/IfcPlate.h>
+#include <ifcpp/IFC4X3/include/IfcRailing.h>
+#include <ifcpp/IFC4X3/include/IfcRamp.h>
+#include <ifcpp/IFC4X3/include/IfcRampFlight.h>
+#include <ifcpp/IFC4X3/include/IfcRoof.h>
+#include <ifcpp/IFC4X3/include/IfcShadingDevice.h>
+#include <ifcpp/IFC4X3/include/IfcSlab.h>
+#include <ifcpp/IFC4X3/include/IfcStair.h>
+#include <ifcpp/IFC4X3/include/IfcStairFlight.h>
+#include <ifcpp/IFC4X3/include/IfcWall.h>
+#include <ifcpp/IFC4X3/include/IfcCivilElement.h>
+#include <ifcpp/IFC4X3/include/IfcDistributionElement.h>
+#include <ifcpp/IFC4X3/include/IfcElementAssembly.h>
+#include <ifcpp/IFC4X3/include/IfcElementComponent.h>
+#include <ifcpp/IFC4X3/include/IfcFurnishingElement.h>
+#include <ifcpp/IFC4X3/include/IfcGeographicElement.h>
+#include <ifcpp/IFC4X3/include/IfcTransportElement.h>
+#include <ifcpp/IFC4X3/include/IfcVirtualElement.h>
+#include <ifcpp/IFC4X3/include/IfcExternalSpatialElement.h>
+#include <ifcpp/IFC4X3/include/IfcSpatialZone.h>
+
+#include <Carve/src/include/carve/carve.hpp>
+#include <ifcpp/geometry/MeshUtils.h>
 
 #include <IBK_Exception.h>
 
@@ -106,7 +109,7 @@ bool IFCReader::read(const IBK::Path& filename, bool ignoreReadError) {
 	try {
 		ReaderSTEP readerStep;
 		readerStep.setMessageCallBack(this, &IFCReader::messageTarget);
-		readerStep.loadModelFromFile(m_filename.wstr(), m_geometryConverter.getBuildingModel());
+		readerStep.loadModelFromFile(m_filename.str(), m_geometryConverter.getBuildingModel());
 		if(!ignoreReadError && m_hasError) {
 			m_readCompletedSuccessfully = false;
 		}
@@ -131,7 +134,7 @@ void IFCReader::splitShapeData() {
 	for(const auto& shapeData : shapeDataMap) {
 		const shared_ptr<ProductShapeData>& data = shapeData.second;
 		std::string id = shapeData.first;
-		std::wstring guid = data->m_entity_guid;
+		std::string guid = data->m_entity_guid;
 		const std::shared_ptr<IfcObjectDefinition> od = data->m_ifc_object_definition.lock();
 		if(dynamic_pointer_cast<IfcElement>(od) != nullptr) {
 			if(dynamic_pointer_cast<IfcWall>(od) != nullptr) {
@@ -504,6 +507,23 @@ void IFCReader::setRemoveDoubledSBs(bool removeDoubledSBs) {
 	m_repairFlags.m_removeDoubledSBs = removeDoubledSBs;
 }
 
+QString IFCReader::nameForId(int id, Name_Id_Type type) const {
+	switch(type) {
+		case NIT_Space: {
+			const Space* sp = m_site.spaceWithId(id);
+			if(sp != nullptr)
+				return QString::fromStdString(sp->m_name);
+		}
+		case NIT_SpaceBoundary: {
+			const SpaceBoundary* sp = m_site.spaceBoundaryWithId(id);
+			if(sp != nullptr)
+				return QString::fromStdString(sp->m_name);
+		}
+	}
+	return QString();
+}
+
+
 void IFCReader::writeXML(const IBK::Path & filename) const {
 	TiXmlDocument doc;
 	TiXmlDeclaration * decl = new TiXmlDeclaration( "1.0", "UTF-8", "" );
@@ -715,24 +735,24 @@ void IFCReader::messageTarget( void* ptr, shared_ptr<StatusCallback::Message> m 
 	std::string position;
 	if( m->m_entity )
 	{
-		position = "IFC entity: #" + std::to_string(m->m_entity->m_entity_id) + "=" + m->m_entity->className();
+		position = "IFC entity: #" + std::to_string(m->m_entity->m_tag) + "=" + std::to_string(m->m_entity->classID());
 	}
 	if(m->m_message_type == StatusCallback::MESSAGE_TYPE_ERROR) {
 		myself->m_hasError = true;
 		myself->m_errorText = "Error from: " + reporting_function_str + " in " + position;
-		myself->m_errorText += ws2s(m->m_message_text);
+		myself->m_errorText += m->m_message_text;
 	}
 	if(m->m_message_type == StatusCallback::MESSAGE_TYPE_WARNING) {
 		myself->m_hasWarning = true;
 		myself->m_warningText = "Error from: " + reporting_function_str + " in " + position;
-		myself->m_warningText += ws2s(m->m_message_text);
+		myself->m_warningText += m->m_message_text;
 	}
 }
 
 bool IFCReader::typeByGuid(const std::string& guid, std::pair<BuildingElementTypes,std::shared_ptr<ProductShapeData>>& res) {
 	for(const auto& elemType : m_elementEntitesShape) {
 		for(const auto& elem : elemType.second) {
-			if(guid == ws2s(elem->m_entity_guid)) {
+			if(guid == elem->m_entity_guid) {
 				res = std::pair<BuildingElementTypes,std::shared_ptr<ProductShapeData>>(elemType.first,elem);
 				return true;
 			}

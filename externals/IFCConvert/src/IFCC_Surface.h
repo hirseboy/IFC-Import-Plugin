@@ -5,7 +5,7 @@
 
 #include <tinyxml.h>
 
-#include <ifcpp/IFC4/include/IfcInternalOrExternalEnum.h>
+#include <ifcpp/IFC4X3/include/IfcInternalOrExternalEnum.h>
 
 #include "IFCC_Types.h"
 #include "IFCC_Helper.h"
@@ -118,7 +118,7 @@ public:
 	/*! Set the position type of the surface.
 		\param type Position type from IFC space boundary object.
 	*/
-	void setSurfaceType(IfcInternalOrExternalEnum::IfcInternalOrExternalEnumEnum type);
+	void setSurfaceType(IFC4X3::IfcInternalOrExternalEnum::IfcInternalOrExternalEnumEnum type);
 
 	std::vector<SubSurface> subSurfaces() const {
 		return m_subSurfaces;

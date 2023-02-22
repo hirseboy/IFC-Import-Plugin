@@ -3,9 +3,9 @@
 
 #include "IFCC_EntityBase.h"
 
-#include <ifcpp/IFC4/include/IfcRelSpaceBoundary.h>
-#include <ifcpp/IFC4/include/IfcPhysicalOrVirtualEnum.h>
-#include <ifcpp/IFC4/include/IfcInternalOrExternalEnum.h>
+#include <ifcpp/IFC4X3/include/IfcRelSpaceBoundary.h>
+#include <ifcpp/IFC4X3/include/IfcPhysicalOrVirtualEnum.h>
+#include <ifcpp/IFC4X3/include/IfcInternalOrExternalEnum.h>
 
 #include <ifcpp/model/UnitConverter.h>
 
@@ -56,7 +56,7 @@ public:
 		It set a name, guid, related element, type and basic geometry.
 		\param ifcSpaceBoundary Original IFC space boundary element
 	*/
-	bool setFromIFC(std::shared_ptr<IfcRelSpaceBoundary> ifcSpaceBoundary);
+	bool setFromIFC(std::shared_ptr<IFC4X3::IfcRelSpaceBoundary> ifcSpaceBoundary);
 
 	/*! Initialise space boundary from a building element object.
 		It set a name, related element, related space and type. Geometry is not set.
@@ -169,24 +169,24 @@ public:
 
 	/*! Return true if its a virtual space boundary (no real buildin element).*/
 	bool isVirtual() const {
-		return m_physicalOrVirtual == IfcPhysicalOrVirtualEnum::ENUM_VIRTUAL;
+		return m_physicalOrVirtual == IFC4X3::IfcPhysicalOrVirtualEnum::ENUM_VIRTUAL;
 	}
 
 	/*! Return true if the related building element could not be evaluated and a missing one is set.*/
 	bool isMissing() const {
-		return m_physicalOrVirtual == IfcPhysicalOrVirtualEnum::ENUM_PHYSICAL && m_elementEntityId == -1;
+		return m_physicalOrVirtual == IFC4X3::IfcPhysicalOrVirtualEnum::ENUM_PHYSICAL && m_elementEntityId == -1;
 	}
 
 	bool isInternal() const {
-		return !isVirtual() && m_internalOrExternal == IfcInternalOrExternalEnum::ENUM_INTERNAL;
+		return !isVirtual() && m_internalOrExternal == IFC4X3::IfcInternalOrExternalEnum::ENUM_INTERNAL;
 	}
 
 	bool isExternalToGround() const {
-		return !isVirtual() && m_internalOrExternal == IfcInternalOrExternalEnum::ENUM_EXTERNAL_EARTH;
+		return !isVirtual() && m_internalOrExternal == IFC4X3::IfcInternalOrExternalEnum::ENUM_EXTERNAL_EARTH;
 	}
 
 	bool isExternal() const {
-		return !isVirtual() && m_internalOrExternal == IfcInternalOrExternalEnum::ENUM_EXTERNAL;
+		return !isVirtual() && m_internalOrExternal == IFC4X3::IfcInternalOrExternalEnum::ENUM_EXTERNAL;
 	}
 
 	/*! Return the vector of all contained opening space boundaries.*/
@@ -223,7 +223,7 @@ private:
 		\li ENUM_VIRTUAL - a virtual object only for dividing a space
 		\li ENUM_NOTDEFINED - not known
 	*/
-	IfcPhysicalOrVirtualEnum::IfcPhysicalOrVirtualEnumEnum		m_physicalOrVirtual;
+	IFC4X3::IfcPhysicalOrVirtualEnum::IfcPhysicalOrVirtualEnumEnum		m_physicalOrVirtual;
 	/*! Defines if the space boundary is a internal or external boundary.
 		Possible types:
 		\li ENUM_INTERNAL - internal boundary
@@ -234,12 +234,12 @@ private:
 		\li ENUM_NOTDEFINED - not defined
 		It is used to define the surface position type (\sa Surface::setSurfaceType).
 	*/
-	IfcInternalOrExternalEnum::IfcInternalOrExternalEnumEnum	m_internalOrExternal;
+	IFC4X3::IfcInternalOrExternalEnum::IfcInternalOrExternalEnumEnum	m_internalOrExternal;
 	ConstructionType											m_type;					///< Type of connected construction
 	/*! Temporary vector used from fetchGeometryFromIFC. Should be splitted later.*/
 	std::vector<Surface>										m_surfaces;
 	Surface														m_surface;				///< Surface of the space boundary
-	std::shared_ptr<IfcConnectionGeometry>						m_connectionGeometry;	///< Geometry from IFC space boundary object
+	std::shared_ptr<IFC4X3::IfcConnectionGeometry>						m_connectionGeometry;	///< Geometry from IFC space boundary object
 	/*! Type of the space boundary (A, B, inner) evaluated only in case of derived IFC type.*/
 	SpaceBoundaryType											m_spaceBoundaryType;
 	/*! Level of the space boundary (1st, 2nd, 3rd) evaluated only in case of derived IFC type.*/

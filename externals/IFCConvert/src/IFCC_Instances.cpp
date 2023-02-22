@@ -1,7 +1,8 @@
 #include "IFCC_Instances.h"
 
 
-//#include <VICUS_Project.h>
+#include <Carve/src/include/carve/carve.hpp>
+#include <ifcpp/geometry/MeshUtils.h>
 
 #include "IFCC_Helper.h"
 #include "IFCC_Site.h"

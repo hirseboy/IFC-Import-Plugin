@@ -19,12 +19,12 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OU
 */
 
 #include <ifcpp/model/StatusCallback.h>
-#include <ifcpp/IFC4/include/IfcArbitraryClosedProfileDef.h>
-#include <ifcpp/IFC4/include/IfcArbitraryOpenProfileDef.h>
-#include <ifcpp/IFC4/include/IfcCompositeProfileDef.h>
-#include <ifcpp/IFC4/include/IfcDerivedProfileDef.h>
-#include <ifcpp/IFC4/include/IfcParameterizedProfileDef.h>
-#include <ifcpp/IFC4/include/IfcProfileDef.h>
+#include <ifcpp/IFC4X3/include/IfcArbitraryClosedProfileDef.h>
+#include <ifcpp/IFC4X3/include/IfcArbitraryOpenProfileDef.h>
+#include <ifcpp/IFC4X3/include/IfcCompositeProfileDef.h>
+#include <ifcpp/IFC4X3/include/IfcDerivedProfileDef.h>
+#include <ifcpp/IFC4X3/include/IfcParameterizedProfileDef.h>
+#include <ifcpp/IFC4X3/include/IfcProfileDef.h>
 
 #include "IFCC_CurveConverter.h"
 
@@ -48,21 +48,21 @@ public:
 
 	virtual ~ProfileConverter() = default;
 
-	void computeProfile( shared_ptr<IfcProfileDef> profile_def );
+	void computeProfile( shared_ptr<IFC4X3::IfcProfileDef> profile_def );
 
 	void addAvoidingDuplicates( const std::vector<vec2>& polygon, std::vector<std::vector<vec2> >& paths );
 
-	void convertIfcArbitraryClosedProfileDef( const shared_ptr<IfcArbitraryClosedProfileDef>& profile, std::vector<std::vector<vec2> >& paths );
+	void convertIfcArbitraryClosedProfileDef( const shared_ptr<IFC4X3::IfcArbitraryClosedProfileDef>& profile, std::vector<std::vector<vec2> >& paths );
 
-	void convertIfcArbitraryOpenProfileDef( const shared_ptr<IfcArbitraryOpenProfileDef>& profile, std::vector<std::vector<vec2> >& paths );
+	void convertIfcArbitraryOpenProfileDef( const shared_ptr<IFC4X3::IfcArbitraryOpenProfileDef>& profile, std::vector<std::vector<vec2> >& paths );
 
-	void convertIfcCompositeProfileDef( const shared_ptr<IfcCompositeProfileDef>& composite_profile, std::vector<std::vector<vec2> >& paths );
+	void convertIfcCompositeProfileDef( const shared_ptr<IFC4X3::IfcCompositeProfileDef>& composite_profile, std::vector<std::vector<vec2> >& paths );
 
-	void convertIfcDerivedProfileDef( const shared_ptr<IfcDerivedProfileDef>& derived_profile, std::vector<std::vector<vec2> >& paths );
+	void convertIfcDerivedProfileDef( const shared_ptr<IFC4X3::IfcDerivedProfileDef>& derived_profile, std::vector<std::vector<vec2> >& paths );
 
-	void convertIfcParameterizedProfileDefWithPosition( const shared_ptr<IfcParameterizedProfileDef>& parameterized, std::vector<std::vector<vec2> >& paths );
+	void convertIfcParameterizedProfileDefWithPosition( const shared_ptr<IFC4X3::IfcParameterizedProfileDef>& parameterized, std::vector<std::vector<vec2> >& paths );
 
-	void convertIfcParameterizedProfileDef( const shared_ptr<IfcParameterizedProfileDef>& profile, std::vector<std::vector<vec2> >& paths );
+	void convertIfcParameterizedProfileDef( const shared_ptr<IFC4X3::IfcParameterizedProfileDef>& profile, std::vector<std::vector<vec2> >& paths );
 
 	static void deleteLastPointIfEqualToFirst( std::vector<vec2>& coords );
 

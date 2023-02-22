@@ -1,5 +1,8 @@
 #include "IFCC_BuildingElementsCollector.h"
 
+#include <Carve/src/include/carve/carve.hpp>
+#include <ifcpp/geometry/MeshUtils.h>
+
 #include "IFCC_BuildingElement.h"
 
 namespace IFCC {

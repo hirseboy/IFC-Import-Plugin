@@ -2,7 +2,7 @@
 #define IFCC_OpeningH
 
 
-#include <ifcpp/IFC4/include/IfcFeatureElementSubtraction.h>
+#include <ifcpp/IFC4X3/include/IfcFeatureElementSubtraction.h>
 
 
 //#include "IFCC_SpaceBoundary.h"
@@ -28,7 +28,7 @@ public:
 		It set a name and guid.
 		\param ifcElement Original IFC element which can represent a opening.
 	*/
-	bool set(std::shared_ptr<IfcFeatureElementSubtraction> ifcElement);
+	bool set(std::shared_ptr<IFC4X3::IfcFeatureElementSubtraction> ifcElement);
 
 	/*! Get and transform geometry and fill surface vector.
 		\param Shape data of a opening.

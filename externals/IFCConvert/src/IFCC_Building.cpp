@@ -1,8 +1,12 @@
 #include "IFCC_Building.h"
 
-#include <ifcpp/IFC4/include/IfcRelAggregates.h>
-#include <ifcpp/IFC4/include/IfcGloballyUniqueId.h>
-#include <ifcpp/IFC4/include/IfcBuilding.h>
+#include <ifcpp/IFC4X3/include/IfcRelAggregates.h>
+#include <ifcpp/IFC4X3/include/IfcGloballyUniqueId.h>
+#include <ifcpp/IFC4X3/include/IfcBuilding.h>
+
+
+#include <Carve/src/include/carve/carve.hpp>
+#include <ifcpp/geometry/MeshUtils.h>
 
 #include "IFCC_Helper.h"
 
@@ -12,25 +16,25 @@ Building::Building(int id) :
 	EntityBase(id)
 {}
 
-bool Building::set(std::shared_ptr<IfcSpatialStructureElement> ifcElement) {
-	if(!EntityBase::set(dynamic_pointer_cast<IfcRoot>(ifcElement)))
+bool Building::set(std::shared_ptr<IFC4X3::IfcSpatialStructureElement> ifcElement) {
+	if(!EntityBase::set(dynamic_pointer_cast<IFC4X3::IfcRoot>(ifcElement)))
 		return false;
 
-	const std::vector<weak_ptr<IfcRelAggregates> >& vec_decomposedBy = ifcElement->m_IsDecomposedBy_inverse;
+	const std::vector<weak_ptr<IFC4X3::IfcRelAggregates> >& vec_decomposedBy = ifcElement->m_IsDecomposedBy_inverse;
 	for(const auto& contentElement : vec_decomposedBy) {
 		if( contentElement.expired() ) {
 			continue;
 		}
-		shared_ptr<IfcRelAggregates> rel_aggregates( contentElement );
+		shared_ptr<IFC4X3::IfcRelAggregates> rel_aggregates( contentElement );
 		if( rel_aggregates ) {
-			const std::vector<shared_ptr<IfcObjectDefinition> >& vec_related_objects = rel_aggregates->m_RelatedObjects;
+			const std::vector<shared_ptr<IFC4X3::IfcObjectDefinition> >& vec_related_objects = rel_aggregates->m_RelatedObjects;
 			for(const auto& contObj : vec_related_objects) {
 				if( contObj ) {
-					shared_ptr<IfcBuildingStorey> storey = std::dynamic_pointer_cast<IfcBuildingStorey>(contObj);
+					shared_ptr<IFC4X3::IfcBuildingStorey> storey = std::dynamic_pointer_cast<IFC4X3::IfcBuildingStorey>(contObj);
 					if(storey != nullptr)
 						m_storeysOriginal.push_back(storey);
 
-					shared_ptr<IfcSpace> space = std::dynamic_pointer_cast<IfcSpace>(contObj);
+					shared_ptr<IFC4X3::IfcSpace> space = std::dynamic_pointer_cast<IFC4X3::IfcSpace>(contObj);
 					if(space != nullptr)
 						m_spacesOriginal.push_back(space);
 				}

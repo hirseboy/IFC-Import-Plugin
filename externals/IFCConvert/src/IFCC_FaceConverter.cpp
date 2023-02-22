@@ -15,17 +15,21 @@ FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTH
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-#include <ifcpp/IFC4/include/IfcBoolean.h>
-#include <ifcpp/IFC4/include/IfcCurveBoundedPlane.h>
-#include <ifcpp/IFC4/include/IfcCurveBoundedSurface.h>
-#include <ifcpp/IFC4/include/IfcCylindricalSurface.h>
-#include <ifcpp/IFC4/include/IfcFaceBound.h>
-#include <ifcpp/IFC4/include/IfcPlane.h>
-#include <ifcpp/IFC4/include/IfcRectangularTrimmedSurface.h>
-#include <ifcpp/IFC4/include/IfcSurfaceOfLinearExtrusion.h>
-#include <ifcpp/IFC4/include/IfcSurfaceOfRevolution.h>
-#include <ifcpp/IFC4/include/IfcSweptSurface.h>
-#include <ifcpp/IFC4/include/IfcPositiveLengthMeasure.h>
+#include <ifcpp/IFC4X3/include/IfcBoolean.h>
+#include <ifcpp/IFC4X3/include/IfcCurveBoundedPlane.h>
+#include <ifcpp/IFC4X3/include/IfcCurveBoundedSurface.h>
+#include <ifcpp/IFC4X3/include/IfcCylindricalSurface.h>
+#include <ifcpp/IFC4X3/include/IfcFaceBound.h>
+#include <ifcpp/IFC4X3/include/IfcPlane.h>
+#include <ifcpp/IFC4X3/include/IfcRectangularTrimmedSurface.h>
+#include <ifcpp/IFC4X3/include/IfcSurfaceOfLinearExtrusion.h>
+#include <ifcpp/IFC4X3/include/IfcSurfaceOfRevolution.h>
+#include <ifcpp/IFC4X3/include/IfcSweptSurface.h>
+#include <ifcpp/IFC4X3/include/IfcPositiveLengthMeasure.h>
+#include <ifcpp/IFC4X3/include/IfcRationalBSplineSurfaceWithKnots.h>
+
+#include <Carve/src/include/carve/carve.hpp>
+#include <ifcpp/geometry/MeshUtils.h>
 
 #include "IFCC_FaceConverter.h"
 
@@ -37,20 +41,20 @@ namespace IFCC {
 	{
 	}
 
-	void FaceConverter::convertIfcSurface( const shared_ptr<IfcSurface>& surface, shared_ptr<ItemShapeData>& item_data, shared_ptr<SurfaceProxy>& surface_proxy )
+	void FaceConverter::convertIfcSurface( const shared_ptr<IFC4X3::IfcSurface>& surface, shared_ptr<ItemShapeData>& item_data, shared_ptr<SurfaceProxy>& surface_proxy )
 	{
 		//ENTITY IfcSurface ABSTRACT SUPERTYPE OF(ONEOF(IfcBoundedSurface, IfcElementarySurface, IfcSweptSurface))
 
 		//double length_factor = m_unit_converter->getLengthInMeterFactor();
-		shared_ptr<IfcBoundedSurface> bounded_surface = dynamic_pointer_cast<IfcBoundedSurface>( surface );
+		shared_ptr<IFC4X3::IfcBoundedSurface> bounded_surface = dynamic_pointer_cast<IFC4X3::IfcBoundedSurface>( surface );
 		if( bounded_surface )
 		{
 			// ENTITY IfcBoundedSurface ABSTRACT SUPERTYPE OF(ONEOF(IfcBSplineSurface, IfcCurveBoundedPlane, IfcCurveBoundedSurface, IfcRectangularTrimmedSurface))
-			if( dynamic_pointer_cast<IfcBSplineSurface>( bounded_surface ) )
+			if( dynamic_pointer_cast<IFC4X3::IfcBSplineSurface>( bounded_surface ) )
 			{
-				if( dynamic_pointer_cast<IfcRationalBSplineSurfaceWithKnots>( bounded_surface ) )
+				if( dynamic_pointer_cast<IFC4X3::IfcRationalBSplineSurfaceWithKnots>( bounded_surface ) )
 				{
-					shared_ptr<IfcRationalBSplineSurfaceWithKnots> nurbs_surface = dynamic_pointer_cast<IfcRationalBSplineSurfaceWithKnots>( bounded_surface );
+					shared_ptr<IFC4X3::IfcRationalBSplineSurfaceWithKnots> nurbs_surface = dynamic_pointer_cast<IFC4X3::IfcRationalBSplineSurfaceWithKnots>( bounded_surface );
 					if( nurbs_surface )
 					{
 						shared_ptr<carve::input::PolylineSetData> polyline_data( new carve::input::PolylineSetData() );
@@ -62,15 +66,15 @@ namespace IFCC {
 					}
 				}
 			}
-			else if( dynamic_pointer_cast<IfcCurveBoundedPlane>( bounded_surface ) )
+			else if( dynamic_pointer_cast<IFC4X3::IfcCurveBoundedPlane>( bounded_surface ) )
 			{
 				// ENTITY IfcCurveBoundedPlane SUBTYPE OF IfcBoundedSurface;
-				shared_ptr<IfcCurveBoundedPlane> curve_bounded_plane = dynamic_pointer_cast<IfcCurveBoundedPlane>( bounded_surface );
+				shared_ptr<IFC4X3::IfcCurveBoundedPlane> curve_bounded_plane = dynamic_pointer_cast<IFC4X3::IfcCurveBoundedPlane>( bounded_surface );
 				shared_ptr<TransformData> curve_bounded_plane_matrix;
-				shared_ptr<IfcPlane>& basis_surface = curve_bounded_plane->m_BasisSurface;
+				shared_ptr<IFC4X3::IfcPlane>& basis_surface = curve_bounded_plane->m_BasisSurface;
 				if( basis_surface )
 				{
-					shared_ptr<IfcAxis2Placement3D>& basis_surface_placement = basis_surface->m_Position;
+					shared_ptr<IFC4X3::IfcAxis2Placement3D>& basis_surface_placement = basis_surface->m_Position;
 
 					if( basis_surface_placement )
 					{
@@ -79,15 +83,15 @@ namespace IFCC {
 				}
 
 				// convert outer boundary
-				shared_ptr<IfcCurve>& outer_boundary = curve_bounded_plane->m_OuterBoundary;
+				shared_ptr<IFC4X3::IfcCurve>& outer_boundary = curve_bounded_plane->m_OuterBoundary;
 				std::vector<std::vector<vec3> > face_loops;
 				face_loops.push_back( std::vector<vec3>() );
 				std::vector<vec3>& outer_boundary_loop = face_loops.back();
 				std::vector<vec3> segment_start_points;
-				m_curve_converter->convertIfcCurve( outer_boundary, outer_boundary_loop, segment_start_points );
+				m_curve_converter->convertIfcCurve( outer_boundary, outer_boundary_loop, segment_start_points, true );
 
 				// convert inner boundaries
-				std::vector<shared_ptr<IfcCurve> >& vec_inner_boundaries = curve_bounded_plane->m_InnerBoundaries;			//optional
+				std::vector<shared_ptr<IFC4X3::IfcCurve> >& vec_inner_boundaries = curve_bounded_plane->m_InnerBoundaries;			//optional
 				for( auto& inner_boundary : vec_inner_boundaries )
 				{
 					if( !inner_boundary )
@@ -97,18 +101,21 @@ namespace IFCC {
 					face_loops.push_back( std::vector<vec3>() );
 					std::vector<vec3>& inner_boundary_loop = face_loops.back();
 					std::vector<vec3> segment_start_points;
-					m_curve_converter->convertIfcCurve( inner_boundary, inner_boundary_loop, segment_start_points );
+					m_curve_converter->convertIfcCurve( inner_boundary, inner_boundary_loop, segment_start_points, true );
 				}
 
-				PolyInputCache3D poly_cache;
-				Sweeper::createTriangulated3DFace( face_loops, outer_boundary.get(), poly_cache );
-				item_data->addOpenPolyhedron( poly_cache.m_poly_data );
+				double CARVE_EPSILON = m_geom_settings->getEpsilonCoplanarDistance();
+				PolyInputCache3D poly_cache(CARVE_EPSILON);
+//				bool mergeAlignedEdges = true;
+				GeomProcessingParams params( m_geom_settings, outer_boundary.get(),  this );
+				MeshUtils::createTriangulated3DFace( face_loops, poly_cache, params );
+				item_data->addOpenPolyhedron( poly_cache.m_poly_data, CARVE_EPSILON );
 				item_data->applyTransformToItem( curve_bounded_plane_matrix );
 			}
-			else if( dynamic_pointer_cast<IfcCurveBoundedSurface>( bounded_surface ) )
+			else if( dynamic_pointer_cast<IFC4X3::IfcCurveBoundedSurface>( bounded_surface ) )
 			{
-				shared_ptr<IfcCurveBoundedSurface> curve_bounded_surface = dynamic_pointer_cast<IfcCurveBoundedSurface>( bounded_surface );
-				shared_ptr<IfcSurface>& basis_surface = curve_bounded_surface->m_BasisSurface;
+				shared_ptr<IFC4X3::IfcCurveBoundedSurface> curve_bounded_surface = dynamic_pointer_cast<IFC4X3::IfcCurveBoundedSurface>( bounded_surface );
+				shared_ptr<IFC4X3::IfcSurface>& basis_surface = curve_bounded_surface->m_BasisSurface;
 				if( basis_surface )
 				{
 					convertIfcSurface( basis_surface, item_data, surface_proxy );
@@ -123,11 +130,11 @@ namespace IFCC {
 				std::cout << "IfcCurveBoundedSurface boundaries not implemented." << std::endl;
 #endif
 			}
-			else if( dynamic_pointer_cast<IfcRectangularTrimmedSurface>( bounded_surface ) )
+			else if( dynamic_pointer_cast<IFC4X3::IfcRectangularTrimmedSurface>( bounded_surface ) )
 			{
-				shared_ptr<IfcRectangularTrimmedSurface> rectengular_trimmed_surface = dynamic_pointer_cast<IfcRectangularTrimmedSurface>( bounded_surface );
+				shared_ptr<IFC4X3::IfcRectangularTrimmedSurface> rectengular_trimmed_surface = dynamic_pointer_cast<IFC4X3::IfcRectangularTrimmedSurface>( bounded_surface );
 
-				shared_ptr<IfcSurface>& basis_surface = rectengular_trimmed_surface->m_BasisSurface;
+				shared_ptr<IFC4X3::IfcSurface>& basis_surface = rectengular_trimmed_surface->m_BasisSurface;
 				if( basis_surface )
 				{
 					convertIfcSurface( basis_surface, item_data, surface_proxy );
@@ -147,11 +154,11 @@ namespace IFCC {
 			return;
 		}
 
-		shared_ptr<IfcElementarySurface> elementary_surface = dynamic_pointer_cast<IfcElementarySurface>( surface );
+		shared_ptr<IFC4X3::IfcElementarySurface> elementary_surface = dynamic_pointer_cast<IFC4X3::IfcElementarySurface>( surface );
 		if( elementary_surface )
 		{
 			//ENTITY IfcElementarySurface	ABSTRACT SUPERTYPE OF(ONEOF(IfcCylindricalSurface, IfcPlane))
-			shared_ptr<IfcAxis2Placement3D>& elementary_surface_placement = elementary_surface->m_Position;
+			shared_ptr<IFC4X3::IfcAxis2Placement3D>& elementary_surface_placement = elementary_surface->m_Position;
 
 			shared_ptr<TransformData> elementary_surface_transform;
 			if( elementary_surface_placement )
@@ -166,7 +173,7 @@ namespace IFCC {
 			}
 			surface_proxy = proxy_linear;
 
-			shared_ptr<IfcPlane> elementary_surface_plane = dynamic_pointer_cast<IfcPlane>( elementary_surface );
+			shared_ptr<IFC4X3::IfcPlane> elementary_surface_plane = dynamic_pointer_cast<IFC4X3::IfcPlane>( elementary_surface );
 			if( elementary_surface_plane )
 			{
 				//  1----0     create big rectangular plane
@@ -191,10 +198,10 @@ namespace IFCC {
 				return;
 			}
 
-			shared_ptr<IfcCylindricalSurface> cylindrical_surface = dynamic_pointer_cast<IfcCylindricalSurface>( elementary_surface );
+			shared_ptr<IFC4X3::IfcCylindricalSurface> cylindrical_surface = dynamic_pointer_cast<IFC4X3::IfcCylindricalSurface>( elementary_surface );
 			if( cylindrical_surface )
 			{
-				shared_ptr<IfcPositiveLengthMeasure> cylindrical_surface_radius = cylindrical_surface->m_Radius;
+				shared_ptr<IFC4X3::IfcPositiveLengthMeasure> cylindrical_surface_radius = cylindrical_surface->m_Radius;
 				double circle_radius = cylindrical_surface_radius->m_value;
 
 				int num_segments = m_geom_settings->getNumVerticesPerCircleWithRadius(circle_radius);
@@ -226,12 +233,12 @@ namespace IFCC {
 			throw UnhandledRepresentationException( surface );
 		}
 
-		shared_ptr<IfcSweptSurface> swept_surface = dynamic_pointer_cast<IfcSweptSurface>( surface );
-		if( dynamic_pointer_cast<IfcSweptSurface>( surface ) )
+		shared_ptr<IFC4X3::IfcSweptSurface> swept_surface = dynamic_pointer_cast<IFC4X3::IfcSweptSurface>( surface );
+		if( dynamic_pointer_cast<IFC4X3::IfcSweptSurface>( surface ) )
 		{
 			// ENTITY IfcSweptSurface	ABSTRACT SUPERTYPE OF(ONEOF(IfcSurfaceOfLinearExtrusion, IfcSurfaceOfRevolution))
 			//shared_ptr<IfcProfileDef>& swept_surface_profile = swept_surface->m_SweptCurve;
-			shared_ptr<IfcAxis2Placement3D>& swept_surface_placement = swept_surface->m_Position;
+			shared_ptr<IFC4X3::IfcAxis2Placement3D>& swept_surface_placement = swept_surface->m_Position;
 
 			shared_ptr<TransformData> swept_surface_transform;
 			if( swept_surface_placement )
@@ -239,25 +246,19 @@ namespace IFCC {
 				m_curve_converter->getPlacementConverter()->convertIfcAxis2Placement3D( swept_surface_placement,  swept_surface_transform );
 			}
 
-			shared_ptr<IfcSurfaceOfLinearExtrusion> linear_extrusion = dynamic_pointer_cast<IfcSurfaceOfLinearExtrusion>( swept_surface );
+			shared_ptr<IFC4X3::IfcSurfaceOfLinearExtrusion> linear_extrusion = dynamic_pointer_cast<IFC4X3::IfcSurfaceOfLinearExtrusion>( swept_surface );
 			if( linear_extrusion )
 			{
 				//shared_ptr<IfcDirection>& linear_extrusion_direction = linear_extrusion->m_ExtrudedDirection;
 				//shared_ptr<IfcLengthMeasure>& linear_extrusion_depth = linear_extrusion->m_Depth;
 				// TODO: implement
-#ifdef _DEBUG
-				std::cout << "IfcSurfaceOfLinearExtrusion not implemented." << std::endl;
-#endif
 				return;
 			}
 
-			shared_ptr<IfcSurfaceOfRevolution> suface_of_revolution = dynamic_pointer_cast<IfcSurfaceOfRevolution>( swept_surface );
+			shared_ptr<IFC4X3::IfcSurfaceOfRevolution> suface_of_revolution = dynamic_pointer_cast<IFC4X3::IfcSurfaceOfRevolution>( swept_surface );
 			if( suface_of_revolution )
 			{
 				// TODO: implement
-#ifdef _DEBUG
-				std::cout << "IfcSurfaceOfRevolution not implemented." << std::endl;
-#endif
 				return;
 			}
 
@@ -266,23 +267,29 @@ namespace IFCC {
 		throw UnhandledRepresentationException( surface );
 	}
 
-	void FaceConverter::convertIfcFaceList( const std::vector<shared_ptr<IfcFace> >& vec_faces, shared_ptr<ItemShapeData> item_data, ShellType st )
+	void FaceConverter::convertIfcFaceList( const std::vector<shared_ptr<IFC4X3::IfcFace> >& vec_faces, shared_ptr<ItemShapeData> item_data, ShellType st )
 	{
-		PolyInputCache3D poly_cache;
+		if( vec_faces.size() == 0 )
+		{
+			return;
+		}
+		double CARVE_EPSILON = m_geom_settings->getEpsilonCoplanarDistance();
+		PolyInputCache3D poly_cache(CARVE_EPSILON);
+		GeomProcessingParams params( m_geom_settings, nullptr,  this );
 		BuildingEntity* report_entity = nullptr;
-		for( const shared_ptr<IfcFace>& ifc_face : vec_faces )
+		for( const shared_ptr<IFC4X3::IfcFace>& ifc_face : vec_faces )
 		{
 			if( !ifc_face )
 			{
 				continue;
 			}
-			const std::vector<shared_ptr<IfcFaceBound> >& vec_bounds = ifc_face->m_Bounds;
+			const std::vector<shared_ptr<IFC4X3::IfcFaceBound> >& vec_bounds = ifc_face->m_Bounds;
 			std::vector<std::vector<vec3> > face_loops;
 			report_entity = ifc_face.get();
 
 			for( auto it_bounds = vec_bounds.begin(); it_bounds != vec_bounds.end(); ++it_bounds )
 			{
-				const shared_ptr<IfcFaceBound>& face_bound = ( *it_bounds );
+				const shared_ptr<IFC4X3::IfcFaceBound>& face_bound = ( *it_bounds );
 
 				if( !face_bound )
 				{
@@ -290,7 +297,7 @@ namespace IFCC {
 				}
 
 				// ENTITY IfcLoop SUPERTYPE OF(ONEOF(IfcEdgeLoop, IfcPolyLoop, IfcVertexLoop))
-				const shared_ptr<IfcLoop>& loop = face_bound->m_Bound;
+				const shared_ptr<IFC4X3::IfcLoop>& loop = face_bound->m_Bound;
 				if( !loop )
 				{
 					if( it_bounds == vec_bounds.begin() )
@@ -329,38 +336,36 @@ namespace IFCC {
 					std::reverse( loop_points.begin(), loop_points.end() );
 				}
 			}
-			Sweeper::createTriangulated3DFace( face_loops, report_entity, poly_cache );
+
+			for( size_t iiLoop = 0; iiLoop < face_loops.size(); ++iiLoop )
+			{
+				std::vector<vec3>& loop = face_loops[iiLoop];
+				GeomUtils::unClosePolygon(loop);
+			}
+
+			MeshUtils::createTriangulated3DFace( face_loops, poly_cache, params );
 		}
 
 		// IfcFaceList can be a closed or open shell
 		if( st == SHELL_TYPE_UNKONWN )
 		{
-			item_data->addOpenOrClosedPolyhedron( poly_cache.m_poly_data );
+			item_data->addOpenOrClosedPolyhedron( poly_cache.m_poly_data, CARVE_EPSILON );
 		}
 		else if( st == OPEN_SHELL )
 		{
-			item_data->addOpenPolyhedron( poly_cache.m_poly_data );
+			item_data->addOpenPolyhedron( poly_cache.m_poly_data, CARVE_EPSILON );
 		}
 		else if( st == CLOSED_SHELL )
 		{
 			try
 			{
-				item_data->addClosedPolyhedron( poly_cache.m_poly_data );
+				item_data->addClosedPolyhedron(poly_cache.m_poly_data, params);
 			}
 			catch( BuildingException& e )
 			{
 				// not a fatal error, just mesh is not closed
 				messageCallback( e.what(), StatusCallback::MESSAGE_TYPE_MINOR_WARNING, "", report_entity );  // calling function already in e.what()
 
-#ifdef _DEBUG
-				if( item_data->m_meshsets_open.size() > 0 )
-				{
-					shared_ptr<carve::mesh::MeshSet<3> > meshset = item_data->m_meshsets_open.back();
-					carve::geom::vector<4> color = carve::geom::VECTOR(0.7, 0.7, 0.7, 1.0);
-					//shared_ptr<carve::mesh::MeshSet<3> > meshset(poly_cache.m_poly_data->createMesh(carve::input::opts()));
-					GeomDebugDump::dumpMeshset(meshset, color, true);
-				}
-#endif
 			}
 		}
 	}

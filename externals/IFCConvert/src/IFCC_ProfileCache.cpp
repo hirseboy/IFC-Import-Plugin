@@ -18,6 +18,9 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OU
 
 #include "IFCC_ProfileCache.h"
 
+#include <Carve/src/include/carve/carve.hpp>
+#include <ifcpp/geometry/MeshUtils.h>
+
 namespace IFCC {
 
 
@@ -32,17 +35,17 @@ namespace IFCC {
 		m_profile_cache.clear();
 	}
 
-	shared_ptr<ProfileConverter> ProfileCache::getProfileConverter( shared_ptr<IfcProfileDef>& ifc_profile )
+	shared_ptr<ProfileConverter> ProfileCache::getProfileConverter( shared_ptr<IFC4X3::IfcProfileDef>& ifc_profile )
 	{
 		if( !ifc_profile )
 		{
 			return shared_ptr<ProfileConverter>();
 		}
-		const int profile_id = ifc_profile->m_entity_id;
+		const int profile_id = ifc_profile->m_tag;
 		if( profile_id < 0 )
 		{
 			std::stringstream strs;
-			strs << "Entity ID is invalid, type: " << ifc_profile->className();
+			strs << "Entity ID is invalid, type: ";
 			throw BuildingException( strs.str().c_str(), __FUNC__ );
 		}
 
@@ -53,10 +56,6 @@ namespace IFCC {
 		}
 
 		shared_ptr<ProfileConverter> profile_converter = shared_ptr<ProfileConverter>( new ProfileConverter( m_curve_converter, m_spline_converter ) );
-		if( !profile_converter )
-		{
-			throw OutOfMemoryException( __FUNC__ );
-		}
 		profile_converter->computeProfile( ifc_profile );
 
 #ifdef ENABLE_OPENMP

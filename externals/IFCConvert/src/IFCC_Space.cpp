@@ -1,13 +1,16 @@
 #include "IFCC_Space.h"
 
-#include <ifcpp/IFC4/include/IfcRelSpaceBoundary.h>
-#include <ifcpp/IFC4/include/IfcLengthMeasure.h>
+#include <ifcpp/IFC4X3/include/IfcRelSpaceBoundary.h>
+#include <ifcpp/IFC4X3/include/IfcLengthMeasure.h>
 
 #include <numeric>
 
 #include <IBK_math.h>
 
 #include <IBKMK_3DCalculations.h>
+
+#include <Carve/src/include/carve/carve.hpp>
+#include <ifcpp/geometry/MeshUtils.h>
 
 #include "IFCC_Helper.h"
 
@@ -18,8 +21,8 @@ Space::Space(int id) :
 {
 }
 
-bool Space::set(std::shared_ptr<IfcSpace> ifcSpace) {
-	if(!EntityBase::set(dynamic_pointer_cast<IfcRoot>(ifcSpace)))
+bool Space::set(std::shared_ptr<IFC4X3::IfcSpace> ifcSpace) {
+	if(!EntityBase::set(dynamic_pointer_cast<IFC4X3::IfcRoot>(ifcSpace)))
 		return false;
 
 	m_longName = label2s(ifcSpace->m_LongName);
@@ -50,7 +53,7 @@ void Space::transform(std::shared_ptr<ProductShapeData> productShape) {
 
 	m_transformMatrix = productShape->getTransform();
 	if(m_transformMatrix != carve::math::Matrix::IDENT()) {
-		productShape->applyTransformToProduct(m_transformMatrix);
+		productShape->applyTransformToProduct(m_transformMatrix, true, true);
 	}
 }
 
@@ -435,7 +438,7 @@ void Space::createSpaceBoundariesForOpeningsFromOpenings(std::vector<std::shared
 static int typeFromElementShape(const shared_ptr<SpaceBoundary>& sb, const objectShapeTypeVector_t& shapes) {
 	for(const auto& elemType : shapes) {
 		for(const auto& elem : elemType.second) {
-			if(sb->guidRelatedElement() == ws2s(elem->m_entity_guid)) {
+			if(sb->guidRelatedElement() == elem->m_entity_guid) {
 				return elemType.first;
 			}
 		}

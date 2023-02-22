@@ -1,7 +1,7 @@
 #ifndef IFCC_EntityBaseH
 #define IFCC_EntityBaseH
 
-#include <ifcpp/IFC4/include/IfcRoot.h>
+#include <ifcpp/IFC4X3/include/IfcRoot.h>
 
 namespace IFCC {
 
@@ -19,7 +19,7 @@ public:
 	/*! Set name, description and guid from given IFC object.
 		\param ifcObject Base IFC object.
 	*/
-	bool set(std::shared_ptr<IfcRoot> ifcObject);
+	bool set(std::shared_ptr<IFC4X3::IfcRoot> ifcObject);
 
 	std::string				m_name;			///< Object name
 	std::string				m_description;	///< Object description

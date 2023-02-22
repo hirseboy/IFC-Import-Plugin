@@ -5,53 +5,55 @@
 #include <carve/mesh.hpp>
 #include <carve/matrix.hpp>
 
-#include <ifcpp/IFC4/include/IfcRelVoidsElement.h>
-#include <ifcpp/IFC4/include/IfcGloballyUniqueId.h>
-#include <ifcpp/IFC4/include/IfcObjectTypeEnum.h>
-#include <ifcpp/IFC4/include/IfcMaterialLayerSetUsage.h>
-#include <ifcpp/IFC4/include/IfcMaterialLayerSet.h>
-#include <ifcpp/IFC4/include/IfcMaterialLayer.h>
-#include <ifcpp/IFC4/include/IfcMaterial.h>
-#include <ifcpp/IFC4/include/IfcMaterialDefinitionRepresentation.h>
-#include <ifcpp/IFC4/include/IfcMaterialList.h>
-#include <ifcpp/IFC4/include/IfcMaterialProfile.h>
-#include <ifcpp/IFC4/include/IfcMaterialProfileSet.h>
+#include <ifcpp/IFC4X3/include/IfcRelVoidsElement.h>
+#include <ifcpp/IFC4X3/include/IfcGloballyUniqueId.h>
+#include <ifcpp/IFC4X3/include/IfcObjectTypeEnum.h>
+#include <ifcpp/IFC4X3/include/IfcMaterialLayerSetUsage.h>
+#include <ifcpp/IFC4X3/include/IfcMaterialLayerSet.h>
+#include <ifcpp/IFC4X3/include/IfcMaterialLayer.h>
+#include <ifcpp/IFC4X3/include/IfcMaterial.h>
+#include <ifcpp/IFC4X3/include/IfcMaterialDefinitionRepresentation.h>
+#include <ifcpp/IFC4X3/include/IfcMaterialList.h>
+#include <ifcpp/IFC4X3/include/IfcMaterialProfile.h>
+#include <ifcpp/IFC4X3/include/IfcMaterialProfileSet.h>
 
-#include <ifcpp/IFC4/include/IfcNonNegativeLengthMeasure.h>
-#include <ifcpp/IFC4/include/IfcPositiveLengthMeasure.h>
-#include <ifcpp/IFC4/include/IfcWindowStyle.h>
-#include <ifcpp/IFC4/include/IfcWindowStyleOperationEnum.h>
-#include <ifcpp/IFC4/include/IfcWindowType.h>
-#include <ifcpp/IFC4/include/IfcDoorStyle.h>
+#include <ifcpp/IFC4X3/include/IfcNonNegativeLengthMeasure.h>
+#include <ifcpp/IFC4X3/include/IfcPositiveLengthMeasure.h>
+#include <ifcpp/IFC4X3/include/IfcWindowStyle.h>
+#include <ifcpp/IFC4X3/include/IfcWindowStyleOperationEnum.h>
+#include <ifcpp/IFC4X3/include/IfcWindowType.h>
+#include <ifcpp/IFC4X3/include/IfcDoorStyle.h>
 
-#include <ifcpp/IFC4/include/IfcRelAssignsToProduct.h>
-#include <ifcpp/IFC4/include/IfcRelFillsElement.h>
-#include <ifcpp/IFC4/include/IfcRelAssociatesMaterial.h>
-#include <ifcpp/IFC4/include/IfcRelDefinesByType.h>
-#include <ifcpp/IFC4/include/IfcRelDefinesByProperties.h>
-#include <ifcpp/IFC4/include/IfcRelAggregates.h>
-#include <ifcpp/IFC4/include/IfcObjectDefinition.h>
+#include <ifcpp/IFC4X3/include/IfcRelAssignsToProduct.h>
+#include <ifcpp/IFC4X3/include/IfcRelFillsElement.h>
+#include <ifcpp/IFC4X3/include/IfcRelAssociatesMaterial.h>
+#include <ifcpp/IFC4X3/include/IfcRelDefinesByType.h>
+#include <ifcpp/IFC4X3/include/IfcRelDefinesByProperties.h>
+#include <ifcpp/IFC4X3/include/IfcRelAggregates.h>
+#include <ifcpp/IFC4X3/include/IfcObjectDefinition.h>
 
-#include <ifcpp/IFC4/include/IfcPropertySetDefinitionSelect.h>
-#include <ifcpp/IFC4/include/IfcPropertySetDefinition.h>
-#include <ifcpp/IFC4/include/IfcPropertySet.h>
-#include <ifcpp/IFC4/include/IfcProperty.h>
-#include <ifcpp/IFC4/include/IfcPropertySingleValue.h>
-#include <ifcpp/IFC4/include/IfcDerivedMeasureValue.h>
-#include <ifcpp/IFC4/include/IfcMeasureValue.h>
-#include <ifcpp/IFC4/include/IfcSimpleValue.h>
-#include <ifcpp/IFC4/include/IfcBinary.h>
-#include <ifcpp/IFC4/include/IfcBoolean.h>
-#include <ifcpp/IFC4/include/IfcDate.h>
-#include <ifcpp/IFC4/include/IfcDateTime.h>
-#include <ifcpp/IFC4/include/IfcDuration.h>
-#include <ifcpp/IFC4/include/IfcReal.h>
-#include <ifcpp/IFC4/include/IfcPositiveInteger.h>
-#include <ifcpp/IFC4/include/IfcTime.h>
-#include <ifcpp/IFC4/include/IfcTimeStamp.h>
-#include <ifcpp/IFC4/include/IfcLogical.h>
+#include <ifcpp/IFC4X3/include/IfcPropertySetDefinitionSelect.h>
+#include <ifcpp/IFC4X3/include/IfcPropertySetDefinition.h>
+#include <ifcpp/IFC4X3/include/IfcPropertySet.h>
+#include <ifcpp/IFC4X3/include/IfcProperty.h>
+#include <ifcpp/IFC4X3/include/IfcPropertySingleValue.h>
+#include <ifcpp/IFC4X3/include/IfcDerivedMeasureValue.h>
+#include <ifcpp/IFC4X3/include/IfcMeasureValue.h>
+#include <ifcpp/IFC4X3/include/IfcSimpleValue.h>
+#include <ifcpp/IFC4X3/include/IfcBinary.h>
+#include <ifcpp/IFC4X3/include/IfcBoolean.h>
+#include <ifcpp/IFC4X3/include/IfcDate.h>
+#include <ifcpp/IFC4X3/include/IfcDateTime.h>
+#include <ifcpp/IFC4X3/include/IfcDuration.h>
+#include <ifcpp/IFC4X3/include/IfcReal.h>
+#include <ifcpp/IFC4X3/include/IfcPositiveInteger.h>
+#include <ifcpp/IFC4X3/include/IfcTime.h>
+#include <ifcpp/IFC4X3/include/IfcTimeStamp.h>
+#include <ifcpp/IFC4X3/include/IfcLogical.h>
 
-#include <ifcpp/IFC4/include/IfcMaterialProperties.h>
+#include <ifcpp/IFC4X3/include/IfcMaterialProperties.h>
+#include <Carve/src/include/carve/carve.hpp>
+#include <ifcpp/geometry/MeshUtils.h>
 
 
 
@@ -59,7 +61,7 @@
 
 namespace IFCC {
 
-void BuildingElement::WallProperties::update(std::shared_ptr<IfcWall>& ifcWall) {
+void BuildingElement::WallProperties::update(std::shared_ptr<IFC4X3::IfcWall>& ifcWall) {
 	if(!ifcWall)
 		return;
 	if(ifcWall->m_PredefinedType)
@@ -77,8 +79,8 @@ BuildingElement::BuildingElement(int id) :
 
 }
 
-bool BuildingElement::set(std::shared_ptr<IfcElement> ifcElement, BuildingElementTypes type) {
-	if(!EntityBase::set(dynamic_pointer_cast<IfcRoot>(ifcElement)))
+bool BuildingElement::set(std::shared_ptr<IFC4X3::IfcElement> ifcElement, BuildingElementTypes type) {
+	if(!EntityBase::set(dynamic_pointer_cast<IFC4X3::IfcRoot>(ifcElement)))
 		return false;
 
 	m_type = type;
@@ -93,11 +95,11 @@ bool BuildingElement::set(std::shared_ptr<IfcElement> ifcElement, BuildingElemen
 
 	// look for properties
 	for(const auto& relproperties : ifcElement->m_IsDefinedBy_inverse) {
-		shared_ptr<IfcRelDefinesByProperties> rel_properties(relproperties);
+		shared_ptr<IFC4X3::IfcRelDefinesByProperties> rel_properties(relproperties);
 		if(rel_properties && rel_properties->m_RelatingPropertyDefinition) {
-			shared_ptr<IfcPropertySetDefinition> property_set_def = dynamic_pointer_cast<IfcPropertySetDefinition>(rel_properties->m_RelatingPropertyDefinition);
+			shared_ptr<IFC4X3::IfcPropertySetDefinition> property_set_def = dynamic_pointer_cast<IFC4X3::IfcPropertySetDefinition>(rel_properties->m_RelatingPropertyDefinition);
 			if( property_set_def ) {
-				shared_ptr<IfcPropertySet> property_set = dynamic_pointer_cast<IfcPropertySet>(property_set_def);
+				shared_ptr<IFC4X3::IfcPropertySet> property_set = dynamic_pointer_cast<IFC4X3::IfcPropertySet>(property_set_def);
 				if( property_set ) {
 					std::string pset_name = label2s(property_set->m_Name);
 					for(const auto& property : property_set->m_HasProperties) {
@@ -123,7 +125,7 @@ bool BuildingElement::set(std::shared_ptr<IfcElement> ifcElement, BuildingElemen
 			m_isUsedFromOpeningsOriginal.push_back(relop.lock()->m_RelatingOpeningElement);
 		}
 		if(m_type == BET_Window) {
-			shared_ptr<IfcWindow> window = dynamic_pointer_cast<IfcWindow>(ifcElement);
+			shared_ptr<IFC4X3::IfcWindow> window = dynamic_pointer_cast<IFC4X3::IfcWindow>(ifcElement);
 			if(window != nullptr) {
 				m_openingProperties.m_isWindow = true;
 				m_openingProperties.m_isDoor = false;
@@ -137,41 +139,41 @@ bool BuildingElement::set(std::shared_ptr<IfcElement> ifcElement, BuildingElemen
 					m_openingProperties.m_windowPartitionType = window->m_PartitioningType->m_enum;
 				m_openingProperties.m_windowUserDefinedPartitionType = label2s(window->m_UserDefinedPartitioningType);
 				switch(m_openingProperties.m_windowType) {
-					case IfcWindowTypeEnum::ENUM_WINDOW: m_openingProperties.m_typeName = "Window"; break;
-					case IfcWindowTypeEnum::ENUM_SKYLIGHT: m_openingProperties.m_typeName = "Skylight"; break;
-					case IfcWindowTypeEnum::ENUM_LIGHTDOME: m_openingProperties.m_typeName = "LightDome"; break;
-					case IfcWindowTypeEnum::ENUM_USERDEFINED: m_openingProperties.m_typeName = "UserDefined"; break;
-					case IfcWindowTypeEnum::ENUM_NOTDEFINED: m_openingProperties.m_typeName = "Not defined"; break;
+					case IFC4X3::IfcWindowTypeEnum::ENUM_WINDOW: m_openingProperties.m_typeName = "Window"; break;
+					case IFC4X3::IfcWindowTypeEnum::ENUM_SKYLIGHT: m_openingProperties.m_typeName = "Skylight"; break;
+					case IFC4X3::IfcWindowTypeEnum::ENUM_LIGHTDOME: m_openingProperties.m_typeName = "LightDome"; break;
+					case IFC4X3::IfcWindowTypeEnum::ENUM_USERDEFINED: m_openingProperties.m_typeName = "UserDefined"; break;
+					case IFC4X3::IfcWindowTypeEnum::ENUM_NOTDEFINED: m_openingProperties.m_typeName = "Not defined"; break;
 				}
 			}
 			for(const auto& reltypes : ifcElement->m_IsTypedBy_inverse) {
-				shared_ptr<IfcRelDefinesByType> rel_types(reltypes);
-				shared_ptr<IfcWindowStyle> windowStyle = dynamic_pointer_cast<IfcWindowStyle>(rel_types->m_RelatingType);
+				shared_ptr<IFC4X3::IfcRelDefinesByType> rel_types(reltypes);
+				shared_ptr<IFC4X3::IfcWindowStyle> windowStyle = dynamic_pointer_cast<IFC4X3::IfcWindowStyle>(rel_types->m_RelatingType);
 				if(windowStyle != nullptr) {
 					if(windowStyle->m_ConstructionType != nullptr) {
 
 					}
 					if(windowStyle->m_OperationType != nullptr) {
-						IfcWindowStyleOperationEnum::IfcWindowStyleOperationEnumEnum type =
+						IFC4X3::IfcWindowStyleOperationEnum::IfcWindowStyleOperationEnumEnum type =
 								windowStyle->m_OperationType->m_enum;
 
 						switch(type) {
-							case IfcWindowStyleOperationEnum::ENUM_SINGLE_PANEL: m_openingProperties.m_windowConstructionTypes.push_back("Single pane"); break;
-							case IfcWindowStyleOperationEnum::ENUM_DOUBLE_PANEL_VERTICAL: m_openingProperties.m_windowConstructionTypes.push_back("Double pane vertical"); break;
-							case IfcWindowStyleOperationEnum::ENUM_DOUBLE_PANEL_HORIZONTAL: m_openingProperties.m_windowConstructionTypes.push_back("Double pane horizontal"); break;
-							case IfcWindowStyleOperationEnum::ENUM_TRIPLE_PANEL_VERTICAL: m_openingProperties.m_windowConstructionTypes.push_back("Triple pane vertical"); break;
-							case IfcWindowStyleOperationEnum::ENUM_TRIPLE_PANEL_BOTTOM: m_openingProperties.m_windowConstructionTypes.push_back("Triple pane bottom"); break;
-							case IfcWindowStyleOperationEnum::ENUM_TRIPLE_PANEL_TOP: m_openingProperties.m_windowConstructionTypes.push_back("Triple pane top"); break;
-							case IfcWindowStyleOperationEnum::ENUM_TRIPLE_PANEL_LEFT: m_openingProperties.m_windowConstructionTypes.push_back("Triple pane left"); break;
-							case IfcWindowStyleOperationEnum::ENUM_TRIPLE_PANEL_RIGHT: m_openingProperties.m_windowConstructionTypes.push_back("Triple pane right"); break;
-							case IfcWindowStyleOperationEnum::ENUM_TRIPLE_PANEL_HORIZONTAL: m_openingProperties.m_windowConstructionTypes.push_back("Triple pane horizontal"); break;
-							case IfcWindowStyleOperationEnum::ENUM_USERDEFINED: m_openingProperties.m_windowConstructionTypes.push_back("User defined panes"); break;
-							case IfcWindowStyleOperationEnum::ENUM_NOTDEFINED: m_openingProperties.m_windowConstructionTypes.push_back("Panes not defined"); break;
+							case IFC4X3::IfcWindowStyleOperationEnum::ENUM_SINGLE_PANEL: m_openingProperties.m_windowConstructionTypes.push_back("Single pane"); break;
+							case IFC4X3::IfcWindowStyleOperationEnum::ENUM_DOUBLE_PANEL_VERTICAL: m_openingProperties.m_windowConstructionTypes.push_back("Double pane vertical"); break;
+							case IFC4X3::IfcWindowStyleOperationEnum::ENUM_DOUBLE_PANEL_HORIZONTAL: m_openingProperties.m_windowConstructionTypes.push_back("Double pane horizontal"); break;
+							case IFC4X3::IfcWindowStyleOperationEnum::ENUM_TRIPLE_PANEL_VERTICAL: m_openingProperties.m_windowConstructionTypes.push_back("Triple pane vertical"); break;
+							case IFC4X3::IfcWindowStyleOperationEnum::ENUM_TRIPLE_PANEL_BOTTOM: m_openingProperties.m_windowConstructionTypes.push_back("Triple pane bottom"); break;
+							case IFC4X3::IfcWindowStyleOperationEnum::ENUM_TRIPLE_PANEL_TOP: m_openingProperties.m_windowConstructionTypes.push_back("Triple pane top"); break;
+							case IFC4X3::IfcWindowStyleOperationEnum::ENUM_TRIPLE_PANEL_LEFT: m_openingProperties.m_windowConstructionTypes.push_back("Triple pane left"); break;
+							case IFC4X3::IfcWindowStyleOperationEnum::ENUM_TRIPLE_PANEL_RIGHT: m_openingProperties.m_windowConstructionTypes.push_back("Triple pane right"); break;
+							case IFC4X3::IfcWindowStyleOperationEnum::ENUM_TRIPLE_PANEL_HORIZONTAL: m_openingProperties.m_windowConstructionTypes.push_back("Triple pane horizontal"); break;
+							case IFC4X3::IfcWindowStyleOperationEnum::ENUM_USERDEFINED: m_openingProperties.m_windowConstructionTypes.push_back("User defined panes"); break;
+							case IFC4X3::IfcWindowStyleOperationEnum::ENUM_NOTDEFINED: m_openingProperties.m_windowConstructionTypes.push_back("Panes not defined"); break;
 						}
 
 					}
 				}
-				shared_ptr<IfcWindowType> windowType = dynamic_pointer_cast<IfcWindowType>(rel_types);
+				shared_ptr<IFC4X3::IfcWindowType> windowType = dynamic_pointer_cast<IFC4X3::IfcWindowType>(rel_types);
 				if(windowType != nullptr) {
 //					if(windowType->m_ConstructionType != nullptr) {
 
@@ -181,7 +183,7 @@ bool BuildingElement::set(std::shared_ptr<IfcElement> ifcElement, BuildingElemen
 		}
 		// door
 		else {
-			shared_ptr<IfcDoor> door = dynamic_pointer_cast<IfcDoor>(ifcElement);
+			shared_ptr<IFC4X3::IfcDoor> door = dynamic_pointer_cast<IFC4X3::IfcDoor>(ifcElement);
 			if(door != nullptr) {
 				m_openingProperties.m_isWindow = false;
 				m_openingProperties.m_isDoor = true;
@@ -192,8 +194,8 @@ bool BuildingElement::set(std::shared_ptr<IfcElement> ifcElement, BuildingElemen
 				if(door->m_OverallWidth != nullptr)
 					m_openingProperties.m_doorWidth = door->m_OverallWidth->m_value;
 				for(const auto& reltypes : ifcElement->m_IsTypedBy_inverse) {
-					shared_ptr<IfcRelDefinesByType> rel_types(reltypes);
-					shared_ptr<IfcDoorStyle> doorStyle = dynamic_pointer_cast<IfcDoorStyle>(rel_types->m_RelatingType);
+					shared_ptr<IFC4X3::IfcRelDefinesByType> rel_types(reltypes);
+					shared_ptr<IFC4X3::IfcDoorStyle> doorStyle = dynamic_pointer_cast<IFC4X3::IfcDoorStyle>(rel_types->m_RelatingType);
 					if(doorStyle != nullptr) {
 
 					}
@@ -203,15 +205,15 @@ bool BuildingElement::set(std::shared_ptr<IfcElement> ifcElement, BuildingElemen
 	}
 
 	if(m_type == BET_Wall) {
-		shared_ptr<IfcWall> wall = dynamic_pointer_cast<IfcWall>(ifcElement);
+		shared_ptr<IFC4X3::IfcWall> wall = dynamic_pointer_cast<IFC4X3::IfcWall>(ifcElement);
 		m_wallProperties.update(wall);
 
 		if(!wall->m_IsDecomposedBy_inverse.empty()) {
 			for(size_t i=0; i<wall->m_IsDecomposedBy_inverse.size(); ++i) {
-				shared_ptr<IfcRelAggregates> relAggregate(wall->m_IsDecomposedBy_inverse[i]);
+				shared_ptr<IFC4X3::IfcRelAggregates> relAggregate(wall->m_IsDecomposedBy_inverse[i]);
 				if(relAggregate) {
 					for(size_t io=0; io<relAggregate->m_RelatedObjects.size(); ++io) {
-						const shared_ptr<IfcObjectDefinition>& object = relAggregate->m_RelatedObjects[io];
+						const shared_ptr<IFC4X3::IfcObjectDefinition>& object = relAggregate->m_RelatedObjects[io];
 
 					}
 				}
@@ -219,7 +221,7 @@ bool BuildingElement::set(std::shared_ptr<IfcElement> ifcElement, BuildingElemen
 		}
 		if(!wall->m_Decomposes_inverse.empty()) {
 			for(size_t i=0; i<wall->m_Decomposes_inverse.size(); ++i) {
-				shared_ptr<IfcRelAggregates> relAggregate(wall->m_Decomposes_inverse[i]);
+				shared_ptr<IFC4X3::IfcRelAggregates> relAggregate(wall->m_Decomposes_inverse[i]);
 				if(relAggregate) {
 
 				}
@@ -228,14 +230,14 @@ bool BuildingElement::set(std::shared_ptr<IfcElement> ifcElement, BuildingElemen
 	}
 
 	for(const auto& relass : ifcElement->m_HasAssociations_inverse) {
-		shared_ptr<IfcRelAssociates> rel_associates(relass);
-		shared_ptr<IfcRelAssociatesMaterial> associated_material = dynamic_pointer_cast<IfcRelAssociatesMaterial>(rel_associates);
+		shared_ptr<IFC4X3::IfcRelAssociates> rel_associates(relass);
+		shared_ptr<IFC4X3::IfcRelAssociatesMaterial> associated_material = dynamic_pointer_cast<IFC4X3::IfcRelAssociatesMaterial>(rel_associates);
 		if (associated_material != nullptr && associated_material->m_RelatingMaterial != nullptr) {
-			std::string classname = associated_material->m_RelatingMaterial->className();
+//			std::string classname = associated_material->m_RelatingMaterial->classID();
 
-			shared_ptr<IfcMaterialDefinitionRepresentation> material_definition_rep = dynamic_pointer_cast<IfcMaterialDefinitionRepresentation>(associated_material->m_RelatingMaterial);
+			shared_ptr<IFC4X3::IfcMaterialDefinitionRepresentation> material_definition_rep = dynamic_pointer_cast<IFC4X3::IfcMaterialDefinitionRepresentation>(associated_material->m_RelatingMaterial);
 			if(material_definition_rep) {
-				const shared_ptr<IfcMaterial>& mat = material_definition_rep->m_RepresentedMaterial;
+				const shared_ptr<IFC4X3::IfcMaterial>& mat = material_definition_rep->m_RepresentedMaterial;
 				if (mat) {
 					m_materialLayers.emplace_back(std::pair<double,std::string>(0.01, label2s(mat->m_Name)));
 					m_materialPropertyMap.emplace_back(std::map<std::string,std::map<std::string,Property>>());
@@ -243,32 +245,32 @@ bool BuildingElement::set(std::shared_ptr<IfcElement> ifcElement, BuildingElemen
 				}
 			}
 
-			shared_ptr<IfcMaterialDefinition> material_definition = dynamic_pointer_cast<IfcMaterialDefinition>(associated_material->m_RelatingMaterial);
+			shared_ptr<IFC4X3::IfcMaterialDefinition> material_definition = dynamic_pointer_cast<IFC4X3::IfcMaterialDefinition>(associated_material->m_RelatingMaterial);
 			if(material_definition) {
-				shared_ptr<IfcMaterial> mat = dynamic_pointer_cast<IfcMaterial>(material_definition);
+				shared_ptr<IFC4X3::IfcMaterial> mat = dynamic_pointer_cast<IFC4X3::IfcMaterial>(material_definition);
 				if (mat) {
 					m_materialLayers.emplace_back(std::pair<double,std::string>(0.01, label2s(mat->m_Name)));
 					m_materialPropertyMap.emplace_back(std::map<std::string,std::map<std::string,Property>>());
 					getMaterialProperties(mat, m_materialPropertyMap.back());
 				}
-				shared_ptr<IfcMaterialLayer> matLayer = dynamic_pointer_cast<IfcMaterialLayer>(material_definition);
+				shared_ptr<IFC4X3::IfcMaterialLayer> matLayer = dynamic_pointer_cast<IFC4X3::IfcMaterialLayer>(material_definition);
 				if (matLayer) {
-					const shared_ptr<IfcMaterial>& mat = matLayer->m_Material;					//optional
+					const shared_ptr<IFC4X3::IfcMaterial>& mat = matLayer->m_Material;					//optional
 					if (mat) {
 						m_materialLayers.emplace_back(std::pair<double,std::string>(matLayer->m_LayerThickness->m_value, label2s(mat->m_Name)));
 						m_materialPropertyMap.emplace_back(std::map<std::string,std::map<std::string,Property>>());
 						getMaterialProperties(mat, m_materialPropertyMap.back());
 					}
 				}
-				shared_ptr<IfcMaterialLayerSet> matLayerSet = dynamic_pointer_cast<IfcMaterialLayerSet>(material_definition);
-				shared_ptr<IfcMaterialProfile> matProfile = dynamic_pointer_cast<IfcMaterialProfile>(material_definition);
-				shared_ptr<IfcMaterialProfileSet> matProfileSet = dynamic_pointer_cast<IfcMaterialProfileSet>(material_definition);
+				shared_ptr<IFC4X3::IfcMaterialLayerSet> matLayerSet = dynamic_pointer_cast<IFC4X3::IfcMaterialLayerSet>(material_definition);
+				shared_ptr<IFC4X3::IfcMaterialProfile> matProfile = dynamic_pointer_cast<IFC4X3::IfcMaterialProfile>(material_definition);
+				shared_ptr<IFC4X3::IfcMaterialProfileSet> matProfileSet = dynamic_pointer_cast<IFC4X3::IfcMaterialProfileSet>(material_definition);
 
 			}
-			shared_ptr<IfcMaterialList> material_list = dynamic_pointer_cast<IfcMaterialList>(associated_material->m_RelatingMaterial);
+			shared_ptr<IFC4X3::IfcMaterialList> material_list = dynamic_pointer_cast<IFC4X3::IfcMaterialList>(associated_material->m_RelatingMaterial);
 			if(material_list) {
 				for(size_t im=0; im<material_list->m_Materials.size(); ++im) {
-					const shared_ptr<IfcMaterial>& mat = material_list->m_Materials[im];
+					const shared_ptr<IFC4X3::IfcMaterial>& mat = material_list->m_Materials[im];
 					if (mat) {
 						m_materialLayers.emplace_back(std::pair<double,std::string>(0.01, label2s(mat->m_Name)));
 						m_materialPropertyMap.emplace_back(std::map<std::string,std::map<std::string,Property>>());
@@ -276,14 +278,14 @@ bool BuildingElement::set(std::shared_ptr<IfcElement> ifcElement, BuildingElemen
 					}
 				}
 			}
-			shared_ptr<IfcMaterialUsageDefinition> material_usage_definition = dynamic_pointer_cast<IfcMaterialUsageDefinition>(associated_material->m_RelatingMaterial);
+			shared_ptr<IFC4X3::IfcMaterialUsageDefinition> material_usage_definition = dynamic_pointer_cast<IFC4X3::IfcMaterialUsageDefinition>(associated_material->m_RelatingMaterial);
 			if(material_usage_definition) {
-				shared_ptr<IfcMaterialLayerSetUsage> material_layer_set_usage = dynamic_pointer_cast<IfcMaterialLayerSetUsage>(material_usage_definition);
+				shared_ptr<IFC4X3::IfcMaterialLayerSetUsage> material_layer_set_usage = dynamic_pointer_cast<IFC4X3::IfcMaterialLayerSetUsage>(material_usage_definition);
 				if (material_layer_set_usage != nullptr && material_layer_set_usage->m_ForLayerSet != nullptr) {
 					for (size_t jj = 0; jj < material_layer_set_usage->m_ForLayerSet->m_MaterialLayers.size(); ++jj) {
-						const shared_ptr<IfcMaterialLayer>& material_layer = material_layer_set_usage->m_ForLayerSet->m_MaterialLayers[jj];
+						const shared_ptr<IFC4X3::IfcMaterialLayer>& material_layer = material_layer_set_usage->m_ForLayerSet->m_MaterialLayers[jj];
 						if (material_layer) {
-							const shared_ptr<IfcMaterial>& mat = material_layer->m_Material;					//optional
+							const shared_ptr<IFC4X3::IfcMaterial>& mat = material_layer->m_Material;					//optional
 							if (mat) {
 								m_materialLayers.emplace_back(std::pair<double,std::string>(material_layer->m_LayerThickness->m_value, label2s(mat->m_Name)));
 								m_materialPropertyMap.emplace_back(std::map<std::string,std::map<std::string,Property>>());
@@ -313,7 +315,7 @@ void BuildingElement::transform(std::shared_ptr<ProductShapeData> productShape) 
 
 	carve::math::Matrix transformMatrix = productShape->getTransform();
 	if(transformMatrix != carve::math::Matrix::IDENT()) {
-		productShape->applyTransformToProduct(transformMatrix);
+		productShape->applyTransformToProduct(transformMatrix, true, true);
 	}
 }
 

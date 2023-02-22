@@ -7,11 +7,11 @@
 
 #include <IBK_Path.h>
 
-#include <ifcpp/IFC4/include/IfcObjectDefinition.h>
-#include <ifcpp/IFC4/include/IfcLabel.h>
-#include <ifcpp/IFC4/include/IfcText.h>
-#include <ifcpp/IFC4/include/IfcIdentifier.h>
-#include <ifcpp/IFC4/include/IfcConnectionGeometry.h>
+#include <ifcpp/IFC4X3/include/IfcObjectDefinition.h>
+#include <ifcpp/IFC4X3/include/IfcLabel.h>
+#include <ifcpp/IFC4X3/include/IfcText.h>
+#include <ifcpp/IFC4X3/include/IfcIdentifier.h>
+#include <ifcpp/IFC4X3/include/IfcConnectionGeometry.h>
 
 #include <ifcpp/model/UnitConverter.h>
 
@@ -58,16 +58,16 @@ inline bool isOpeningType(BuildingElementTypes type) {
 std::string ws2s(const std::wstring& wstr);
 
 /*! Return UTF8 version of label text from IfcLabel.*/
-std::string label2s(const std::shared_ptr<IfcLabel>& label);
+std::string label2s(const std::shared_ptr<IFC4X3::IfcLabel>& label);
 
 /*! Return UTF8 version of text from IfcText.*/
-std::string text2s(const std::shared_ptr<IfcText>& text);
+std::string text2s(const std::shared_ptr<IFC4X3::IfcText>& text);
 
 /*! Return UTF8 version of text from IfcText.*/
-std::string name2s(const std::shared_ptr<IfcIdentifier>& text);
+std::string name2s(const std::shared_ptr<IFC4X3::IfcIdentifier>& text);
 
 /*! Return UTF8 version of the guid of the given IFC object.*/
-std::string guidFromObject(IfcRoot* object);
+std::string guidFromObject(IFC4X3::IfcRoot* object);
 
 /*! Convert the given meshSet into vectors of polygons.
 	A mesh set can contain several meshes which can contain several faces. Each face will be converted to a polygon.
@@ -118,7 +118,7 @@ std::string objectTypeToString(BuildingElementTypes type);
 std::string objectTypeToString(ObjectType type);
 
 /*! Evaluate object type of given object definition.*/
-BuildingElementTypes getObjectType(const std::shared_ptr<IfcObjectDefinition>& od);
+BuildingElementTypes getObjectType(const std::shared_ptr<IFC4X3::IfcObjectDefinition>& od);
 
 /*! Convert geometry given by IfcConnectionGeometry object into a polyVector.
 	\param connectionGeometry Geometry object
@@ -128,7 +128,7 @@ BuildingElementTypes getObjectType(const std::shared_ptr<IfcObjectDefinition>& o
 	\param errors Vector of errors while conversion
 	\return Vector of created polylines or empty in case of errors.
 */
-polyVector_t polylinesFromConnectionGeometry(std::shared_ptr<IfcConnectionGeometry> connectionGeometry,
+polyVector_t polylinesFromConnectionGeometry(std::shared_ptr<IFC4X3::IfcConnectionGeometry> connectionGeometry,
 										  shared_ptr<UnitConverter>& unit_converter,
 										  const carve::math::Matrix& spaceTransformation,
 										  int objectId,

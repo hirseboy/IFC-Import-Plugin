@@ -1,12 +1,14 @@
 #include "IFCC_Opening.h"
 
-#include <ifcpp/IFC4/include/IfcGloballyUniqueId.h>
-#include <ifcpp/geometry/Carve/GeometryInputData.h>
+#include <ifcpp/IFC4X3/include/IfcGloballyUniqueId.h>
+#include <ifcpp/geometry/GeometryInputData.h>
 
 #include <IBKMK_Vector3D.h>
 
 #include <carve/mesh.hpp>
 #include <carve/matrix.hpp>
+#include <Carve/src/include/carve/carve.hpp>
+#include <ifcpp/geometry/MeshUtils.h>
 
 #include "IFCC_Helper.h"
 
@@ -18,8 +20,8 @@ Opening::Opening(int id) :
 
 }
 
-bool Opening::set(std::shared_ptr<IfcFeatureElementSubtraction> ifcElement) {
-	if(!EntityBase::set(dynamic_pointer_cast<IfcRoot>(ifcElement)))
+bool Opening::set(std::shared_ptr<IFC4X3::IfcFeatureElementSubtraction> ifcElement) {
+	if(!EntityBase::set(dynamic_pointer_cast<IFC4X3::IfcRoot>(ifcElement)))
 		return false;
 
 	m_guid = guidFromObject(ifcElement.get());
@@ -39,7 +41,7 @@ void Opening::transform(std::shared_ptr<ProductShapeData> productShape) {
 
 	carve::math::Matrix transformMatrix = productShape->getTransform();
 	if(transformMatrix != carve::math::Matrix::IDENT()) {
-		productShape->applyTransformToProduct(transformMatrix);
+		productShape->applyTransformToProduct(transformMatrix, true, true);
 	}
 }
 

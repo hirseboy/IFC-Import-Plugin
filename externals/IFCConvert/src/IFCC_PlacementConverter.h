@@ -23,13 +23,13 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OU
 
 #include <ifcpp/model/BasicTypes.h>
 #include <ifcpp/model/UnitConverter.h>
-#include <ifcpp/IFC4/include/IfcAxis2Placement2D.h>
-#include <ifcpp/IFC4/include/IfcAxis2Placement3D.h>
-#include <ifcpp/IFC4/include/IfcCartesianTransformationOperator.h>
+#include <ifcpp/IFC4X3/include/IfcAxis2Placement2D.h>
+#include <ifcpp/IFC4X3/include/IfcAxis2Placement3D.h>
+#include <ifcpp/IFC4X3/include/IfcCartesianTransformationOperator.h>
 
-#include <ifcpp/geometry/Carve/GeomUtils.h>
-#include <ifcpp/geometry/Carve/GeometryInputData.h>
-#include <ifcpp/geometry/Carve/IncludeCarveHeaders.h>
+#include <ifcpp/geometry/GeomUtils.h>
+#include <ifcpp/geometry/GeometryInputData.h>
+#include <ifcpp/geometry/IncludeCarveHeaders.h>
 
 namespace IFCC {
 
@@ -41,23 +41,23 @@ public:
 
 	PlacementConverter( shared_ptr<UnitConverter>& uc );
 
-	void convertIfcAxis2Placement2D( const shared_ptr<IfcAxis2Placement2D>& axis2placement2d, shared_ptr<TransformData>& resulting_matrix, bool only_rotation = false );
+	void convertIfcAxis2Placement2D( const shared_ptr<IFC4X3::IfcAxis2Placement2D>& axis2placement2d, shared_ptr<TransformData>& resulting_matrix, bool only_rotation = false );
 
-	void convertIfcAxis2Placement3D( const shared_ptr<IfcAxis2Placement3D>& axis2placement3d, shared_ptr<TransformData>& resulting_matrix, bool only_rotation = false );
+	void convertIfcAxis2Placement3D( const shared_ptr<IFC4X3::IfcAxis2Placement3D>& axis2placement3d, shared_ptr<TransformData>& resulting_matrix, bool only_rotation = false );
 
-	void getPlane( const shared_ptr<IfcAxis2Placement3D>& axis2placement3d, carve::geom::plane<3>& plane, vec3& translate );
+	void getPlane( const shared_ptr<IFC4X3::IfcAxis2Placement3D>& axis2placement3d, carve::geom::plane<3>& plane, vec3& translate );
 
-	void convertMatrix( const carve::math::Matrix& matrix, shared_ptr<IfcAxis2Placement3D>& axis2placement3d, int& entity_id, std::vector<shared_ptr<BuildingEntity> >& vec_new_entities );
+	void convertMatrix( const carve::math::Matrix& matrix, shared_ptr<IFC4X3::IfcAxis2Placement3D>& axis2placement3d, int& entity_id, std::vector<shared_ptr<BuildingEntity> >& vec_new_entities );
 
-	void convertIfcPlacement( const shared_ptr<IfcPlacement>& placement, shared_ptr<TransformData>& resulting_matrix, bool only_rotation = false );
+	void convertIfcPlacement( const shared_ptr<IFC4X3::IfcPlacement>& placement, shared_ptr<TransformData>& resulting_matrix, bool only_rotation = false );
 
-	void getWorldCoordinateSystem( const shared_ptr<IfcRepresentationContext>& context, shared_ptr<TransformData>& resulting_matrix, std::unordered_set<IfcRepresentationContext*>& already_applied );
+	void getWorldCoordinateSystem( const shared_ptr<IFC4X3::IfcRepresentationContext>& context, shared_ptr<TransformData>& resulting_matrix, std::unordered_set<IFC4X3::IfcRepresentationContext*>& already_applied );
 
 	/*! \brief translates an IfcObjectPlacement (or subtype) to carve Matrix.*/
-	void convertIfcObjectPlacement( const shared_ptr<IfcObjectPlacement>& ifc_object_placement, shared_ptr<ProductShapeData>& product_data,
-		std::unordered_set<IfcObjectPlacement*>& placement_already_applied, bool only_rotation );
+	void convertIfcObjectPlacement( const shared_ptr<IFC4X3::IfcObjectPlacement>& ifc_object_placement, shared_ptr<ProductShapeData>& product_data,
+		std::unordered_set<IFC4X3::IfcObjectPlacement*>& placement_already_applied, bool only_rotation );
 
-	void convertTransformationOperator( const shared_ptr<IfcCartesianTransformationOperator>& transform_operator, shared_ptr<TransformData>& resulting_matrix );
+	void convertTransformationOperator( const shared_ptr<IFC4X3::IfcCartesianTransformationOperator>& transform_operator, shared_ptr<TransformData>& resulting_matrix );
 };
 
 } // end namespace

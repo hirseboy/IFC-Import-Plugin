@@ -7,6 +7,9 @@
 #include <IBK_math.h>
 #include <IBK_assert.h>
 
+#include <Carve/src/include/carve/carve.hpp>
+#include <ifcpp/geometry/MeshUtils.h>
+
 #include "IFCC_Clippertools.h"
 #include "IFCC_Helper.h"
 
@@ -335,14 +338,14 @@ TiXmlElement * Surface::writeXML(TiXmlElement * parent) const {
 	return e;
 }
 
-void Surface::setSurfaceType(IfcInternalOrExternalEnum::IfcInternalOrExternalEnumEnum type) {
+void Surface::setSurfaceType(IFC4X3::IfcInternalOrExternalEnum::IfcInternalOrExternalEnumEnum type) {
 	switch(type) {
-		case IfcInternalOrExternalEnum::ENUM_INTERNAL: m_positionType = Surface::PT_Internal; break;
-		case IfcInternalOrExternalEnum::ENUM_EXTERNAL: m_positionType = Surface::PT_External; break;
-		case IfcInternalOrExternalEnum::ENUM_EXTERNAL_EARTH: m_positionType = Surface::PT_External_Ground; break;
-		case IfcInternalOrExternalEnum::ENUM_EXTERNAL_WATER:
-		case IfcInternalOrExternalEnum::ENUM_EXTERNAL_FIRE:
-		case IfcInternalOrExternalEnum::ENUM_NOTDEFINED: m_positionType = Surface::PT_Unknown; break;
+		case IFC4X3::IfcInternalOrExternalEnum::ENUM_INTERNAL: m_positionType = Surface::PT_Internal; break;
+		case IFC4X3::IfcInternalOrExternalEnum::ENUM_EXTERNAL: m_positionType = Surface::PT_External; break;
+		case IFC4X3::IfcInternalOrExternalEnum::ENUM_EXTERNAL_EARTH: m_positionType = Surface::PT_External_Ground; break;
+		case IFC4X3::IfcInternalOrExternalEnum::ENUM_EXTERNAL_WATER:
+		case IFC4X3::IfcInternalOrExternalEnum::ENUM_EXTERNAL_FIRE:
+		case IFC4X3::IfcInternalOrExternalEnum::ENUM_NOTDEFINED: m_positionType = Surface::PT_Unknown; break;
 	}
 }
 
@@ -389,19 +392,19 @@ void surfacesFromRepresentation(std::shared_ptr<ProductShapeData> productShape, 
 	int profileRepCount = 0;
 	for(int repi = 0; repi<repCount; ++repi) {
 		currentRep = productShape->m_vec_representations[repi];
-		if(currentRep->m_representation_identifier == L"Body") {
+		if(currentRep->m_representation_identifier == "Body") {
 			bodyRep = currentRep;
 			++bodyRepCount;
 		}
-		if(currentRep->m_representation_identifier == L"Reference") {
+		if(currentRep->m_representation_identifier == "Reference") {
 			referenceRep = currentRep;
 			++referenceRepCount;
 		}
-		if(currentRep->m_representation_identifier == L"Surface") {
+		if(currentRep->m_representation_identifier == "Surface") {
 			surfaceRep = currentRep;
 			++surfaceRepCount;
 		}
-		if(currentRep->m_representation_identifier == L"Profile") {
+		if(currentRep->m_representation_identifier == "Profile") {
 			profileRep = currentRep;
 			++profileRepCount;
 		}
@@ -450,7 +453,7 @@ void surfacesFromRepresentation(std::shared_ptr<ProductShapeData> productShape, 
 
 static std::shared_ptr<RepresentationData> firstBodyRep(std::shared_ptr<ProductShapeData> productShape) {
 	for(auto rep : productShape->m_vec_representations) {
-		if(rep->m_representation_identifier == L"Body") {
+		if(rep->m_representation_identifier == "Body") {
 			return rep;
 		}
 	}

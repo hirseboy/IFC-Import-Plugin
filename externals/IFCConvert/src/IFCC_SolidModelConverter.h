@@ -18,14 +18,17 @@ FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTH
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-#include <ifcpp/IFC4/include/IfcBooleanResult.h>
-#include <ifcpp/IFC4/include/IfcCsgPrimitive3D.h>
-#include <ifcpp/IFC4/include/IfcExtrudedAreaSolid.h>
-#include <ifcpp/IFC4/include/IfcHalfSpaceSolid.h>
-#include <ifcpp/IFC4/include/IfcRevolvedAreaSolid.h>
-#include <ifcpp/IFC4/include/IfcSectionedSpine.h>
-#include <ifcpp/IFC4/include/IfcSolidModel.h>
+#include <ifcpp/geometry/GeomUtils.h>
 
+#include <ifcpp/IFC4X3/include/IfcBooleanResult.h>
+#include <ifcpp/IFC4X3/include/IfcCsgPrimitive3D.h>
+#include <ifcpp/IFC4X3/include/IfcExtrudedAreaSolid.h>
+#include <ifcpp/IFC4X3/include/IfcHalfSpaceSolid.h>
+#include <ifcpp/IFC4X3/include/IfcRevolvedAreaSolid.h>
+#include <ifcpp/IFC4X3/include/IfcSectionedSpine.h>
+#include <ifcpp/IFC4X3/include/IfcSolidModel.h>
+
+#include "IFCC_PointConverter.h"
 #include "IFCC_ProfileCache.h"
 #include "IFCC_FaceConverter.h"
 #include "IFCC_CurveConverter.h"
@@ -49,25 +52,25 @@ public:
 	virtual ~SolidModelConverter();
 
 	// ENTITY IfcSolidModel ABSTRACT SUPERTYPE OF(ONEOF(IfcCsgSolid, IfcManifoldSolidBrep, IfcSweptAreaSolid, IfcSweptDiskSolid))
-	void convertIfcSolidModel( const shared_ptr<IfcSolidModel>& solid_model, shared_ptr<ItemShapeData> item_data );
+	void convertIfcSolidModel( const shared_ptr<IFC4X3::IfcSolidModel>& solid_model, shared_ptr<ItemShapeData> item_data );
 
-	void convertIfcExtrudedAreaSolid( const shared_ptr<IfcExtrudedAreaSolid>& extruded_area, shared_ptr<ItemShapeData> item_data );
+	void convertIfcExtrudedAreaSolid( const shared_ptr<IFC4X3::IfcExtrudedAreaSolid>& extruded_area, shared_ptr<ItemShapeData> item_data );
 
 	void convertRevolvedAreaSolid( const std::vector<std::vector<vec2> >& profile_coords_unchecked, const vec3& axis_location, const vec3& axis_direction, double revolution_angle, shared_ptr<ItemShapeData> item_data, BuildingEntity* entity_of_origin = nullptr );
 
-	void convertIfcRevolvedAreaSolid( const shared_ptr<IfcRevolvedAreaSolid>& revolved_area, shared_ptr<ItemShapeData> item_data );
+	void convertIfcRevolvedAreaSolid( const shared_ptr<IFC4X3::IfcRevolvedAreaSolid>& revolved_area, shared_ptr<ItemShapeData> item_data );
 
-	void convertIfcBooleanResult( const shared_ptr<IfcBooleanResult>& bool_result, shared_ptr<ItemShapeData> item_data );
+	void convertIfcBooleanResult( const shared_ptr<IFC4X3::IfcBooleanResult>& bool_result, shared_ptr<ItemShapeData> item_data );
 
-	void convertIfcCsgPrimitive3D( const shared_ptr<IfcCsgPrimitive3D>& csg_primitive, shared_ptr<ItemShapeData> item_data );
+	void convertIfcCsgPrimitive3D( const shared_ptr<IFC4X3::IfcCsgPrimitive3D>& csg_primitive, shared_ptr<ItemShapeData> item_data );
 
 	void extrudeBox( const std::vector<vec3>& boundary_points, const vec3& extrusion_vector, shared_ptr<carve::input::PolyhedronData>& box_data );
 
-	void convertIfcHalfSpaceSolid( const shared_ptr<IfcHalfSpaceSolid>& half_space_solid, shared_ptr<ItemShapeData> item_data, const shared_ptr<ItemShapeData>& other_operand );
+	void convertIfcHalfSpaceSolid( const shared_ptr<IFC4X3::IfcHalfSpaceSolid>& half_space_solid, shared_ptr<ItemShapeData> item_data, const shared_ptr<ItemShapeData>& other_operand );
 
-	void convertIfcBooleanOperand( const shared_ptr<IfcBooleanOperand>& operand_select, shared_ptr<ItemShapeData> item_data, const shared_ptr<ItemShapeData>& other_operand );
+	void convertIfcBooleanOperand( const shared_ptr<IFC4X3::IfcBooleanOperand>& operand_select, shared_ptr<ItemShapeData> item_data, const shared_ptr<ItemShapeData>& other_operand );
 
-	void convertIfcSectionedSpine( const shared_ptr<IfcSectionedSpine>& spine, shared_ptr<ItemShapeData> item_data );
+	void convertIfcSectionedSpine( const shared_ptr<IFC4X3::IfcSectionedSpine>& spine, shared_ptr<ItemShapeData> item_data );
 };
 
 } // end namespace

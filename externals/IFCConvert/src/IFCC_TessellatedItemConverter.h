@@ -25,12 +25,12 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 #include <ifcpp/model/StatusCallback.h>
 #include <ifcpp/model/UnitConverter.h>
-#include <ifcpp/IFC4/include/IfcTessellatedItem.h>
-#include <ifcpp/IFC4/include/IfcCartesianPointList3D.h>
-#include <ifcpp/IFC4/include/IfcPolygonalFaceSet.h>
-#include <ifcpp/IFC4/include/IfcTriangulatedFaceSet.h>
+#include <ifcpp/IFC4X3/include/IfcTessellatedItem.h>
+#include <ifcpp/IFC4X3/include/IfcCartesianPointList3D.h>
+#include <ifcpp/IFC4X3/include/IfcPolygonalFaceSet.h>
+#include <ifcpp/IFC4X3/include/IfcTriangulatedFaceSet.h>
 
-#include <ifcpp/geometry/Carve/GeometryInputData.h>
+#include <ifcpp/geometry/GeometryInputData.h>
 
 
 namespace IFCC {
@@ -49,23 +49,23 @@ class TessellatedItemConverter : public StatusCallback {
 public:
 	TessellatedItemConverter(std::shared_ptr<UnitConverter> unit_converter);
 
-	void convertTessellatedItem(std::shared_ptr<IfcTessellatedItem> const tessellated_item,
+	void convertTessellatedItem(std::shared_ptr<IFC4X3::IfcTessellatedItem> const tessellated_item,
 								std::shared_ptr<ItemShapeData> item_data);
 
 	std::shared_ptr<UnitConverter> m_unit_converter;
 
 protected:
-	bool copyVertices(std::shared_ptr<IfcCartesianPointList3D> const point_list,
+	bool copyVertices(std::shared_ptr<IFC4X3::IfcCartesianPointList3D> const point_list,
 					  std::shared_ptr<carve::input::PolyhedronData> carve_mesh_builder);
 
-	void convertPolygonalFaceSet(std::shared_ptr<IfcPolygonalFaceSet> const poly_face_set,
+	void convertPolygonalFaceSet(std::shared_ptr<IFC4X3::IfcPolygonalFaceSet> const poly_face_set,
 								 size_t const coordinate_count,
 								 std::shared_ptr<carve::input::PolyhedronData> carve_mesh_builder);
 
 	//also resolves indirect access via pn, giving direct indices into coord list
 	void copyHoleIndices(std::vector<std::vector<int>>& hole_indices,
-						 std::vector<std::vector<std::shared_ptr<IfcPositiveInteger>>> const& coord_index,
-						 std::vector<std::shared_ptr<IfcPositiveInteger>> const& pn_indices,
+						 std::vector<std::vector<std::shared_ptr<IFC4X3::IfcPositiveInteger>>> const& coord_index,
+						 std::vector<std::shared_ptr<IFC4X3::IfcPositiveInteger>> const& pn_indices,
 						 size_t const coordinate_count);
 
 	///@brief Merge boundary and hole indices together
@@ -82,7 +82,7 @@ protected:
 							std::vector<std::vector<int>> const& hole_vertex_indices,
 							std::shared_ptr<carve::input::PolyhedronData> carve_mesh_builder);
 
-	void convertTriangulatedFaceSet(std::shared_ptr<IfcTriangulatedFaceSet> const tri_face_set,
+	void convertTriangulatedFaceSet(std::shared_ptr<IFC4X3::IfcTriangulatedFaceSet> const tri_face_set,
 									size_t const coordinate_count,
 									std::shared_ptr<carve::input::PolyhedronData> carve_mesh_builder);
 

@@ -22,11 +22,14 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 #include "IFCC_TessellatedItemConverter.h"
 
-#include <ifcpp/IFC4/include/IfcLengthMeasure.h>
-#include <ifcpp/IFC4/include/IfcPositiveInteger.h>
-#include <ifcpp/IFC4/include/IfcIndexedPolygonalFace.h>
-#include <ifcpp/IFC4/include/IfcIndexedPolygonalFaceWithVoids.h>
-//#include <ifcpp/IFC4/include/IfcTessellatedFaceSet.h>
+#include <ifcpp/IFC4X3/include/IfcLengthMeasure.h>
+#include <ifcpp/IFC4X3/include/IfcPositiveInteger.h>
+#include <ifcpp/IFC4X3/include/IfcIndexedPolygonalFace.h>
+#include <ifcpp/IFC4X3/include/IfcIndexedPolygonalFaceWithVoids.h>
+//#include <ifcpp/IFC4X3/include/IfcTessellatedFaceSet.h>
+
+#include <Carve/src/include/carve/carve.hpp>
+#include <ifcpp/geometry/MeshUtils.h>
 
 ///@brief imports tessellated meshes as carve meshes
 //Open tasks & TODOS:
@@ -45,14 +48,14 @@ namespace IFCC {
 		m_unit_converter(unit_converter)
 	{ }
 
-	void TessellatedItemConverter::convertTessellatedItem(shared_ptr<IfcTessellatedItem> const tessellated_item,
+	void TessellatedItemConverter::convertTessellatedItem(shared_ptr<IFC4X3::IfcTessellatedItem> const tessellated_item,
 			shared_ptr<ItemShapeData> item_data)
 	{
 		//Can be either an IfcPolygonalFaceSet or an IfcTriangulatedFaceSet
 		//the former one needs to be triangulated by the user, while the
 		//latter one can usually directly be used for rendering
 		auto carve_mesh_builder = make_shared<carve::input::PolyhedronData>();
-		auto face_set = dynamic_pointer_cast<IfcTessellatedFaceSet>(tessellated_item);
+		auto face_set = dynamic_pointer_cast<IFC4X3::IfcTessellatedFaceSet>(tessellated_item);
 		if(!face_set)
 		{
 			messageCallback( "Tessellated item is not a face set! Probably a bare polygonal face?",
@@ -70,17 +73,17 @@ namespace IFCC {
 			return;
 		auto const coordinate_count = face_set->m_Coordinates->m_CoordList.size();
 
-		if(auto const poly_face_set = dynamic_pointer_cast<IfcPolygonalFaceSet>(tessellated_item))
+		if(auto const poly_face_set = dynamic_pointer_cast<IFC4X3::IfcPolygonalFaceSet>(tessellated_item))
 			convertPolygonalFaceSet( poly_face_set, coordinate_count, carve_mesh_builder );
 
-		if(auto const tri_face_set = dynamic_pointer_cast<IfcTriangulatedFaceSet>(tessellated_item))
+		if(auto const tri_face_set = dynamic_pointer_cast<IFC4X3::IfcTriangulatedFaceSet>(tessellated_item))
 			convertTriangulatedFaceSet( tri_face_set, coordinate_count, carve_mesh_builder );
 
-		item_data->addOpenOrClosedPolyhedron( carve_mesh_builder );
+		item_data->addOpenOrClosedPolyhedron( carve_mesh_builder, 1e-6 );
 	}
 
 
-	bool TessellatedItemConverter::copyVertices(shared_ptr<IfcCartesianPointList3D> const point_list,
+	bool TessellatedItemConverter::copyVertices(shared_ptr<IFC4X3::IfcCartesianPointList3D> const point_list,
 			shared_ptr<carve::input::PolyhedronData> carve_mesh_builder)
 	{
 		double length_factor = m_unit_converter->getLengthInMeterFactor();
@@ -101,7 +104,7 @@ namespace IFCC {
 		return true;
 	}
 
-	void TessellatedItemConverter::convertPolygonalFaceSet(shared_ptr<IfcPolygonalFaceSet> const poly_face_set,
+	void TessellatedItemConverter::convertPolygonalFaceSet(shared_ptr<IFC4X3::IfcPolygonalFaceSet> const poly_face_set,
 			size_t const coordinate_count,
 			shared_ptr<carve::input::PolyhedronData> carve_mesh_builder)
 	{
@@ -113,7 +116,7 @@ namespace IFCC {
 		std::vector<std::vector<int>> hole_vertex_indices;
 		//using a lambda saves one nested loop
 		size_t const pn_index_count = poly_face_set->m_PnIndex.size();
-		auto check_and_add = [&vertex_indices,&coordinate_count](shared_ptr<IfcPositiveInteger> const& index)
+		auto check_and_add = [&vertex_indices,&coordinate_count](shared_ptr<IFC4X3::IfcPositiveInteger> const& index)
 		{
 			if(!index)
 				return true;
@@ -122,7 +125,7 @@ namespace IFCC {
 			vertex_indices.push_back(index->m_value - 1);
 			return false;
 		};
-		auto check_and_add_indirect = [&](shared_ptr<IfcPositiveInteger> const& pn_index)
+		auto check_and_add_indirect = [&](shared_ptr<IFC4X3::IfcPositiveInteger> const& pn_index)
 		{
 			if(!pn_index)
 				return true;
@@ -142,7 +145,7 @@ namespace IFCC {
 				? std::any_of(coord_index.cbegin(), coord_index.cend(), check_and_add_indirect)
 				: std::any_of(coord_index.cbegin(), coord_index.cend(), check_and_add))
 				continue;
-			if(auto face_with_voids = dynamic_pointer_cast<IfcIndexedPolygonalFaceWithVoids>
+			if(auto face_with_voids = dynamic_pointer_cast<IFC4X3::IfcIndexedPolygonalFaceWithVoids>
 					(indexed_face))
 			{
 				copyHoleIndices(hole_vertex_indices, face_with_voids->m_InnerCoordIndices,
@@ -155,13 +158,13 @@ namespace IFCC {
 
 	//also resolves indirect access via pn, giving direct indices into coord list
 	void TessellatedItemConverter::copyHoleIndices(std::vector<std::vector<int>>& hole_indices,
-			std::vector<std::vector<shared_ptr<IfcPositiveInteger>>> const& coord_index,
-			std::vector<shared_ptr<IfcPositiveInteger>> const& pn_indices,
+			std::vector<std::vector<shared_ptr<IFC4X3::IfcPositiveInteger>>> const& coord_index,
+			std::vector<shared_ptr<IFC4X3::IfcPositiveInteger>> const& pn_indices,
 			size_t const coordinate_count)
 	{
 		std::vector<int> index_buffer;
 		size_t const pn_index_count = pn_indices.size();
-		auto check_and_add = [&index_buffer,&coordinate_count](shared_ptr<IfcPositiveInteger> const& index)
+		auto check_and_add = [&index_buffer,&coordinate_count](shared_ptr<IFC4X3::IfcPositiveInteger> const& index)
 		{
 			if(!index)
 				return true;
@@ -170,7 +173,7 @@ namespace IFCC {
 			index_buffer.push_back(index->m_value - 1);
 			return false;
 		};
-		auto check_and_add_indirect = [&](shared_ptr<IfcPositiveInteger> const& pn_index)
+		auto check_and_add_indirect = [&](shared_ptr<IFC4X3::IfcPositiveInteger> const& pn_index)
 		{
 			if(!pn_index)
 				return true;
@@ -235,7 +238,7 @@ namespace IFCC {
 		}
 	}
 
-	void TessellatedItemConverter::convertTriangulatedFaceSet(shared_ptr<IfcTriangulatedFaceSet> const tri_face_set,
+	void TessellatedItemConverter::convertTriangulatedFaceSet(shared_ptr<IFC4X3::IfcTriangulatedFaceSet> const tri_face_set,
 			size_t const coordinate_count,
 			shared_ptr<carve::input::PolyhedronData> carve_mesh_builder)
 	{
@@ -246,7 +249,7 @@ namespace IFCC {
 		std::vector<int> vertex_indices;
 		size_t const pn_index_count = tri_face_set->m_PnIndex.size();
 		//using a lambda saves one nested loop
-		auto check_and_add = [&vertex_indices,&coordinate_count](shared_ptr<IfcPositiveInteger> const& index)
+		auto check_and_add = [&vertex_indices,&coordinate_count](shared_ptr<IFC4X3::IfcPositiveInteger> const& index)
 		{
 			if(!index)
 				return true;
@@ -255,7 +258,7 @@ namespace IFCC {
 			vertex_indices.push_back(index->m_value - 1);
 			return false;
 		};
-		auto check_and_add_indirect = [&](shared_ptr<IfcPositiveInteger> const& pn_index)
+		auto check_and_add_indirect = [&](shared_ptr<IFC4X3::IfcPositiveInteger> const& pn_index)
 		{
 			if(!pn_index)
 				return true;

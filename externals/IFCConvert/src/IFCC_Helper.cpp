@@ -4,50 +4,53 @@
 #include <codecvt>
 #include <fstream>
 
-#include <ifcpp/IFC4/include/IfcGloballyUniqueId.h>
-#include <ifcpp/IFC4/include/IfcWall.h>
-#include <ifcpp/IFC4/include/IfcBeam.h>
-#include <ifcpp/IFC4/include/IfcChimney.h>
-#include <ifcpp/IFC4/include/IfcColumn.h>
-#include <ifcpp/IFC4/include/IfcCovering.h>
-#include <ifcpp/IFC4/include/IfcCurtainWall.h>
-#include <ifcpp/IFC4/include/IfcDoor.h>
-#include <ifcpp/IFC4/include/IfcFooting.h>
-#include <ifcpp/IFC4/include/IfcMember.h>
-#include <ifcpp/IFC4/include/IfcPile.h>
-#include <ifcpp/IFC4/include/IfcPlate.h>
-#include <ifcpp/IFC4/include/IfcRailing.h>
-#include <ifcpp/IFC4/include/IfcRamp.h>
-#include <ifcpp/IFC4/include/IfcRampFlight.h>
-#include <ifcpp/IFC4/include/IfcRoof.h>
-#include <ifcpp/IFC4/include/IfcShadingDevice.h>
-#include <ifcpp/IFC4/include/IfcSlab.h>
-#include <ifcpp/IFC4/include/IfcStair.h>
-#include <ifcpp/IFC4/include/IfcStairFlight.h>
-#include <ifcpp/IFC4/include/IfcWall.h>
-#include <ifcpp/IFC4/include/IfcCivilElement.h>
-#include <ifcpp/IFC4/include/IfcDistributionElement.h>
-#include <ifcpp/IFC4/include/IfcElementAssembly.h>
-#include <ifcpp/IFC4/include/IfcElementComponent.h>
-#include <ifcpp/IFC4/include/IfcFurnishingElement.h>
-#include <ifcpp/IFC4/include/IfcGeographicElement.h>
-#include <ifcpp/IFC4/include/IfcTransportElement.h>
-#include <ifcpp/IFC4/include/IfcVirtualElement.h>
-#include <ifcpp/IFC4/include/IfcExternalSpatialElement.h>
-#include <ifcpp/IFC4/include/IfcSpatialZone.h>
-#include <ifcpp/IFC4/include/IfcWindow.h>
-#include <ifcpp/IFC4/include/IfcFeatureElement.h>
+#include <ifcpp/IFC4X3/include/IfcGloballyUniqueId.h>
+#include <ifcpp/IFC4X3/include/IfcWall.h>
+#include <ifcpp/IFC4X3/include/IfcBeam.h>
+#include <ifcpp/IFC4X3/include/IfcChimney.h>
+#include <ifcpp/IFC4X3/include/IfcColumn.h>
+#include <ifcpp/IFC4X3/include/IfcCovering.h>
+#include <ifcpp/IFC4X3/include/IfcCurtainWall.h>
+#include <ifcpp/IFC4X3/include/IfcDoor.h>
+#include <ifcpp/IFC4X3/include/IfcFooting.h>
+#include <ifcpp/IFC4X3/include/IfcMember.h>
+#include <ifcpp/IFC4X3/include/IfcPile.h>
+#include <ifcpp/IFC4X3/include/IfcPlate.h>
+#include <ifcpp/IFC4X3/include/IfcRailing.h>
+#include <ifcpp/IFC4X3/include/IfcRamp.h>
+#include <ifcpp/IFC4X3/include/IfcRampFlight.h>
+#include <ifcpp/IFC4X3/include/IfcRoof.h>
+#include <ifcpp/IFC4X3/include/IfcShadingDevice.h>
+#include <ifcpp/IFC4X3/include/IfcSlab.h>
+#include <ifcpp/IFC4X3/include/IfcStair.h>
+#include <ifcpp/IFC4X3/include/IfcStairFlight.h>
+#include <ifcpp/IFC4X3/include/IfcWall.h>
+#include <ifcpp/IFC4X3/include/IfcCivilElement.h>
+#include <ifcpp/IFC4X3/include/IfcDistributionElement.h>
+#include <ifcpp/IFC4X3/include/IfcElementAssembly.h>
+#include <ifcpp/IFC4X3/include/IfcElementComponent.h>
+#include <ifcpp/IFC4X3/include/IfcFurnishingElement.h>
+#include <ifcpp/IFC4X3/include/IfcGeographicElement.h>
+#include <ifcpp/IFC4X3/include/IfcTransportElement.h>
+#include <ifcpp/IFC4X3/include/IfcVirtualElement.h>
+#include <ifcpp/IFC4X3/include/IfcExternalSpatialElement.h>
+#include <ifcpp/IFC4X3/include/IfcSpatialZone.h>
+#include <ifcpp/IFC4X3/include/IfcWindow.h>
+#include <ifcpp/IFC4X3/include/IfcFeatureElement.h>
 
-#include <ifcpp/IFC4/include/IfcConnectionCurveGeometry.h>
-#include <ifcpp/IFC4/include/IfcConnectionPointGeometry.h>
-#include <ifcpp/IFC4/include/IfcConnectionPointEccentricity.h>
-#include <ifcpp/IFC4/include/IfcConnectionSurfaceGeometry.h>
-#include <ifcpp/IFC4/include/IfcConnectionVolumeGeometry.h>
-#include <ifcpp/IFC4/include/IfcFaceBasedSurfaceModel.h>
-#include <ifcpp/IFC4/include/IfcFaceSurface.h>
-#include <ifcpp/IFC4/include/IfcSurface.h>
+#include <ifcpp/IFC4X3/include/IfcConnectionCurveGeometry.h>
+#include <ifcpp/IFC4X3/include/IfcConnectionPointGeometry.h>
+#include <ifcpp/IFC4X3/include/IfcConnectionPointEccentricity.h>
+#include <ifcpp/IFC4X3/include/IfcConnectionSurfaceGeometry.h>
+#include <ifcpp/IFC4X3/include/IfcConnectionVolumeGeometry.h>
+#include <ifcpp/IFC4X3/include/IfcFaceBasedSurfaceModel.h>
+#include <ifcpp/IFC4X3/include/IfcFaceSurface.h>
+#include <ifcpp/IFC4X3/include/IfcSurface.h>
 
 #include <carve/mesh_simplify.hpp>
+
+#include <Carve/src/include/carve/carve.hpp>
+#include <ifcpp/geometry/MeshUtils.h>
 
 #include <IBK_math.h>
 #include <IBK_assert.h>
@@ -70,19 +73,19 @@ std::string ws2s(const std::wstring& wstr) {
 
 std::string label2s(const std::shared_ptr<IfcLabel>& label) {
 	if(label != nullptr)
-		return ws2s(label->m_value);
+		return label->m_value;
 	return std::string();
 }
 
 std::string text2s(const std::shared_ptr<IfcText>& label) {
 	if(label != nullptr)
-		return ws2s(label->m_value);
+		return label->m_value;
 	return std::string();
 }
 
 std::string name2s(const std::shared_ptr<IfcIdentifier>& text) {
 	if(text != nullptr)
-		return ws2s(text->m_value);
+		return text->m_value;
 	return std::string();
 }
 
@@ -207,8 +210,9 @@ double areaPolygon(const std::vector<IBKMK::Vector3D>& poly) {
 }
 
 std::string guidFromObject(IfcRoot* object) {
-	std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> converterX;
-	return converterX.to_bytes(object->m_GlobalId->m_value);
+	return object->m_GlobalId->m_value;
+//	std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> converterX;
+//	return converterX.to_bytes(object->m_GlobalId->m_value);
 }
 
 std::string objectTypeToString(BuildingElementTypes type) {
@@ -392,7 +396,7 @@ polyVector_t polylinesFromConnectionGeometry(std::shared_ptr<IfcConnectionGeomet
 					return res;
 
 				if(spaceTransformation != carve::math::Matrix::IDENT()) {
-					item_data->applyTransformToItem(spaceTransformation);
+					item_data->applyTransformToItem(spaceTransformation, true);
 				}
 			}
 		}
@@ -438,13 +442,14 @@ polyVector_t polylinesFromConnectionGeometry(std::shared_ptr<IfcConnectionGeomet
 }
 
 bool isIntersected(carve::mesh::MeshSet<3>* a, carve::mesh::MeshSet<3>* b) {
-	carve::csg::CSG csg;
+	double CARVE_EPSILON = 1e-5;
+	carve::csg::CSG csg(CARVE_EPSILON);
 
 	if(a == nullptr || b == nullptr)
 		return false;
 
 	try {
-		meshset_t* res = csg.compute(a, b, carve::csg::CSG::INTERSECTION);
+		carve::csg::CSG::meshset_t* res = csg.compute(a, b, carve::csg::CSG::INTERSECTION);
 		return !res->meshes.empty();
 	}
 	catch(...) {

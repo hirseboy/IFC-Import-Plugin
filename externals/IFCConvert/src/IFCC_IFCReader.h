@@ -8,7 +8,7 @@
 
 #include <ReaderSTEP.h>
 
-#include <ifcpp/IFC4/include/IfcSpaceTypeEnum.h>
+#include <ifcpp/IFC4X3/include/IfcSpaceTypeEnum.h>
 
 #include <QCoreApplication>
 #include <QStringList>
@@ -35,6 +35,11 @@ class IFCReader {
 Q_DECLARE_TR_FUNCTIONS( IFCReader );
 
 public:
+
+	enum Name_Id_Type {
+		NIT_Space,
+		NIT_SpaceBoundary
+	};
 
 	/*! Struct contains flags or parameter for controlling conversion.
 		It should repair possible IFC problems.
@@ -110,9 +115,13 @@ public:
 	*/
 	void setRemoveDoubledSBs(bool removeDoubledSBs);
 
+	/*! Search for object with given id and type and return its name.*/
+	QString nameForId(int id, Name_Id_Type) const;
+
 	/*! Write converted data as vicus file.*/
 	void writeXML(const IBK::Path & filename) const;
 
+	/*! Create a VICUS project text based on the current content.*/
 	void setVicusProjectText(QString& projectText);
 
 	QStringList messages() const;

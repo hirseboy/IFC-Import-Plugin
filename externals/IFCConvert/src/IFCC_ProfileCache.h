@@ -19,12 +19,15 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OU
 */
 
 #include <ifcpp/model/StatusCallback.h>
-#include <ifcpp/geometry/Carve/SplineConverter.h>
 
+#include <ifcpp/IFC4X3/include/IfcCartesianPoint.h>
+
+#include "IFCC_SplineConverter.h"
 #include "IFCC_ProfileConverter.h"
 #include "IFCC_CurveConverter.h"
 
 namespace IFCC {
+
 
 class ProfileCache : public StatusCallback
 {
@@ -44,7 +47,7 @@ public:
 
 	void clearProfileCache();
 
-	shared_ptr<ProfileConverter> getProfileConverter( shared_ptr<IfcProfileDef>& ifc_profile );
+	shared_ptr<ProfileConverter> getProfileConverter( shared_ptr<IFC4X3::IfcProfileDef>& ifc_profile );
 };
 
 } // end namespace

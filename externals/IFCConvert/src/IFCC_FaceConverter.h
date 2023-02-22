@@ -18,15 +18,19 @@ FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTH
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
+#include <ifcpp/model/BuildingObject.h>
+#include <ifcpp/geometry/GeomUtils.h>
 #include <ifcpp/geometry/GeometrySettings.h>
 #include <ifcpp/model/StatusCallback.h>
 #include <ifcpp/model/UnitConverter.h>
 
-#include <ifcpp/IFC4/include/IfcFace.h>
+#include <ifcpp/IFC4X3/include/IfcFace.h>
+#include <ifcpp/IFC4X3/include/IfcCartesianPoint.h>
+#include <ifcpp/IFC4X3/EntityFactory.h>
 
-#include <ifcpp/geometry/Carve/SplineConverter.h>
-#include <ifcpp/geometry/Carve/Sweeper.h>
+#include <ifcpp/geometry/Sweeper.h>
 
+#include "IFCC_SplineConverter.h"
 #include "IFCC_CurveConverter.h"
 
 namespace IFCC {
@@ -63,9 +67,9 @@ public:
 
 	virtual ~FaceConverter() = default;
 
-	void convertIfcSurface( const shared_ptr<IfcSurface>& surface, shared_ptr<ItemShapeData>& item_data, shared_ptr<SurfaceProxy>& surface_proxy );
+	void convertIfcSurface( const shared_ptr<IFC4X3::IfcSurface>& surface, shared_ptr<ItemShapeData>& item_data, shared_ptr<SurfaceProxy>& surface_proxy );
 
-	void convertIfcFaceList( const std::vector<shared_ptr<IfcFace> >& vec_faces, shared_ptr<ItemShapeData> item_data, ShellType st );
+	void convertIfcFaceList( const std::vector<shared_ptr<IFC4X3::IfcFace> >& vec_faces, shared_ptr<ItemShapeData> item_data, ShellType st );
 };
 
 } // end namespace

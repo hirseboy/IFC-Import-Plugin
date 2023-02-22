@@ -21,23 +21,25 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OU
 #include <ifcpp/model/BasicTypes.h>
 #include <ifcpp/model/OpenMPIncludes.h>
 #include <ifcpp/model/StatusCallback.h>
-#include <ifcpp/IFC4/include/IfcCurtainWall.h>
-#include <ifcpp/IFC4/include/IfcGloballyUniqueId.h>
-#include <ifcpp/IFC4/include/IfcPropertySetDefinitionSet.h>
-#include <ifcpp/IFC4/include/IfcRelAggregates.h>
-#include <ifcpp/IFC4/include/IfcRelContainedInSpatialStructure.h>
-#include <ifcpp/IFC4/include/IfcRelDefinesByProperties.h>
-#include <ifcpp/IFC4/include/IfcSpace.h>
-#include <ifcpp/IFC4/include/IfcWindow.h>
-#include <ifcpp/IFC4/include/IfcWall.h>
-#include <ifcpp/IFC4/include/IfcDoor.h>
-#include <ifcpp/IFC4/include/IfcLocalPlacement.h>
+#include <ifcpp/IFC4X3/include/IfcCurtainWall.h>
+#include <ifcpp/IFC4X3/include/IfcGloballyUniqueId.h>
+#include <ifcpp/IFC4X3/include/IfcPropertySetDefinitionSet.h>
+#include <ifcpp/IFC4X3/include/IfcRelAggregates.h>
+#include <ifcpp/IFC4X3/include/IfcRelContainedInSpatialStructure.h>
+#include <ifcpp/IFC4X3/include/IfcRelDefinesByProperties.h>
+#include <ifcpp/IFC4X3/include/IfcSpace.h>
+#include <ifcpp/IFC4X3/include/IfcWindow.h>
+#include <ifcpp/IFC4X3/include/IfcWall.h>
+#include <ifcpp/IFC4X3/include/IfcDoor.h>
+#include <ifcpp/IFC4X3/include/IfcLocalPlacement.h>
+#include <ifcpp/IFC4X3/include/IfcBuilding.h>
+#include <ifcpp/IFC4X3/include/IfcFeatureElementSubtraction.h>
 
 #include <carve/carve.hpp>
 
-#include <ifcpp/geometry/Carve/IncludeCarveHeaders.h>
-#include <ifcpp/geometry/Carve/GeometryInputData.h>
-#include <ifcpp/geometry/Carve/CSG_Adapter.h>
+#include <ifcpp/geometry/IncludeCarveHeaders.h>
+#include <ifcpp/geometry/GeometryInputData.h>
+#include <ifcpp/geometry/CSG_Adapter.h>
 
 #include "IFCC_RepresentationConverter.h"
 #include "IFCC_Helper.h"
@@ -82,18 +84,14 @@ GeometryConverter::~GeometryConverter() {}
 	}
 
 	void GeometryConverter::resetModel() {
-		progressTextCallback( L"Unloading model, cleaning up memory..." );
+//		progressTextCallback( L"Unloading model, cleaning up memory..." );
 		clearInputCache();
 		m_recent_progress = 0.0;
 
 		m_ifc_model->clearCache();
 		m_ifc_model->clearIfcModel();
-		progressTextCallback( L"Unloading model done" );
-		progressValueCallback( 0.0, "parse" );
-
-#ifdef _DEBUG
-		GeomDebugDump::clearMeshsetDump();
-#endif
+//		progressTextCallback( L"Unloading model done" );
+//		progressValueCallback( 0.0, "parse" );
 	}
 
 	void GeometryConverter::clearInputCache() {
@@ -152,7 +150,7 @@ GeometryConverter::~GeometryConverter() {}
 						std::string related_guid;
 						if (related_obj_def->m_GlobalId) {
 							std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> converterX;
-							related_guid = converterX.to_bytes(related_obj_def->m_GlobalId->m_value);
+							related_guid = related_obj_def->m_GlobalId->m_value;
 						}
 
 						auto it_product_map = m_product_shape_data.find(related_guid);
@@ -186,7 +184,7 @@ GeometryConverter::~GeometryConverter() {}
 							std::string related_guid;
 							if (related_product->m_GlobalId) {
 								std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> converterX;
-								related_guid = converterX.to_bytes(related_product->m_GlobalId->m_value);
+								related_guid = related_product->m_GlobalId->m_value;
 							}
 
 							auto it_product_map = m_product_shape_data.find(related_guid);
@@ -221,11 +219,11 @@ GeometryConverter::~GeometryConverter() {}
 				// IfcPropertyReferenceValue, IfcPropertySingleValue, IfcPropertyTableValue))
 
 				shared_ptr<IfcIdentifier> property_name = simple_property->m_Name;
-				std::wstring name_str = property_name->m_value;
-				if( name_str.compare( L"LayerName" ) == 0 ) {
+				std::string name_str = property_name->m_value;
+				if( name_str.compare( "LayerName" ) == 0 ) {
 					// TODO: implement layers
 				}
-				shared_ptr<IfcText> description = simple_property->m_Description;
+				shared_ptr<IfcText> description = simple_property->m_Specification;
 
 
 				shared_ptr<IfcPropertySingleValue> property_single_value = dynamic_pointer_cast<IfcPropertySingleValue>(simple_property);
@@ -241,13 +239,10 @@ GeometryConverter::~GeometryConverter() {}
 			shared_ptr<IfcComplexProperty> complex_property = dynamic_pointer_cast<IfcComplexProperty>(ifc_property);
 			if( complex_property ) {
 				if( !complex_property->m_UsageName ) continue;
-				if( complex_property->m_UsageName->m_value.compare( L"Color" ) == 0 ) {
+				if( complex_property->m_UsageName->m_value.compare( "Color" ) == 0 ) {
 					vec4 vec_color;
 					m_representation_converter->getStylesConverter()->convertIfcComplexPropertyColor( complex_property, vec_color );
 					shared_ptr<AppearanceData> appearance_data( new AppearanceData( -1 ) );
-					if( !appearance_data ) {
-						throw OutOfMemoryException( __FUNC__ );
-					}
 					appearance_data->m_apply_to_geometry_type = AppearanceData::GEOM_TYPE_ANY;
 					appearance_data->m_color_ambient.setColor( vec_color );
 					appearance_data->m_color_diffuse.setColor( vec_color );
@@ -258,7 +253,7 @@ GeometryConverter::~GeometryConverter() {}
 			}
 		}
 	}
-
+/*
 	void GeometryConverter::resetIfcSiteLargeCoords(shared_ptr<IfcSite>& ifc_site) {
 		if (!ifc_site) {
 			return;
@@ -303,11 +298,174 @@ GeometryConverter::~GeometryConverter() {}
 			}
 		}
 	}
+*/
+
+	void GeometryConverter::setIfcSiteToOrigin(shared_ptr<IfcSite>& ifc_site)
+	{
+		if (!ifc_site)
+		{
+			return;
+		}
+
+		if (!ifc_site->m_ObjectPlacement)
+		{
+			return;
+		}
+
+		shared_ptr<IfcLocalPlacement> local_placement = dynamic_pointer_cast<IfcLocalPlacement>(ifc_site->m_ObjectPlacement);
+		if (!local_placement)
+		{
+			return;
+		}
+
+		if (local_placement->m_RelativePlacement)
+		{
+			shared_ptr<IfcAxis2Placement3D> axis_placement = dynamic_pointer_cast<IfcAxis2Placement3D>(local_placement->m_RelativePlacement);
+			if (axis_placement)
+			{
+				if (axis_placement->m_Location)
+				{
+					shared_ptr<IfcCartesianPoint> placement_location = dynamic_pointer_cast<IfcCartesianPoint>(axis_placement->m_Location);
+					if (placement_location)
+					{
+						double lengthFactor = m_ifc_model->getUnitConverter()->getLengthInMeterFactor();
+						PointConverter::convertIfcCartesianPoint(placement_location, m_siteOffset, lengthFactor);
+
+						if( m_siteOffset.length2() > 1000 * 1000 )
+						{
+							for( double& coordinate : placement_location->m_Coordinates )
+							{
+								if( coordinate )
+								{
+									coordinate = 0;
+								}
+							}
+						}
+					}
+					else
+					{
+						std::cout << "IfcAxis2Placement3D.Location is not an IfcCartesianPoint" << std::endl;
+					}
+				}
+			}
+		}
+	}
+
+
+	void GeometryConverter::fixModelHierarchy()
+	{
+		// sometimes there are IfcBuilding, not attached to IfcSite and IfcProject
+		std::map<std::string, shared_ptr<ProductShapeData> >& map_shapeInputData = getShapeInputData();
+		shared_ptr<BuildingModel> ifc_model = getBuildingModel();
+		shared_ptr<IfcProject> ifc_project = ifc_model->getIfcProject();
+		shared_ptr<IfcSite> ifc_site;
+
+		std::vector<shared_ptr<ProductShapeData> > vec_ifc_buildings;
+
+		for( auto it : map_shapeInputData )
+		{
+			std::string guid = it.first;
+			shared_ptr<ProductShapeData>& product_shape = it.second;
+
+			if( product_shape->m_ifc_object_definition.expired() )
+			{
+				continue;
+			}
+
+			shared_ptr<IfcObjectDefinition> ifc_object_definition(product_shape->m_ifc_object_definition);
+			if( !ifc_object_definition )
+			{
+				continue;
+			}
+
+			if( ifc_object_definition->classID() == IFC4X3::IFCBUILDING )
+			{
+				shared_ptr<IfcBuilding> ifc_building = dynamic_pointer_cast<IfcBuilding>(ifc_object_definition);
+				if( ifc_building )
+				{
+					vec_ifc_buildings.push_back(product_shape);
+					continue;
+				}
+			}
+
+			if( ifc_object_definition->classID() == IFC4X3::IFCSITE )
+			{
+				shared_ptr<IfcSite> site = dynamic_pointer_cast<IfcSite>(ifc_object_definition);
+				if( site )
+				{
+					ifc_site = site;
+					continue;
+				}
+			}
+
+			if( ifc_object_definition->classID() == IFC4X3::IFCPROJECT )
+			{
+				shared_ptr<IfcProject> project = dynamic_pointer_cast<IfcProject>(ifc_object_definition);
+				if( project )
+				{
+					ifc_project = project;
+					continue;
+				}
+			}
+		}
+
+		// if IfcBuilding is not connected to IfcSite and IfcProject, find IfcSite, and connect it
+		if( ifc_site )
+		{
+			for( auto product_shape_building : vec_ifc_buildings )
+			{
+				shared_ptr<IfcObjectDefinition> ifc_object_definition(product_shape_building->m_ifc_object_definition);
+				if( !ifc_object_definition )
+				{
+					continue;
+				}
+				shared_ptr<IfcBuilding> ifc_building = dynamic_pointer_cast<IfcBuilding>(ifc_object_definition);
+				if( ifc_building )
+				{
+					if( ifc_building->m_Decomposes_inverse.size() == 0 )
+					{
+						if( ifc_site->m_IsDecomposedBy_inverse.size() == 0 )
+						{
+							shared_ptr<IfcRelAggregates> site_aggregates(new IfcRelAggregates());
+							ifc_model->insertEntity(site_aggregates);
+							site_aggregates->m_RelatingObject = ifc_site;
+
+							ifc_site->m_IsDecomposedBy_inverse.push_back(site_aggregates);
+						}
+
+						weak_ptr<IfcRelAggregates> site_aggregates_weak = ifc_site->m_IsDecomposedBy_inverse[0];
+						if( !site_aggregates_weak.expired() )
+						{
+							shared_ptr<IfcRelAggregates> site_aggregates(site_aggregates_weak);
+							site_aggregates->m_RelatingObject = ifc_site;
+							site_aggregates->m_RelatedObjects.push_back(ifc_building);
+
+							ifc_building->m_Decomposes_inverse.push_back(site_aggregates);
+						}
+					}
+				}
+			}
+
+			if( ifc_project )
+			{
+				if( ifc_project->m_IsDecomposedBy_inverse.size() == 0 )
+				{
+					shared_ptr<IfcRelAggregates> project_aggregates(new IfcRelAggregates());
+					ifc_model->insertEntity(project_aggregates);
+					project_aggregates->m_RelatingObject = ifc_project;
+					project_aggregates->m_RelatedObjects.push_back(ifc_site);
+
+					ifc_site->m_Decomposes_inverse.push_back(project_aggregates);
+					ifc_project->m_IsDecomposedBy_inverse.push_back(project_aggregates);
+				}
+			}
+		}
+	}
 
 	/*\brief method convertGeometry: Creates geometry for Carve from previously loaded BuildingModel model.
 	**/
 	void GeometryConverter::convertGeometry(bool performSubtractOpenings, std::vector<ConvertError>& errors) {
-		progressTextCallback( L"Creating geometry..." );
+		progressTextCallback( "Creating geometry..." );
 		progressValueCallback( 0, "geometry" );
 		m_product_shape_data.clear();
 		m_map_outside_spatial_structure.clear();
@@ -319,11 +477,15 @@ GeometryConverter::~GeometryConverter() {}
 
 		shared_ptr<ProductShapeData> ifc_project_data;
 		std::vector<shared_ptr<IfcObjectDefinition> > vec_object_definitions;
-		double length_to_meter_factor = 1.0;
-		if( m_ifc_model->getUnitConverter() ) {
-			length_to_meter_factor = m_ifc_model->getUnitConverter()->getLengthInMeterFactor();
+		const double length_in_meter = m_representation_converter->getUnitConverter()->getLengthInMeterFactor();
+		setCsgEps(1.5e-08 * length_in_meter);
+		if( std::abs(length_in_meter) > EPS_M14 )
+		{
+			double eps = m_geom_settings->getEpsilonCoplanarDistance();
+			eps /= length_in_meter;
+			m_geom_settings->setEpsilonCoplanarDistance(eps);
+			m_geom_settings->setEpsilonCoplanarAngle(eps * 0.1);
 		}
-		carve::setEpsilon( m_csg_eps );
 
 		const std::map<int, shared_ptr<BuildingEntity> >& map_entities = m_ifc_model->getMapIfcEntities();
 		if (map_entities.size() > 0) {
@@ -334,9 +496,16 @@ GeometryConverter::~GeometryConverter() {}
 					if (object_def) {
 						vec_object_definitions.push_back(object_def);
 
-						shared_ptr<IfcSite> ifc_site = dynamic_pointer_cast<IfcSite>(object_def);
-						if (ifc_site) {
-							resetIfcSiteLargeCoords(ifc_site);
+						if( m_set_model_to_origin )
+						{
+							if( object_def->classID() == IFC4X3::IFCSITE )
+							{
+								shared_ptr<IfcSite> ifc_site = dynamic_pointer_cast<IfcSite>(object_def);
+								if( ifc_site )
+								{
+									setIfcSiteToOrigin(ifc_site);
+								}
+							}
 						}
 					}
 				}
@@ -361,16 +530,14 @@ GeometryConverter::~GeometryConverter() {}
 				BuildingElementTypes type = getObjectType(object_def);
 				bool geometricObject = isConstructionType(type) || isOpeningType(type) || isConstructionSimilarType(type);
 
-				const int entity_id = object_def->m_entity_id;
+				const int entity_id = object_def->m_tag;
 				std::string guid;
-				std::wstring guid_wstr;
-				if (object_def->m_GlobalId) {
-					std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> converterX;
-					guid_wstr = object_def->m_GlobalId->m_value;
-					guid = converterX.to_bytes(guid_wstr);
+				if (object_def->m_GlobalId)
+				{
+					guid = object_def->m_GlobalId->m_value;
 				}
 
-				shared_ptr<ProductShapeData> product_geom_input_data( new ProductShapeData(guid_wstr) );
+				shared_ptr<ProductShapeData> product_geom_input_data( new ProductShapeData(guid) );
 				product_geom_input_data->m_ifc_object_definition = object_def;
 
 				// TODO: check for equal product shapes: each representation and each item must be equal, also openings must be equal: m_HasOpenings_inverse
@@ -378,7 +545,7 @@ GeometryConverter::~GeometryConverter() {}
 				// check if the object_def is convertible into a IfcFeatureElementSubtraction object
 				// this is the base class for all openenings
 				// that means: this function checks if this is an opening
-				if( performSubtractOpenings && !m_geom_settings->getRenderObjectFilter()(object_def) ) {
+				if( performSubtractOpenings && m_geom_settings->skipRenderObject( object_def->classID() ) ) {
 					// geometry will be created in method subtractOpenings
 					continue;
 				}
@@ -388,7 +555,7 @@ GeometryConverter::~GeometryConverter() {}
 #endif
 					ifc_project_data = product_geom_input_data;
 				}
-				std::wstring nameOfSpace;
+				std::string nameOfSpace;
 				if( dynamic_pointer_cast<IfcSpace>(object_def)) {
 					nameOfSpace = dynamic_pointer_cast<IfcSpace>(object_def)->m_LongName->m_value;
 					int i=0;
@@ -404,9 +571,6 @@ GeometryConverter::~GeometryConverter() {}
 
 				try {
 					convertIfcProductShape( product_geom_input_data, performSubtractOpenings, errors );
-				}
-				catch( OutOfMemoryException& e ) {
-					throw e;
 				}
 				catch( BuildingException& e ) {
 					thread_err << e.what();
@@ -462,9 +626,6 @@ GeometryConverter::~GeometryConverter() {}
 					subtractOpeningsInRelatedObjects(product_geom_input_data, errors);
 				}
 			}
-			catch( OutOfMemoryException& e ) {
-				throw e;
-			}
 			catch( BuildingException& e ) {
 				messageCallback(e.what(), StatusCallback::MESSAGE_TYPE_ERROR, "");
 			}
@@ -482,6 +643,7 @@ GeometryConverter::~GeometryConverter() {}
 		try {
 			// now resolve spatial structure
 			if( ifc_project_data ) {
+				fixModelHierarchy();
 				resolveProjectStructure( ifc_project_data );
 			}
 
@@ -496,21 +658,17 @@ GeometryConverter::~GeometryConverter() {}
 					if( !product_shape->m_ifc_object_definition.expired() ) {
 						shared_ptr<IfcObjectDefinition> ifc_object_def( product_shape->m_ifc_object_definition );
 						shared_ptr<IfcFeatureElementSubtraction> opening = dynamic_pointer_cast<IfcFeatureElementSubtraction>(ifc_object_def);
-						if( !m_geom_settings->getRenderObjectFilter()(ifc_object_def) ) {
+						if( !m_geom_settings->skipRenderObject(ifc_object_def->classID()) ) {
 							continue;
 						}
 						std::string guid;
 						if (ifc_object_def->m_GlobalId) {
-							std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> converterX;
-							guid = converterX.to_bytes(ifc_object_def->m_GlobalId->m_value);
+							guid = ifc_object_def->m_GlobalId->m_value;
 						}
 						m_map_outside_spatial_structure[guid] = ifc_object_def;
 					}
 				}
 			}
-		}
-		catch( OutOfMemoryException& e ) {
-			throw e;
 		}
 		catch( BuildingException& e ) {
 			messageCallback( e.what(), StatusCallback::MESSAGE_TYPE_ERROR, "" );
@@ -523,7 +681,7 @@ GeometryConverter::~GeometryConverter() {}
 		}
 
 		m_representation_converter->getProfileCache()->clearProfileCache();
-		progressTextCallback( L"Loading file done" );
+		progressTextCallback( "Loading file done" );
 		progressValueCallback( 1.0, "geometry" );
 	}
 
@@ -588,10 +746,6 @@ GeometryConverter::~GeometryConverter() {}
 				product_shape->m_vec_representations.push_back( representation_data );
 				representation_data->m_parent_product = product_shape;
 			}
-			catch( OutOfMemoryException& e )
-			{
-				throw e;
-			}
 			catch( BuildingException& e )
 			{
 				messageCallback( e.what(), StatusCallback::MESSAGE_TYPE_ERROR, "" );
@@ -622,7 +776,7 @@ GeometryConverter::~GeometryConverter() {}
 
 			// handle styles on IfcElement level
 			std::vector<shared_ptr<AppearanceData> > vec_apperances;
-			StylesConverter::convertElementStyle(ifc_element, vec_apperances);
+			m_representation_converter->getStylesConverter()->convertElementStyle(ifc_element, vec_apperances);
 			for (auto appearance_data : vec_apperances)
 			{
 				product_shape->addAppearance(appearance_data);
@@ -744,8 +898,7 @@ GeometryConverter::~GeometryConverter() {}
 
 				std::string guid;
 				if (related_object->m_GlobalId) {
-					std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> converterX;
-					guid = converterX.to_bytes(related_object->m_GlobalId->m_value);
+					guid = related_object->m_GlobalId->m_value;
 
 					auto it_find_related_shape = m_product_shape_data.find(guid);
 					if( it_find_related_shape != m_product_shape_data.end() ) {
@@ -765,7 +918,7 @@ GeometryConverter::~GeometryConverter() {}
 				ScopedLock lock( myself->m_writelock_messages );
 #endif
 				// make sure that the same message for one entity does not appear several times
-				const int entity_id = m->m_entity->m_entity_id;
+				const int entity_id = m->m_entity->m_tag;
 
 				auto it = myself->m_messages.find( entity_id );
 				if( it != myself->m_messages.end() ) {

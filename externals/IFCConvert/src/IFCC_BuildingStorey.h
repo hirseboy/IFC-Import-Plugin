@@ -1,9 +1,9 @@
 #ifndef IFCC_BuildingStoreyH
 #define IFCC_BuildingStoreyH
 
-#include <ifcpp/IFC4/include/IfcSpatialStructureElement.h>
-#include <ifcpp/IFC4/include/IfcSpace.h>
-#include <ifcpp/geometry/Carve/GeometryInputData.h>
+#include <ifcpp/IFC4X3/include/IfcSpatialStructureElement.h>
+#include <ifcpp/IFC4X3/include/IfcSpace.h>
+#include <ifcpp/geometry/GeometryInputData.h>
 
 #include <tinyxml.h>
 
@@ -31,13 +31,13 @@ public:
 		It set a name and fills the original storey vector.
 		\param ifcElement IFC object for a building storey. It uses the base class of IfcBuildingStorey.
 	*/
-	bool set(std::shared_ptr<IfcSpatialStructureElement> ifcElement);
+	bool set(std::shared_ptr<IFC4X3::IfcSpatialStructureElement> ifcElement);
 
 	/*! Set a storeys which contains all spaces in project.*/
 	bool set(const objectShapeGUIDMap_t& spaces);
 
 	/*! Set a storeys which contains all spaces contained in a building.*/
-	bool set(const std::vector<std::shared_ptr<IfcSpace>>& spaces);
+	bool set(const std::vector<std::shared_ptr<IFC4X3::IfcSpace>>& spaces);
 
 	/*! Create spaces vector from original vector and given shapes.
 		\param shapes Product shape for all spaces in project.
@@ -86,7 +86,7 @@ private:
 	/*! Vector of spaces in the storey.*/
 	std::vector<std::shared_ptr<Space>>						m_spaces;
 	/*! Vector of original IFC space objects.*/
-	std::vector<std::shared_ptr<IfcSpace>>	m_spacesOriginal;
+	std::vector<std::shared_ptr<IFC4X3::IfcSpace>>			m_spacesOriginal;
 };
 
 } // namespace IFCC

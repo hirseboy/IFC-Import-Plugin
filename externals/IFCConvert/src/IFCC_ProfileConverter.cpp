@@ -15,25 +15,28 @@ FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTH
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-#include <ifcpp/IFC4/include/IfcArbitraryProfileDefWithVoids.h>
-#include <ifcpp/IFC4/include/IfcAsymmetricIShapeProfileDef.h>
-#include <ifcpp/IFC4/include/IfcCartesianTransformationOperator2D.h>
-#include <ifcpp/IFC4/include/IfcCenterLineProfileDef.h>
-#include <ifcpp/IFC4/include/IfcCircleHollowProfileDef.h>
-#include <ifcpp/IFC4/include/IfcCShapeProfileDef.h>
-#include <ifcpp/IFC4/include/IfcEllipseProfileDef.h>
-#include <ifcpp/IFC4/include/IfcIShapeProfileDef.h>
-#include <ifcpp/IFC4/include/IfcLShapeProfileDef.h>
-#include <ifcpp/IFC4/include/IfcNonNegativeLengthMeasure.h>
-#include <ifcpp/IFC4/include/IfcPlaneAngleMeasure.h>
-#include <ifcpp/IFC4/include/IfcPositiveLengthMeasure.h>
-#include <ifcpp/IFC4/include/IfcRectangleProfileDef.h>
-#include <ifcpp/IFC4/include/IfcRectangleHollowProfileDef.h>
-#include <ifcpp/IFC4/include/IfcRoundedRectangleProfileDef.h>
-#include <ifcpp/IFC4/include/IfcTrapeziumProfileDef.h>
-#include <ifcpp/IFC4/include/IfcTShapeProfileDef.h>
-#include <ifcpp/IFC4/include/IfcUShapeProfileDef.h>
-#include <ifcpp/IFC4/include/IfcZShapeProfileDef.h>
+#include <ifcpp/IFC4X3/include/IfcArbitraryProfileDefWithVoids.h>
+#include <ifcpp/IFC4X3/include/IfcAsymmetricIShapeProfileDef.h>
+#include <ifcpp/IFC4X3/include/IfcCartesianTransformationOperator2D.h>
+#include <ifcpp/IFC4X3/include/IfcCenterLineProfileDef.h>
+#include <ifcpp/IFC4X3/include/IfcCircleHollowProfileDef.h>
+#include <ifcpp/IFC4X3/include/IfcCShapeProfileDef.h>
+#include <ifcpp/IFC4X3/include/IfcEllipseProfileDef.h>
+#include <ifcpp/IFC4X3/include/IfcIShapeProfileDef.h>
+#include <ifcpp/IFC4X3/include/IfcLShapeProfileDef.h>
+#include <ifcpp/IFC4X3/include/IfcNonNegativeLengthMeasure.h>
+#include <ifcpp/IFC4X3/include/IfcPlaneAngleMeasure.h>
+#include <ifcpp/IFC4X3/include/IfcPositiveLengthMeasure.h>
+#include <ifcpp/IFC4X3/include/IfcRectangleProfileDef.h>
+#include <ifcpp/IFC4X3/include/IfcRectangleHollowProfileDef.h>
+#include <ifcpp/IFC4X3/include/IfcRoundedRectangleProfileDef.h>
+#include <ifcpp/IFC4X3/include/IfcTrapeziumProfileDef.h>
+#include <ifcpp/IFC4X3/include/IfcTShapeProfileDef.h>
+#include <ifcpp/IFC4X3/include/IfcUShapeProfileDef.h>
+#include <ifcpp/IFC4X3/include/IfcZShapeProfileDef.h>
+
+#include <Carve/src/include/carve/carve.hpp>
+#include <ifcpp/geometry/MeshUtils.h>
 
 #include "IFCC_ProfileConverter.h"
 
@@ -45,10 +48,10 @@ namespace IFCC {
 	{
 	}
 
-	void ProfileConverter::computeProfile( shared_ptr<IfcProfileDef> profile_def )
+	void ProfileConverter::computeProfile( shared_ptr<IFC4X3::IfcProfileDef> profile_def )
 	{
 		// ENTITY IfcProfileDef SUPERTYPE OF(ONEOF(IfcArbitraryClosedProfileDef, IfcArbitraryOpenProfileDef, IfcCompositeProfileDef, IfcDerivedProfileDef, IfcParameterizedProfileDef));
-		shared_ptr<IfcParameterizedProfileDef> parameterized = dynamic_pointer_cast<IfcParameterizedProfileDef>( profile_def );
+		shared_ptr<IFC4X3::IfcParameterizedProfileDef> parameterized = dynamic_pointer_cast<IFC4X3::IfcParameterizedProfileDef>( profile_def );
 		if( parameterized )
 		{
 			convertIfcParameterizedProfileDefWithPosition( parameterized, m_paths );
@@ -56,7 +59,7 @@ namespace IFCC {
 			return;
 		}
 
-		shared_ptr<IfcArbitraryClosedProfileDef> arbitrary_closed = dynamic_pointer_cast<IfcArbitraryClosedProfileDef>( profile_def );
+		shared_ptr<IFC4X3::IfcArbitraryClosedProfileDef> arbitrary_closed = dynamic_pointer_cast<IFC4X3::IfcArbitraryClosedProfileDef>( profile_def );
 		if( arbitrary_closed )
 		{
 			convertIfcArbitraryClosedProfileDef( arbitrary_closed, m_paths );
@@ -64,7 +67,7 @@ namespace IFCC {
 			return;
 		}
 
-		shared_ptr<IfcArbitraryOpenProfileDef> arbitrary_open = dynamic_pointer_cast<IfcArbitraryOpenProfileDef>( profile_def );
+		shared_ptr<IFC4X3::IfcArbitraryOpenProfileDef> arbitrary_open = dynamic_pointer_cast<IFC4X3::IfcArbitraryOpenProfileDef>( profile_def );
 		if( arbitrary_open )
 		{
 			convertIfcArbitraryOpenProfileDef( arbitrary_open, m_paths );
@@ -72,7 +75,7 @@ namespace IFCC {
 			return;
 		}
 
-		shared_ptr<IfcCompositeProfileDef> composite = dynamic_pointer_cast<IfcCompositeProfileDef>( profile_def );
+		shared_ptr<IFC4X3::IfcCompositeProfileDef> composite = dynamic_pointer_cast<IFC4X3::IfcCompositeProfileDef>( profile_def );
 		if( composite )
 		{
 			convertIfcCompositeProfileDef( composite, m_paths );
@@ -80,7 +83,7 @@ namespace IFCC {
 			return;
 		}
 
-		shared_ptr<IfcDerivedProfileDef> derived = dynamic_pointer_cast<IfcDerivedProfileDef>( profile_def );
+		shared_ptr<IFC4X3::IfcDerivedProfileDef> derived = dynamic_pointer_cast<IFC4X3::IfcDerivedProfileDef>( profile_def );
 		if( derived )
 		{
 			convertIfcDerivedProfileDef( derived, m_paths );
@@ -121,48 +124,49 @@ namespace IFCC {
 		paths.push_back( polygon_add );
 	}
 
-	void ProfileConverter::convertIfcArbitraryClosedProfileDef( const shared_ptr<IfcArbitraryClosedProfileDef>& profile, std::vector<std::vector<vec2> >& paths )
+	void ProfileConverter::convertIfcArbitraryClosedProfileDef( const shared_ptr<IFC4X3::IfcArbitraryClosedProfileDef>& profile, std::vector<std::vector<vec2> >& paths )
 	{
-		shared_ptr<IfcCurve> outer_curve = profile->m_OuterCurve;
+		shared_ptr<IFC4X3::IfcCurve> outer_curve = profile->m_OuterCurve;
 		if( outer_curve )
 		{
 			std::vector<vec2> curve_polygon;
 			std::vector<vec2> segment_start_points;
-			m_curve_converter->convertIfcCurve2D( outer_curve, curve_polygon, segment_start_points );
+			m_curve_converter->convertIfcCurve2D( outer_curve, curve_polygon, segment_start_points, true );
 			deleteLastPointIfEqualToFirst( curve_polygon );
 			addAvoidingDuplicates( curve_polygon, paths );
 		}
 
 		// IfcArbitraryProfileDefWithVoids
-		shared_ptr<IfcArbitraryProfileDefWithVoids> profile_with_voids = dynamic_pointer_cast<IfcArbitraryProfileDefWithVoids>( profile );
+		shared_ptr<IFC4X3::IfcArbitraryProfileDefWithVoids> profile_with_voids = dynamic_pointer_cast<IFC4X3::IfcArbitraryProfileDefWithVoids>( profile );
 		if( profile_with_voids )
 		{
-			std::vector<shared_ptr<IfcCurve> > inner_curves = profile_with_voids->m_InnerCurves;
+			std::vector<shared_ptr<IFC4X3::IfcCurve> > inner_curves = profile_with_voids->m_InnerCurves;
 			for( size_t i = 0; i < inner_curves.size(); ++i )
 			{
-				shared_ptr<IfcCurve> inner_ifc_curve = inner_curves[i];
+				shared_ptr<IFC4X3::IfcCurve> inner_ifc_curve = inner_curves[i];
 				std::vector<vec2> inner_curve_polygon;
 				std::vector<vec2> segment_start_points;
 
-				m_curve_converter->convertIfcCurve2D( inner_ifc_curve, inner_curve_polygon, segment_start_points );
+				m_curve_converter->convertIfcCurve2D( inner_ifc_curve, inner_curve_polygon, segment_start_points, true );
 				deleteLastPointIfEqualToFirst( inner_curve_polygon );
 				addAvoidingDuplicates( inner_curve_polygon, paths );
 			}
 		}
 	}
 
-	void ProfileConverter::convertIfcArbitraryOpenProfileDef( const shared_ptr<IfcArbitraryOpenProfileDef>& profile, std::vector<std::vector<vec2> >& paths )
+	void ProfileConverter::convertIfcArbitraryOpenProfileDef( const shared_ptr<IFC4X3::IfcArbitraryOpenProfileDef>& profile, std::vector<std::vector<vec2> >& paths )
 	{
 		// ENTITY IfcArbitraryOpenProfileDef
 		//	SUPERTYPE OF(IfcCenterLineProfileDef)
 		//	SUBTYPE OF IfcProfileDef;
 		//	Curve	 :	IfcBoundedCurve;
 
-		shared_ptr<IfcCurve> ifc_curve = profile->m_Curve;
+		shared_ptr<IFC4X3::IfcCurve> ifc_curve = profile->m_Curve;
 		const shared_ptr<UnitConverter>& uc = m_curve_converter->getPointConverter()->getUnitConverter();
+		double CARVE_EPSILON = m_curve_converter->getGeomSettings()->getEpsilonCoplanarDistance();
 
 		// IfcCenterLineProfileDef
-		shared_ptr<IfcCenterLineProfileDef> center_line_profile_def = dynamic_pointer_cast<IfcCenterLineProfileDef>( profile );
+		shared_ptr<IFC4X3::IfcCenterLineProfileDef> center_line_profile_def = dynamic_pointer_cast<IFC4X3::IfcCenterLineProfileDef>( profile );
 		if( center_line_profile_def )
 		{
 			if( center_line_profile_def->m_Thickness )
@@ -170,7 +174,7 @@ namespace IFCC {
 				const double thickness = center_line_profile_def->m_Thickness->m_value * uc->getLengthInMeterFactor();
 				std::vector<vec3> segment_start_points;
 				std::vector<vec3> basis_curve_points;
-				m_curve_converter->convertIfcCurve( ifc_curve, basis_curve_points, segment_start_points );
+				m_curve_converter->convertIfcCurve( ifc_curve, basis_curve_points, segment_start_points, true );
 
 				size_t num_base_points = basis_curve_points.size();
 				if( num_base_points < 2 )
@@ -215,7 +219,7 @@ namespace IFCC {
 					}
 
 					vec3 bisecting_normal;
-					GeomUtils::bisectingPlane( vertex_before, vertex_current, vertex_next, bisecting_normal );
+					GeomUtils::bisectingPlane( vertex_before, vertex_current, vertex_next, bisecting_normal, CARVE_EPSILON );
 
 					if( ii == num_base_points - 1 )
 					{
@@ -250,50 +254,50 @@ namespace IFCC {
 		{
 			std::vector<vec2> polygon;
 			std::vector<vec2> segment_start_points;
-			m_curve_converter->convertIfcCurve2D( ifc_curve, polygon, segment_start_points );
+			m_curve_converter->convertIfcCurve2D( ifc_curve, polygon, segment_start_points, true );
 			addAvoidingDuplicates( polygon, paths );
 		}
 	}
 
-	void ProfileConverter::convertIfcCompositeProfileDef( const shared_ptr<IfcCompositeProfileDef>& composite_profile, std::vector<std::vector<vec2> >& paths )
+	void ProfileConverter::convertIfcCompositeProfileDef( const shared_ptr<IFC4X3::IfcCompositeProfileDef>& composite_profile, std::vector<std::vector<vec2> >& paths )
 	{
 		std::vector<int> temploop_counts;
 		std::vector<int> tempcontour_counts;
 
-		std::vector<shared_ptr<IfcProfileDef> >& vec_profiles = composite_profile->m_Profiles;
+		std::vector<shared_ptr<IFC4X3::IfcProfileDef> >& vec_profiles = composite_profile->m_Profiles;
 		for( size_t ii = 0; ii < vec_profiles.size(); ++ii )
 		{
-			shared_ptr<IfcProfileDef>& profile_def = vec_profiles[ii];
+			shared_ptr<IFC4X3::IfcProfileDef>& profile_def = vec_profiles[ii];
 
-			shared_ptr<IfcParameterizedProfileDef> parameterized = dynamic_pointer_cast<IfcParameterizedProfileDef>( profile_def );
+			shared_ptr<IFC4X3::IfcParameterizedProfileDef> parameterized = dynamic_pointer_cast<IFC4X3::IfcParameterizedProfileDef>( profile_def );
 			if( parameterized )
 			{
 				convertIfcParameterizedProfileDefWithPosition( parameterized, paths );
 				continue;
 			}
 
-			shared_ptr<IfcArbitraryOpenProfileDef> open = dynamic_pointer_cast<IfcArbitraryOpenProfileDef>( profile_def );
+			shared_ptr<IFC4X3::IfcArbitraryOpenProfileDef> open = dynamic_pointer_cast<IFC4X3::IfcArbitraryOpenProfileDef>( profile_def );
 			if( open )
 			{
 				convertIfcArbitraryOpenProfileDef( open, paths );
 				continue;
 			}
 
-			shared_ptr<IfcArbitraryClosedProfileDef> closed = dynamic_pointer_cast<IfcArbitraryClosedProfileDef>( profile_def );
+			shared_ptr<IFC4X3::IfcArbitraryClosedProfileDef> closed = dynamic_pointer_cast<IFC4X3::IfcArbitraryClosedProfileDef>( profile_def );
 			if( closed )
 			{
 				convertIfcArbitraryClosedProfileDef( closed, paths );
 				continue;
 			}
 
-			shared_ptr<IfcCompositeProfileDef> composite = dynamic_pointer_cast<IfcCompositeProfileDef>( profile_def );
+			shared_ptr<IFC4X3::IfcCompositeProfileDef> composite = dynamic_pointer_cast<IFC4X3::IfcCompositeProfileDef>( profile_def );
 			if( composite )
 			{
 				convertIfcCompositeProfileDef( composite, paths );
 				continue;
 			}
 
-			shared_ptr<IfcDerivedProfileDef> derived = dynamic_pointer_cast<IfcDerivedProfileDef>( profile_def );
+			shared_ptr<IFC4X3::IfcDerivedProfileDef> derived = dynamic_pointer_cast<IFC4X3::IfcDerivedProfileDef>( profile_def );
 			if( derived )
 			{
 				convertIfcDerivedProfileDef( derived, paths );
@@ -304,13 +308,13 @@ namespace IFCC {
 		}
 	}
 
-	void ProfileConverter::convertIfcDerivedProfileDef( const shared_ptr<IfcDerivedProfileDef>& derived_profile, std::vector<std::vector<vec2> >& paths )
+	void ProfileConverter::convertIfcDerivedProfileDef( const shared_ptr<IFC4X3::IfcDerivedProfileDef>& derived_profile, std::vector<std::vector<vec2> >& paths )
 	{
 		ProfileConverter temp_profiler( m_curve_converter, m_spline_converter );
 		temp_profiler.computeProfile( derived_profile->m_ParentProfile );
 		const std::vector<std::vector<vec2> >& parent_paths = temp_profiler.getCoordinates();
 
-		shared_ptr<IfcCartesianTransformationOperator2D> transf_op_2D = derived_profile->m_Operator;
+		shared_ptr<IFC4X3::IfcCartesianTransformationOperator2D> transf_op_2D = derived_profile->m_Operator;
 
 		shared_ptr<TransformData> transform;
 		m_curve_converter->getPlacementConverter()->convertTransformationOperator( transf_op_2D, transform );
@@ -333,7 +337,7 @@ namespace IFCC {
 		}
 	}
 
-	void ProfileConverter::convertIfcParameterizedProfileDefWithPosition( const shared_ptr<IfcParameterizedProfileDef>& parameterized, std::vector<std::vector<vec2> >& paths )
+	void ProfileConverter::convertIfcParameterizedProfileDefWithPosition( const shared_ptr<IFC4X3::IfcParameterizedProfileDef>& parameterized, std::vector<std::vector<vec2> >& paths )
 	{
 		std::vector<std::vector<vec2> > temp_paths;
 		convertIfcParameterizedProfileDef( parameterized, temp_paths );
@@ -341,7 +345,7 @@ namespace IFCC {
 		// local coordinate system
 		if( parameterized->m_Position )
 		{
-			shared_ptr<IfcAxis2Placement2D> axis2Placement2D = parameterized->m_Position;
+			shared_ptr<IFC4X3::IfcAxis2Placement2D> axis2Placement2D = parameterized->m_Position;
 			shared_ptr<TransformData> transform;
 			m_curve_converter->getPlacementConverter()->convertIfcPlacement( axis2Placement2D, transform );
 
@@ -372,7 +376,7 @@ namespace IFCC {
 		}
 	}
 
-	void ProfileConverter::convertIfcParameterizedProfileDef( const shared_ptr<IfcParameterizedProfileDef>& profile, std::vector<std::vector<vec2> >& paths )
+	void ProfileConverter::convertIfcParameterizedProfileDef( const shared_ptr<IFC4X3::IfcParameterizedProfileDef>& profile, std::vector<std::vector<vec2> >& paths )
 	{
 		//IfcParameterizedProfileDef ABSTRACT SUPERTYPE OF (ONEOF
 		//	(IfcCShapeProfileDef, IfcCircleProfileDef, IfcEllipseProfileDef, IfcIShapeProfileDef, IfcLShapeProfileDef,
@@ -395,7 +399,7 @@ namespace IFCC {
 		std::vector<vec2> outer_loop;
 
 		// Rectangle profile
-		shared_ptr<IfcRectangleProfileDef> rectangle_profile = dynamic_pointer_cast<IfcRectangleProfileDef>( profile );
+		shared_ptr<IFC4X3::IfcRectangleProfileDef> rectangle_profile = dynamic_pointer_cast<IFC4X3::IfcRectangleProfileDef>( profile );
 		if( rectangle_profile )
 		{
 			if( rectangle_profile->m_XDim && rectangle_profile->m_YDim )
@@ -403,7 +407,7 @@ namespace IFCC {
 				double x_dim = rectangle_profile->m_XDim->m_value*length_factor;
 				double y_dim = rectangle_profile->m_YDim->m_value*length_factor;
 
-				shared_ptr<IfcRectangleHollowProfileDef> hollow = dynamic_pointer_cast<IfcRectangleHollowProfileDef>( rectangle_profile );
+				shared_ptr<IFC4X3::IfcRectangleHollowProfileDef> hollow = dynamic_pointer_cast<IFC4X3::IfcRectangleHollowProfileDef>( rectangle_profile );
 				if( hollow )
 				{
 					if( hollow->m_WallThickness )
@@ -462,7 +466,7 @@ namespace IFCC {
 				}
 
 				// RoundedRectangle
-				shared_ptr<IfcRoundedRectangleProfileDef> rounded_rectangle = dynamic_pointer_cast<IfcRoundedRectangleProfileDef>( rectangle_profile );
+				shared_ptr<IFC4X3::IfcRoundedRectangleProfileDef> rounded_rectangle = dynamic_pointer_cast<IFC4X3::IfcRoundedRectangleProfileDef>( rectangle_profile );
 				if( rounded_rectangle && !gs->isIgnoreProfileRadius() )
 				{
 					if( rounded_rectangle->m_RoundingRadius )
@@ -489,7 +493,7 @@ namespace IFCC {
 		}
 
 		// Trapezium profile
-		shared_ptr<IfcTrapeziumProfileDef> trapezium = dynamic_pointer_cast<IfcTrapeziumProfileDef>( profile );
+		shared_ptr<IFC4X3::IfcTrapeziumProfileDef> trapezium = dynamic_pointer_cast<IFC4X3::IfcTrapeziumProfileDef>( profile );
 		if( trapezium )
 		{
 			if( trapezium->m_BottomXDim && trapezium->m_TopXDim && trapezium->m_TopXOffset && trapezium->m_YDim )
@@ -508,10 +512,10 @@ namespace IFCC {
 		}
 
 		// Circle profile
-		shared_ptr<IfcCircleProfileDef> circle_profile_def = dynamic_pointer_cast<IfcCircleProfileDef>( profile );
+		shared_ptr<IFC4X3::IfcCircleProfileDef> circle_profile_def = dynamic_pointer_cast<IFC4X3::IfcCircleProfileDef>( profile );
 		if( circle_profile_def )
 		{
-			shared_ptr<IfcPositiveLengthMeasure> radius_measure = circle_profile_def->m_Radius;
+			shared_ptr<IFC4X3::IfcPositiveLengthMeasure> radius_measure = circle_profile_def->m_Radius;
 			if( radius_measure )
 			{
 				double radius = radius_measure->m_value*length_factor;
@@ -530,7 +534,7 @@ namespace IFCC {
 
 				// CircleHollow
 				std::vector<vec2> inner_loop;
-				shared_ptr<IfcCircleHollowProfileDef> hollow = dynamic_pointer_cast<IfcCircleHollowProfileDef>( profile );
+				shared_ptr<IFC4X3::IfcCircleHollowProfileDef> hollow = dynamic_pointer_cast<IFC4X3::IfcCircleHollowProfileDef>( profile );
 				if( hollow )
 				{
 					angle = 0;
@@ -549,7 +553,7 @@ namespace IFCC {
 		}
 
 		// Ellipse profile
-		shared_ptr<IfcEllipseProfileDef> ellipse_profile_def = dynamic_pointer_cast<IfcEllipseProfileDef>( profile );
+		shared_ptr<IFC4X3::IfcEllipseProfileDef> ellipse_profile_def = dynamic_pointer_cast<IFC4X3::IfcEllipseProfileDef>( profile );
 		if( ellipse_profile_def )
 		{
 			if( ellipse_profile_def->m_SemiAxis1 )
@@ -572,7 +576,7 @@ namespace IFCC {
 		}
 
 		// I-shaped profile
-		shared_ptr<IfcIShapeProfileDef> i_shape = dynamic_pointer_cast<IfcIShapeProfileDef>( profile );
+		shared_ptr<IFC4X3::IfcIShapeProfileDef> i_shape = dynamic_pointer_cast<IFC4X3::IfcIShapeProfileDef>( profile );
 		if( i_shape )
 		{
 			if( i_shape->m_OverallDepth && i_shape->m_OverallWidth && i_shape->m_WebThickness && i_shape->m_FlangeThickness )
@@ -611,7 +615,7 @@ namespace IFCC {
 					outer_loop.push_back( carve::geom::VECTOR( tw*0.5, ( -h*0.5 + tf ) ) );
 				}
 
-				shared_ptr<IfcAsymmetricIShapeProfileDef> asym_I_profile = dynamic_pointer_cast<IfcAsymmetricIShapeProfileDef>( i_shape );
+				shared_ptr<IFC4X3::IfcAsymmetricIShapeProfileDef> asym_I_profile = dynamic_pointer_cast<IFC4X3::IfcAsymmetricIShapeProfileDef>( i_shape );
 				if( asym_I_profile )
 				{
 					if( asym_I_profile->m_TopFlangeWidth )
@@ -655,7 +659,7 @@ namespace IFCC {
 		}
 
 		// L-shaped profile
-		shared_ptr<IfcLShapeProfileDef> l_shape = dynamic_pointer_cast<IfcLShapeProfileDef>( profile );
+		shared_ptr<IFC4X3::IfcLShapeProfileDef> l_shape = dynamic_pointer_cast<IFC4X3::IfcLShapeProfileDef>( profile );
 		if( l_shape )
 		{
 			if( l_shape->m_Depth && l_shape->m_Thickness )
@@ -731,7 +735,7 @@ namespace IFCC {
 		}
 
 		// U-shaped profile
-		shared_ptr<IfcUShapeProfileDef> u_shape = dynamic_pointer_cast<IfcUShapeProfileDef>( profile );
+		shared_ptr<IFC4X3::IfcUShapeProfileDef> u_shape = dynamic_pointer_cast<IFC4X3::IfcUShapeProfileDef>( profile );
 		if( u_shape )
 		{
 			if( u_shape->m_Depth && u_shape->m_FlangeWidth && u_shape->m_WebThickness && u_shape->m_FlangeThickness )
@@ -788,7 +792,7 @@ namespace IFCC {
 		}
 
 		// C-shaped profile
-		shared_ptr<IfcCShapeProfileDef> c_shape = dynamic_pointer_cast<IfcCShapeProfileDef>( profile );
+		shared_ptr<IFC4X3::IfcCShapeProfileDef> c_shape = dynamic_pointer_cast<IFC4X3::IfcCShapeProfileDef>( profile );
 		if( c_shape )
 		{
 			if( c_shape->m_Depth && c_shape->m_Width && c_shape->m_Girth && c_shape->m_WallThickness )
@@ -849,7 +853,7 @@ namespace IFCC {
 		}
 
 		// Z-shape profile
-		shared_ptr<IfcZShapeProfileDef> z_shape = dynamic_pointer_cast<IfcZShapeProfileDef>( profile );
+		shared_ptr<IFC4X3::IfcZShapeProfileDef> z_shape = dynamic_pointer_cast<IFC4X3::IfcZShapeProfileDef>( profile );
 		if( z_shape )
 		{
 			if( z_shape->m_Depth && z_shape->m_FlangeWidth && z_shape->m_WebThickness && z_shape->m_FlangeThickness )
@@ -899,7 +903,7 @@ namespace IFCC {
 		}
 
 		// T-shape profile
-		shared_ptr<IfcTShapeProfileDef> t_shape = dynamic_pointer_cast<IfcTShapeProfileDef>( profile );
+		shared_ptr<IFC4X3::IfcTShapeProfileDef> t_shape = dynamic_pointer_cast<IFC4X3::IfcTShapeProfileDef>( profile );
 		if( t_shape )
 		{
 			const double h = t_shape->m_Depth->m_value*length_factor;

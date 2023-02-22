@@ -1,17 +1,17 @@
 #include "IFCC_SpaceBoundary.h"
 
-#include <ifcpp/IFC4/include/IfcConnectionCurveGeometry.h>
-#include <ifcpp/IFC4/include/IfcConnectionPointEccentricity.h>
-#include <ifcpp/IFC4/include/IfcConnectionPointGeometry.h>
-#include <ifcpp/IFC4/include/IfcConnectionSurfaceGeometry.h>
-#include <ifcpp/IFC4/include/IfcConnectionVolumeGeometry.h>
-#include <ifcpp/IFC4/include/IfcSurface.h>
-#include <ifcpp/IFC4/include/IfcSpace.h>
-#include <ifcpp/IFC4/include/IfcExternalSpatialElement.h>
-#include <ifcpp/IFC4/include/IfcFaceBasedSurfaceModel.h>
-#include <ifcpp/IFC4/include/IfcFaceSurface.h>
-#include <ifcpp/IFC4/include/IfcRelSpaceBoundary1stLevel.h>
-#include <ifcpp/IFC4/include/IfcRelSpaceBoundary2ndLevel.h>
+#include <ifcpp/IFC4X3/include/IfcConnectionCurveGeometry.h>
+#include <ifcpp/IFC4X3/include/IfcConnectionPointEccentricity.h>
+#include <ifcpp/IFC4X3/include/IfcConnectionPointGeometry.h>
+#include <ifcpp/IFC4X3/include/IfcConnectionSurfaceGeometry.h>
+#include <ifcpp/IFC4X3/include/IfcConnectionVolumeGeometry.h>
+#include <ifcpp/IFC4X3/include/IfcSurface.h>
+#include <ifcpp/IFC4X3/include/IfcSpace.h>
+#include <ifcpp/IFC4X3/include/IfcExternalSpatialElement.h>
+#include <ifcpp/IFC4X3/include/IfcFaceBasedSurfaceModel.h>
+#include <ifcpp/IFC4X3/include/IfcFaceSurface.h>
+#include <ifcpp/IFC4X3/include/IfcRelSpaceBoundary1stLevel.h>
+#include <ifcpp/IFC4X3/include/IfcRelSpaceBoundary2ndLevel.h>
 
 
 #include "IFCC_Helper.h"

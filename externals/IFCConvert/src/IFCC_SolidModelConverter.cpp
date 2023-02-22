@@ -17,36 +17,36 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OU
 
 #include "IFCC_SolidModelConverter.h"
 
-#include <ifcpp/IFC4/include/IfcAdvancedBrepWithVoids.h>
-#include <ifcpp/IFC4/include/IfcBlock.h>
-#include <ifcpp/IFC4/include/IfcBooleanOperand.h>
-#include <ifcpp/IFC4/include/IfcBooleanOperator.h>
-#include <ifcpp/IFC4/include/IfcBooleanClippingResult.h>
-#include <ifcpp/IFC4/include/IfcBoxedHalfSpace.h>
-#include <ifcpp/IFC4/include/IfcBoundingBox.h>
-#include <ifcpp/IFC4/include/IfcCsgSolid.h>
-#include <ifcpp/IFC4/include/IfcFacetedBrep.h>
-#include <ifcpp/IFC4/include/IfcFixedReferenceSweptAreaSolid.h>
-#include <ifcpp/IFC4/include/IfcManifoldSolidBrep.h>
-#include <ifcpp/IFC4/include/IfcPolygonalBoundedHalfSpace.h>
-#include <ifcpp/IFC4/include/IfcRectangularPyramid.h>
-#include <ifcpp/IFC4/include/IfcRightCircularCone.h>
-#include <ifcpp/IFC4/include/IfcRightCircularCylinder.h>
-#include <ifcpp/IFC4/include/IfcSphere.h>
-#include <ifcpp/IFC4/include/IfcSurfaceCurveSweptAreaSolid.h>
-#include <ifcpp/IFC4/include/IfcSweptDiskSolid.h>
-#include <ifcpp/IFC4/include/IfcClosedShell.h>
-#include <ifcpp/IFC4/include/IfcPositiveLengthMeasure.h>
-#include <ifcpp/IFC4/include/IfcPlaneAngleMeasure.h>
-#include <ifcpp/IFC4/include/IfcDirection.h>
-#include <ifcpp/IFC4/include/IfcPlaneAngleMeasure.h>
-#include <ifcpp/IFC4/include/IfcAxis1Placement.h>
-#include <ifcpp/IFC4/include/IfcElementarySurface.h>
-#include <ifcpp/IFC4/include/IfcCompositeCurve.h>
-#include <ifcpp/IFC4/include/IfcBoolean.h>
+#include <ifcpp/IFC4X3/include/IfcAdvancedBrepWithVoids.h>
+#include <ifcpp/IFC4X3/include/IfcBlock.h>
+#include <ifcpp/IFC4X3/include/IfcBooleanOperand.h>
+#include <ifcpp/IFC4X3/include/IfcBooleanOperator.h>
+#include <ifcpp/IFC4X3/include/IfcBooleanClippingResult.h>
+#include <ifcpp/IFC4X3/include/IfcBoxedHalfSpace.h>
+#include <ifcpp/IFC4X3/include/IfcBoundingBox.h>
+#include <ifcpp/IFC4X3/include/IfcCsgSolid.h>
+#include <ifcpp/IFC4X3/include/IfcFacetedBrep.h>
+#include <ifcpp/IFC4X3/include/IfcFixedReferenceSweptAreaSolid.h>
+#include <ifcpp/IFC4X3/include/IfcManifoldSolidBrep.h>
+#include <ifcpp/IFC4X3/include/IfcPolygonalBoundedHalfSpace.h>
+#include <ifcpp/IFC4X3/include/IfcRectangularPyramid.h>
+#include <ifcpp/IFC4X3/include/IfcRightCircularCone.h>
+#include <ifcpp/IFC4X3/include/IfcRightCircularCylinder.h>
+#include <ifcpp/IFC4X3/include/IfcSphere.h>
+#include <ifcpp/IFC4X3/include/IfcSurfaceCurveSweptAreaSolid.h>
+#include <ifcpp/IFC4X3/include/IfcSweptDiskSolid.h>
+#include <ifcpp/IFC4X3/include/IfcClosedShell.h>
+#include <ifcpp/IFC4X3/include/IfcPositiveLengthMeasure.h>
+#include <ifcpp/IFC4X3/include/IfcPlaneAngleMeasure.h>
+#include <ifcpp/IFC4X3/include/IfcDirection.h>
+#include <ifcpp/IFC4X3/include/IfcPlaneAngleMeasure.h>
+#include <ifcpp/IFC4X3/include/IfcAxis1Placement.h>
+#include <ifcpp/IFC4X3/include/IfcElementarySurface.h>
+#include <ifcpp/IFC4X3/include/IfcCompositeCurve.h>
+#include <ifcpp/IFC4X3/include/IfcBoolean.h>
+#include <ifcpp/IFC4X3/include/IfcReal.h>
+#include <ifcpp/IFC4X3/include/IfcSegment.h>
 
-
-#include <ifcpp/geometry/Carve/PointConverter.h>
 
 #include <fstream>
 
@@ -76,11 +76,11 @@ namespace IFCC {
 	}
 
 	// ENTITY IfcSolidModel ABSTRACT SUPERTYPE OF(ONEOF(IfcCsgSolid, IfcManifoldSolidBrep, IfcSweptAreaSolid, IfcSweptDiskSolid))
-	void SolidModelConverter::convertIfcSolidModel( const shared_ptr<IfcSolidModel>& solid_model, shared_ptr<ItemShapeData> item_data )
+	void SolidModelConverter::convertIfcSolidModel( const shared_ptr<IFC4X3::IfcSolidModel>& solid_model, shared_ptr<ItemShapeData> item_data )
 	{
 		const double length_in_meter = m_curve_converter->getPointConverter()->getUnitConverter()->getLengthInMeterFactor();
 
-		shared_ptr<IfcSweptAreaSolid> swept_area_solid = dynamic_pointer_cast<IfcSweptAreaSolid>( solid_model );
+		shared_ptr<IFC4X3::IfcSweptAreaSolid> swept_area_solid = dynamic_pointer_cast<IFC4X3::IfcSweptAreaSolid>( solid_model );
 		if( swept_area_solid )
 		{
 			//ENTITY IfcSweptAreaSolid
@@ -92,7 +92,7 @@ namespace IFCC {
 			//	SweptAreaType	 :	SweptArea.ProfileType = IfcProfileTypeEnum.Area;
 			//END_ENTITY;
 
-			shared_ptr<IfcProfileDef>& swept_area = swept_area_solid->m_SweptArea;
+			shared_ptr<IFC4X3::IfcProfileDef>& swept_area = swept_area_solid->m_SweptArea;
 			if( !swept_area )
 			{
 				messageCallback( "SweptArea not valid", StatusCallback::MESSAGE_TYPE_ERROR, __FUNC__, swept_area_solid.get() );
@@ -100,20 +100,16 @@ namespace IFCC {
 			}
 
 			shared_ptr<ItemShapeData> item_data_solid( new ItemShapeData() );
-			if( !item_data_solid )
-			{
-				throw OutOfMemoryException( __FUNC__ );
-			}
 
 			// check if local coordinate system is specified for extrusion
 			shared_ptr<TransformData> swept_area_pos;
 			if( swept_area_solid->m_Position )
 			{
-				shared_ptr<IfcAxis2Placement3D> swept_area_position = swept_area_solid->m_Position;
+				shared_ptr<IFC4X3::IfcAxis2Placement3D> swept_area_position = swept_area_solid->m_Position;
 				m_curve_converter->getPlacementConverter()->convertIfcAxis2Placement3D( swept_area_position, swept_area_pos );
 			}
 
-			shared_ptr<IfcExtrudedAreaSolid> extruded_area = dynamic_pointer_cast<IfcExtrudedAreaSolid>( swept_area_solid );
+			shared_ptr<IFC4X3::IfcExtrudedAreaSolid> extruded_area = dynamic_pointer_cast<IFC4X3::IfcExtrudedAreaSolid>( swept_area_solid );
 			if( extruded_area )
 			{
 				convertIfcExtrudedAreaSolid( extruded_area, item_data_solid );
@@ -125,7 +121,7 @@ namespace IFCC {
 			shared_ptr<ProfileConverter> profile_converter = m_profile_cache->getProfileConverter( swept_area );
 			const std::vector<std::vector<vec2> >& profile_paths = profile_converter->getCoordinates();
 
-			shared_ptr<IfcFixedReferenceSweptAreaSolid> fixed_reference_swept_area_solid = dynamic_pointer_cast<IfcFixedReferenceSweptAreaSolid>( swept_area_solid );
+			shared_ptr<IFC4X3::IfcFixedReferenceSweptAreaSolid> fixed_reference_swept_area_solid = dynamic_pointer_cast<IFC4X3::IfcFixedReferenceSweptAreaSolid>( swept_area_solid );
 			if( fixed_reference_swept_area_solid )
 			{
 				//Directrix	 : OPTIONAL IfcCurve;
@@ -133,7 +129,7 @@ namespace IFCC {
 				//EndParam	 : OPTIONAL IfcParameterValue;
 				//FixedReference	 : IfcDirection;
 
-				shared_ptr<IfcCurve>& ifc_directrix_curve = fixed_reference_swept_area_solid->m_Directrix;
+				shared_ptr<IFC4X3::IfcCurve>& ifc_directrix_curve = fixed_reference_swept_area_solid->m_Directrix;
 				//shared_ptr<IfcParameterValue>& ifc_start_param = fixed_reference_swept_area_solid->m_StartParam;				//optional
 				//shared_ptr<IfcParameterValue>& ifc_end_param = fixed_reference_swept_area_solid->m_EndParam;					//optional
 				//shared_ptr<IfcDirection>& ifc_fixed_reference = fixed_reference_swept_area_solid->m_FixedReference;				// TODO: apply fixed reference
@@ -141,16 +137,17 @@ namespace IFCC {
 
 				std::vector<vec3> segment_start_points;
 				std::vector<vec3> basis_curve_points;
-				m_curve_converter->convertIfcCurve( ifc_directrix_curve, basis_curve_points, segment_start_points );
+				m_curve_converter->convertIfcCurve( ifc_directrix_curve, basis_curve_points, segment_start_points, true );
 
-				m_sweeper->sweepArea( basis_curve_points, profile_paths, fixed_reference_swept_area_solid.get(), item_data_solid );
+				GeomProcessingParams params( m_geom_settings, fixed_reference_swept_area_solid.get(),  this );
+				m_sweeper->sweepArea( basis_curve_points, profile_paths, item_data_solid, params );
 				item_data->addItemData( item_data_solid );
 				item_data->applyTransformToItem( swept_area_pos );
 
 				return;
 			}
 
-			shared_ptr<IfcRevolvedAreaSolid> revolved_area_solid = dynamic_pointer_cast<IfcRevolvedAreaSolid>( swept_area_solid );
+			shared_ptr<IFC4X3::IfcRevolvedAreaSolid> revolved_area_solid = dynamic_pointer_cast<IFC4X3::IfcRevolvedAreaSolid>( swept_area_solid );
 			if( revolved_area_solid )
 			{
 				convertIfcRevolvedAreaSolid( revolved_area_solid, item_data_solid );
@@ -159,18 +156,18 @@ namespace IFCC {
 				return;
 			}
 
-			shared_ptr<IfcSurfaceCurveSweptAreaSolid> surface_curve_swept_area_solid = dynamic_pointer_cast<IfcSurfaceCurveSweptAreaSolid>( swept_area_solid );
+			shared_ptr<IFC4X3::IfcSurfaceCurveSweptAreaSolid> surface_curve_swept_area_solid = dynamic_pointer_cast<IFC4X3::IfcSurfaceCurveSweptAreaSolid>( swept_area_solid );
 			if( surface_curve_swept_area_solid )
 			{
-				shared_ptr<IfcCurve>& ifc_directrix_curve = surface_curve_swept_area_solid->m_Directrix;
+				shared_ptr<IFC4X3::IfcCurve>& ifc_directrix_curve = surface_curve_swept_area_solid->m_Directrix;
 				//shared_ptr<IfcParameterValue>& ifc_start_param = surface_curve_swept_area_solid->m_StartParam;				//optional
 				//shared_ptr<IfcParameterValue>& ifc_end_param = surface_curve_swept_area_solid->m_EndParam;					//optional
-				shared_ptr<IfcSurface>& ifc_reference_surface = surface_curve_swept_area_solid->m_ReferenceSurface;			// TODO: apply start_param, end_param
+				shared_ptr<IFC4X3::IfcSurface>& ifc_reference_surface = surface_curve_swept_area_solid->m_ReferenceSurface;			// TODO: apply start_param, end_param
 				messageCallback( "IfcSurfaceCurveSweptAreaSolid: StartParam and EndParam not implemented", StatusCallback::MESSAGE_TYPE_WARNING, __FUNC__, surface_curve_swept_area_solid.get() );
 
 				std::vector<vec3> segment_start_points;
 				std::vector<vec3> directrix_curve_points;
-				m_curve_converter->convertIfcCurve( ifc_directrix_curve, directrix_curve_points, segment_start_points );
+				m_curve_converter->convertIfcCurve( ifc_directrix_curve, directrix_curve_points, segment_start_points, true );
 
 				// apply reference curve
 				//shared_ptr<carve::input::PolylineSetData> reference_surface_data( new carve::input::PolylineSetData() );
@@ -188,7 +185,8 @@ namespace IFCC {
 					}
 				}
 
-				m_sweeper->sweepArea( directrix_curve_points, profile_paths, surface_curve_swept_area_solid.get(), item_data_solid );
+				GeomProcessingParams params( m_geom_settings, surface_curve_swept_area_solid.get(),  this );
+				m_sweeper->sweepArea( directrix_curve_points, profile_paths, item_data_solid, params );
 				item_data->addItemData( item_data_solid );
 				item_data->applyTransformToItem( swept_area_pos );
 
@@ -198,7 +196,7 @@ namespace IFCC {
 			messageCallback( "Unhandled IFC Representation", StatusCallback::MESSAGE_TYPE_WARNING, __FUNC__, solid_model.get() );
 		}
 
-		shared_ptr<IfcManifoldSolidBrep> manifold_solid_brep = dynamic_pointer_cast<IfcManifoldSolidBrep>( solid_model );
+		shared_ptr<IFC4X3::IfcManifoldSolidBrep> manifold_solid_brep = dynamic_pointer_cast<IFC4X3::IfcManifoldSolidBrep>( solid_model );
 		if( manifold_solid_brep )
 		{
 			//ENTITY IfcManifoldSolidBrep
@@ -207,34 +205,31 @@ namespace IFCC {
 			//		Outer	 :	IfcClosedShell;
 			//END_ENTITY;
 
-			shared_ptr<IfcClosedShell>& outer_shell = manifold_solid_brep->m_Outer;
+			shared_ptr<IFC4X3::IfcClosedShell>& outer_shell = manifold_solid_brep->m_Outer;
 			if( outer_shell )
 			{
 				// first convert outer shell
-				std::vector<shared_ptr<IfcFace> >& vec_faces_outer_shell = outer_shell->m_CfsFaces;
+				std::vector<shared_ptr<IFC4X3::IfcFace> >& vec_faces_outer_shell = outer_shell->m_CfsFaces;
 				m_face_converter->convertIfcFaceList( vec_faces_outer_shell, item_data, FaceConverter::CLOSED_SHELL );
 			}
 
-			shared_ptr<IfcFacetedBrep> faceted_brep = dynamic_pointer_cast<IfcFacetedBrep>( manifold_solid_brep );
+			shared_ptr<IFC4X3::IfcFacetedBrep> faceted_brep = dynamic_pointer_cast<IFC4X3::IfcFacetedBrep>( manifold_solid_brep );
 			if( faceted_brep )
 			{
 				// no additional attributes
 				return;
 			}
 
-			shared_ptr<IfcAdvancedBrep> advanced_brep = dynamic_pointer_cast<IfcAdvancedBrep>( manifold_solid_brep );
+			shared_ptr<IFC4X3::IfcAdvancedBrep> advanced_brep = dynamic_pointer_cast<IFC4X3::IfcAdvancedBrep>( manifold_solid_brep );
 			if( advanced_brep )
 			{
 				// ENTITY IfcAdvancedBrep	SUPERTYPE OF(IfcAdvancedBrepWithVoids)
-				if( dynamic_pointer_cast<IfcAdvancedBrepWithVoids>( advanced_brep ) )
+				if( dynamic_pointer_cast<IFC4X3::IfcAdvancedBrepWithVoids>( advanced_brep ) )
 				{
 					//shared_ptr<IfcAdvancedBrepWithVoids> advanced_brep_with_voids = dynamic_pointer_cast<IfcAdvancedBrepWithVoids>( solid_model );
 					//std::vector<shared_ptr<IfcClosedShell> >& vec_voids = advanced_brep_with_voids->m_Voids;
 
 					// TODO: subtract voids from outer shell
-#ifdef _DEBUG
-					std::cout << "IfcAdvancedBrep not implemented" << std::endl;
-#endif
 				}
 				return;
 			}
@@ -242,19 +237,19 @@ namespace IFCC {
 			messageCallback( "Unhandled IFC Representation", StatusCallback::MESSAGE_TYPE_WARNING, __FUNC__, solid_model.get() );
 		}
 
-		shared_ptr<IfcCsgSolid> csg_solid = dynamic_pointer_cast<IfcCsgSolid>( solid_model );
+		shared_ptr<IFC4X3::IfcCsgSolid> csg_solid = dynamic_pointer_cast<IFC4X3::IfcCsgSolid>( solid_model );
 		if( csg_solid )
 		{
-			shared_ptr<IfcCsgSelect> csg_select = csg_solid->m_TreeRootExpression;
+			shared_ptr<IFC4X3::IfcCsgSelect> csg_select = csg_solid->m_TreeRootExpression;
 
-			shared_ptr<IfcBooleanResult> csg_select_boolean_result = dynamic_pointer_cast<IfcBooleanResult>( csg_select );
+			shared_ptr<IFC4X3::IfcBooleanResult> csg_select_boolean_result = dynamic_pointer_cast<IFC4X3::IfcBooleanResult>( csg_select );
 			if( csg_select_boolean_result )
 			{
 				convertIfcBooleanResult( csg_select_boolean_result, item_data );
 			}
 			else
 			{
-				shared_ptr<IfcCsgPrimitive3D> csg_select_primitive_3d = dynamic_pointer_cast<IfcCsgPrimitive3D>( csg_select );
+				shared_ptr<IFC4X3::IfcCsgPrimitive3D> csg_select_primitive_3d = dynamic_pointer_cast<IFC4X3::IfcCsgPrimitive3D>( csg_select );
 				if( csg_select_primitive_3d )
 				{
 					convertIfcCsgPrimitive3D( csg_select_primitive_3d, item_data );
@@ -270,7 +265,7 @@ namespace IFCC {
 		//	return;
 		//}
 
-		shared_ptr<IfcSweptDiskSolid> swept_disp_solid = dynamic_pointer_cast<IfcSweptDiskSolid>( solid_model );
+		shared_ptr<IFC4X3::IfcSweptDiskSolid> swept_disp_solid = dynamic_pointer_cast<IFC4X3::IfcSweptDiskSolid>( solid_model );
 		if( swept_disp_solid )
 		{
 			//ENTITY IfcSweptDiskSolid;
@@ -290,7 +285,7 @@ namespace IFCC {
 			//		EndParam	 : 	OPTIONAL IfcParameterValue;
 			//END_ENTITY;
 
-			shared_ptr<IfcCurve>& directrix_curve = swept_disp_solid->m_Directrix;
+			shared_ptr<IFC4X3::IfcCurve>& directrix_curve = swept_disp_solid->m_Directrix;
 			double radius = 0.0;
 			if( swept_disp_solid->m_Radius )
 			{
@@ -307,14 +302,10 @@ namespace IFCC {
 
 			std::vector<vec3> segment_start_points;
 			std::vector<vec3> basis_curve_points;
-			m_curve_converter->convertIfcCurve( directrix_curve, basis_curve_points, segment_start_points );
+			m_curve_converter->convertIfcCurve( directrix_curve, basis_curve_points, segment_start_points, true );
 			GeomUtils::removeDuplicates(basis_curve_points);
 
 			shared_ptr<ItemShapeData> item_data_solid( new ItemShapeData() );
-			if( !item_data_solid )
-			{
-				throw OutOfMemoryException( __FUNC__ );
-			}
 
 			const int nvc = m_geom_settings->getNumVerticesPerCircleWithRadius(radius);
 			int nvc_disk = nvc;
@@ -327,7 +318,8 @@ namespace IFCC {
 				}
 			}
 
-			m_sweeper->sweepDisk( basis_curve_points, swept_disp_solid.get(), item_data_solid, nvc_disk, radius, radius_inner );
+			GeomProcessingParams params( m_geom_settings, swept_disp_solid.get(),  this );
+			m_sweeper->sweepDisk( basis_curve_points, item_data_solid, params, nvc_disk, radius, radius_inner );
 			item_data->addItemData( item_data_solid );
 
 			return;
@@ -336,7 +328,7 @@ namespace IFCC {
 		messageCallback( "Unhandled IFC Representation", StatusCallback::MESSAGE_TYPE_WARNING, __FUNC__, solid_model.get() );
 	}
 
-	void SolidModelConverter::convertIfcExtrudedAreaSolid( const shared_ptr<IfcExtrudedAreaSolid>& extruded_area, shared_ptr<ItemShapeData> item_data )
+	void SolidModelConverter::convertIfcExtrudedAreaSolid( const shared_ptr<IFC4X3::IfcExtrudedAreaSolid>& extruded_area, shared_ptr<ItemShapeData> item_data )
 	{
 		if( !extruded_area->m_ExtrudedDirection )
 		{
@@ -354,7 +346,7 @@ namespace IFCC {
 		// direction and length of extrusion
 		const double depth = extruded_area->m_Depth->m_value*length_factor;
 		vec3  extrusion_vector;
-		std::vector<shared_ptr<IfcReal> >& vec_direction = extruded_area->m_ExtrudedDirection->m_DirectionRatios;
+		std::vector<shared_ptr<IFC4X3::IfcReal> >& vec_direction = extruded_area->m_ExtrudedDirection->m_DirectionRatios;
 		if( GeomUtils::allPointersValid( vec_direction ) )
 		{
 			if( vec_direction.size() > 2 )
@@ -368,7 +360,7 @@ namespace IFCC {
 		}
 
 		// swept area
-		shared_ptr<IfcProfileDef>	swept_area = extruded_area->m_SweptArea;
+		shared_ptr<IFC4X3::IfcProfileDef>	swept_area = extruded_area->m_SweptArea;
 		if( !swept_area )
 		{
 			messageCallback( "Invalid SweptArea", StatusCallback::MESSAGE_TYPE_WARNING, __FUNC__, extruded_area.get() );
@@ -382,7 +374,8 @@ namespace IFCC {
 		{
 			return;
 		}
-		m_sweeper->extrude( paths, extrusion_vector, extruded_area.get(), item_data );
+		GeomProcessingParams params( m_geom_settings, extruded_area.get(),  this );
+		m_sweeper->extrude( paths, extrusion_vector, item_data, params );
 
 	}
 
@@ -438,6 +431,7 @@ namespace IFCC {
 		}
 
 		// triangulate
+		double CARVE_EPSILON = m_geom_settings->getEpsilonCoplanarDistance();
 		std::vector<vec2> path_merged;
 		std::vector<std::pair<size_t, size_t> > path_incorporated_holes;
 		std::vector<carve::triangulate::tri_idx> triangulated;
@@ -461,7 +455,7 @@ namespace IFCC {
 				const vec2 & point_2d = loop_2d[index_in_loop];
 				path_merged.push_back( point_2d );
 			}
-			carve::triangulate::triangulate( path_merged, triangulated );
+			carve::triangulate::triangulate( path_merged, triangulated, CARVE_EPSILON );
 			carve::triangulate::improve( path_merged, triangulated );
 		}
 		catch( ... )
@@ -506,7 +500,7 @@ namespace IFCC {
 		vec3  polygon_normal = GeomUtils::computePolygon2DNormal( profile_coords[0] );
 		const vec2&  pt0_2d = profile_coords[0][0];
 		vec3  pt0_3d( carve::geom::VECTOR( pt0_2d.x, pt0_2d.y, 0 ) );
-		vec3  pt0 = carve::math::Matrix::ROT( d_angle, axis_direction )*(pt0_3d + base_point);
+		vec3  pt0 = carve::math::Matrix::ROT( d_angle, axis_direction, CARVE_EPSILON )*(pt0_3d + base_point);
 		if( polygon_normal.z*pt0.z > 0 )
 		{
 			angle = revolution_angle;
@@ -516,16 +510,12 @@ namespace IFCC {
 		// TODO: use m_sweeper->sweepArea
 
 		shared_ptr<carve::input::PolyhedronData> polyhedron_data( new carve::input::PolyhedronData() );
-		if( !polyhedron_data )
-		{
-			throw OutOfMemoryException( __FUNC__ );
-		}
 
 		// create vertices
 		carve::math::Matrix m;
 		for( int ii = 0; ii <= num_segments; ++ii )
 		{
-			m = carve::math::Matrix::ROT( angle, -axis_direction );
+			m = carve::math::Matrix::ROT( angle, -axis_direction, CARVE_EPSILON );
 			for( size_t jj = 0; jj < profile_coords.size(); ++jj )
 			{
 				const std::vector<vec2>& loop = profile_coords[jj];
@@ -732,10 +722,10 @@ namespace IFCC {
 		//}
 #endif
 
-		item_data->addOpenOrClosedPolyhedron( polyhedron_data );
+		item_data->addOpenOrClosedPolyhedron( polyhedron_data, CARVE_EPSILON );
 	}
 
-	void SolidModelConverter::convertIfcRevolvedAreaSolid( const shared_ptr<IfcRevolvedAreaSolid>& revolved_area, shared_ptr<ItemShapeData> item_data )
+	void SolidModelConverter::convertIfcRevolvedAreaSolid( const shared_ptr<IFC4X3::IfcRevolvedAreaSolid>& revolved_area, shared_ptr<ItemShapeData> item_data )
 	{
 		// TODO: use Sweeper::sweepArea
 		if( !revolved_area )
@@ -748,7 +738,7 @@ namespace IFCC {
 			messageCallback( "Invalid SweptArea", StatusCallback::MESSAGE_TYPE_ERROR, __FUNC__, revolved_area.get() );
 			return;
 		}
-		shared_ptr<IfcProfileDef> swept_area_profile = revolved_area->m_SweptArea;
+		shared_ptr<IFC4X3::IfcProfileDef> swept_area_profile = revolved_area->m_SweptArea;
 		if( !swept_area_profile )
 		{
 			messageCallback( "Invalid SweptArea", StatusCallback::MESSAGE_TYPE_ERROR, __FUNC__, revolved_area.get() );
@@ -776,17 +766,18 @@ namespace IFCC {
 		vec3  axis_direction;
 		if( revolved_area->m_Axis )
 		{
-			shared_ptr<IfcAxis1Placement> axis_placement = revolved_area->m_Axis;
+			shared_ptr<IFC4X3::IfcAxis1Placement> axis_placement = revolved_area->m_Axis;
 
 			if( axis_placement->m_Location )
 			{
-				shared_ptr<IfcCartesianPoint> location_point = axis_placement->m_Location;
-				PointConverter::convertIfcCartesianPoint( location_point, axis_location, length_factor );
+				shared_ptr<IFC4X3::IfcCartesianPoint> location_point = dynamic_pointer_cast<IFC4X3::IfcCartesianPoint>(axis_placement->m_Location);
+				if( location_point )
+					PointConverter::convertIfcCartesianPoint( location_point, axis_location, length_factor );
 			}
 
 			if( axis_placement->m_Axis )
 			{
-				shared_ptr<IfcDirection> axis = axis_placement->m_Axis;
+				shared_ptr<IFC4X3::IfcDirection> axis = axis_placement->m_Axis;
 				axis_direction = carve::geom::VECTOR( axis->m_DirectionRatios[0]->m_value, axis->m_DirectionRatios[1]->m_value, axis->m_DirectionRatios[2]->m_value );
 			}
 		}
@@ -797,11 +788,11 @@ namespace IFCC {
 		convertRevolvedAreaSolid( profile_coords_unchecked, axis_location, axis_direction, revolution_angle, item_data );
 	}
 
-	void SolidModelConverter::convertIfcBooleanResult( const shared_ptr<IfcBooleanResult>& bool_result, shared_ptr<ItemShapeData> item_data )
+	void SolidModelConverter::convertIfcBooleanResult( const shared_ptr<IFC4X3::IfcBooleanResult>& bool_result, shared_ptr<ItemShapeData> item_data )
 	{
-		shared_ptr<IfcBooleanOperator>& ifc_boolean_operator = bool_result->m_Operator;
-		shared_ptr<IfcBooleanOperand> ifc_first_operand = bool_result->m_FirstOperand;
-		shared_ptr<IfcBooleanOperand> ifc_second_operand = bool_result->m_SecondOperand;
+		shared_ptr<IFC4X3::IfcBooleanOperator>& ifc_boolean_operator = bool_result->m_Operator;
+		shared_ptr<IFC4X3::IfcBooleanOperand> ifc_first_operand = bool_result->m_FirstOperand;
+		shared_ptr<IFC4X3::IfcBooleanOperand> ifc_second_operand = bool_result->m_SecondOperand;
 		if( !ifc_boolean_operator || !ifc_first_operand || !ifc_second_operand )
 		{
 			messageCallback( "Invalid IfcBooleanOperator or IfcBooleanOperand", StatusCallback::MESSAGE_TYPE_WARNING, __FUNC__, bool_result.get() );
@@ -809,15 +800,15 @@ namespace IFCC {
 		}
 		carve::csg::CSG::OP csg_operation = carve::csg::CSG::A_MINUS_B;
 
-		if( ifc_boolean_operator->m_enum == IfcBooleanOperator::ENUM_UNION )
+		if( ifc_boolean_operator->m_enum == IFC4X3::IfcBooleanOperator::ENUM_UNION )
 		{
 			csg_operation = carve::csg::CSG::UNION;
 		}
-		else if( ifc_boolean_operator->m_enum == IfcBooleanOperator::ENUM_INTERSECTION )
+		else if( ifc_boolean_operator->m_enum == IFC4X3::IfcBooleanOperator::ENUM_INTERSECTION )
 		{
 			csg_operation = carve::csg::CSG::INTERSECTION;
 		}
-		else if( ifc_boolean_operator->m_enum == IfcBooleanOperator::ENUM_DIFFERENCE )
+		else if( ifc_boolean_operator->m_enum == IFC4X3::IfcBooleanOperator::ENUM_DIFFERENCE )
 		{
 			csg_operation = carve::csg::CSG::A_MINUS_B;
 		}
@@ -829,55 +820,30 @@ namespace IFCC {
 
 		// convert the first operand
 		shared_ptr<ItemShapeData> first_operand_data( new ItemShapeData() );
-		if( !first_operand_data )
-		{
-			throw OutOfMemoryException( __FUNC__ );
-		}
 		shared_ptr<ItemShapeData> empty_operand;
 		convertIfcBooleanOperand( ifc_first_operand, first_operand_data, empty_operand );
 
 		// convert the second operand
 		shared_ptr<ItemShapeData> second_operand_data( new ItemShapeData() );
-		if( !second_operand_data )
-		{
-			throw OutOfMemoryException( __FUNC__ );
-		}
 		convertIfcBooleanOperand( ifc_second_operand, second_operand_data, first_operand_data );
 
+		// for every first operand polyhedrons, apply all second operand polyhedrons
 		// for every first operand polyhedrons, apply all second operand polyhedrons
 		std::vector<shared_ptr<carve::mesh::MeshSet<3> > >& vec_first_operand_meshsets = first_operand_data->m_meshsets;
 		for( size_t i_meshset_first = 0; i_meshset_first < vec_first_operand_meshsets.size(); ++i_meshset_first )
 		{
 			shared_ptr<carve::mesh::MeshSet<3> >& first_operand_meshset = vec_first_operand_meshsets[i_meshset_first];
 			std::vector<shared_ptr<carve::mesh::MeshSet<3> > >& vec_second_operand_meshsets = second_operand_data->m_meshsets;
-			for( size_t i_meshset_second = 0; i_meshset_second < vec_second_operand_meshsets.size(); ++i_meshset_second )
-			{
-				shared_ptr<carve::mesh::MeshSet<3> >& second_operand_meshset = vec_second_operand_meshsets[i_meshset_second];
-				shared_ptr<carve::mesh::MeshSet<3> > result;
-				try
-				{
-					CSG_Adapter::computeCSG( first_operand_meshset, second_operand_meshset, csg_operation, result, this, bool_result, m_geom_settings );
-				}
-				catch( OutOfMemoryException& e )
-				{
-					throw e;
-				}
-				catch( BuildingException& e )
-				{
-					messageCallback( e.what(), StatusCallback::MESSAGE_TYPE_ERROR, "", bool_result.get() ); // __FUNC__ is already in exception.what()
-				}
-				catch( std::exception& e )
-				{
-					messageCallback( e.what(), StatusCallback::MESSAGE_TYPE_ERROR, __FUNC__, bool_result.get() );
-				}
-				first_operand_meshset = result;
-			}
+
+			shared_ptr<carve::mesh::MeshSet<3> > result;
+			CSG_Adapter::computeCSG( first_operand_meshset, vec_second_operand_meshsets, csg_operation, result, m_geom_settings, this, bool_result );
+			first_operand_meshset = result;
 		}
 
 		// now copy processed first operands to result input data
 		std::copy( first_operand_data->m_meshsets.begin(), first_operand_data->m_meshsets.end(), std::back_inserter( item_data->m_meshsets ) );
 
-		shared_ptr<IfcBooleanClippingResult> boolean_clipping_result = dynamic_pointer_cast<IfcBooleanClippingResult>( bool_result );
+		shared_ptr<IFC4X3::IfcBooleanClippingResult> boolean_clipping_result = dynamic_pointer_cast<IFC4X3::IfcBooleanClippingResult>( bool_result );
 		if( boolean_clipping_result )
 		{
 			// no additional attributes, just the type of operands and operator is restricted:
@@ -888,14 +854,15 @@ namespace IFCC {
 		}
 	}
 
-	void SolidModelConverter::convertIfcCsgPrimitive3D( const shared_ptr<IfcCsgPrimitive3D>& csg_primitive, shared_ptr<ItemShapeData> item_data )
+	void SolidModelConverter::convertIfcCsgPrimitive3D( const shared_ptr<IFC4X3::IfcCsgPrimitive3D>& csg_primitive, shared_ptr<ItemShapeData> item_data )
 	{
 		shared_ptr<carve::input::PolyhedronData> polyhedron_data( new carve::input::PolyhedronData() );
 		const double length_factor = m_point_converter->getUnitConverter()->getLengthInMeterFactor();
+		double CARVE_EPSILON = m_geom_settings->getEpsilonCoplanarDistance();
 
 		// ENTITY IfcCsgPrimitive3D  ABSTRACT SUPERTYPE OF(ONEOF(IfcBlock, IfcRectangularPyramid, IfcRightCircularCone, IfcRightCircularCylinder, IfcSphere
 		shared_ptr<TransformData> primitive_placement_transform;
-		shared_ptr<IfcAxis2Placement3D>& primitive_placement = csg_primitive->m_Position;
+		shared_ptr<IFC4X3::IfcAxis2Placement3D>& primitive_placement = csg_primitive->m_Position;
 		if( primitive_placement )
 		{
 			m_curve_converter->getPlacementConverter()->convertIfcAxis2Placement3D( primitive_placement, primitive_placement_transform );
@@ -913,7 +880,7 @@ namespace IFCC {
 			return;
 		}
 
-		shared_ptr<IfcBlock> block = dynamic_pointer_cast<IfcBlock>( csg_primitive );
+		shared_ptr<IFC4X3::IfcBlock> block = dynamic_pointer_cast<IFC4X3::IfcBlock>( csg_primitive );
 		if( block )
 		{
 			if( !block->m_XLength )
@@ -963,11 +930,11 @@ namespace IFCC {
 			polyhedron_data->addFace( 3, 7, 4 );
 			polyhedron_data->addFace( 4, 0, 3 );
 
-			item_data->addOpenOrClosedPolyhedron( polyhedron_data );
+			item_data->addOpenOrClosedPolyhedron( polyhedron_data, CARVE_EPSILON );
 			return;
 		}
 
-		shared_ptr<IfcRectangularPyramid> rectangular_pyramid = dynamic_pointer_cast<IfcRectangularPyramid>( csg_primitive );
+		shared_ptr<IFC4X3::IfcRectangularPyramid> rectangular_pyramid = dynamic_pointer_cast<IFC4X3::IfcRectangularPyramid>( csg_primitive );
 		if( rectangular_pyramid )
 		{
 			if( !rectangular_pyramid->m_XLength )
@@ -1003,11 +970,11 @@ namespace IFCC {
 			polyhedron_data->addFace( 0, 4, 3 );
 			polyhedron_data->addFace( 0, 3, 2 );
 
-			item_data->addOpenOrClosedPolyhedron( polyhedron_data );
+			item_data->addOpenOrClosedPolyhedron( polyhedron_data, CARVE_EPSILON );
 			return;
 		}
 
-		shared_ptr<IfcRightCircularCone> right_circular_cone = dynamic_pointer_cast<IfcRightCircularCone>( csg_primitive );
+		shared_ptr<IFC4X3::IfcRightCircularCone> right_circular_cone = dynamic_pointer_cast<IFC4X3::IfcRightCircularCone>( csg_primitive );
 		if( right_circular_cone )
 		{
 			if( !right_circular_cone->m_Height )
@@ -1049,11 +1016,11 @@ namespace IFCC {
 			}
 			polyhedron_data->addFace( 1, m_geom_settings->getNumVerticesPerCircleWithRadius(radius) + 1, 2 );
 
-			item_data->addOpenOrClosedPolyhedron( polyhedron_data );
+			item_data->addOpenOrClosedPolyhedron( polyhedron_data, CARVE_EPSILON );
 			return;
 		}
 
-		shared_ptr<IfcRightCircularCylinder> right_circular_cylinder = dynamic_pointer_cast<IfcRightCircularCylinder>( csg_primitive );
+		shared_ptr<IFC4X3::IfcRightCircularCylinder> right_circular_cylinder = dynamic_pointer_cast<IFC4X3::IfcRightCircularCylinder>( csg_primitive );
 		if( right_circular_cylinder )
 		{
 			if( !right_circular_cylinder->m_Height )
@@ -1098,11 +1065,11 @@ namespace IFCC {
 				polyhedron_data->addFace( 1, i*2 + 5, i*2 + 3 );	// bottom cap:	1-5-3	1-7-5		1-9-7
 			}
 
-			item_data->addOpenOrClosedPolyhedron( polyhedron_data );
+			item_data->addOpenOrClosedPolyhedron( polyhedron_data, CARVE_EPSILON );
 			return;
 		}
 
-		shared_ptr<IfcSphere> sphere = dynamic_pointer_cast<IfcSphere>( csg_primitive );
+		shared_ptr<IFC4X3::IfcSphere> sphere = dynamic_pointer_cast<IFC4X3::IfcSphere>( csg_primitive );
 		if( sphere )
 		{
 			if( !sphere->m_Radius )
@@ -1122,10 +1089,6 @@ namespace IFCC {
 			//        /   |   \
 
 			shared_ptr<carve::input::PolyhedronData> polyhedron_data( new carve::input::PolyhedronData() );
-			if( !polyhedron_data )
-			{
-				throw OutOfMemoryException( __FUNC__ );
-			}
 			polyhedron_data->addVertex( primitive_placement_matrix*carve::geom::VECTOR( 0.0, 0.0, radius ) ); // top
 
 			const int nvc = m_geom_settings->getNumVerticesPerCircleWithRadius(radius);
@@ -1177,7 +1140,7 @@ namespace IFCC {
 				polyhedron_data->addFace( last_index, last_index - ( i + 2 ), last_index - ( i + 1 ) );
 			}
 			polyhedron_data->addFace( last_index, last_index - 1, last_index - nvc );
-			item_data->addOpenOrClosedPolyhedron( polyhedron_data );
+			item_data->addOpenOrClosedPolyhedron( polyhedron_data, CARVE_EPSILON );
 			return;
 		}
 		messageCallback( "Unhandled IFC Representation", StatusCallback::MESSAGE_TYPE_WARNING, __FUNC__, csg_primitive.get() );
@@ -1207,20 +1170,21 @@ namespace IFCC {
 		box_data->addFace( 7, 3, 2 );
 	}
 
-	void SolidModelConverter::convertIfcHalfSpaceSolid( const shared_ptr<IfcHalfSpaceSolid>& half_space_solid, shared_ptr<ItemShapeData> item_data, const shared_ptr<ItemShapeData>& other_operand )
+	void SolidModelConverter::convertIfcHalfSpaceSolid( const shared_ptr<IFC4X3::IfcHalfSpaceSolid>& half_space_solid, shared_ptr<ItemShapeData> item_data, const shared_ptr<ItemShapeData>& other_operand )
 	{
 		//ENTITY IfcHalfSpaceSolid SUPERTYPE OF(ONEOF(IfcBoxedHalfSpace, IfcPolygonalBoundedHalfSpace))
 		double length_factor = m_point_converter->getUnitConverter()->getLengthInMeterFactor();
-		shared_ptr<IfcSurface> base_surface = half_space_solid->m_BaseSurface;
+		shared_ptr<IFC4X3::IfcSurface> base_surface = half_space_solid->m_BaseSurface;
+		double CARVE_EPSILON = m_geom_settings->getEpsilonCoplanarDistance();
 
 		// base surface
-		shared_ptr<IfcElementarySurface> elem_base_surface = dynamic_pointer_cast<IfcElementarySurface>( base_surface );
+		shared_ptr<IFC4X3::IfcElementarySurface> elem_base_surface = dynamic_pointer_cast<IFC4X3::IfcElementarySurface>( base_surface );
 		if( !elem_base_surface )
 		{
 			messageCallback( "The base surface shall be an unbounded surface (subtype of IfcElementarySurface)", StatusCallback::MESSAGE_TYPE_ERROR, __FUNC__, half_space_solid.get() );
 			return;
 		}
-		shared_ptr<IfcAxis2Placement3D>& base_surface_pos = elem_base_surface->m_Position;
+		shared_ptr<IFC4X3::IfcAxis2Placement3D>& base_surface_pos = elem_base_surface->m_Position;
 		carve::geom::plane<3> base_surface_plane;
 		vec3 base_surface_position;
 		shared_ptr<TransformData> base_position_transform;
@@ -1242,10 +1206,10 @@ namespace IFCC {
 			base_surface_plane.negate();
 		}
 
-		shared_ptr<IfcBoxedHalfSpace> boxed_half_space = dynamic_pointer_cast<IfcBoxedHalfSpace>( half_space_solid );
+		shared_ptr<IFC4X3::IfcBoxedHalfSpace> boxed_half_space = dynamic_pointer_cast<IFC4X3::IfcBoxedHalfSpace>( half_space_solid );
 		if( boxed_half_space )
 		{
-			shared_ptr<IfcBoundingBox> bbox = boxed_half_space->m_Enclosure;
+			shared_ptr<IFC4X3::IfcBoundingBox> bbox = boxed_half_space->m_Enclosure;
 			if( !bbox )
 			{
 				messageCallback( "Enclosure not given", StatusCallback::MESSAGE_TYPE_ERROR, __FUNC__, half_space_solid.get() );
@@ -1257,10 +1221,10 @@ namespace IFCC {
 				messageCallback( "Enclosure not valid", StatusCallback::MESSAGE_TYPE_ERROR, __FUNC__, half_space_solid.get() );
 				return;
 			}
-			shared_ptr<IfcCartesianPoint>&			bbox_corner = bbox->m_Corner;
-			shared_ptr<IfcPositiveLengthMeasure>&	bbox_x_dim = bbox->m_XDim;
-			shared_ptr<IfcPositiveLengthMeasure>&	bbox_y_dim = bbox->m_YDim;
-			shared_ptr<IfcPositiveLengthMeasure>&	bbox_z_dim = bbox->m_ZDim;
+			shared_ptr<IFC4X3::IfcCartesianPoint>&			bbox_corner = bbox->m_Corner;
+			shared_ptr<IFC4X3::IfcPositiveLengthMeasure>&	bbox_x_dim = bbox->m_XDim;
+			shared_ptr<IFC4X3::IfcPositiveLengthMeasure>&	bbox_y_dim = bbox->m_YDim;
+			shared_ptr<IFC4X3::IfcPositiveLengthMeasure>&	bbox_z_dim = bbox->m_ZDim;
 
 			vec3 corner;
 			PointConverter::convertIfcCartesianPoint( bbox_corner, corner, length_factor );
@@ -1297,7 +1261,7 @@ namespace IFCC {
 				poly_point = box_position_matrix*poly_point;
 			}
 
-			item_data->addOpenOrClosedPolyhedron( polyhedron_data );
+			item_data->addOpenOrClosedPolyhedron( polyhedron_data, CARVE_EPSILON );
 			return;
 		}
 
@@ -1333,7 +1297,7 @@ namespace IFCC {
 			//other_operand_pos = aabb.pos;
 		}
 
-		shared_ptr<IfcPolygonalBoundedHalfSpace> polygonal_half_space = dynamic_pointer_cast<IfcPolygonalBoundedHalfSpace>( half_space_solid );
+		shared_ptr<IFC4X3::IfcPolygonalBoundedHalfSpace> polygonal_half_space = dynamic_pointer_cast<IFC4X3::IfcPolygonalBoundedHalfSpace>( half_space_solid );
 		if( polygonal_half_space )
 		{
 			// ENTITY IfcPolygonalBoundedHalfSpace
@@ -1359,8 +1323,8 @@ namespace IFCC {
 			// PolygonalBoundary is given in 2D
 			std::vector<vec2> polygonal_boundary;
 			std::vector<vec2> segment_start_points_2d;
-			shared_ptr<IfcBoundedCurve> bounded_curve = polygonal_half_space->m_PolygonalBoundary;
-			m_curve_converter->convertIfcCurve2D( bounded_curve, polygonal_boundary, segment_start_points_2d );
+			shared_ptr<IFC4X3::IfcBoundedCurve> bounded_curve = polygonal_half_space->m_PolygonalBoundary;
+			m_curve_converter->convertIfcCurve2D( bounded_curve, polygonal_boundary, segment_start_points_2d, true );
 			ProfileConverter::deleteLastPointIfEqualToFirst( polygonal_boundary );
 			ProfileConverter::simplifyPath( polygonal_boundary );
 
@@ -1374,7 +1338,8 @@ namespace IFCC {
 			std::vector<std::vector<vec2> > paths;
 			paths.push_back( polygonal_boundary );
 			shared_ptr<ItemShapeData> polygonal_halfspace_item_data( new ItemShapeData );
-			m_sweeper->extrude( paths, vec3( carve::geom::VECTOR( 0, 0, extrusion_depth ) ), polygonal_half_space.get(), polygonal_halfspace_item_data );
+			GeomProcessingParams params( m_geom_settings, polygonal_half_space.get(),  this );
+			m_sweeper->extrude( paths, vec3( carve::geom::VECTOR( 0, 0, extrusion_depth ) ), polygonal_halfspace_item_data, params );
 
 			if( polygonal_halfspace_item_data->m_meshsets.size() != 1 )
 			{
@@ -1385,7 +1350,7 @@ namespace IFCC {
 //			meshDump(*polygonal_halfspace_item_data->m_meshsets.front(),"polygonal half space before transform", "g:/temp/meshsets.txt");
 
 			// apply position of PolygonalBoundary
-			polygonal_halfspace_item_data->applyTransformToItem( boundary_position_matrix );
+			polygonal_halfspace_item_data->applyTransformToItem( boundary_position_matrix, CARVE_EPSILON );
 
 //			meshDump(*polygonal_halfspace_item_data->m_meshsets.front(),"polygonal half space after transform", "g:/temp/meshsets.txt");
 
@@ -1410,7 +1375,7 @@ namespace IFCC {
 				// points below the base surface are projected into plane
 				vec3 v;
 				double t;
-				carve::IntersectionClass intersect = carve::geom3d::rayPlaneIntersection( base_surface_plane, poly_point, poly_point + boundary_plane_normal, v, t );
+				carve::IntersectionClass intersect = carve::geom3d::rayPlaneIntersection( base_surface_plane, poly_point, poly_point + boundary_plane_normal, v, t, CARVE_EPSILON );
 				if( intersect > 0 )
 				{
 					if( agreement_check > 0 )
@@ -1446,7 +1411,7 @@ namespace IFCC {
 
 			for( size_t i_mesh = 0; i_mesh < polygonal_halfspace_meshset->meshes.size(); ++i_mesh )
 			{
-				polygonal_halfspace_meshset->meshes[i_mesh]->recalc();
+				polygonal_halfspace_meshset->meshes[i_mesh]->recalc(CARVE_EPSILON);
 			}
 
 //			meshDump(*polygonal_halfspace_meshset,"polygonal half space after recalc", "g:/temp/meshsets.txt");
@@ -1487,7 +1452,7 @@ namespace IFCC {
 					vec3  half_space_extrusion_vector = half_space_extrusion_direction*HALF_SPACE_BOX_SIZE*m_point_converter->getUnitConverter()->getCustomLengthFactor();
 					shared_ptr<carve::input::PolyhedronData> half_space_box_data( new carve::input::PolyhedronData() );
 					extrudeBox( base_surface_points, half_space_extrusion_vector, half_space_box_data );
-					item_data->addOpenOrClosedPolyhedron( half_space_box_data );
+					item_data->addOpenOrClosedPolyhedron( half_space_box_data, CARVE_EPSILON );
 				}
 			}
 
@@ -1511,38 +1476,38 @@ namespace IFCC {
 
 				shared_ptr<carve::input::PolyhedronData> half_space_box_data( new carve::input::PolyhedronData() );
 				extrudeBox( box_base_points, half_space_extrusion_vector, half_space_box_data );
-				item_data->addOpenOrClosedPolyhedron( half_space_box_data );
+				item_data->addOpenOrClosedPolyhedron( half_space_box_data, CARVE_EPSILON );
 			}
 
 			return;
 		}
 	}
 
-	void SolidModelConverter::convertIfcBooleanOperand( const shared_ptr<IfcBooleanOperand>& operand_select, shared_ptr<ItemShapeData> item_data, const shared_ptr<ItemShapeData>& other_operand )
+	void SolidModelConverter::convertIfcBooleanOperand( const shared_ptr<IFC4X3::IfcBooleanOperand>& operand_select, shared_ptr<ItemShapeData> item_data, const shared_ptr<ItemShapeData>& other_operand )
 	{
 		// TYPE IfcBooleanOperand = SELECT	(IfcBooleanResult	,IfcCsgPrimitive3D	,IfcHalfSpaceSolid	,IfcSolidModel);
-		shared_ptr<IfcSolidModel> solid_model = dynamic_pointer_cast<IfcSolidModel>( operand_select );
+		shared_ptr<IFC4X3::IfcSolidModel> solid_model = dynamic_pointer_cast<IFC4X3::IfcSolidModel>( operand_select );
 		if( solid_model )
 		{
 			convertIfcSolidModel( solid_model, item_data );  // not necessary to catch GeometryWarningException here
 			return;
 		}
 
-		shared_ptr<IfcHalfSpaceSolid> half_space_solid = dynamic_pointer_cast<IfcHalfSpaceSolid>( operand_select );
+		shared_ptr<IFC4X3::IfcHalfSpaceSolid> half_space_solid = dynamic_pointer_cast<IFC4X3::IfcHalfSpaceSolid>( operand_select );
 		if( half_space_solid )
 		{
 			convertIfcHalfSpaceSolid( half_space_solid, item_data, other_operand );
 			return;
 		}
 
-		shared_ptr<IfcBooleanResult> boolean_result = dynamic_pointer_cast<IfcBooleanResult>( operand_select );
+		shared_ptr<IFC4X3::IfcBooleanResult> boolean_result = dynamic_pointer_cast<IFC4X3::IfcBooleanResult>( operand_select );
 		if( boolean_result )
 		{
 			convertIfcBooleanResult( boolean_result, item_data );
 			return;
 		}
 
-		shared_ptr<IfcCsgPrimitive3D> csg_primitive3D = dynamic_pointer_cast<IfcCsgPrimitive3D>( operand_select );
+		shared_ptr<IFC4X3::IfcCsgPrimitive3D> csg_primitive3D = dynamic_pointer_cast<IFC4X3::IfcCsgPrimitive3D>( operand_select );
 		if( csg_primitive3D )
 		{
 			convertIfcCsgPrimitive3D( csg_primitive3D, item_data );
@@ -1550,22 +1515,22 @@ namespace IFCC {
 		}
 
 		std::stringstream strs_err;
-		strs_err << "Unhandled IFC Representation: " << operand_select->className();
+		strs_err << "Unhandled IFC Representation: ";
 		throw BuildingException( strs_err.str().c_str(), __FUNC__ );
 	}
 
-	void SolidModelConverter::convertIfcSectionedSpine( const shared_ptr<IfcSectionedSpine>& spine, shared_ptr<ItemShapeData> item_data )
+	void SolidModelConverter::convertIfcSectionedSpine( const shared_ptr<IFC4X3::IfcSectionedSpine>& spine, shared_ptr<ItemShapeData> item_data )
 	{
-		const shared_ptr<IfcCompositeCurve> spine_curve = spine->m_SpineCurve;
+		const shared_ptr<IFC4X3::IfcCompositeCurve> spine_curve = spine->m_SpineCurve;
 		if( !spine_curve )
 		{
 			messageCallback( "invalid IfcHalfSpaceSolid.BaseSurface", StatusCallback::MESSAGE_TYPE_ERROR, __FUNC__, spine.get() );
 			return;
 		}
-		const std::vector<shared_ptr<IfcProfileDef> >& vec_cross_sections = spine->m_CrossSections;
-		const std::vector<shared_ptr<IfcAxis2Placement3D> >& vec_cross_section_positions = spine->m_CrossSectionPositions;
+		const std::vector<shared_ptr<IFC4X3::IfcProfileDef> >& vec_cross_sections = spine->m_CrossSections;
+		const std::vector<shared_ptr<IFC4X3::IfcAxis2Placement3D> >& vec_cross_section_positions = spine->m_CrossSectionPositions;
 
-		std::vector<shared_ptr<IfcProfileDef> >::iterator it_cross_sections;
+		std::vector<shared_ptr<IFC4X3::IfcProfileDef> >::iterator it_cross_sections;
 
 		size_t num_cross_sections = vec_cross_sections.size();
 		if( vec_cross_section_positions.size() < num_cross_sections )
@@ -1573,7 +1538,7 @@ namespace IFCC {
 			num_cross_sections = vec_cross_section_positions.size();
 		}
 
-		std::vector<shared_ptr<IfcCompositeCurveSegment> > segements = spine_curve->m_Segments;
+		std::vector<shared_ptr<IFC4X3::IfcSegment> > segements = spine_curve->m_Segments;
 		size_t num_segments = segements.size();
 		if( vec_cross_section_positions.size() < num_segments + 1 )
 		{
@@ -1583,11 +1548,8 @@ namespace IFCC {
 		std::vector<vec3> curve_polygon;
 		std::vector<vec3> segment_start_points;
 		//CurveConverter cconv( m_unit_converter );
-		m_curve_converter->convertIfcCurve( spine_curve, curve_polygon, segment_start_points );
+		m_curve_converter->convertIfcCurve( spine_curve, curve_polygon, segment_start_points, true );
 
-#ifdef _DEBUG
-		std::cout << "IfcSectionedSpine not implemented." << std::endl;
-#endif
 	}
 
 } // end namespace
