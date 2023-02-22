@@ -12,7 +12,7 @@
 class IFCImportPlugin : public QObject, public SVImportPluginInterface
 {
 	Q_OBJECT
-	Q_PLUGIN_METADATA(IID IFCImportPlugin_iid)
+	Q_PLUGIN_METADATA(IID IFCImportPlugin_iid FILE "metadata.json")
 	Q_INTERFACES(SVImportPluginInterface)
 
 public:
