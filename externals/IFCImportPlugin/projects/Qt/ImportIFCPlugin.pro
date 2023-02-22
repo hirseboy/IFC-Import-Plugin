@@ -31,11 +31,16 @@ INCLUDEPATH = \
 	../../../../externals/IBKMK/src \
 	../../../../externals/TiCPP/src \
 	../../../../externals/QtExt/src \
-	../../../IFCConvert/src \
+	../../../ifcplusplus/src/IfcPlusPlus/src/ifcpp/IFC4X3/include \
 	../../../ifcplusplus/src/IfcPlusPlus/src/ifcpp/reader \
 	../../../ifcplusplus/src/IfcPlusPlus/src \
-	../../../ifcplusplus/src/external/Carve/src/include \
+	../../../ifcplusplus/src/IfcPlusPlus/src/external/Carve/src/include \
 	../../../ifcplusplus/src/external \
+	../../../ifcplusplus/src/IfcPlusPlus/src/external \
+	../../../ifcplusplus/src/IfcPlusPlus/src/external/glm \
+	../../../ifcplusplus/src/IfcPlusPlus/src/external/manifold/src/utilities/include \
+	../../../ifcplusplus/src/IfcPlusPlus/src/external/Carve/src/common \
+	../../../IFCConvert/src
 
 CONFIG(debug, debug|release) {
 	OBJECTS_DIR = debug$${DIR_PREFIX}
@@ -87,6 +92,10 @@ LIBS += \
 
 win32:LIBS += -liphlpapi
 win32:LIBS += -lshell32
+
+win32-msvc* {
+	QMAKE_CXXFLAGS += /std:c++17
+}
 
 # Default rules for deployment.
 unix {
