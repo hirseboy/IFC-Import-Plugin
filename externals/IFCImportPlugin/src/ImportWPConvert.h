@@ -32,8 +32,13 @@ private slots:
 
 	void on_checkBoxIgnorErrors_toggled(bool checked);
 
+	void on_checkBoxSpaceIntersectionDetails_clicked();
+
 private:
 	void initializePage() override;
+
+	/*! Create text from convert results and add it to the edit field.*/
+	void setText();
 
 	Ui::ImportWPConvert *ui;
 

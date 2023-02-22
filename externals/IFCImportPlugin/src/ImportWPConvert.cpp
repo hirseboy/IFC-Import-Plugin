@@ -50,12 +50,7 @@ bool ImportWPConvert::isComplete() const {
 	return m_convertSuccessfully;
 }
 
-
-void ImportWPConvert::on_pushButtonConvert_clicked() {
-	m_convertSuccessfully = false;
-
-	ui->textEdit->setText(tr("Converting ..."));
-	bool res = m_reader->convert(ui->checkBoxUseSpaceBoundaries->isChecked());
+void ImportWPConvert::setText() {
 	std::vector<std::pair<int,int>> equalSBs;
 	int equalSBCount = m_reader->checkForEqualSpaceBoundaries(equalSBs);
 	std::vector<std::pair<int,std::vector<int>>> multiSubsurfaces;
@@ -66,52 +61,67 @@ void ImportWPConvert::on_pushButtonConvert_clicked() {
 		++instersectionCounts[isId.first];
 	}
 	int spaceIntersectCount = intersectedSpaceIds.size();
-	if(res && (equalSBCount > 0 || multiSubCount > 0 || spaceIntersectCount)) {
-		res = false;
+	if(m_convertSuccessfully && (equalSBCount > 0 || multiSubCount > 0 || spaceIntersectCount)) {
+		m_convertSuccessfully = false;
 	}
 	ui->textEdit->clear();
 	QStringList text;
-	if(res) {
+	if(m_convertSuccessfully) {
 		if(!m_reader->m_errorText.empty()) {
-			text << tr("<font color=\"#FF0000\">Errors while converting:</font><br>");
+			text << tr("<font color=\"#FF0000\">Errors while converting:</font>");
 			QString errTxt = QString::fromStdString(m_reader->m_errorText);
-			text << errTxt.split("<br>");
-			text << "<br>";
+			text << errTxt.split("");
+			text << "";
 		}
 		const std::vector<IFCC::ConvertError>& errors = m_reader->convertErrors();
 		if(!errors.empty()) {
-			text << tr("<font color=\"#FF0000\">Conversion errors:</font><br>");
+			text << tr("<font color=\"#FF0000\">Conversion errors:</font>");
 			for( const auto& err : errors) {
-				text << QString("%1 for object '%2' with id: %3<br>").arg(QString::fromStdString(err.m_errorText))
+				text << QString("%1 for object '%2' with id: %3").arg(QString::fromStdString(err.m_errorText))
 						.arg(QString::fromStdString(IFCC::objectTypeToString(err.m_objectType))).arg(err.m_objectID);
 			}
 			text << "<br>";
 		}
-		text << tr("File converted successfully.<br>");
-		text << m_reader->messages() << "<br>";
-		text << "<br>";
+		text << tr("File converted successfully.");
+		text << m_reader->messages() << "";
+		text << "";
 		text << m_reader->statistic();
-		m_convertSuccessfully = true;
 	}
 	else {
-		text << tr("<font color=\"#FF0000\">Error while converting IFC file.</font><br>");
+		text << tr("<font color=\"#FF0000\">Error while converting IFC file.</font>");
 		if(spaceIntersectCount > 0) {
-			text << tr("%1 spaces intersections found.<br>").arg(spaceIntersectCount);
-			for(const auto& it : instersectionCounts) {
-				text << tr("Space %1 with %2 spaces intersected.<br>").arg(it.first).arg(it.second);
+			text << tr("%1 spaces intersections found.").arg(spaceIntersectCount);
+			if(ui->checkBoxSpaceIntersectionDetails->isChecked()) {
+				text << tr("Space intersections.<br>");
+				for(const auto& it : intersectedSpaceIds) {
+					QString name1 = m_reader->nameForId(it.first, IFCC::IFCReader::NIT_Space);
+					QString name2 = m_reader->nameForId(it.second, IFCC::IFCReader::NIT_Space);
+					text << tr("'%1' with '%2'.").arg(name1).arg(name2);
+				}
+			}
+			else {
+				for(const auto& it : instersectionCounts) {
+					text << tr("Space %1 with %2 spaces intersected.").arg(it.first).arg(it.second);
+				}
 			}
 		}
 		else if(equalSBCount > 0) {
-			text << tr("%1 space boundaries with identical surfaces found.<br>").arg(equalSBCount);
+			text << tr("%1 space boundaries with identical surfaces found.").arg(equalSBCount);
 		}
 		else if(multiSubCount > 0) {
-			text << tr("%1 opening space boundaries found which are used more than once in one space.<br>").arg(multiSubCount);
+			text << tr("%1 opening space boundaries found which are used more than once in one space.").arg(multiSubCount);
 		}
 		else {
-			text << QString::fromStdString(m_reader->m_errorText) << "<br>";
+			text << QString::fromStdString(m_reader->m_errorText);
 		}
 	}
-	ui->textEdit->setHtml(text.join("\n"));
+	ui->textEdit->setHtml(text.join("<br>"));
+}
+
+void ImportWPConvert::on_pushButtonConvert_clicked() {
+	ui->textEdit->setText(tr("Converting ..."));
+	m_convertSuccessfully = m_reader->convert(ui->checkBoxUseSpaceBoundaries->isChecked());
+	setText();
 
 	emit completeChanged();
 }
@@ -123,5 +133,10 @@ void ImportWPConvert::on_checkBoxRemoveDoubleSBs_clicked() {
 
 void ImportWPConvert::on_checkBoxIgnorErrors_toggled(bool checked) {
 	emit completeChanged();
+}
+
+
+void ImportWPConvert::on_checkBoxSpaceIntersectionDetails_clicked() {
+	setText();
 }
 

@@ -6,14 +6,14 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>554</width>
-    <height>431</height>
+    <width>604</width>
+    <height>498</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Convert IFC into VICUS</string>
   </property>
-  <layout class="QGridLayout" name="gridLayout" columnstretch="0,0,0">
+  <layout class="QGridLayout" name="gridLayout">
    <item row="0" column="0">
     <widget class="QPushButton" name="pushButtonConvert">
      <property name="text">
@@ -21,7 +21,7 @@
      </property>
     </widget>
    </item>
-   <item row="0" column="1" colspan="2">
+   <item row="0" column="1">
     <spacer name="horizontalSpacer">
      <property name="orientation">
       <enum>Qt::Horizontal</enum>
@@ -41,22 +41,29 @@
      </property>
     </widget>
    </item>
-   <item row="3" column="0" colspan="3">
-    <widget class="QTextEdit" name="textEdit"/>
-   </item>
-   <item row="1" column="1" colspan="2">
+   <item row="1" column="1">
     <widget class="QLabel" name="labelSBDescription">
      <property name="text">
       <string>TextLabel</string>
      </property>
     </widget>
    </item>
-   <item row="2" column="0" colspan="3">
+   <item row="2" column="0" colspan="2">
     <widget class="QGroupBox" name="groupBox">
      <property name="title">
       <string>Repair flags</string>
      </property>
      <layout class="QGridLayout" name="gridLayout_2">
+      <item row="1" column="0">
+       <widget class="QCheckBox" name="checkBoxIgnorErrors">
+        <property name="toolTip">
+         <string>If checked all errors will be ignored and the finish button will be enabled</string>
+        </property>
+        <property name="text">
+         <string>Ignore convert errors</string>
+        </property>
+       </widget>
+      </item>
       <item row="0" column="1">
        <widget class="QCheckBox" name="checkBoxRemoveDoubleSBs">
         <property name="text">
@@ -71,15 +78,37 @@
         </property>
        </widget>
       </item>
-      <item row="1" column="0">
-       <widget class="QCheckBox" name="checkBoxIgnorErrors">
-        <property name="toolTip">
-         <string>If checked all errors will be ignored and the finish button will be enabled</string>
-        </property>
+     </layout>
+    </widget>
+   </item>
+   <item row="4" column="0" colspan="2">
+    <widget class="QTextEdit" name="textEdit"/>
+   </item>
+   <item row="3" column="0" colspan="2">
+    <widget class="QGroupBox" name="groupBox_2">
+     <property name="title">
+      <string>Details</string>
+     </property>
+     <layout class="QGridLayout" name="gridLayout_3">
+      <item row="0" column="0">
+       <widget class="QCheckBox" name="checkBoxSpaceIntersectionDetails">
         <property name="text">
-         <string>Ignore convert errors</string>
+         <string>More space intersection details</string>
         </property>
        </widget>
+      </item>
+      <item row="0" column="1">
+       <spacer name="horizontalSpacer_2">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>389</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
       </item>
      </layout>
     </widget>
