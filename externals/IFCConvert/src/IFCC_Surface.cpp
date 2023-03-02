@@ -8,8 +8,8 @@
 #include <IBK_assert.h>
 
 #include <Carve/src/include/carve/carve.hpp>
-#include <ifcpp/geometry/MeshUtils.h>
 
+#include "IFCC_MeshUtils.h"
 #include "IFCC_Clippertools.h"
 #include "IFCC_Helper.h"
 

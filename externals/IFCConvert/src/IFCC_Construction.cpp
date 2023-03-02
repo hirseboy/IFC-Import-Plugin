@@ -1,7 +1,8 @@
 #include "IFCC_Construction.h"
 
 #include <Carve/src/include/carve/carve.hpp>
-#include <ifcpp/geometry/MeshUtils.h>
+
+#include "IFCC_MeshUtils.h"
 
 namespace IFCC {
 

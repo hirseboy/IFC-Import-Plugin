@@ -2,13 +2,11 @@
 #define IFCC_BuildingH
 
 #include <ifcpp/IFC4X3/include/IfcSpatialStructureElement.h>
-#include <ifcpp/geometry/GeometryInputData.h>
 #include <ifcpp/IFC4X3/include/IfcBuildingStorey.h>
 
 #include <tinyxml.h>
 
-//#include <VICUS_Building.h>
-
+#include "IFCC_GeometryInputData.h"
 #include "IFCC_EntityBase.h"
 #include "IFCC_BuildingStorey.h"
 #include "IFCC_BuildingElementsCollector.h"

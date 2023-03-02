@@ -5,8 +5,8 @@
 #include <ifcpp/IFC4X3/include/IfcGloballyUniqueId.h>
 
 #include <Carve/src/include/carve/carve.hpp>
-#include <ifcpp/geometry/MeshUtils.h>
 
+#include "IFCC_MeshUtils.h"
 #include "IFCC_Helper.h"
 
 namespace IFCC {

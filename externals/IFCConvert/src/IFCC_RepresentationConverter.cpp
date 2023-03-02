@@ -63,11 +63,12 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OU
 #include <ifcpp/IFC4X3/include/IfcCartesianPoint.h>
 
 #include <ifcpp/geometry/IncludeCarveHeaders.h>
-#include <ifcpp/geometry/GeometryInputData.h>
-#include <ifcpp/geometry/Sweeper.h>
 
+#include "IFCC_Sweeper.h"
+#include "IFCC_GeometryInputData.h"
 #include "IFCC_SplineConverter.h"
 #include "IFCC_PointConverter.h"
+#include "IFCC_MeshUtils.h"
 
 namespace IFCC {
 

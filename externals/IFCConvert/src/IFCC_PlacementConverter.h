@@ -28,8 +28,9 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OU
 #include <ifcpp/IFC4X3/include/IfcCartesianTransformationOperator.h>
 
 #include <ifcpp/geometry/GeomUtils.h>
-#include <ifcpp/geometry/GeometryInputData.h>
 #include <ifcpp/geometry/IncludeCarveHeaders.h>
+
+#include "IFCC_GeometryInputData.h"
 
 namespace IFCC {
 

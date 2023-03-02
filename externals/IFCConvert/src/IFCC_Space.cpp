@@ -10,8 +10,8 @@
 #include <IBKMK_3DCalculations.h>
 
 #include <Carve/src/include/carve/carve.hpp>
-#include <ifcpp/geometry/MeshUtils.h>
 
+#include "IFCC_MeshUtils.h"
 #include "IFCC_Helper.h"
 
 namespace IFCC {

@@ -20,7 +20,6 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OU
 #include "IFCC_CurveConverter.h"
 
 #include <Carve/src/include/carve/carve.hpp>
-#include <ifcpp/geometry/MeshUtils.h>
 
 #include <ifcpp/geometry/GeometryException.h>
 
@@ -51,6 +50,8 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OU
 #include <ifcpp/IFC4X3/include/IfcVector.h>
 #include <ifcpp/IFC4X3/include/IfcParameterValue.h>
 #include <ifcpp/IFC4X3/include/IfcReal.h>
+
+#include "IFCC_MeshUtils.h"
 
 namespace IFCC {
 

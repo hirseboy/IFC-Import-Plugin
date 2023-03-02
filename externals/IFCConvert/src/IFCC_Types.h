@@ -8,7 +8,7 @@
 
 #include <carve/mesh.hpp>
 
-#include <ifcpp/geometry/GeometryInputData.h>
+#include "IFCC_GeometryInputData.h"
 
 
 namespace IFCC {

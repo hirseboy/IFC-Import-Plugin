@@ -37,11 +37,13 @@
 #include <ifcpp/IFC4X3/include/IfcSpatialZone.h>
 
 #include <Carve/src/include/carve/carve.hpp>
-#include <ifcpp/geometry/MeshUtils.h>
 
 #include <IBK_Exception.h>
 
 #include <tinyxml.h>
+
+#include "IFCC_MeshUtils.h"
+#include "IFCC_Logger.h"
 
 namespace IFCC {
 
@@ -60,6 +62,8 @@ IFCReader::IFCReader() :
 	m_geometryConverter.resetModel();
 	m_geometryConverter.getGeomSettings()->setNumVerticesPerCircle(16);
 	m_geometryConverter.getGeomSettings()->setMinNumVerticesPerArc(4);
+
+	Logger::instance().set("g:/temp/IFC_Log.txt");
 }
 
 void IFCReader::clear() {
@@ -265,6 +269,64 @@ void IFCReader::splitShapeData() {
 	}
 }
 
+void IFCReader::updateBuildingElements() {
+	Logger::instance() << "IFCReader::updateBuildingElements start";
+
+	m_buildingElements.clear();
+	for(auto& elems : m_elementEntitesShape) {
+		for(auto& elem : elems.second) {
+			std::shared_ptr<IfcElement> e = dynamic_pointer_cast<IfcElement>(elem->m_ifc_object_definition.lock());
+			if(e == nullptr)
+				continue;
+
+			std::shared_ptr<BuildingElement> bElem(new BuildingElement(GUID_maker::instance().guid()));
+			if(!bElem->set(e, elems.first))
+				continue;
+
+			if(isConstructionType(elems.first)) {
+				m_buildingElements.m_constructionElements.push_back( bElem);
+				BuildingElement& currbElem = *m_buildingElements.m_constructionElements.back();
+
+				Logger::instance() << "update constr " << currbElem.m_name;
+
+				currbElem.update(elem, m_openings, m_convertErrors);
+				if(currbElem.surfaces().empty())
+					m_buildingElements.m_elementsWithoutSurfaces.push_back(m_buildingElements.m_constructionElements.back());
+			}
+			else if(isConstructionSimilarType(elems.first)) {
+				m_buildingElements.m_constructionSimilarElements.push_back(bElem);
+				BuildingElement& currbElem = *m_buildingElements.m_constructionSimilarElements.back();
+
+				Logger::instance() << "update similar " << currbElem.m_name;
+
+				currbElem.update(elem, m_openings, m_convertErrors);
+				if(currbElem.surfaces().empty())
+					m_buildingElements.m_elementsWithoutSurfaces.push_back(m_buildingElements.m_constructionSimilarElements.back());
+			}
+			else if(isOpeningType(elems.first)) {
+				m_buildingElements.m_openingElements.push_back(bElem);
+				BuildingElement& currbElem = *m_buildingElements.m_openingElements.back();
+
+				Logger::instance() << "update opening " << currbElem.m_name;
+
+				currbElem.update(elem, m_openings, m_convertErrors);
+				if(currbElem.surfaces().empty())
+					m_buildingElements.m_elementsWithoutSurfaces.push_back(m_buildingElements.m_openingElements.back());
+			}
+			else {
+				m_buildingElements.m_otherElements.push_back(bElem);
+				BuildingElement& currbElem = *m_buildingElements.m_otherElements.back();
+
+				Logger::instance() << "update other " << currbElem.m_name;
+
+				currbElem.update(elem, m_openings, m_convertErrors);
+				//						if(m_buildingElements.m_otherElements.back()->surfaces().empty())
+				//							m_buildingElements.m_elementsWithoutSurfaces.push_back(m_buildingElements.m_otherElements.back());
+			}
+		}
+	}
+}
+
 bool IFCReader::convert(bool useSpaceBoundaries) {
 
 	if(!m_readCompletedSuccessfully) {
@@ -300,43 +362,26 @@ bool IFCReader::convert(bool useSpaceBoundaries) {
 			}
 		}
 
-		m_buildingElements.clear();
-		for(auto& elems : m_elementEntitesShape) {
-			for(auto& elem : elems.second) {
-				std::shared_ptr<IfcElement> e = dynamic_pointer_cast<IfcElement>(elem->m_ifc_object_definition.lock());
-				if(e == nullptr)
-					continue;
+		try {
+			updateBuildingElements();
+		}
+		catch (std::exception& e) {
+			ConvertError err;
+			err.m_objectType = OT_Unknown;
+			err.m_errorText = "Exception: '" + std::string(e.what()) + "' while converting ifc file.";
+			m_convertErrors.push_back(err);
+			m_hasError = true;
 
-				std::shared_ptr<BuildingElement> bElem(new BuildingElement(GUID_maker::instance().guid()));
-				if(bElem->set(e, elems.first)) {
-					if(isConstructionType(elems.first)) {
-						m_buildingElements.m_constructionElements.push_back( bElem);
-						m_buildingElements.m_constructionElements.back()->update(elem, m_openings, m_convertErrors);
-						if(m_buildingElements.m_constructionElements.back()->surfaces().empty())
-							m_buildingElements.m_elementsWithoutSurfaces.push_back(m_buildingElements.m_constructionElements.back());
-					}
-					else if(isConstructionSimilarType(elems.first)) {
-						m_buildingElements.m_constructionSimilarElements.push_back(bElem);
-						m_buildingElements.m_constructionSimilarElements.back()->update(elem, m_openings, m_convertErrors);
-						if(m_buildingElements.m_constructionSimilarElements.back()->surfaces().empty())
-							m_buildingElements.m_elementsWithoutSurfaces.push_back(m_buildingElements.m_constructionSimilarElements.back());
-					}
-					else if(isOpeningType(elems.first)) {
-						m_buildingElements.m_openingElements.push_back(bElem);
-						m_buildingElements.m_openingElements.back()->update(elem, m_openings, m_convertErrors);
-						if(m_buildingElements.m_openingElements.back()->surfaces().empty())
-							m_buildingElements.m_elementsWithoutSurfaces.push_back(m_buildingElements.m_openingElements.back());
-					}
-					else {
-						m_buildingElements.m_otherElements.push_back(bElem);
-						m_buildingElements.m_otherElements.back()->update(elem, m_openings, m_convertErrors);
-//						if(m_buildingElements.m_otherElements.back()->surfaces().empty())
-//							m_buildingElements.m_elementsWithoutSurfaces.push_back(m_buildingElements.m_otherElements.back());
-					}
-				}
-				else
-					continue;
-			}
+			return false;
+		}
+		catch (...) {
+			ConvertError err;
+			err.m_objectType = OT_Unknown;
+			err.m_errorText = "Unknown exception: while converting ifc file.";
+			m_convertErrors.push_back(err);
+			m_hasError = true;
+
+			return false;
 		}
 
 		for(std::shared_ptr<BuildingElement>& openingElement : m_buildingElements.m_openingElements) {

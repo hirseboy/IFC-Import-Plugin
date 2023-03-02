@@ -43,10 +43,11 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OU
 #include <ifcpp/IFC4X3/include/IfcVirtualGridIntersection.h>
 
 #include <ifcpp/geometry/GeomUtils.h>
-#include <ifcpp/geometry/GeometryInputData.h>
 #include <ifcpp/geometry/IncludeCarveHeaders.h>
 #include <Carve/src/include/carve/carve.hpp>
-#include <ifcpp/geometry/MeshUtils.h>
+
+#include "IFCC_GeometryInputData.h"
+#include "IFCC_MeshUtils.h"
 
 namespace IFCC {
 

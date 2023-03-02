@@ -1,15 +1,15 @@
 #include "IFCC_Opening.h"
 
 #include <ifcpp/IFC4X3/include/IfcGloballyUniqueId.h>
-#include <ifcpp/geometry/GeometryInputData.h>
 
 #include <IBKMK_Vector3D.h>
 
 #include <carve/mesh.hpp>
 #include <carve/matrix.hpp>
 #include <Carve/src/include/carve/carve.hpp>
-#include <ifcpp/geometry/MeshUtils.h>
 
+#include "IFCC_GeometryInputData.h"
+#include "IFCC_MeshUtils.h"
 #include "IFCC_Helper.h"
 
 namespace IFCC {

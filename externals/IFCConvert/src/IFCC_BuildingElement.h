@@ -13,8 +13,8 @@
 #include <ifcpp/IFC4X3/include/IfcWindowTypePartitioningEnum.h>
 #include <ifcpp/IFC4X3/include/IfcWallTypeEnum.h>
 #include <ifcpp/IFC4X3/include/IfcWallType.h>
-#include <ifcpp/geometry/GeometryInputData.h>
 
+#include "IFCC_GeometryInputData.h"
 #include "IFCC_Types.h"
 #include "IFCC_Surface.h"
 #include "IFCC_Opening.h"

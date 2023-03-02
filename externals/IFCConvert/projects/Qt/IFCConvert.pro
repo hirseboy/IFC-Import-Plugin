@@ -25,9 +25,9 @@ INCLUDEPATH += \
 				../../../ifcplusplus/src/IfcPlusPlus/src/ifcpp/IFC4X3/include \
 				../../../ifcplusplus/src/IfcPlusPlus/src/ifcpp/reader \
 				../../../clipper/src \
-				../../../../externals/IBK/src \
-				../../../../externals/IBKMK/src \
-				../../../../externals/TiCPP/src \
+				../../../IBK/src \
+				../../../IBKMK/src \
+				../../../TiCPP/src \
 				../../../ifcplusplus/src/IfcPlusPlus/src/external/Carve/src/include \
 				../../../ifcplusplus/src/IfcPlusPlus/src/external \
 				../../../ifcplusplus/src/IfcPlusPlus/src/external/glm \
@@ -48,10 +48,12 @@ SOURCES +=  \
 	../../src/IFCC_EntityBase.cpp \
 	../../src/IFCC_FaceConverter.cpp \
 	../../src/IFCC_GeometricHelperClasses.cpp \
+	../../src/IFCC_GeometryInputData.cpp \
 	../../src/IFCC_Helper.cpp \
 	../../src/IFCC_IFCReader.cpp \
 	../../src/IFCC_Instances.cpp \
 	../../src/IFCC_Material.cpp \
+	../../src/IFCC_MeshUtils.cpp \
 	../../src/IFCC_Opening.cpp \
 	../../src/IFCC_PointConverter.cpp \
 	../../src/IFCC_ProfileCache.cpp \
@@ -68,6 +70,7 @@ SOURCES +=  \
 	../../src/IFCC_PlacementConverter.cpp \
 	../../src/IFCC_RepresentationConverter.cpp \
 	../../src/IFCC_SolidModelConverter.cpp \
+	../../src/IFCC_Sweeper.cpp \
 	../../src/IFCC_TessellatedItemConverter.cpp \
 	../../src/IFCC_Window.cpp \
 	../../src/IFCC_WindowGlazing.cpp
@@ -88,11 +91,13 @@ HEADERS +=  \
 	../../src/IFCC_EntityBase.h \
 	../../src/IFCC_FaceConverter.h \
 	../../src/IFCC_GeometricHelperClasses.h \
+	../../src/IFCC_GeometryInputData.h \
 	../../src/IFCC_Helper.h \
 	../../src/IFCC_IFCReader.h \
 	../../src/IFCC_Instances.h \
 	../../src/IFCC_Logger.h \
 	../../src/IFCC_Material.h \
+	../../src/IFCC_MeshUtils.h \
 	../../src/IFCC_Opening.h \
 	../../src/IFCC_PointConverter.h \
 	../../src/IFCC_ProfileCache.h \
@@ -105,6 +110,7 @@ HEADERS +=  \
 	../../src/IFCC_SubSurface.h \
 	../../src/IFCC_SubSurfaceComponent.h \
 	../../src/IFCC_Surface.h \
+	../../src/IFCC_Sweeper.h \
 	../../src/IFCC_TessellatedItemConverter.h \
 	../../src/IFCC_Types.h \
 	../../src/IFCC_GeometryConverter.h \

@@ -28,8 +28,7 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OU
 #include <ifcpp/IFC4X3/include/IfcCartesianPoint.h>
 #include <ifcpp/IFC4X3/EntityFactory.h>
 
-#include <ifcpp/geometry/Sweeper.h>
-
+#include "IFCC_Sweeper.h"
 #include "IFCC_SplineConverter.h"
 #include "IFCC_CurveConverter.h"
 

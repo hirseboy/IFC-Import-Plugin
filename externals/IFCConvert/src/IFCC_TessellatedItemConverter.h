@@ -30,7 +30,7 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #include <ifcpp/IFC4X3/include/IfcPolygonalFaceSet.h>
 #include <ifcpp/IFC4X3/include/IfcTriangulatedFaceSet.h>
 
-#include <ifcpp/geometry/GeometryInputData.h>
+#include "IFCC_GeometryInputData.h"
 
 
 namespace IFCC {

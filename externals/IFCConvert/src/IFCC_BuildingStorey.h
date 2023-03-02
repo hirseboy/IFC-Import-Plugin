@@ -3,12 +3,10 @@
 
 #include <ifcpp/IFC4X3/include/IfcSpatialStructureElement.h>
 #include <ifcpp/IFC4X3/include/IfcSpace.h>
-#include <ifcpp/geometry/GeometryInputData.h>
 
 #include <tinyxml.h>
 
-//#include <VICUS_BuildingLevel.h>
-
+#include "IFCC_GeometryInputData.h"
 #include "IFCC_EntityBase.h"
 #include "IFCC_Space.h"
 #include "IFCC_Types.h"

@@ -140,6 +140,8 @@ public:
 
 private:
 
+	void updateBuildingElements();
+
 	IBK::Path						m_filename;				///< IFC file
 	std::shared_ptr<BuildingModel>	m_model;				///< IFC model created from file
 	RepairFlags						m_repairFlags;			///< Contains all flags and parameter for IFC repair

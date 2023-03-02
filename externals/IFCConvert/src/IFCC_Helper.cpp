@@ -50,11 +50,11 @@
 #include <carve/mesh_simplify.hpp>
 
 #include <Carve/src/include/carve/carve.hpp>
-#include <ifcpp/geometry/MeshUtils.h>
 
 #include <IBK_math.h>
 #include <IBK_assert.h>
 
+#include "IFCC_MeshUtils.h"
 #include "IFCC_Surface.h"
 #include "IFCC_RepresentationConverter.h"
 

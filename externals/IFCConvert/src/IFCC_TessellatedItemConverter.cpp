@@ -29,7 +29,8 @@ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 //#include <ifcpp/IFC4X3/include/IfcTessellatedFaceSet.h>
 
 #include <Carve/src/include/carve/carve.hpp>
-#include <ifcpp/geometry/MeshUtils.h>
+
+#include "IFCC_MeshUtils.h"
 
 ///@brief imports tessellated meshes as carve meshes
 //Open tasks & TODOS:

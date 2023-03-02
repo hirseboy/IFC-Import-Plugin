@@ -29,8 +29,8 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OU
 #include <ifcpp/IFC4X3/include/IfcRationalBSplineSurfaceWithKnots.h>
 
 #include <Carve/src/include/carve/carve.hpp>
-#include <ifcpp/geometry/MeshUtils.h>
 
+#include "IFCC_MeshUtils.h"
 #include "IFCC_FaceConverter.h"
 
 namespace IFCC {
