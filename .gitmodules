@@ -1,12 +1,12 @@
 [submodule "externals/TiCPP"]
 	path = externals/TiCPP
-	url = 141.30.43.38:/srv/git/TiCPP.git
+	url = https://github.com/ghorwin/SIM-VICUS/externals/TiCPP
 [submodule "externals/IBK"]
 	path = externals/IBK
-	url = 141.30.43.38:/srv/git/IBK.git
+	url = https://github.com/ghorwin/SIM-VICUS/externals/IBK
 [submodule "externals/IBKMK"]
 	path = externals/IBKMK
-	url = 141.30.43.38:/srv/git/IBKMK.git
+	url = https://github.com/ghorwin/SIM-VICUS/externals/IBKMK
 [submodule "externals/QtExt"]
 	path = externals/QtExt
-	url = 141.30.43.38:/srv/git/QtExt.git
+	url = https://github.com/ghorwin/SIM-VICUS/externals/QtExt
