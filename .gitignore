@@ -37,9 +37,12 @@ Makefile.*
 *.idx
 ui_*.h
 moc_*.h
+moc_*.cpp
+.qmake.stash
+Makefile
+lib_x64
 
 # SIM-VICUS
 /SIM-VICUS/*
 /SIM-VICUS/!externals/
-moc_*.cpp
-/IfcDebug/projects/Qt/.qmake.stash
+
