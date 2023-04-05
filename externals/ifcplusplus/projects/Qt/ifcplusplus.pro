@@ -7,7 +7,7 @@ CONFIG -= qt
 TARGET = ifcplusplus
 TEMPLATE = lib
 
-CONFIG += c++11
+CONFIG += c++17
 
 # this pri must be sourced from all our libraries,
 # it contains all functions defined for casual libraries
@@ -28,17 +28,16 @@ win32-msvc* {
 #DEFINES += IFCQUERY_STATIC_LIB
 DEFINES += IFCQUERY_LIB
 
-INCLUDEPATH += ../../src/IfcPlusPlus/src \
-				../../src/IfcPlusPlus/src/ifcpp/IFC4X3/include \
-				../../src/IfcPlusPlus/src/external/Carve/src/include \
-				../../src/external \
-				../../src/IfcPlusPlus/src/external \
-				../../src/IfcPlusPlus/src/external/Carve/src/commonS
+INCLUDEPATH +=  ../../src/IfcPlusPlus/src \
+                ../../src/IfcPlusPlus/src/ifcpp/IFC4X3/include \
+                ../../src/IfcPlusPlus/src/external/Carve/src/include \
+                ../../src/external \
+                ../../src/IfcPlusPlus/src/external \
+                ../../src/IfcPlusPlus/src/external/Carve/src/commonS
 
 SOURCES += \
 	../../src/IfcPlusPlus/src/ifcpp/IFC4X3/EntityFactory.cpp \
-	../../src/IfcPlusPlus/src/ifcpp/IFC4X3/TypeFactory.cpp \
-	../../src/IfcPlusPlus/src/external/XUnzip.cpp \
+        ../../src/IfcPlusPlus/src/ifcpp/IFC4X3/TypeFactory.cpp \
 	../../src/IfcPlusPlus/src/ifcpp/IFC4X3/lib/IfcAbsorbedDoseMeasure.cpp \
 	../../src/IfcPlusPlus/src/ifcpp/IFC4X3/lib/IfcAccelerationMeasure.cpp \
 	../../src/IfcPlusPlus/src/ifcpp/IFC4X3/lib/IfcActionRequest.cpp \
@@ -1253,8 +1252,7 @@ SOURCES += \
 
 HEADERS += \
 	../../src/IfcPlusPlus/src/ifcpp/IFC4X3/EntityFactory.h \
-	../../src/IfcPlusPlus/src/ifcpp/IFC4X3/TypeFactory.h \
-	../../src/IfcPlusPlus/src/ifcpp/IFC4X3/XUnzip.h \
+        ../../src/IfcPlusPlus/src/ifcpp/IFC4X3/TypeFactory.h \
 	../../src/IfcPlusPlus/src/ifcpp/IFC4X3/include/IfcAbsorbedDoseMeasure.h \
 	../../src/IfcPlusPlus/src/ifcpp/IFC4X3/include/IfcAccelerationMeasure.h \
 	../../src/IfcPlusPlus/src/ifcpp/IFC4X3/include/IfcActionRequest.h \

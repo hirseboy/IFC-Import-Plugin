@@ -6,7 +6,7 @@
 TARGET = IFCConvert
 TEMPLATE = lib
 
-CONFIG += c++11
+CONFIG += c++17
 
 # this pri must be sourced from all our libraries,
 # it contains all functions defined for casual libraries
@@ -20,19 +20,19 @@ QT       += core gui
 #
 
 INCLUDEPATH += \
-				../../src \
-				../../../ifcplusplus/src/IfcPlusPlus/src \
-				../../../ifcplusplus/src/IfcPlusPlus/src/ifcpp/IFC4X3/include \
-				../../../ifcplusplus/src/IfcPlusPlus/src/ifcpp/reader \
-				../../../clipper/src \
-				../../../IBK/src \
-				../../../IBKMK/src \
-				../../../TiCPP/src \
-				../../../ifcplusplus/src/IfcPlusPlus/src/external/Carve/src/include \
-				../../../ifcplusplus/src/IfcPlusPlus/src/external \
-				../../../ifcplusplus/src/IfcPlusPlus/src/external/glm \
-				../../../ifcplusplus/src/IfcPlusPlus/src/external/manifold/src/utilities/include \
-				../../../ifcplusplus/src/IfcPlusPlus/src/external/Carve/src/common
+        ../../src \
+        ../../../ifcplusplus/src/IfcPlusPlus/src \
+        ../../../ifcplusplus/src/IfcPlusPlus/src/ifcpp/IFC4X3/include \
+        ../../../ifcplusplus/src/IfcPlusPlus/src/ifcpp/reader \
+        ../../../clipper/src \
+        ../../../IBK/src \
+        ../../../IBKMK/src \
+        ../../../TiCPP/src \
+        ../../../ifcplusplus/src/IfcPlusPlus/src/external/Carve/src/include \
+        ../../../ifcplusplus/src/IfcPlusPlus/src/external \
+        ../../../ifcplusplus/src/IfcPlusPlus/src/external/glm \
+        ../../../ifcplusplus/src/IfcPlusPlus/src/external/manifold/src/utilities/include \
+        ../../../ifcplusplus/src/IfcPlusPlus/src/external/Carve/src/common
 
 SOURCES +=  \
 	../../src/IFCC_Building.cpp \

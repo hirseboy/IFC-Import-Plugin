@@ -3,7 +3,7 @@
 # ---------------------------
 TARGET = Clipper
 TEMPLATE = lib
-CONFIG += staticlib
+#CONFIG += staticlib
 
 CONFIG += c++11
 
