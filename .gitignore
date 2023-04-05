@@ -41,3 +41,5 @@ moc_*.h
 # SIM-VICUS
 /SIM-VICUS/*
 /SIM-VICUS/!externals/
+moc_*.cpp
+/IfcDebug/projects/Qt/.qmake.stash
