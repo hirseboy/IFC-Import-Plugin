@@ -31,8 +31,13 @@
 *.out
 *.app
 *.pro.user
+
+# Misc
 Makefile.*
 *.idx
 ui_*.h
 moc_*.h
 
+# SIM-VICUS
+/SIM-VICUS/*
+/SIM-VICUS/!externals/
