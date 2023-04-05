@@ -81,7 +81,7 @@ QMAKE_LIBDIR += ../../../../externals/lib$${DIR_PREFIX}
 LIBS += -L../../../../externals/lib$${DIR_PREFIX}
 
 LIBS += \
-        -lClipper \
+        -lclipper \
         -lifcplusplus \
 	-lIFCConvert \
 	-lCarve \

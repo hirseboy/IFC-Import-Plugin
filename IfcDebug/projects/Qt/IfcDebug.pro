@@ -58,7 +58,7 @@ LIBS += \
     -lCarve \
     -lImportIFCPlugin \
     -lIFCConvert \
-    -lClipper \
+    -lclipper \
     -lifcplusplus \
     -lQtExt \
     -lTiCPP \
@@ -87,12 +87,15 @@ INCLUDEPATH = \
 DEPENDPATH = $${INCLUDEPATH}
 
 SOURCES += \
+	../../src/IfcDebug_MainWidget.cpp \
 	../../src/main.cpp
 
 HEADERS += \
+    ../../src/IfcDebug_MainWidget.h
 
 
 FORMS += \
+    ../../src/IfcDebug_MainWidget.ui
 
 
 TRANSLATIONS += ../../resources/translations/IfcDebug_de.ts
