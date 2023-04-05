@@ -6,15 +6,15 @@ TEMPLATE=subdirs
 
 # SUBDIRS lists all subprojects
 SUBDIRS += ImportIFCPlugin \
-	IFCConvert \
-        IFCDebug \
+IFCConvert \
+IFCDebug \
 	IFC2BESTest \
 	Carve \
-        Clipper \
+	Clipper \
 	QtExt \
 	IBK \
-        IBKMK \
-        ifcplusplus \
+    IBKMK \
+    ifcplusplus \
 	TiCPP
 
 # where to find the sub projects

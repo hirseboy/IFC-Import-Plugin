@@ -3,12 +3,12 @@
 goto check_permissions
 
 :create_symlinks
-	set lib_list=IBK lib_x64 QuaZIP QtExt IBKMK sundials SuiteSparse
+	set lib_list=IBK lib_x64 QtExt IBKMK clipper TiCPP
 
 	(for %%a in (%lib_list%) do (
 	   echo -----------------------------
-	   IF NOT EXIST "%~dp0..\submodules\SIM-VICUS\externals\%%a" (
-		echo Verzeichnis '..\submodules\SIM-VICUS\externals\%%a' existiert nicht. Bitte submodules in git-repository prÅfen.
+	   IF NOT EXIST "%~dp0..\SIM-VICUS\externals\%%a" (
+		echo Verzeichnis '..\SIM-VICUS\externals\%%a' existiert nicht. Bitte submodules in git-repository prÅfen.
 		pause
 		exit /b 1
 	   ) 
@@ -17,7 +17,7 @@ goto check_permissions
 			rmdir %~dp0\%%a	
 	   )
 	   echo Erzeuge Symlink fÅr Bibliothek '%%a'
-	   mklink /d %~dp0\%%a %~dp0..\submodules\SIM-VICUS\externals\%%a
+	   mklink /d %~dp0\%%a %~dp0..\SIM-VICUS\externals\%%a
 	))
 
 pause
