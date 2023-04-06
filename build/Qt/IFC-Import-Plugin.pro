@@ -7,19 +7,19 @@ TEMPLATE=subdirs
 # SUBDIRS lists all subprojects
 SUBDIRS += ImportIFCPlugin \
 IFCConvert \
-IFCDebug \
-	IFC2BESTest \
+#IFCDebug \
+IFC2BESTest \
 	Carve \
 	Clipper \
 	QtExt \
 	IBK \
-    IBKMK \
-    ifcplusplus \
+	IBKMK \
+	ifcplusplus \
 	TiCPP
 
 # where to find the sub projects
 IFC2BESTest.file = ../../IFC2BESTest/projects/Qt/IFC2BESTest.pro
-IFCDebug.file = ../../IfcDebug/projects/Qt/IfcDebug.pro
+#IFCDebug.file = ../../IfcDebug/projects/Qt/IfcDebug.pro
 
 ImportIFCPlugin.file = ../../externals/IFCImportPlugin/projects/Qt/ImportIFCPlugin.pro
 IFCConvert.file = ../../externals/IFCConvert/projects/Qt/IFCConvert.pro
@@ -33,7 +33,7 @@ ifcplusplus.file = ../../externals/ifcplusplus/projects/Qt/ifcplusplus.pro
 
 # dependencies
 IFC2BESTest.depends = ImportIFCPlugin IBK IBKMK TiCPP
-IFCDebug.depends = ImportIFCPlugin IBK IBKMK TiCPP
+#IFCDebug.depends = ImportIFCPlugin IBK IBKMK TiCPP
 
 QtExt.depends = IBK
 ImportIFCPlugin.depends = IBK IBKMK TiCPP QtExt Carve Clipper IFCConvert

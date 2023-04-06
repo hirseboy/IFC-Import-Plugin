@@ -21,24 +21,29 @@ CONFIG += shared
 #
 
 win32-msvc* {
-	QMAKE_CXXFLAGS += /bigobj
-	QMAKE_CFLAGS += /bigobj
+QMAKE_CXXFLAGS += /bigobj
+QMAKE_CFLAGS += /bigobj
 }
 
 #DEFINES += IFCQUERY_STATIC_LIB
 DEFINES += IFCQUERY_LIB
 
 INCLUDEPATH +=  ../../src/IfcPlusPlus/src \
-                ../../src/IfcPlusPlus/src/ifcpp/IFC4X3/include \
-                ../../src/IfcPlusPlus/src/external/Carve/src/include \
-                ../../src/external \
-                ../../src/IfcPlusPlus/src/external \
-                ../../src/IfcPlusPlus/src/external/Carve/src/commonS
+../../src/IfcPlusPlus/src/ifcpp/IFC4X3/include \
+../../src/IfcPlusPlus/src/external/Carve/src/include \
+../../src/external \
+				../../src/IfcPlusPlus/src/external \
+				../../src/IfcPlusPlus/src/external/Carve/src/commonS
+
+win32-msvc* {
+SOURCES += ../../src/IfcPlusPlus/src/external/XUnzip.cpp
+	HEADERS += ../../src/IfcPlusPlus/src/external/XUnzip.h
+}
 
 SOURCES += \
-	../../src/IfcPlusPlus/src/ifcpp/IFC4X3/EntityFactory.cpp \
-        ../../src/IfcPlusPlus/src/ifcpp/IFC4X3/TypeFactory.cpp \
-	../../src/IfcPlusPlus/src/ifcpp/IFC4X3/lib/IfcAbsorbedDoseMeasure.cpp \
+../../src/IfcPlusPlus/src/ifcpp/IFC4X3/EntityFactory.cpp \
+../../src/IfcPlusPlus/src/ifcpp/IFC4X3/TypeFactory.cpp \
+../../src/IfcPlusPlus/src/ifcpp/IFC4X3/lib/IfcAbsorbedDoseMeasure.cpp \
 	../../src/IfcPlusPlus/src/ifcpp/IFC4X3/lib/IfcAccelerationMeasure.cpp \
 	../../src/IfcPlusPlus/src/ifcpp/IFC4X3/lib/IfcActionRequest.cpp \
 	../../src/IfcPlusPlus/src/ifcpp/IFC4X3/lib/IfcActionRequestTypeEnum.cpp \
@@ -74,12 +79,12 @@ SOURCES += \
 #	../../src/IfcPlusPlus/src/ifcpp/IFC4X3/lib/IfcAlignmentVerSegCircularArc.cpp \
 #	../../src/IfcPlusPlus/src/ifcpp/IFC4X3/lib/IfcAlignmentVerSegLine.cpp \
 #	../../src/IfcPlusPlus/src/ifcpp/IFC4X3/lib/IfcAlignmentVerSegParabolicArc.cpp \
-	../../src/IfcPlusPlus/src/ifcpp/IFC4X3/lib/IfcAlignmentVertical.cpp \
-	../../src/IfcPlusPlus/src/ifcpp/IFC4X3/lib/IfcAlignmentVerticalSegment.cpp \
+../../src/IfcPlusPlus/src/ifcpp/IFC4X3/lib/IfcAlignmentVertical.cpp \
+../../src/IfcPlusPlus/src/ifcpp/IFC4X3/lib/IfcAlignmentVerticalSegment.cpp \
 #	../../src/IfcPlusPlus/src/ifcpp/IFC4X3/lib/IfcAlignmentCurve.cpp \
-	../../src/IfcPlusPlus/src/ifcpp/IFC4X3/lib/IfcAlignmentTypeEnum.cpp \
-	../../src/IfcPlusPlus/src/ifcpp/IFC4X3/lib/IfcAmountOfSubstanceMeasure.cpp \
-	../../src/IfcPlusPlus/src/ifcpp/IFC4X3/lib/IfcAnalysisModelTypeEnum.cpp \
+../../src/IfcPlusPlus/src/ifcpp/IFC4X3/lib/IfcAlignmentTypeEnum.cpp \
+../../src/IfcPlusPlus/src/ifcpp/IFC4X3/lib/IfcAmountOfSubstanceMeasure.cpp \
+../../src/IfcPlusPlus/src/ifcpp/IFC4X3/lib/IfcAnalysisModelTypeEnum.cpp \
 	../../src/IfcPlusPlus/src/ifcpp/IFC4X3/lib/IfcAnalysisTheoryTypeEnum.cpp \
 	../../src/IfcPlusPlus/src/ifcpp/IFC4X3/lib/IfcAngularVelocityMeasure.cpp \
 	../../src/IfcPlusPlus/src/ifcpp/IFC4X3/lib/IfcAnnotation.cpp \
@@ -114,9 +119,9 @@ SOURCES += \
 	../../src/IfcPlusPlus/src/ifcpp/IFC4X3/lib/IfcBSplineSurfaceWithKnots.cpp \
 	../../src/IfcPlusPlus/src/ifcpp/IFC4X3/lib/IfcBeam.cpp \
 #	../../src/IfcPlusPlus/src/ifcpp/IFC4X3/lib/IfcBeamStandardCase.cpp \
-	../../src/IfcPlusPlus/src/ifcpp/IFC4X3/lib/IfcBeamType.cpp \
-	../../src/IfcPlusPlus/src/ifcpp/IFC4X3/lib/IfcBeamTypeEnum.cpp \
-	../../src/IfcPlusPlus/src/ifcpp/IFC4X3/lib/IfcBenchmarkEnum.cpp \
+../../src/IfcPlusPlus/src/ifcpp/IFC4X3/lib/IfcBeamType.cpp \
+../../src/IfcPlusPlus/src/ifcpp/IFC4X3/lib/IfcBeamTypeEnum.cpp \
+../../src/IfcPlusPlus/src/ifcpp/IFC4X3/lib/IfcBenchmarkEnum.cpp \
 	../../src/IfcPlusPlus/src/ifcpp/IFC4X3/lib/IfcBendingParameterSelect.cpp \
 	../../src/IfcPlusPlus/src/ifcpp/IFC4X3/lib/IfcBinary.cpp \
 	../../src/IfcPlusPlus/src/ifcpp/IFC4X3/lib/IfcBlobTexture.cpp \
@@ -190,9 +195,9 @@ SOURCES += \
 	../../src/IfcPlusPlus/src/ifcpp/IFC4X3/lib/IfcCircleHollowProfileDef.cpp \
 	../../src/IfcPlusPlus/src/ifcpp/IFC4X3/lib/IfcCircleProfileDef.cpp \
 #	../../src/IfcPlusPlus/src/ifcpp/IFC4X3/lib/IfcCircularArcSegment2D.cpp \
-	../../src/IfcPlusPlus/src/ifcpp/IFC4X3/lib/IfcCivilElement.cpp \
-	../../src/IfcPlusPlus/src/ifcpp/IFC4X3/lib/IfcCivilElementType.cpp \
-	../../src/IfcPlusPlus/src/ifcpp/IFC4X3/lib/IfcClassification.cpp \
+../../src/IfcPlusPlus/src/ifcpp/IFC4X3/lib/IfcCivilElement.cpp \
+../../src/IfcPlusPlus/src/ifcpp/IFC4X3/lib/IfcCivilElementType.cpp \
+../../src/IfcPlusPlus/src/ifcpp/IFC4X3/lib/IfcClassification.cpp \
 	../../src/IfcPlusPlus/src/ifcpp/IFC4X3/lib/IfcClassificationReference.cpp \
 	../../src/IfcPlusPlus/src/ifcpp/IFC4X3/lib/IfcClassificationReferenceSelect.cpp \
 	../../src/IfcPlusPlus/src/ifcpp/IFC4X3/lib/IfcClassificationSelect.cpp \
@@ -207,9 +212,9 @@ SOURCES += \
 	../../src/IfcPlusPlus/src/ifcpp/IFC4X3/lib/IfcColourSpecification.cpp \
 	../../src/IfcPlusPlus/src/ifcpp/IFC4X3/lib/IfcColumn.cpp \
 #	../../src/IfcPlusPlus/src/ifcpp/IFC4X3/lib/IfcColumnStandardCase.cpp \
-	../../src/IfcPlusPlus/src/ifcpp/IFC4X3/lib/IfcColumnType.cpp \
-	../../src/IfcPlusPlus/src/ifcpp/IFC4X3/lib/IfcColumnTypeEnum.cpp \
-	../../src/IfcPlusPlus/src/ifcpp/IFC4X3/lib/IfcCommunicationsAppliance.cpp \
+../../src/IfcPlusPlus/src/ifcpp/IFC4X3/lib/IfcColumnType.cpp \
+../../src/IfcPlusPlus/src/ifcpp/IFC4X3/lib/IfcColumnTypeEnum.cpp \
+../../src/IfcPlusPlus/src/ifcpp/IFC4X3/lib/IfcCommunicationsAppliance.cpp \
 	../../src/IfcPlusPlus/src/ifcpp/IFC4X3/lib/IfcCommunicationsApplianceType.cpp \
 	../../src/IfcPlusPlus/src/ifcpp/IFC4X3/lib/IfcCommunicationsApplianceTypeEnum.cpp \
 	../../src/IfcPlusPlus/src/ifcpp/IFC4X3/lib/IfcComplexNumber.cpp \
@@ -324,9 +329,9 @@ SOURCES += \
 	../../src/IfcPlusPlus/src/ifcpp/IFC4X3/lib/IfcDiscreteAccessoryType.cpp \
 	../../src/IfcPlusPlus/src/ifcpp/IFC4X3/lib/IfcDiscreteAccessoryTypeEnum.cpp \
 #	../../src/IfcPlusPlus/src/ifcpp/IFC4X3/lib/IfcDistanceExpression.cpp \
-	../../src/IfcPlusPlus/src/ifcpp/IFC4X3/lib/IfcDistributionChamberElement.cpp \
-	../../src/IfcPlusPlus/src/ifcpp/IFC4X3/lib/IfcDistributionChamberElementType.cpp \
-	../../src/IfcPlusPlus/src/ifcpp/IFC4X3/lib/IfcDistributionChamberElementTypeEnum.cpp \
+../../src/IfcPlusPlus/src/ifcpp/IFC4X3/lib/IfcDistributionChamberElement.cpp \
+../../src/IfcPlusPlus/src/ifcpp/IFC4X3/lib/IfcDistributionChamberElementType.cpp \
+../../src/IfcPlusPlus/src/ifcpp/IFC4X3/lib/IfcDistributionChamberElementTypeEnum.cpp \
 	../../src/IfcPlusPlus/src/ifcpp/IFC4X3/lib/IfcDistributionCircuit.cpp \
 	../../src/IfcPlusPlus/src/ifcpp/IFC4X3/lib/IfcDistributionControlElement.cpp \
 	../../src/IfcPlusPlus/src/ifcpp/IFC4X3/lib/IfcDistributionControlElementType.cpp \
@@ -350,9 +355,9 @@ SOURCES += \
 	../../src/IfcPlusPlus/src/ifcpp/IFC4X3/lib/IfcDoorPanelPositionEnum.cpp \
 	../../src/IfcPlusPlus/src/ifcpp/IFC4X3/lib/IfcDoorPanelProperties.cpp \
 #	../../src/IfcPlusPlus/src/ifcpp/IFC4X3/lib/IfcDoorStandardCase.cpp \
-	../../src/IfcPlusPlus/src/ifcpp/IFC4X3/lib/IfcDoorStyle.cpp \
-	../../src/IfcPlusPlus/src/ifcpp/IFC4X3/lib/IfcDoorStyleConstructionEnum.cpp \
-	../../src/IfcPlusPlus/src/ifcpp/IFC4X3/lib/IfcDoorStyleOperationEnum.cpp \
+../../src/IfcPlusPlus/src/ifcpp/IFC4X3/lib/IfcDoorStyle.cpp \
+../../src/IfcPlusPlus/src/ifcpp/IFC4X3/lib/IfcDoorStyleConstructionEnum.cpp \
+../../src/IfcPlusPlus/src/ifcpp/IFC4X3/lib/IfcDoorStyleOperationEnum.cpp \
 	../../src/IfcPlusPlus/src/ifcpp/IFC4X3/lib/IfcDoorType.cpp \
 	../../src/IfcPlusPlus/src/ifcpp/IFC4X3/lib/IfcDoorTypeEnum.cpp \
 	../../src/IfcPlusPlus/src/ifcpp/IFC4X3/lib/IfcDoorTypeOperationEnum.cpp \
@@ -590,9 +595,9 @@ SOURCES += \
 	../../src/IfcPlusPlus/src/ifcpp/IFC4X3/lib/IfcLine.cpp \
 	../../src/IfcPlusPlus/src/ifcpp/IFC4X3/lib/IfcLineIndex.cpp \
 #	../../src/IfcPlusPlus/src/ifcpp/IFC4X3/lib/IfcLineSegment2D.cpp \
-	../../src/IfcPlusPlus/src/ifcpp/IFC4X3/lib/IfcLinearForceMeasure.cpp \
-	../../src/IfcPlusPlus/src/ifcpp/IFC4X3/lib/IfcLinearMomentMeasure.cpp \
-	../../src/IfcPlusPlus/src/ifcpp/IFC4X3/lib/IfcLinearPlacement.cpp \
+../../src/IfcPlusPlus/src/ifcpp/IFC4X3/lib/IfcLinearForceMeasure.cpp \
+../../src/IfcPlusPlus/src/ifcpp/IFC4X3/lib/IfcLinearMomentMeasure.cpp \
+../../src/IfcPlusPlus/src/ifcpp/IFC4X3/lib/IfcLinearPlacement.cpp \
 	../../src/IfcPlusPlus/src/ifcpp/IFC4X3/lib/IfcLinearPositioningElement.cpp \
 	../../src/IfcPlusPlus/src/ifcpp/IFC4X3/lib/IfcLinearStiffnessMeasure.cpp \
 	../../src/IfcPlusPlus/src/ifcpp/IFC4X3/lib/IfcLinearVelocityMeasure.cpp \
@@ -643,9 +648,9 @@ SOURCES += \
 	../../src/IfcPlusPlus/src/ifcpp/IFC4X3/lib/IfcMedicalDeviceTypeEnum.cpp \
 	../../src/IfcPlusPlus/src/ifcpp/IFC4X3/lib/IfcMember.cpp \
 #	../../src/IfcPlusPlus/src/ifcpp/IFC4X3/lib/IfcMemberStandardCase.cpp \
-	../../src/IfcPlusPlus/src/ifcpp/IFC4X3/lib/IfcMemberType.cpp \
-	../../src/IfcPlusPlus/src/ifcpp/IFC4X3/lib/IfcMemberTypeEnum.cpp \
-	../../src/IfcPlusPlus/src/ifcpp/IFC4X3/lib/IfcMetric.cpp \
+../../src/IfcPlusPlus/src/ifcpp/IFC4X3/lib/IfcMemberType.cpp \
+../../src/IfcPlusPlus/src/ifcpp/IFC4X3/lib/IfcMemberTypeEnum.cpp \
+../../src/IfcPlusPlus/src/ifcpp/IFC4X3/lib/IfcMetric.cpp \
 	../../src/IfcPlusPlus/src/ifcpp/IFC4X3/lib/IfcMetricValueSelect.cpp \
 	../../src/IfcPlusPlus/src/ifcpp/IFC4X3/lib/IfcMirroredProfileDef.cpp \
 	../../src/IfcPlusPlus/src/ifcpp/IFC4X3/lib/IfcModulusOfElasticityMeasure.cpp \
@@ -668,9 +673,9 @@ SOURCES += \
 	../../src/IfcPlusPlus/src/ifcpp/IFC4X3/lib/IfcNonNegativeLengthMeasure.cpp \
 	../../src/IfcPlusPlus/src/ifcpp/IFC4X3/lib/IfcNormalisedRatioMeasure.cpp \
 #	../../src/IfcPlusPlus/src/ifcpp/IFC4X3/lib/IfcNullStyle.cpp \
-	../../src/IfcPlusPlus/src/ifcpp/IFC4X3/lib/IfcNumericMeasure.cpp \
-	../../src/IfcPlusPlus/src/ifcpp/IFC4X3/lib/IfcObject.cpp \
-	../../src/IfcPlusPlus/src/ifcpp/IFC4X3/lib/IfcObjectDefinition.cpp \
+../../src/IfcPlusPlus/src/ifcpp/IFC4X3/lib/IfcNumericMeasure.cpp \
+../../src/IfcPlusPlus/src/ifcpp/IFC4X3/lib/IfcObject.cpp \
+../../src/IfcPlusPlus/src/ifcpp/IFC4X3/lib/IfcObjectDefinition.cpp \
 	../../src/IfcPlusPlus/src/ifcpp/IFC4X3/lib/IfcObjectPlacement.cpp \
 	../../src/IfcPlusPlus/src/ifcpp/IFC4X3/lib/IfcObjectReferenceSelect.cpp \
 	../../src/IfcPlusPlus/src/ifcpp/IFC4X3/lib/IfcObjectTypeEnum.cpp \
@@ -686,12 +691,12 @@ SOURCES += \
 	../../src/IfcPlusPlus/src/ifcpp/IFC4X3/lib/IfcOpeningElement.cpp \
 	../../src/IfcPlusPlus/src/ifcpp/IFC4X3/lib/IfcOpeningElementTypeEnum.cpp \
 #	../../src/IfcPlusPlus/src/ifcpp/IFC4X3/lib/IfcOpeningStandardCase.cpp \
-	../../src/IfcPlusPlus/src/ifcpp/IFC4X3/lib/IfcOrganization.cpp \
-	../../src/IfcPlusPlus/src/ifcpp/IFC4X3/lib/IfcOrganizationRelationship.cpp \
+../../src/IfcPlusPlus/src/ifcpp/IFC4X3/lib/IfcOrganization.cpp \
+../../src/IfcPlusPlus/src/ifcpp/IFC4X3/lib/IfcOrganizationRelationship.cpp \
 #	../../src/IfcPlusPlus/src/ifcpp/IFC4X3/lib/IfcOrientationExpression.cpp \
-	../../src/IfcPlusPlus/src/ifcpp/IFC4X3/lib/IfcOrientedEdge.cpp \
-	../../src/IfcPlusPlus/src/ifcpp/IFC4X3/lib/IfcOuterBoundaryCurve.cpp \
-	../../src/IfcPlusPlus/src/ifcpp/IFC4X3/lib/IfcOutlet.cpp \
+../../src/IfcPlusPlus/src/ifcpp/IFC4X3/lib/IfcOrientedEdge.cpp \
+../../src/IfcPlusPlus/src/ifcpp/IFC4X3/lib/IfcOuterBoundaryCurve.cpp \
+../../src/IfcPlusPlus/src/ifcpp/IFC4X3/lib/IfcOutlet.cpp \
 	../../src/IfcPlusPlus/src/ifcpp/IFC4X3/lib/IfcOutletType.cpp \
 	../../src/IfcPlusPlus/src/ifcpp/IFC4X3/lib/IfcOutletTypeEnum.cpp \
 	../../src/IfcPlusPlus/src/ifcpp/IFC4X3/lib/IfcOwnerHistory.cpp \
@@ -731,9 +736,9 @@ SOURCES += \
 	../../src/IfcPlusPlus/src/ifcpp/IFC4X3/lib/IfcPlaneAngleMeasure.cpp \
 	../../src/IfcPlusPlus/src/ifcpp/IFC4X3/lib/IfcPlate.cpp \
 #	../../src/IfcPlusPlus/src/ifcpp/IFC4X3/lib/IfcPlateStandardCase.cpp \
-	../../src/IfcPlusPlus/src/ifcpp/IFC4X3/lib/IfcPlateType.cpp \
-	../../src/IfcPlusPlus/src/ifcpp/IFC4X3/lib/IfcPlateTypeEnum.cpp \
-	../../src/IfcPlusPlus/src/ifcpp/IFC4X3/lib/IfcPoint.cpp \
+../../src/IfcPlusPlus/src/ifcpp/IFC4X3/lib/IfcPlateType.cpp \
+../../src/IfcPlusPlus/src/ifcpp/IFC4X3/lib/IfcPlateTypeEnum.cpp \
+../../src/IfcPlusPlus/src/ifcpp/IFC4X3/lib/IfcPoint.cpp \
 	../../src/IfcPlusPlus/src/ifcpp/IFC4X3/lib/IfcPointOnCurve.cpp \
 	../../src/IfcPlusPlus/src/ifcpp/IFC4X3/lib/IfcPointOnSurface.cpp \
 	../../src/IfcPlusPlus/src/ifcpp/IFC4X3/lib/IfcPointOrVertexPoint.cpp \
@@ -763,9 +768,9 @@ SOURCES += \
 	../../src/IfcPlusPlus/src/ifcpp/IFC4X3/lib/IfcPresentationStyle.cpp \
 	../../src/IfcPlusPlus/src/ifcpp/IFC4X3/lib/IfcPresentationStyleAssignment.cpp \
 #	../../src/IfcPlusPlus/src/ifcpp/IFC4X3/lib/IfcPresentationStyleSelect.cpp \
-	../../src/IfcPlusPlus/src/ifcpp/IFC4X3/lib/IfcPressureMeasure.cpp \
-	../../src/IfcPlusPlus/src/ifcpp/IFC4X3/lib/IfcProcedure.cpp \
-	../../src/IfcPlusPlus/src/ifcpp/IFC4X3/lib/IfcProcedureType.cpp \
+../../src/IfcPlusPlus/src/ifcpp/IFC4X3/lib/IfcPressureMeasure.cpp \
+../../src/IfcPlusPlus/src/ifcpp/IFC4X3/lib/IfcProcedure.cpp \
+../../src/IfcPlusPlus/src/ifcpp/IFC4X3/lib/IfcProcedureType.cpp \
 	../../src/IfcPlusPlus/src/ifcpp/IFC4X3/lib/IfcProcedureTypeEnum.cpp \
 	../../src/IfcPlusPlus/src/ifcpp/IFC4X3/lib/IfcProcess.cpp \
 	../../src/IfcPlusPlus/src/ifcpp/IFC4X3/lib/IfcProcessSelect.cpp \
@@ -811,9 +816,9 @@ SOURCES += \
 	../../src/IfcPlusPlus/src/ifcpp/IFC4X3/lib/IfcProtectiveDeviceType.cpp \
 	../../src/IfcPlusPlus/src/ifcpp/IFC4X3/lib/IfcProtectiveDeviceTypeEnum.cpp \
 #	../../src/IfcPlusPlus/src/ifcpp/IFC4X3/lib/IfcProxy.cpp \
-	../../src/IfcPlusPlus/src/ifcpp/IFC4X3/lib/IfcPump.cpp \
-	../../src/IfcPlusPlus/src/ifcpp/IFC4X3/lib/IfcPumpType.cpp \
-	../../src/IfcPlusPlus/src/ifcpp/IFC4X3/lib/IfcPumpTypeEnum.cpp \
+../../src/IfcPlusPlus/src/ifcpp/IFC4X3/lib/IfcPump.cpp \
+../../src/IfcPlusPlus/src/ifcpp/IFC4X3/lib/IfcPumpType.cpp \
+../../src/IfcPlusPlus/src/ifcpp/IFC4X3/lib/IfcPumpTypeEnum.cpp \
 	../../src/IfcPlusPlus/src/ifcpp/IFC4X3/lib/IfcQuantityArea.cpp \
 	../../src/IfcPlusPlus/src/ifcpp/IFC4X3/lib/IfcQuantityCount.cpp \
 	../../src/IfcPlusPlus/src/ifcpp/IFC4X3/lib/IfcQuantityLength.cpp \
@@ -971,9 +976,9 @@ SOURCES += \
 	../../src/IfcPlusPlus/src/ifcpp/IFC4X3/lib/IfcSlab.cpp \
 #	../../src/IfcPlusPlus/src/ifcpp/IFC4X3/lib/IfcSlabElementedCase.cpp \
 #	../../src/IfcPlusPlus/src/ifcpp/IFC4X3/lib/IfcSlabStandardCase.cpp \
-	../../src/IfcPlusPlus/src/ifcpp/IFC4X3/lib/IfcSlabType.cpp \
-	../../src/IfcPlusPlus/src/ifcpp/IFC4X3/lib/IfcSlabTypeEnum.cpp \
-	../../src/IfcPlusPlus/src/ifcpp/IFC4X3/lib/IfcSlippageConnectionCondition.cpp \
+../../src/IfcPlusPlus/src/ifcpp/IFC4X3/lib/IfcSlabType.cpp \
+../../src/IfcPlusPlus/src/ifcpp/IFC4X3/lib/IfcSlabTypeEnum.cpp \
+../../src/IfcPlusPlus/src/ifcpp/IFC4X3/lib/IfcSlippageConnectionCondition.cpp \
 	../../src/IfcPlusPlus/src/ifcpp/IFC4X3/lib/IfcSolarDevice.cpp \
 	../../src/IfcPlusPlus/src/ifcpp/IFC4X3/lib/IfcSolarDeviceType.cpp \
 	../../src/IfcPlusPlus/src/ifcpp/IFC4X3/lib/IfcSolarDeviceTypeEnum.cpp \
@@ -1057,9 +1062,9 @@ SOURCES += \
 	../../src/IfcPlusPlus/src/ifcpp/IFC4X3/lib/IfcStructuralSurfaceMemberVarying.cpp \
 	../../src/IfcPlusPlus/src/ifcpp/IFC4X3/lib/IfcStructuralSurfaceReaction.cpp \
 #	../../src/IfcPlusPlus/src/ifcpp/IFC4X3/lib/IfcStyleAssignmentSelect.cpp \
-	../../src/IfcPlusPlus/src/ifcpp/IFC4X3/lib/IfcStyleModel.cpp \
-	../../src/IfcPlusPlus/src/ifcpp/IFC4X3/lib/IfcStyledItem.cpp \
-	../../src/IfcPlusPlus/src/ifcpp/IFC4X3/lib/IfcStyledRepresentation.cpp \
+../../src/IfcPlusPlus/src/ifcpp/IFC4X3/lib/IfcStyleModel.cpp \
+../../src/IfcPlusPlus/src/ifcpp/IFC4X3/lib/IfcStyledItem.cpp \
+../../src/IfcPlusPlus/src/ifcpp/IFC4X3/lib/IfcStyledRepresentation.cpp \
 	../../src/IfcPlusPlus/src/ifcpp/IFC4X3/lib/IfcSubContractResource.cpp \
 	../../src/IfcPlusPlus/src/ifcpp/IFC4X3/lib/IfcSubContractResourceType.cpp \
 	../../src/IfcPlusPlus/src/ifcpp/IFC4X3/lib/IfcSubContractResourceTypeEnum.cpp \
@@ -1159,9 +1164,9 @@ SOURCES += \
 	../../src/IfcPlusPlus/src/ifcpp/IFC4X3/lib/IfcTransitionCode.cpp \
 #	../../src/IfcPlusPlus/src/ifcpp/IFC4X3/lib/IfcTransitionCurveSegment2D.cpp \
 #	../../src/IfcPlusPlus/src/ifcpp/IFC4X3/lib/IfcTransitionCurveType.cpp \
-	../../src/IfcPlusPlus/src/ifcpp/IFC4X3/lib/IfcTranslationalStiffnessSelect.cpp \
-	../../src/IfcPlusPlus/src/ifcpp/IFC4X3/lib/IfcTransportElement.cpp \
-	../../src/IfcPlusPlus/src/ifcpp/IFC4X3/lib/IfcTransportElementType.cpp \
+../../src/IfcPlusPlus/src/ifcpp/IFC4X3/lib/IfcTranslationalStiffnessSelect.cpp \
+../../src/IfcPlusPlus/src/ifcpp/IFC4X3/lib/IfcTransportElement.cpp \
+../../src/IfcPlusPlus/src/ifcpp/IFC4X3/lib/IfcTransportElementType.cpp \
 	../../src/IfcPlusPlus/src/ifcpp/IFC4X3/lib/IfcTransportElementTypeEnum.cpp \
 	../../src/IfcPlusPlus/src/ifcpp/IFC4X3/lib/IfcTrapeziumProfileDef.cpp \
 	../../src/IfcPlusPlus/src/ifcpp/IFC4X3/lib/IfcTriangulatedFaceSet.cpp \
@@ -1208,9 +1213,9 @@ SOURCES += \
 	../../src/IfcPlusPlus/src/ifcpp/IFC4X3/lib/IfcVolumetricFlowRateMeasure.cpp \
 	../../src/IfcPlusPlus/src/ifcpp/IFC4X3/lib/IfcWall.cpp \
 #	../../src/IfcPlusPlus/src/ifcpp/IFC4X3/lib/IfcWallElementedCase.cpp \
-	../../src/IfcPlusPlus/src/ifcpp/IFC4X3/lib/IfcWallStandardCase.cpp \
-	../../src/IfcPlusPlus/src/ifcpp/IFC4X3/lib/IfcWallType.cpp \
-	../../src/IfcPlusPlus/src/ifcpp/IFC4X3/lib/IfcWallTypeEnum.cpp \
+../../src/IfcPlusPlus/src/ifcpp/IFC4X3/lib/IfcWallStandardCase.cpp \
+../../src/IfcPlusPlus/src/ifcpp/IFC4X3/lib/IfcWallType.cpp \
+../../src/IfcPlusPlus/src/ifcpp/IFC4X3/lib/IfcWallTypeEnum.cpp \
 	../../src/IfcPlusPlus/src/ifcpp/IFC4X3/lib/IfcWarpingConstantMeasure.cpp \
 	../../src/IfcPlusPlus/src/ifcpp/IFC4X3/lib/IfcWarpingMomentMeasure.cpp \
 	../../src/IfcPlusPlus/src/ifcpp/IFC4X3/lib/IfcWarpingStiffnessSelect.cpp \
@@ -1223,9 +1228,9 @@ SOURCES += \
 	../../src/IfcPlusPlus/src/ifcpp/IFC4X3/lib/IfcWindowPanelPositionEnum.cpp \
 	../../src/IfcPlusPlus/src/ifcpp/IFC4X3/lib/IfcWindowPanelProperties.cpp \
 #	../../src/IfcPlusPlus/src/ifcpp/IFC4X3/lib/IfcWindowStandardCase.cpp \
-	../../src/IfcPlusPlus/src/ifcpp/IFC4X3/lib/IfcWindowStyle.cpp \
-	../../src/IfcPlusPlus/src/ifcpp/IFC4X3/lib/IfcWindowStyleConstructionEnum.cpp \
-	../../src/IfcPlusPlus/src/ifcpp/IFC4X3/lib/IfcWindowStyleOperationEnum.cpp \
+../../src/IfcPlusPlus/src/ifcpp/IFC4X3/lib/IfcWindowStyle.cpp \
+../../src/IfcPlusPlus/src/ifcpp/IFC4X3/lib/IfcWindowStyleConstructionEnum.cpp \
+../../src/IfcPlusPlus/src/ifcpp/IFC4X3/lib/IfcWindowStyleOperationEnum.cpp \
 	../../src/IfcPlusPlus/src/ifcpp/IFC4X3/lib/IfcWindowType.cpp \
 	../../src/IfcPlusPlus/src/ifcpp/IFC4X3/lib/IfcWindowTypeEnum.cpp \
 	../../src/IfcPlusPlus/src/ifcpp/IFC4X3/lib/IfcWindowTypePartitioningEnum.cpp \
@@ -1244,16 +1249,18 @@ SOURCES += \
 	../../src/IfcPlusPlus/src/ifcpp/model/BuildingModel.cpp \
 	../../src/IfcPlusPlus/src/ifcpp/model/UnitConverter.cpp \
 #	../../src/IfcPlusPlus/src/ifcpp/reader/AbstractReader.cpp \
-	../../src/IfcPlusPlus/src/ifcpp/reader/ReaderSTEP.cpp \
-	../../src/IfcPlusPlus/src/ifcpp/reader/ReaderUtil.cpp \
+../../src/IfcPlusPlus/src/ifcpp/reader/ReaderSTEP.cpp \
+../../src/IfcPlusPlus/src/ifcpp/reader/ReaderUtil.cpp \
 #	../../src/IfcPlusPlus/src/ifcpp/reader/ReaderXML.cpp \
-	../../src/IfcPlusPlus/src/ifcpp/writer/WriterSTEP.cpp \
-	../../src/IfcPlusPlus/src/ifcpp/writer/WriterUtil.cpp
+../../src/IfcPlusPlus/src/ifcpp/writer/WriterSTEP.cpp \
+../../src/IfcPlusPlus/src/ifcpp/writer/WriterUtil.cpp
+
+
 
 HEADERS += \
-	../../src/IfcPlusPlus/src/ifcpp/IFC4X3/EntityFactory.h \
-        ../../src/IfcPlusPlus/src/ifcpp/IFC4X3/TypeFactory.h \
-	../../src/IfcPlusPlus/src/ifcpp/IFC4X3/include/IfcAbsorbedDoseMeasure.h \
+../../src/IfcPlusPlus/src/ifcpp/IFC4X3/EntityFactory.h \
+../../src/IfcPlusPlus/src/ifcpp/IFC4X3/TypeFactory.h \
+../../src/IfcPlusPlus/src/ifcpp/IFC4X3/include/IfcAbsorbedDoseMeasure.h \
 	../../src/IfcPlusPlus/src/ifcpp/IFC4X3/include/IfcAccelerationMeasure.h \
 	../../src/IfcPlusPlus/src/ifcpp/IFC4X3/include/IfcActionRequest.h \
 	../../src/IfcPlusPlus/src/ifcpp/IFC4X3/include/IfcActionRequestTypeEnum.h \
@@ -2455,13 +2462,13 @@ HEADERS += \
 	../../src/IfcPlusPlus/src/ifcpp/IFC4X3/include/IfcZShapeProfileDef.h \
 	../../src/IfcPlusPlus/src/ifcpp/IFC4X3/include/IfcZone.h \
 	../../src/IfcPlusPlus/src/ifcpp/geometry/AppearanceData.h \
-	../../src/IfcPlusPlus/src/ifcpp/geometry/GeomUtils.h \
-	../../src/IfcPlusPlus/src/ifcpp/geometry/GeometryException.h \
-	../../src/IfcPlusPlus/src/ifcpp/geometry/GeometrySettings.h \
+#	../../src/IfcPlusPlus/src/ifcpp/geometry/GeomUtils.h \
+../../src/IfcPlusPlus/src/ifcpp/geometry/GeometryException.h \
+../../src/IfcPlusPlus/src/ifcpp/geometry/GeometrySettings.h \
 #	../../src/IfcPlusPlus/src/ifcpp/geometry/MeshUtils.h \
-	../../src/IfcPlusPlus/src/ifcpp/geometry/SceneGraphUtils.h \
-	../../src/IfcPlusPlus/src/ifcpp/geometry/StylesConverter.h \
-	../../src/IfcPlusPlus/src/ifcpp/model/AttributeObject.h \
+../../src/IfcPlusPlus/src/ifcpp/geometry/SceneGraphUtils.h \
+../../src/IfcPlusPlus/src/ifcpp/geometry/StylesConverter.h \
+../../src/IfcPlusPlus/src/ifcpp/model/AttributeObject.h \
 	../../src/IfcPlusPlus/src/ifcpp/model/BasicTypes.h \
 	../../src/IfcPlusPlus/src/ifcpp/model/BuildingGuid.h \
 	../../src/IfcPlusPlus/src/ifcpp/model/BuildingModel.h \
@@ -2478,8 +2485,8 @@ HEADERS += \
 	../../src/IfcPlusPlus/src/ifcpp/writer/WriterXML.h
 
 unix|mac {
-	VER_MAJ = 1
-	VER_MIN = 0
-	VER_PAT = 0
+VER_MAJ = 1
+VER_MIN = 0
+VER_PAT = 0
 	VERSION = $${VER_MAJ}.$${VER_MIN}.$${VER_PAT}
 }

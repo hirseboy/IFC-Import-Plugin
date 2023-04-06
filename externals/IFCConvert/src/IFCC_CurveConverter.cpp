@@ -416,26 +416,6 @@ CurveConverter::CurveConverter(shared_ptr<GeometrySettings>& gs, shared_ptr<Plac
 			vec3 trimPoint2;
 			getTrimPoints(trim1_vec, trim2_vec, conic_position_matrix->m_matrix, circle_radius, circle_radius2, senseAgreement, trimPoint1, trimPoint2);
 
-#ifdef _DEBUG
-			vec3 checkTrimAngle1 = conic_position_matrix->m_matrix * carve::geom::VECTOR(circle_radius * cos(startAngle), circle_radius * sin(startAngle), 0);
-			double distanceTrim1 = (trimPoint1 - checkTrimAngle1).length();
-
-			if( distanceTrim1 > EPS_M6 && trim1_vec.size() > 0 )
-			{
-				std::cout << "distanceTrim1: " << distanceTrim1 << std::endl;
-			}
-
-			double endAngle = startAngle + openingAngle;
-			vec3 pointAtTrimAngle2 = conic_position_matrix->m_matrix * carve::geom::VECTOR(circle_radius * cos(endAngle), circle_radius * sin(endAngle), 0);
-			double distanceTrim2 = (trimPoint2 - pointAtTrimAngle2).length();
-
-			if( distanceTrim2 > EPS_M6 && trim2_vec.size() > 0 )
-			{
-				std::cout << "distanceTrim2: " << distanceTrim2 << std::endl;
-			}
-
-#endif
-
 			int num_segments = m_geom_settings->getNumVerticesPerCircleWithRadius(circle_radius) * (std::abs(openingAngle) / (2.0 * M_PI));
 			if( num_segments < m_geom_settings->getMinNumVerticesPerArc() ) num_segments = m_geom_settings->getMinNumVerticesPerArc();
 			const double circle_center_x = 0.0;
@@ -470,13 +450,6 @@ CurveConverter::CurveConverter(shared_ptr<GeometrySettings>& gs, shared_ptr<Plac
 			GeomUtils::appendPointsToCurve(circle_segment_points3D, target_vec);
 			segment_start_points.push_back(circle_segment_points3D[0]);
 
-#ifdef _DEBUG
-			if( openingAngle > M_PI*1.01 )
-			{
-				glm::dvec4 color(0.2, 0.2, 0.2, 0.8);
-				GeomDebugDump::dumpPolyline(target_vec, color, true);
-			}
-#endif
 			return;
 		}
 
@@ -939,96 +912,6 @@ CurveConverter::CurveConverter(shared_ptr<GeometrySettings>& gs, shared_ptr<Plac
 				// edge is oriented reverse
 				//std::reverse(curvePoints.begin(), curvePoints.end());
 			}
-
-#ifdef _DEBUG
-			if( curvePoints.size() > 1 )
-			{
-				double dist0 = (curvePoints[0] - p0).length();
-				double dist1 = (curvePoints[curvePoints.size() -1] - p1).length();
-				//if( !orientation )
-				//{
-				//	dist0 = (curvePoints[0] - p1).length();
-				//	dist1 = (curvePoints[curvePoints.size() -1] - p0).length();
-				//}
-
-				glm::vec4 color(0.5, 0.5, 0.5, 1);
-				if( dist0 > EPS_M6 || dist1 > EPS_M6 )
-				{
-					GeomDebugDump::dumpPolyline(curvePoints, color, false);
-				}
-
-				if( dist0 > EPS_M6 )
-				{
-					int tag = edgeCurve->m_tag;
-					//std::cout << std::endl << "check EdgeStart IfcEdgeCurve, dist0 = " << dist0  << ", tag: " << tag << std::endl;
-
-					std::vector<vec3> segmentStartEndPoints = { p0, p1 };
-					GeomDebugDump::dumpPolyline(segmentStartEndPoints, color, true);
-				}
-
-				if( false )
-				{
-					std::vector<vec3> curvePoints2;
-					std::vector<vec3> segmentStartPoints;
-					shared_ptr<IfcCurve> edgeGeometry = edgeCurve->m_EdgeGeometry;
-					if( edgeGeometry )
-					{
-
-
-						const shared_ptr<IfcTrimmedCurve> trimmedCurve = dynamic_pointer_cast<IfcTrimmedCurve>(edgeGeometry);
-						if( trimmedCurve )
-						{
-							//shared_ptr<IfcCurve>									m_BasisCurve;
-							std::vector<shared_ptr<IfcTrimmingSelect> >			vecTrim1;
-							std::vector<shared_ptr<IfcTrimmingSelect> >			vecTrim2;
-							//shared_ptr<IfcBoolean>								m_SenseAgreement;
-							//shared_ptr<IfcTrimmingPreference>						m_MasterRepresentation;
-
-							const shared_ptr<IfcLine> line = dynamic_pointer_cast<IfcLine>(trimmedCurve->m_BasisCurve);
-							if( line )
-							{
-								std::cout << "l-" << std::endl;
-							}
-							else
-							{
-								const shared_ptr<IfcBSplineCurve> bsplineCurve = dynamic_pointer_cast<IfcBSplineCurve>(trimmedCurve->m_BasisCurve);
-								if( bsplineCurve )
-								{
-									std::cout << "bspline" << std::endl;
-								}
-							}
-						}
-						else
-						{
-							const shared_ptr<IfcBSplineCurve> bsplineCurve = dynamic_pointer_cast<IfcBSplineCurve>(edgeGeometry);
-							if( bsplineCurve )
-							{
-								//convertIfcCurve(edgeGeometry, curvePoints2, segmentStartPoints);
-							}
-							else
-							{
-								std::cout << "edgeGeometry: " << EntityFactory::getStringForClassID(edgeGeometry->classID()) << "" << std::endl;
-							}
-						}
-
-						//convertIfcCurve(edgeGeometry, curvePoints2, segmentStartPoints);
-					}
-
-				}
-				if( dist1 > EPS_M6 )
-				{
-					//std::cout << "check EdgeEnd IfcEdgeCurve, dist1 = " << dist1 << std::endl;
-
-					std::vector<vec3> curvePoints;
-					std::vector<vec3> segmentStartPoints;
-					if( edgeCurve->m_EdgeGeometry )
-					{
-						convertIfcCurve(edgeCurve->m_EdgeGeometry, curvePoints, segmentStartPoints, senseAgreement );
-					}
-
-				}
-			}
-#endif
 
 			std::copy(curvePoints.begin(), curvePoints.end(), std::back_inserter(loopPoints));
 			return;

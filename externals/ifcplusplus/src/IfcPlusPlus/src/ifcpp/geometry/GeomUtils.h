@@ -32,13 +32,13 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OU
 #include <glm/gtx/string_cast.hpp>
 #include <glm/gtx/vector_angle.hpp>
 
-#ifndef GLM_FORCE_CTOR_INIT
-#warning "GLM_FORCE_CTOR_INIT has to be defined in project settings"
-#endif
+//#ifndef GLM_FORCE_CTOR_INIT
+//#warning "GLM_FORCE_CTOR_INIT has to be defined in project settings"
+//#endif
 
-#ifndef GLM_FORCE_XYZW_ONLY
-#warning "GLM_FORCE_XYZW_ONLY has to be defined in project settings"
-#endif
+//#ifndef GLM_FORCE_XYZW_ONLY
+//#warning "GLM_FORCE_XYZW_ONLY has to be defined in project settings"
+//#endif
 
 #include "IncludeCarveHeaders.h"
 
@@ -67,7 +67,7 @@ namespace GeomUtils
 		double dz = p1.z - p0.z;
 		return dx * dx + dy * dy + dz * dz;
 	}
-	
+
 	inline void safeNormalize(carve::geom::vector<3>& vec)
 	{
 		double len = vec.length();
@@ -104,7 +104,7 @@ namespace GeomUtils
 		glm::dvec3 origin;
 		glm::dvec3 direction;
 	};
-	
+
 	struct Plane
 	{
 		Plane()
@@ -132,7 +132,7 @@ namespace GeomUtils
 		{
 			m_position = _position;
 			m_normal = _normal;
-			
+
 #ifdef _DEBUG
 			if( std::abs(glm::length(m_normal) - 1.0) > EPS_DEFAULT )
 			{
@@ -158,7 +158,7 @@ namespace GeomUtils
 				glm::dvec3 point(1, 5, 10);
 				double D = dot(normal, (position));
 				double dist = dot(normal, point - position);
-			
+
 
 				glm::dvec3 normal2(1, 0, 0);
 				glm::dvec3 position2(0, 5, 8);
@@ -182,7 +182,7 @@ namespace GeomUtils
 			}
 
 #endif
-			
+
 			return std::abs(dot(m_normal, point - m_position));
 		}
 
@@ -265,7 +265,7 @@ namespace GeomUtils
 		polygon_centroid /= (double)( polygon.size() );
 		return polygon_centroid;
 	}
-	
+
 	inline vec3 computePolygonNormal( const std::vector<vec3>& polygon )
 	{
 		vec3 polygon_normal( carve::geom::VECTOR( 0, 0, 0 ) );
@@ -1046,7 +1046,7 @@ namespace GeomUtils
 		}
 		return false;
 	}
-	
+
 	static bool isPointOnLineSegment( const glm::dvec3& linesegment_start, const glm::dvec3& linesegment_delta, const glm::dvec3 &point, double eps )
 	{
 		double t = dot( point - linesegment_start, linesegment_delta ) / dot( linesegment_delta, linesegment_delta );
@@ -1221,7 +1221,7 @@ namespace GeomUtils
 			0, 0, 0, 1 );
 
 	}
-	
+
 	/** MeshSet and Polyhedron operations */
 	inline void applyTransform( shared_ptr<carve::input::PolyhedronData>& poly_data, const carve::math::Matrix& matrix )
 	{
@@ -1305,7 +1305,7 @@ namespace GeomUtils
 		return true;
 
 	}
-	inline bool checkMatricesIdentical( const carve::math::Matrix &A, const carve::math::Matrix &B, double tolerance = 0.000001 ) 
+	inline bool checkMatricesIdentical( const carve::math::Matrix &A, const carve::math::Matrix &B, double tolerance = 0.000001 )
 	{
 		for( size_t i = 0; i < 16; ++i )
 		{
@@ -1583,7 +1583,7 @@ namespace GeomUtils
 			loop_out.reserve( loop_in.size() );
 			vec2 previous_point = loop_in[0];
 			loop_out.push_back( previous_point );
-		
+
 			if( loop_in.size() > 1 )
 			{
 				for( size_t ii = 1; ii < loop_in.size(); ++ii )
@@ -1683,7 +1683,7 @@ namespace GeomUtils
 					break;
 				}
 
-				
+
 			}
 			if( repeat > maxNumPoints )
 			{
@@ -1738,7 +1738,7 @@ namespace GeomUtils
 		if (tN < 0.0)
 		{
 			// tc < 0 => the t=0 edge is visible
-			tN = 0.0;             
+			tN = 0.0;
 			// recompute sc for this edge
 			if( -d < 0.0 )          // compute shortest connection of C to segment AB
 			{
@@ -1778,7 +1778,7 @@ namespace GeomUtils
 		tc = (fabs(tN) < tol ? 0.0 : tN / tD);
 
 		vec3 P1 = A + (sc * u);
-		vec3 P2 = C + (tc * v);  
+		vec3 P2 = C + (tc * v);
 
 		return {P1, P2};   // return the closest distance
 	}
@@ -1917,7 +1917,7 @@ namespace GeomUtils
 		return f;
 	}
 
-	//\brief: 
+	//\brief:
 	static void closeMeshSet(carve::mesh::MeshSet<3>* meshset, double CARVE_EPSILON)
 	{
 		// try to fix open mesh
@@ -2010,7 +2010,7 @@ namespace GeomUtils
 			}
 		}
 	}
-	
+
 	static double triangleArea(const glm::dvec3& A, const glm::dvec3& B, const glm::dvec3& C)
 	{
 		glm::dvec3 AB(B - A);
