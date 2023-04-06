@@ -14,7 +14,7 @@ SUBDIRS += ImportIFCPlugin \
 	QtExt \
 	IBK \
         IBKMK \
-	ifcplusplus \
+        ifcplusplus \
 	TiCPP
 
 # where to find the sub projects

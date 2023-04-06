@@ -2,6 +2,7 @@
 #include "ui_ImportWPConvert.h"
 
 #include <QFileDialog>
+#include <QMessageBox>
 
 #include <IFCC_IFCReader.h>
 #include <IFCC_Helper.h>
@@ -120,7 +121,14 @@ void ImportWPConvert::setText() {
 
 void ImportWPConvert::on_pushButtonConvert_clicked() {
 	ui->textEdit->setText(tr("Converting ..."));
-	m_convertSuccessfully = m_reader->convert(ui->checkBoxUseSpaceBoundaries->isChecked());
+	try {
+		m_convertSuccessfully = m_reader->convert(ui->checkBoxUseSpaceBoundaries->isChecked());
+	}
+	catch(IBK::Exception &ex) {
+		QMessageBox::warning(this, tr("Conversion error"), tr("Could not convert IFC-File. See Error below:\n%1").arg(ex.what()));
+		return;
+	}
+
 	setText();
 
 	emit completeChanged();

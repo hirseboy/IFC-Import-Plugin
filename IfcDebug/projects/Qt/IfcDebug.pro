@@ -45,7 +45,7 @@ win32-msvc* {
 	DEFINES += NOMINMAX
 }
 else {
-	QMAKE_CXXFLAGS += -std=c++11
+        QMAKE_CXXFLAGS += -std=c++17
 }
 
 # You can make your code fail to compile if it uses deprecated APIs.
