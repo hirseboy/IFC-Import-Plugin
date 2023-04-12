@@ -2,10 +2,10 @@
 #include "ui_ImportWPConvert.h"
 
 #include <QFileDialog>
-#include <QMessageBox>
 
 #include <IFCC_IFCReader.h>
 #include <IFCC_Helper.h>
+#include <IFCC_Logger.h>
 
 #include <IBK_Path.h>
 
@@ -43,6 +43,8 @@ void ImportWPConvert::initializePage() {
 
 
 bool ImportWPConvert::isComplete() const {
+	IFCC::Logger::instance() << "isComplete";
+
 	m_reader->setFlipPolygons(ui->checkBoxFlipSurfacePolygons->isChecked());
 	bool ignoreErrors = ui->checkBoxIgnorErrors->isChecked();
 	if(ignoreErrors)
@@ -52,11 +54,16 @@ bool ImportWPConvert::isComplete() const {
 }
 
 void ImportWPConvert::setText() {
+	IFCC::Logger::instance() << "setText start";
+
 	std::vector<std::pair<int,int>> equalSBs;
-	int equalSBCount = m_reader->checkForEqualSpaceBoundaries(equalSBs);
+	int equalSBCount = 0;
+//	equalSBCount = m_reader->checkForEqualSpaceBoundaries(equalSBs);
 	std::vector<std::pair<int,std::vector<int>>> multiSubsurfaces;
-	int multiSubCount = m_reader->checkForUniqueSubSurfacesInSpaces(multiSubsurfaces);
-	std::set<std::pair<int,int>> intersectedSpaceIds = m_reader->checkForIntersectedSpace();
+	int multiSubCount = 0;
+//	multiSubCount = m_reader->checkForUniqueSubSurfacesInSpaces(multiSubsurfaces);
+	std::set<std::pair<int,int>> intersectedSpaceIds;
+//	intersectedSpaceIds = m_reader->checkForIntersectedSpace();
 	std::map<int,size_t> instersectionCounts;
 	for(auto isId : intersectedSpaceIds) {
 		++instersectionCounts[isId.first];
@@ -65,17 +72,24 @@ void ImportWPConvert::setText() {
 	if(m_convertSuccessfully && (equalSBCount > 0 || multiSubCount > 0 || spaceIntersectCount)) {
 		m_convertSuccessfully = false;
 	}
+
+	IFCC::Logger::instance() << "setText 1";
+
 	ui->textEdit->clear();
 	QStringList text;
 	if(m_convertSuccessfully) {
+		IFCC::Logger::instance() << "setText 2";
 		if(!m_reader->m_errorText.empty()) {
+			IFCC::Logger::instance() << "setText 21";
 			text << tr("<font color=\"#FF0000\">Errors while converting:</font>");
 			QString errTxt = QString::fromStdString(m_reader->m_errorText);
 			text << errTxt.split("");
 			text << "";
 		}
+		IFCC::Logger::instance() << "setText 3";
 		const std::vector<IFCC::ConvertError>& errors = m_reader->convertErrors();
 		if(!errors.empty()) {
+			IFCC::Logger::instance() << "setText 31";
 			text << tr("<font color=\"#FF0000\">Conversion errors:</font>");
 			for( const auto& err : errors) {
 				text << QString("%1 for object '%2' with id: %3").arg(QString::fromStdString(err.m_errorText))
@@ -83,12 +97,14 @@ void ImportWPConvert::setText() {
 			}
 			text << "<br>";
 		}
+		IFCC::Logger::instance() << "setText 4";
 		text << tr("File converted successfully.");
-		text << m_reader->messages() << "";
+//		text << m_reader->messages() << "";
 		text << "";
-		text << m_reader->statistic();
+//		text << m_reader->statistic();
 	}
 	else {
+		IFCC::Logger::instance() << "setText 5";
 		text << tr("<font color=\"#FF0000\">Error while converting IFC file.</font>");
 		if(spaceIntersectCount > 0) {
 			text << tr("%1 spaces intersections found.").arg(spaceIntersectCount);
@@ -116,20 +132,19 @@ void ImportWPConvert::setText() {
 			text << QString::fromStdString(m_reader->m_errorText);
 		}
 	}
+	IFCC::Logger::instance() << "setText 6 " << text.size() ;
 	ui->textEdit->setHtml(text.join("<br>"));
+	IFCC::Logger::instance() << "setText 7";
 }
 
 void ImportWPConvert::on_pushButtonConvert_clicked() {
 	ui->textEdit->setText(tr("Converting ..."));
-	try {
-		m_convertSuccessfully = m_reader->convert(ui->checkBoxUseSpaceBoundaries->isChecked());
-	}
-	catch(IBK::Exception &ex) {
-		QMessageBox::warning(this, tr("Conversion error"), tr("Could not convert IFC-File. See Error below:\n%1").arg(ex.what()));
-		return;
-	}
+	m_convertSuccessfully = m_reader->convert(ui->checkBoxUseSpaceBoundaries->isChecked());
 
+	IFCC::Logger::instance() << "convert successful " << m_convertSuccessfully;
 	setText();
+
+	IFCC::Logger::instance() << "setText";
 
 	emit completeChanged();
 }

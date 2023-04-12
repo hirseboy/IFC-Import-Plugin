@@ -23,7 +23,6 @@ public:
 	virtual void setLanguage(QString langId, QString appname) override;
 
 private:
-	IFCC::IFCReader			m_reader;
 	ImportIFCMessageHandler m_msgHandler;
 };
 

@@ -16,6 +16,8 @@ IFCImportPlugin::IFCImportPlugin(QObject *parent)
 }
 
 bool IFCImportPlugin::import(QWidget * parent, QString& projectText) {
+	IFCC::IFCReader			m_reader;
+
 	ImportWizard wz(parent, &m_reader);
 
 	if (wz.exec() == QDialog::Rejected)

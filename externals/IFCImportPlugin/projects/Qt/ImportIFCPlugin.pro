@@ -12,7 +12,7 @@ TEMPLATE = lib
 CONFIG += plugin
 CONFIG += shared
 
-CONFIG += c++17
+CONFIG += c++11
 
 # You can make your code fail to compile if it uses deprecated APIs.
 # In order to do so, uncomment the following line.
@@ -81,8 +81,8 @@ QMAKE_LIBDIR += ../../../../externals/lib$${DIR_PREFIX}
 LIBS += -L../../../../externals/lib$${DIR_PREFIX}
 
 LIBS += \
-        -lclipper \
-        -lifcplusplus \
+	-lclipper \
+	-lIFCPlusPlus \
 	-lIFCConvert \
 	-lCarve \
 	-lQtExt \
@@ -110,3 +110,6 @@ FORMS += \
 
 TRANSLATIONS += ../../resources/translations/ImportIFCPlugin_de.ts
 CODECFORSRC = UTF-8
+
+DISTFILES += \
+	../../src/metadata.json
