@@ -253,7 +253,7 @@ GeometryConverter::~GeometryConverter() {}
 			}
 		}
 	}
-/*
+
 	void GeometryConverter::resetIfcSiteLargeCoords(shared_ptr<IfcSite>& ifc_site) {
 		if (!ifc_site) {
 			return;
@@ -274,23 +274,21 @@ GeometryConverter::~GeometryConverter() {}
 				if (axis_placement->m_Location) {
 					shared_ptr<IfcCartesianPoint> placement_location = dynamic_pointer_cast<IfcCartesianPoint>(axis_placement->m_Location);
 					if (placement_location) {
-						if (placement_location->m_Coordinates.size() > 2) {
-							if (placement_location->m_Coordinates[0]) {
-								if (placement_location->m_Coordinates[0]->m_value > 1000) {
-									placement_location->m_Coordinates[0]->m_value = 0;
-								}
+						if (placement_location->m_Coordinates[0]) {
+							if (placement_location->m_Coordinates[0] > 1000) {
+								placement_location->m_Coordinates[0] = 0;
 							}
+						}
 
-							if (placement_location->m_Coordinates[1]) {
-								if (placement_location->m_Coordinates[1]->m_value > 1000) {
-									placement_location->m_Coordinates[1]->m_value = 0;
-								}
+						if (placement_location->m_Coordinates[1]) {
+							if (placement_location->m_Coordinates[1] > 1000) {
+								placement_location->m_Coordinates[1] = 0;
 							}
+						}
 
-							if (placement_location->m_Coordinates[2]) {
-								if (placement_location->m_Coordinates[2]->m_value > 1000) {
-									placement_location->m_Coordinates[2]->m_value = 0;
-								}
+						if (placement_location->m_Coordinates[2]) {
+							if (placement_location->m_Coordinates[2] > 1000) {
+								placement_location->m_Coordinates[2] = 0;
 							}
 						}
 					}
@@ -298,53 +296,41 @@ GeometryConverter::~GeometryConverter() {}
 			}
 		}
 	}
-*/
 
-	void GeometryConverter::setIfcSiteToOrigin(shared_ptr<IfcSite>& ifc_site)
-	{
-		if (!ifc_site)
-		{
+
+	void GeometryConverter::setIfcSiteToOrigin(shared_ptr<IfcSite>& ifc_site) 	{
+		if (!ifc_site) 	{
 			return;
 		}
 
-		if (!ifc_site->m_ObjectPlacement)
-		{
+		if (!ifc_site->m_ObjectPlacement) {
 			return;
 		}
 
 		shared_ptr<IfcLocalPlacement> local_placement = dynamic_pointer_cast<IfcLocalPlacement>(ifc_site->m_ObjectPlacement);
-		if (!local_placement)
-		{
+		if (!local_placement) {
 			return;
 		}
 
-		if (local_placement->m_RelativePlacement)
-		{
+		if (local_placement->m_RelativePlacement) {
 			shared_ptr<IfcAxis2Placement3D> axis_placement = dynamic_pointer_cast<IfcAxis2Placement3D>(local_placement->m_RelativePlacement);
-			if (axis_placement)
-			{
-				if (axis_placement->m_Location)
-				{
+			if (axis_placement) {
+				if (axis_placement->m_Location) {
 					shared_ptr<IfcCartesianPoint> placement_location = dynamic_pointer_cast<IfcCartesianPoint>(axis_placement->m_Location);
-					if (placement_location)
-					{
+					if (placement_location) {
 						double lengthFactor = m_ifc_model->getUnitConverter()->getLengthInMeterFactor();
 						PointConverter::convertIfcCartesianPoint(placement_location, m_siteOffset, lengthFactor);
 
-						if( m_siteOffset.length2() > 1000 * 1000 )
-						{
-							for( double& coordinate : placement_location->m_Coordinates )
-							{
-								if( coordinate )
-								{
+						if( m_siteOffset.length2() > 1000 * 1000 ) {
+							for( double& coordinate : placement_location->m_Coordinates ) {
+								if( coordinate ) {
 									coordinate = 0;
 								}
 							}
 						}
 					}
-					else
-					{
-						std::cout << "IfcAxis2Placement3D.Location is not an IfcCartesianPoint" << std::endl;
+					else {
+//						std::cout << "IfcAxis2Placement3D.Location is not an IfcCartesianPoint" << std::endl;
 					}
 				}
 			}
@@ -501,8 +487,8 @@ GeometryConverter::~GeometryConverter() {}
 							if( object_def->classID() == IFC4X3::IFCSITE )
 							{
 								shared_ptr<IfcSite> ifc_site = dynamic_pointer_cast<IfcSite>(object_def);
-								if( ifc_site )
-								{
+								if( ifc_site ) 								{
+//									resetIfcSiteLargeCoords(ifc_site);
 									setIfcSiteToOrigin(ifc_site);
 								}
 							}
@@ -557,15 +543,15 @@ GeometryConverter::~GeometryConverter() {}
 				}
 				std::string nameOfSpace;
 				if( dynamic_pointer_cast<IfcSpace>(object_def)) {
-					nameOfSpace = dynamic_pointer_cast<IfcSpace>(object_def)->m_LongName->m_value;
+					nameOfSpace = label2s(dynamic_pointer_cast<IfcSpace>(object_def)->m_LongName);
 					int i=0;
 				}
 				if( dynamic_pointer_cast<IfcWall>(object_def)) {
-					nameOfSpace = dynamic_pointer_cast<IfcWall>(object_def)->m_Name->m_value;
+					nameOfSpace = label2s(dynamic_pointer_cast<IfcWall>(object_def)->m_Name);
 					int i=0;
 				}
 				if( dynamic_pointer_cast<IfcDoor>(object_def)) {
-					nameOfSpace = dynamic_pointer_cast<IfcDoor>(object_def)->m_Name->m_value;
+					nameOfSpace = label2s(dynamic_pointer_cast<IfcDoor>(object_def)->m_Name);
 					int i=0;
 				}
 

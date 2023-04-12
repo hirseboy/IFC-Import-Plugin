@@ -239,6 +239,9 @@ namespace MeshUtils
 		for( size_t kk = 0; kk < vec_meshes.size(); ++kk )
 		{
 			const carve::mesh::Mesh<3>* mesh = vec_meshes[kk];
+			if(!mesh)
+				continue;
+
 			//volume += mesh->volume();
 
 			const std::vector<carve::mesh::Face<3>* >& vec_faces = mesh->faces;
@@ -2481,46 +2484,46 @@ namespace MeshUtils
 		}
 	}
 
-//	static void manifold2carve( const shared_ptr<manifold::Manifold>& manifoldInput, shared_ptr<carve::mesh::MeshSet<3> >& result, double CARVE_EPSILON)
-//	{
-//		if( !manifoldInput )
-//		{
-//			return;
-//		}
-//		PolyInputCache3D poly( CARVE_EPSILON );
-//		manifold::Mesh resultMesh = manifoldInput->GetMesh();
+	static void manifold2carve( const shared_ptr<manifold::Manifold>& manifoldInput, shared_ptr<carve::mesh::MeshSet<3> >& result, double CARVE_EPSILON)
+	{
+		if( !manifoldInput )
+		{
+			return;
+		}
+		PolyInputCache3D poly( CARVE_EPSILON );
+		manifold::Mesh resultMesh = manifoldInput->GetMesh();
 
-//		for (int i = 0, n = resultMesh.triVerts.size(); i < n; i++)
-//		{
-//			int triIdx0 = resultMesh.triVerts[i][0];
-//			int triIdx1 = resultMesh.triVerts[i][1];
-//			int triIdx2 = resultMesh.triVerts[i][2];
+		for (int i = 0, n = resultMesh.triVerts.size(); i < n; i++)
+		{
+			int triIdx0 = resultMesh.triVerts[i][0];
+			int triIdx1 = resultMesh.triVerts[i][1];
+			int triIdx2 = resultMesh.triVerts[i][2];
 
-//			if( triIdx0 > resultMesh.vertPos.size() )
-//			{
-//				continue;
-//			}
+			if( triIdx0 > resultMesh.vertPos.size() )
+			{
+				continue;
+			}
 
-//			if( triIdx1 > resultMesh.vertPos.size() )
-//			{
-//				continue;
-//			}
+			if( triIdx1 > resultMesh.vertPos.size() )
+			{
+				continue;
+			}
 
-//			if( triIdx2 > resultMesh.vertPos.size() )
-//			{
-//				continue;
-//			}
-//			glm::vec3 p0 = resultMesh.vertPos[triIdx0];
-//			glm::vec3 p1 = resultMesh.vertPos[triIdx1];
-//			glm::vec3 p2 = resultMesh.vertPos[triIdx2];
-//			carve::geom::vector<3> v0 = carve::geom::VECTOR(p0.x, p0.y, p0.z);
-//			carve::geom::vector<3> v1 = carve::geom::VECTOR(p1.x, p1.y, p1.z);
-//			carve::geom::vector<3> v2 = carve::geom::VECTOR(p2.x, p2.y, p2.z);
+			if( triIdx2 > resultMesh.vertPos.size() )
+			{
+				continue;
+			}
+			glm::vec3 p0 = resultMesh.vertPos[triIdx0];
+			glm::vec3 p1 = resultMesh.vertPos[triIdx1];
+			glm::vec3 p2 = resultMesh.vertPos[triIdx2];
+			carve::geom::vector<3> v0 = carve::geom::VECTOR(p0.x, p0.y, p0.z);
+			carve::geom::vector<3> v1 = carve::geom::VECTOR(p1.x, p1.y, p1.z);
+			carve::geom::vector<3> v2 = carve::geom::VECTOR(p2.x, p2.y, p2.z);
 
-//			MeshUtils::addFaceCheckIndexes(v0, v1, v2, poly, CARVE_EPSILON);
-//		}
-//		result = shared_ptr<carve::mesh::MeshSet<3> >(poly.m_poly_data->createMesh(carve::input::opts(), CARVE_EPSILON));
-//	}
+			MeshUtils::addFaceCheckIndexes(v0, v1, v2, poly, CARVE_EPSILON);
+		}
+		result = shared_ptr<carve::mesh::MeshSet<3> >(poly.m_poly_data->createMesh(carve::input::opts(), CARVE_EPSILON));
+	}
 
 	static void boundingBox2Mesh(carve::geom::aabb<3>& bbox, shared_ptr<carve::mesh::MeshSet<3> >& meshset, double CARVE_EPSILON)
 	{

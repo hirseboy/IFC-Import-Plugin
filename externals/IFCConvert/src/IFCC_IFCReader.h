@@ -26,13 +26,13 @@
 #include "IFCC_Instances.h"
 #include "IFCC_BuildingElementsCollector.h"
 
+#include <QProgressDialog>
 
 namespace IFCC {
 
 /*! Main class for IFC reading and conversion int vicus model.*/
-class IFCReader {
-
-Q_DECLARE_TR_FUNCTIONS( IFCReader );
+class IFCReader : public QObject {
+Q_OBJECT
 
 public:
 
@@ -52,6 +52,8 @@ public:
 
 	/*! Standard constructor. Initializes geometry converter.*/
 	IFCReader();
+
+	~IFCReader();
 
 	/*! Clear complete data structure.*/
 	void clear();
@@ -138,6 +140,12 @@ public:
 
 	const std::vector<ConvertError>& convertErrors() const;
 
+signals:
+	void progress(int val, QString text);
+
+private slots:
+	void setProgress(int val, QString text);
+
 private:
 
 	void updateBuildingElements();
@@ -201,6 +209,8 @@ private:
 	bool typeByGuid(const std::string& guid, std::pair<BuildingElementTypes,std::shared_ptr<ProductShapeData>>& res);
 
 	bool		m_useSpaceBoundaries = true;
+
+	std::unique_ptr<QProgressDialog> m_progressDialog;
 };
 
 } // end namespace

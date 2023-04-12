@@ -3,6 +3,8 @@
 #include "IFCC_Helper.h"
 
 #include <QDebug>
+#include <QApplication>
+
 
 #include <ifcpp/IFC4X3/include/IfcRelSpaceBoundary.h>
 #include <ifcpp/IFC4X3/include/IfcWall.h>
@@ -64,7 +66,15 @@ IFCReader::IFCReader() :
 	m_geometryConverter.getGeomSettings()->setMinNumVerticesPerArc(4);
 
 	Logger::instance().set("g:/temp/IFC_Log.txt");
+
+	connect(this, &IFCReader::progress, this, &IFCReader::setProgress);
 }
+
+IFCReader::~IFCReader() {
+//	m_progressDialog->close();
+//	m_progressDialog->reset();
+}
+
 
 void IFCReader::clear() {
 	m_model.reset(new BuildingModel);
@@ -104,6 +114,14 @@ void IFCReader::clearConvertData() {
 	m_instances.clear();
 }
 
+void IFCReader::setProgress(int val, QString text) {
+	if(m_progressDialog) {
+		m_progressDialog->setLabelText(text);
+		m_progressDialog->setValue(val);
+		m_progressDialog->update();
+		QApplication::processEvents();
+	}
+}
 
 bool IFCReader::read(const IBK::Path& filename, bool ignoreReadError) {
 	clear();
@@ -271,10 +289,22 @@ void IFCReader::splitShapeData() {
 
 void IFCReader::updateBuildingElements() {
 	Logger::instance() << "IFCReader::updateBuildingElements start";
+	size_t elemCount = 0;
+	for(auto& elems : m_elementEntitesShape) {
+		elemCount += elems.second.size();
+	}
+	size_t currCount = 0;
+
+	emit progress(0, "start");
 
 	m_buildingElements.clear();
 	for(auto& elems : m_elementEntitesShape) {
 		for(auto& elem : elems.second) {
+			++currCount;
+			emit progress(currCount / elemCount * 100, "building elements");
+			if(elem.get() == nullptr)
+				continue;
+
 			std::shared_ptr<IfcElement> e = dynamic_pointer_cast<IfcElement>(elem->m_ifc_object_definition.lock());
 			if(e == nullptr)
 				continue;
@@ -287,7 +317,7 @@ void IFCReader::updateBuildingElements() {
 				m_buildingElements.m_constructionElements.push_back( bElem);
 				BuildingElement& currbElem = *m_buildingElements.m_constructionElements.back();
 
-				Logger::instance() << "update constr " << currbElem.m_name;
+				Logger::instance() << "update constr nr: " << currCount << " of " << elemCount;
 
 				currbElem.update(elem, m_openings, m_convertErrors);
 				if(currbElem.surfaces().empty())
@@ -297,7 +327,7 @@ void IFCReader::updateBuildingElements() {
 				m_buildingElements.m_constructionSimilarElements.push_back(bElem);
 				BuildingElement& currbElem = *m_buildingElements.m_constructionSimilarElements.back();
 
-				Logger::instance() << "update similar " << currbElem.m_name;
+				Logger::instance() << "update similar " << currCount << " of " << elemCount;
 
 				currbElem.update(elem, m_openings, m_convertErrors);
 				if(currbElem.surfaces().empty())
@@ -307,7 +337,7 @@ void IFCReader::updateBuildingElements() {
 				m_buildingElements.m_openingElements.push_back(bElem);
 				BuildingElement& currbElem = *m_buildingElements.m_openingElements.back();
 
-				Logger::instance() << "update opening " << currbElem.m_name;
+				Logger::instance() << "update opening " << currCount << " of " << elemCount;
 
 				currbElem.update(elem, m_openings, m_convertErrors);
 				if(currbElem.surfaces().empty())
@@ -317,7 +347,7 @@ void IFCReader::updateBuildingElements() {
 				m_buildingElements.m_otherElements.push_back(bElem);
 				BuildingElement& currbElem = *m_buildingElements.m_otherElements.back();
 
-				Logger::instance() << "update other " << currbElem.m_name;
+				Logger::instance() << "update other " << currCount << " of " << elemCount;
 
 				currbElem.update(elem, m_openings, m_convertErrors);
 				//						if(m_buildingElements.m_otherElements.back()->surfaces().empty())
@@ -329,10 +359,19 @@ void IFCReader::updateBuildingElements() {
 
 bool IFCReader::convert(bool useSpaceBoundaries) {
 
+	m_progressDialog.reset(new QProgressDialog("IFC Reader...", "Abort read", 0, 100));
+	m_progressDialog->setWindowModality(Qt::WindowModal);
+//	m_progressDialog->setMinimumDuration(0);
+	m_progressDialog->show();
+
 	if(!m_readCompletedSuccessfully) {
 		m_errorText = "Cannot convert data because file not readed";
 		return false;
 	}
+
+	emit progress(0, "start convert");
+
+	Logger::instance() << "start convert";
 
 	clearConvertData();
 
@@ -342,13 +381,20 @@ bool IFCReader::convert(bool useSpaceBoundaries) {
 
 	try {
 
+		emit progress(20, "convertGeometry");
 		// convert IFC geometric representations into Carve geometry
 		const double length_in_meter = m_geometryConverter.getBuildingModel()->getUnitConverter()->getLengthInMeterFactor();
 		m_geometryConverter.setCsgEps(1.5e-08 * length_in_meter);
 		m_geometryConverter.convertGeometry(subtractOpenings, m_convertErrors);
 
+		Logger::instance() << "convertGeometry";
+
+		Logger::instance() << "splitShapeData";
 		splitShapeData();
 
+		emit progress(50, "splitShapeData");
+
+		Logger::instance() << "update openings";
 		m_openings.clear();
 		for(auto& openShape : m_openingsShape) {
 			std::shared_ptr<IfcOpeningElement> o = dynamic_pointer_cast<IfcOpeningElement>(openShape.second->m_ifc_object_definition.lock());
@@ -362,8 +408,13 @@ bool IFCReader::convert(bool useSpaceBoundaries) {
 			}
 		}
 
+		emit progress(80, "update openings");
+
 		try {
+			emit progress(85, "updateBuildingElements");
 			updateBuildingElements();
+
+			Logger::instance() << "updateBuildingElements";
 		}
 		catch (std::exception& e) {
 			ConvertError err;
@@ -384,19 +435,26 @@ bool IFCReader::convert(bool useSpaceBoundaries) {
 			return false;
 		}
 
+		emit progress(90, "setContainingElements");
 		for(std::shared_ptr<BuildingElement>& openingElement : m_buildingElements.m_openingElements) {
 			openingElement->setContainingElements(m_openings);
 			openingElement->setContainedConstructionThickesses(m_buildingElements.m_constructionElements);
 			openingElement->setContainedConstructionThickesses(m_buildingElements.m_constructionSimilarElements);
 		}
 
+		Logger::instance() << "setContainingElements";
+
 		for(const auto& elem : m_buildingElements.m_elementsWithoutSurfaces) {
 			m_convertErrors.push_back({OT_BuildingElement, elem->m_id, "Building element has no surface"});
 		}
 
 
+		emit progress(95, "collectData");
 		m_database.collectData(m_buildingElements);
 
+		Logger::instance() << "collectData";
+
+		emit progress(97, "updateStoreys");
 		if(m_siteShape != nullptr) {
 			std::shared_ptr<IfcSpatialStructureElement> se = std::dynamic_pointer_cast<IfcSpatialStructureElement>(m_siteShape->m_ifc_object_definition.lock());
 			m_site.set(se, m_siteShape, m_buildingsShape, m_convertErrors);
@@ -413,6 +471,8 @@ bool IFCReader::convert(bool useSpaceBoundaries) {
 			return false;
 		}
 
+		Logger::instance() << "updateStoreys";
+
 		if(m_repairFlags.m_removeDoubledSBs) {
 			std::vector<std::shared_ptr<Space>> spaces = m_site.allSpaces();
 
@@ -421,7 +481,10 @@ bool IFCReader::convert(bool useSpaceBoundaries) {
 			}
 		}
 
+		emit progress(98, "collectComponentInstances");
 		m_instances.collectComponentInstances(m_buildingElements, m_database, m_site, m_convertErrors);
+
+		Logger::instance() << "collectComponentInstances";
 
 		if(!m_convertErrors.empty()) {
 			m_hasError = true;
@@ -429,6 +492,9 @@ bool IFCReader::convert(bool useSpaceBoundaries) {
 		}
 
 		m_convertCompletedSuccessfully = true;
+
+		emit progress(100, "convertCompletedSuccessfully");
+		Logger::instance() << "m_convertCompletedSuccessfully";
 
 		return true;
 

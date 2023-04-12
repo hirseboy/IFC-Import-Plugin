@@ -176,8 +176,9 @@ void simplifyMesh(meshVector_t& meshVector, bool removeLowVolume) {
 	const double MINIMUM_NORMAL_ANGLE = MINIMUM_NORMAL_ANGLE_DEG * M_PI / 180.0;
 
 	int meshSetCount = meshVector.size();
+	size_t removedMeshes = 0;
 	for(int i=0; i<meshSetCount; ++i) {
-		simplifier.mergeCoplanarFaces(meshVector[i].get(), MINIMUM_NORMAL_ANGLE);
+		removedMeshes += simplifier.mergeCoplanarFaces(meshVector[i].get(), MINIMUM_NORMAL_ANGLE);
 	// The following functions can open or destroy the mesh
 //		simplifier.simplify(meshVector[i].get(), 1e-6, 1e-6, MINIMUM_NORMAL_ANGLE, 1e-6);
 //		simplifier.improveMesh_conservative(meshVector[i].get());

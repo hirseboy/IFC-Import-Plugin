@@ -44,7 +44,7 @@ public:
 	std::map<std::string, shared_ptr<ProductShapeData> >&	getShapeInputData();
 	std::map<std::string, shared_ptr<BuildingObject> >&		getObjectsOutsideSpatialStructure();
 	bool m_clear_memory_immedeately = true;
-	bool m_set_model_to_origin = false;
+	bool m_set_model_to_origin = true;
 
 	//\brief Pointer to the object on which the message callback function is called.
 	void* m_callback_object_geometry_converted = nullptr;
@@ -66,7 +66,7 @@ public:
 
 	void readAppearanceFromPropertySet( const shared_ptr<IfcPropertySet>& prop_set, shared_ptr<ProductShapeData>& product_shape );
 
-//	void resetIfcSiteLargeCoords(shared_ptr<IfcSite>& ifc_site);
+	void resetIfcSiteLargeCoords(shared_ptr<IfcSite>& ifc_site);
 
 	/*\brief method convertGeometry: Creates geometry for Carve from previously loaded BuildingModel model.
 	**/

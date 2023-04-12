@@ -633,13 +633,15 @@ static bool checkFaceIndices(PolyInputCache3D& inputData )
 		}
 
 		shared_ptr<carve::mesh::MeshSet<3> > meshset( poly_data->createMesh( carve::input::opts(), CARVE_EPSILON ) );
-		if( meshset->isClosed() )
-		{
-			m_meshsets.push_back( meshset );
-		}
-		else
-		{
-			m_meshsets_open.push_back( meshset );
+		if(meshset) {
+			if( meshset->isClosed() )
+			{
+				m_meshsets.push_back( meshset );
+			}
+			else
+			{
+				m_meshsets_open.push_back( meshset );
+			}
 		}
 	}
 
@@ -665,7 +667,8 @@ static bool checkFaceIndices(PolyInputCache3D& inputData )
 		}
 
 		shared_ptr<carve::mesh::MeshSet<3> > meshset( poly_data->createMesh( carve::input::opts(), CARVE_EPSILON ) );
-		m_meshsets_open.push_back( meshset );
+		if(meshset)
+			m_meshsets_open.push_back( meshset );
 	}
 
 	bool ItemShapeData::addClosedPolyhedron(const shared_ptr<carve::input::PolyhedronData>& poly_data, GeomProcessingParams& params)
@@ -699,51 +702,53 @@ static bool checkFaceIndices(PolyInputCache3D& inputData )
 			bool correct2 = checkPolyhedronData(poly_data, params.minFaceArea);
 			if( !correct2 )
 			{
-				std::cout << "failed to correct polyhedron data\n";
+//				std::cout << "failed to correct polyhedron data\n";
 				return false;
 			}
 		}
 
 		bool dumpMeshes = false;
 		shared_ptr<carve::mesh::MeshSet<3> > meshset(poly_data->createMesh(mesh_input_options, CARVE_EPSILON));
-		if( meshset->isClosed() )
-		{
-			m_meshsets.push_back(meshset);
-			return true;
-		}
-
-		if( meshsetUnchanged->isClosed() )
-		{
-			m_meshsets.push_back(meshsetUnchanged);
-			return true;
-		}
-
-		if( poly_data->faceCount > 10000 )
-		{
-			m_meshsets_open.push_back(meshset); // still may be useful as open mesh
-			return false;
-		}
-
-		if( meshset->meshes.size() > 1 )
-		{
-			// try to add faces of mesh[1] reversed into mesh[0]
-			carve::mesh::Mesh<3>* meshSmall = meshset->meshes[0];
-			carve::mesh::Mesh<3>* meshBig = meshset->meshes[1];
-			if( meshSmall->faces.size() > meshBig->faces.size() )
-			{
-				std::swap(meshSmall, meshBig);
-			}
-			PolyInputCache3D polyhedronSmall;
-			MeshUtils::polyhedronFromMesh(meshSmall, polyhedronSmall);
-
-			PolyInputCache3D polyhedronBig;
-			MeshUtils::polyhedronFromMesh(meshBig, polyhedronBig);
-			MeshUtils::addFacesReversed(polyhedronSmall, polyhedronBig);
-			meshset = shared_ptr<carve::mesh::MeshSet<3> >(polyhedronBig.m_poly_data->createMesh(mesh_input_options, CARVE_EPSILON));
+		if(meshset) {
 			if( meshset->isClosed() )
 			{
 				m_meshsets.push_back(meshset);
 				return true;
+			}
+
+			if( meshsetUnchanged->isClosed() )
+			{
+				m_meshsets.push_back(meshsetUnchanged);
+				return true;
+			}
+
+			if( poly_data->faceCount > 10000 )
+			{
+				m_meshsets_open.push_back(meshset); // still may be useful as open mesh
+				return false;
+			}
+
+			if( meshset->meshes.size() > 1 )
+			{
+				// try to add faces of mesh[1] reversed into mesh[0]
+				carve::mesh::Mesh<3>* meshSmall = meshset->meshes[0];
+				carve::mesh::Mesh<3>* meshBig = meshset->meshes[1];
+				if( meshSmall->faces.size() > meshBig->faces.size() )
+				{
+					std::swap(meshSmall, meshBig);
+				}
+				PolyInputCache3D polyhedronSmall;
+				MeshUtils::polyhedronFromMesh(meshSmall, polyhedronSmall);
+
+				PolyInputCache3D polyhedronBig;
+				MeshUtils::polyhedronFromMesh(meshBig, polyhedronBig);
+				MeshUtils::addFacesReversed(polyhedronSmall, polyhedronBig);
+				meshset = shared_ptr<carve::mesh::MeshSet<3> >(polyhedronBig.m_poly_data->createMesh(mesh_input_options, CARVE_EPSILON));
+				if( meshset->isClosed() )
+				{
+					m_meshsets.push_back(meshset);
+					return true;
+				}
 			}
 		}
 
@@ -751,35 +756,38 @@ static bool checkFaceIndices(PolyInputCache3D& inputData )
 		reverseFacesInPolyhedronData(poly_data);
 
 		meshset = shared_ptr<carve::mesh::MeshSet<3> >(poly_data->createMesh(mesh_input_options, CARVE_EPSILON));
-		if( meshset->isClosed() )
+		if( meshset && meshset->isClosed() )
 		{
 			m_meshsets.push_back(meshset);
 			return true;
 		}
 
-		double eps = CARVE_EPSILON;
-		MeshUtils::intersectOpenEdges(meshset, params);
+		if(meshset) {
 
-		for( size_t i = 0; i < meshset->meshes.size(); ++i )
-		{
-			meshset->meshes[i]->recalc(CARVE_EPSILON);
-		}
-		if( meshset->isClosed() )
-		{
-			m_meshsets.push_back(meshset);
-			return true;
-		}
-		else
-		{
-			MeshUtils::resolveOpenEdges(meshset, eps, dumpMeshes);
+			double eps = CARVE_EPSILON;
+			MeshUtils::intersectOpenEdges(meshset, params);
 
+			for( size_t i = 0; i < meshset->meshes.size(); ++i )
+			{
+				meshset->meshes[i]->recalc(CARVE_EPSILON);
+			}
 			if( meshset->isClosed() )
 			{
 				m_meshsets.push_back(meshset);
 				return true;
 			}
+			else
+			{
+				MeshUtils::resolveOpenEdges(meshset, eps, dumpMeshes);
 
-			m_meshsets_open.push_back(meshset); // still may be useful as open mesh
+				if( meshset->isClosed() )
+				{
+					m_meshsets.push_back(meshset);
+					return true;
+				}
+
+				m_meshsets_open.push_back(meshset); // still may be useful as open mesh
+			}
 		}
 		// Meshset is not closed
 		return false;
@@ -862,6 +870,8 @@ static bool checkFaceIndices(PolyInputCache3D& inputData )
 		for( size_t i_meshsets = 0; i_meshsets < m_meshsets_open.size(); ++i_meshsets )
 		{
 			shared_ptr<carve::mesh::MeshSet<3> >& item_meshset = m_meshsets_open[i_meshsets];
+			if(item_meshset.get() == nullptr)
+				continue;
 
 			for( size_t i = 0; i < item_meshset->vertex_storage.size(); ++i )
 			{
@@ -878,20 +888,17 @@ static bool checkFaceIndices(PolyInputCache3D& inputData )
 			}
 		}
 
-		Logger::instance() << "aTTItem 6";
 		for( size_t i_meshsets = 0; i_meshsets < m_meshsets.size(); ++i_meshsets )
 		{
 			shared_ptr<carve::mesh::MeshSet<3> >& item_meshset = m_meshsets[i_meshsets];
 			if(item_meshset.get() == nullptr)
 				continue;
 
-			Logger::instance() << "aTTItem 61: size: " << item_meshset->vertex_storage.size();
 			for( size_t i = 0; i < item_meshset->vertex_storage.size(); ++i )
 			{
 				vec3& point = item_meshset->vertex_storage[i].v;
 				point = mat*point;
 			}
-			Logger::instance() << "aTTItem 62";
 			for( size_t i = 0; i < item_meshset->meshes.size(); ++i )
 			{
 				item_meshset->meshes[i]->recalc(CARVE_EPSILON);
@@ -904,14 +911,12 @@ static bool checkFaceIndices(PolyInputCache3D& inputData )
 			}
 		}
 
-		Logger::instance() << "aTTItem 7";
 		for( size_t text_i = 0; text_i < m_vec_text_literals.size(); ++text_i )
 		{
 			shared_ptr<TextItemData>& text_literals = m_vec_text_literals[text_i];
 			if(text_literals)
 				text_literals->m_text_position = mat*text_literals->m_text_position;
 		}
-		Logger::instance() << "aTTItem 8";
 	}
 
 	shared_ptr<ItemShapeData> ItemShapeData::getItemShapeDataDeepCopy()
@@ -933,12 +938,16 @@ static bool checkFaceIndices(PolyInputCache3D& inputData )
 		for( auto it_meshsets = m_meshsets_open.begin(); it_meshsets != m_meshsets_open.end(); ++it_meshsets )
 		{
 			shared_ptr<carve::mesh::MeshSet<3> >& item_meshset = ( *it_meshsets );
+			if(item_meshset.get() == nullptr)
+				continue;
 			copy_item->m_meshsets.push_back( shared_ptr<carve::mesh::MeshSet<3> >( item_meshset->clone() ) );
 		}
 
 		for( auto it_meshsets = m_meshsets.begin(); it_meshsets != m_meshsets.end(); ++it_meshsets )
 		{
 			shared_ptr<carve::mesh::MeshSet<3> >& item_meshset = ( *it_meshsets );
+			if(item_meshset.get() == nullptr)
+				continue;
 			copy_item->m_meshsets.push_back( shared_ptr<carve::mesh::MeshSet<3> >( item_meshset->clone() ) );
 		}
 
@@ -1397,13 +1406,11 @@ static bool checkFaceIndices(PolyInputCache3D& inputData )
 				return;
 			}
 		}
-		Logger::instance() << "aTTP 2";
 		for( size_t i_item = 0; i_item < m_vec_representations.size(); ++i_item )
 		{
 			m_vec_representations[i_item]->applyTransformToRepresentation( matrix, true );
 		}
 
-		Logger::instance() << "aTTP 3";
 		if( applyToChildren )
 		{
 			for( auto child_product_data : m_vec_children )
@@ -1411,7 +1418,6 @@ static bool checkFaceIndices(PolyInputCache3D& inputData )
 				child_product_data->applyTransformToProduct(matrix, true, applyToChildren );
 			}
 		}
-		Logger::instance() << "aTTP 4";
 	}
 
 	bool ProductShapeData::isEmpty( bool check_also_children ) const

@@ -416,6 +416,7 @@ CurveConverter::CurveConverter(shared_ptr<GeometrySettings>& gs, shared_ptr<Plac
 			vec3 trimPoint2;
 			getTrimPoints(trim1_vec, trim2_vec, conic_position_matrix->m_matrix, circle_radius, circle_radius2, senseAgreement, trimPoint1, trimPoint2);
 
+
 			int num_segments = m_geom_settings->getNumVerticesPerCircleWithRadius(circle_radius) * (std::abs(openingAngle) / (2.0 * M_PI));
 			if( num_segments < m_geom_settings->getMinNumVerticesPerArc() ) num_segments = m_geom_settings->getMinNumVerticesPerArc();
 			const double circle_center_x = 0.0;
@@ -912,6 +913,7 @@ CurveConverter::CurveConverter(shared_ptr<GeometrySettings>& gs, shared_ptr<Plac
 				// edge is oriented reverse
 				//std::reverse(curvePoints.begin(), curvePoints.end());
 			}
+
 
 			std::copy(curvePoints.begin(), curvePoints.end(), std::back_inserter(loopPoints));
 			return;
