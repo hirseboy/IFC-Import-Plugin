@@ -13,7 +13,7 @@ CONFIG += c++17
 include( ../../../../externals/IBK/projects/Qt/IBK.pri )
 
 #CONFIG += static
-QT       += core gui
+QT       += core gui widgets
 
 # finally we setup our custom library specfic things
 # like version number etc., we also may reset all
