@@ -39,9 +39,9 @@ IBKMK.depends = IBK
 
 linux-g++ | linux-g++-64 | linux-g++-32 {
     # IFC Debug
-    SUBDIRS += IfcDebug
-    IfcDebug.file = ../../IfcDebug/projects/Qt/IfcDebug.pro
-    IfcDebug.depends = ImportIFCPlugin IBK IBKMK TiCPP
+#    SUBDIRS += IfcDebug
+#    IfcDebug.file = ../../IfcDebug/projects/Qt/IfcDebug.pro
+ #   IfcDebug.depends = ImportIFCPlugin IBK IBKMK TiCPP
 }
 
 #DEFINES += OUTPUT_AFTER_EACH_STEP
