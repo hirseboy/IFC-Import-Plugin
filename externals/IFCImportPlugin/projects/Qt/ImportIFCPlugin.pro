@@ -81,11 +81,11 @@ QMAKE_LIBDIR += ../../../../externals/lib$${DIR_PREFIX}
 LIBS += -L../../../../externals/lib$${DIR_PREFIX}
 
 LIBS += \
+        -lIFCConvert \
         -lclipper \
         -lifcplusplus \
-	-lIFCConvert \
 	-lCarve \
-	-lQtExt \
+        -lQtExt \
 	-lTiCPP \
 	-lIBKMK \
 	-lIBK
@@ -98,10 +98,10 @@ win32-msvc* {
 }
 
 # Default rules for deployment.
-unix {
-	target.path = $$[QT_INSTALL_PLUGINS]/generic
-}
-!isEmpty(target.path): INSTALLS += target
+# unix {
+# 	target.path = $$[QT_INSTALL_PLUGINS]/generic
+# }
+# !isEmpty(target.path): INSTALLS += target
 
 FORMS += \
 	../../src/ImportWPConvert.ui \
