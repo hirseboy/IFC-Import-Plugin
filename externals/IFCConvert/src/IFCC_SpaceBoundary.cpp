@@ -138,10 +138,13 @@ void SpaceBoundary::setFromSpaceBoundary(const SpaceBoundary& sb, size_t surface
 	m_surface = sb.m_surfaces[surfaceIndex];
 }
 
-void SpaceBoundary::setForMissingElement(const std::string& name, const Space& space) {
+void SpaceBoundary::setForMissingElement(const std::string& name, const Space& space, bool isOpening) {
 	m_name = name;
 	m_typeRelatedElement = BET_None;
-	m_type = CT_Others;
+	if(isOpening)
+		m_type = CT_OpeningElement;
+	else
+		m_type = CT_Others;
 	m_spaceBoundaryType = SBT_Unknown;
 	m_levelType = SBLT_NoLevel;
 	m_elementEntityId = -1;
@@ -152,10 +155,13 @@ void SpaceBoundary::setForMissingElement(const std::string& name, const Space& s
 	m_nameRelatedSpace = space.m_name;
 }
 
-void SpaceBoundary::setForVirtualElement(const std::string& name, const Space& space) {
+void SpaceBoundary::setForVirtualElement(const std::string& name, const Space& space, bool isOpening) {
 	m_name = name;
 	m_typeRelatedElement = BET_None;
-	m_type = CT_Others;
+	if(isOpening)
+		m_type = CT_OpeningElement;
+	else
+		m_type = CT_Others;
 	m_spaceBoundaryType = SBT_Unknown;
 	m_levelType = SBLT_NoLevel;
 	m_elementEntityId = -1;
@@ -217,6 +223,11 @@ std::vector<std::shared_ptr<SpaceBoundary>> SpaceBoundary::splitBySurfaces() {
 	m_surfaces.clear();
 	return res;
 }
+
+void SpaceBoundary::mergeSurface(const Surface& surf) {
+	m_surface.merge(surf);
+}
+
 
 void SpaceBoundary::createSurfaceVect(const polyVector_t& polylines) {
 	m_surfaces.clear();

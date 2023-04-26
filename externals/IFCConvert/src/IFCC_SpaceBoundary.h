@@ -78,14 +78,14 @@ public:
 		\param name Name for space boundary.
 		\param space Space which is related to.
 	*/
-	void setForMissingElement(const std::string& name, const Space& space);
+	void setForMissingElement(const std::string& name, const Space& space, bool isOpening);
 
 	/*! Initialise space boundary which doesn't have a connection to a buiding element.
 		It set a name, related space and type. Geometry is not set.
 		\param name Name for space boundary.
 		\param space Space which is related to.
 	*/
-	void setForVirtualElement(const std::string& name, const Space& space);
+	void setForVirtualElement(const std::string& name, const Space& space, bool isOpening);
 
 	/*! Set connection base type from building element type.*/
 	void setRelatingElementType(BuildingElementTypes type);
@@ -118,10 +118,9 @@ public:
 		return m_surface;
 	}
 
-	/*! Return the surface of this space boundary.*/
-	Surface& surface() 	{
-		return m_surface;
-	}
+	/*! Merge the internal surface with the given one.*/
+	void mergeSurface(const Surface& surf);
+
 
 	/*! Return the surface of this space boundary.*/
 	Surface surfaceWithSubsurfaces() const 	{
@@ -239,7 +238,7 @@ private:
 	/*! Temporary vector used from fetchGeometryFromIFC. Should be splitted later.*/
 	std::vector<Surface>										m_surfaces;
 	Surface														m_surface;				///< Surface of the space boundary
-	std::shared_ptr<IFC4X3::IfcConnectionGeometry>						m_connectionGeometry;	///< Geometry from IFC space boundary object
+	std::shared_ptr<IFC4X3::IfcConnectionGeometry>				m_connectionGeometry;	///< Geometry from IFC space boundary object
 	/*! Type of the space boundary (A, B, inner) evaluated only in case of derived IFC type.*/
 	SpaceBoundaryType											m_spaceBoundaryType;
 	/*! Level of the space boundary (1st, 2nd, 3rd) evaluated only in case of derived IFC type.*/
