@@ -31,6 +31,8 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OU
 #include "IFCC_Sweeper.h"
 #include "IFCC_SplineConverter.h"
 #include "IFCC_CurveConverter.h"
+#include "IFCC_Types.h"
+#include "IFCC_ProfileCache.h"
 
 namespace IFCC {
 
@@ -60,13 +62,15 @@ public:
 	shared_ptr<CurveConverter>		m_curve_converter;
 	shared_ptr<SplineConverter>		m_spline_converter;
 	shared_ptr<Sweeper>				m_sweeper;
+	shared_ptr<ProfileCache>		m_profile_cache;
 
 	FaceConverter( shared_ptr<GeometrySettings>& gs, shared_ptr<UnitConverter>& uc, shared_ptr<CurveConverter>& cc,
-				   shared_ptr<SplineConverter>& sc, shared_ptr<Sweeper>& sw );
+				   shared_ptr<SplineConverter>& sc, shared_ptr<Sweeper>& sw, shared_ptr<ProfileCache>&	profile_cache );
 
 	virtual ~FaceConverter() = default;
 
-	void convertIfcSurface( const shared_ptr<IFC4X3::IfcSurface>& surface, shared_ptr<ItemShapeData>& item_data, shared_ptr<SurfaceProxy>& surface_proxy );
+	void convertIfcSurface( const shared_ptr<IFC4X3::IfcSurface>& surface, shared_ptr<ItemShapeData>& item_data, shared_ptr<SurfaceProxy>& surface_proxy,
+							std::vector<ConvertError>& errors );
 
 	void convertIfcFaceList( const std::vector<shared_ptr<IFC4X3::IfcFace> >& vec_faces, shared_ptr<ItemShapeData> item_data, ShellType st );
 };

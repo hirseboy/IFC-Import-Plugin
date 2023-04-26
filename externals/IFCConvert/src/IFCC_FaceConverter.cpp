@@ -27,21 +27,32 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OU
 #include <ifcpp/IFC4X3/include/IfcSweptSurface.h>
 #include <ifcpp/IFC4X3/include/IfcPositiveLengthMeasure.h>
 #include <ifcpp/IFC4X3/include/IfcRationalBSplineSurfaceWithKnots.h>
+#include <ifcpp/IFC4X3/include/IfcDirection.h>
+#include <ifcpp/IFC4X3/include/IfcProfileDef.h>
+#include <ifcpp/IFC4X3/include/IfcReal.h>
 
 #include <Carve/src/include/carve/carve.hpp>
 
 #include "IFCC_MeshUtils.h"
 #include "IFCC_FaceConverter.h"
+#include "IFCC_PointConverter.h"
 
 namespace IFCC {
 
 
-	FaceConverter::FaceConverter( shared_ptr<GeometrySettings>& gs, shared_ptr<UnitConverter>& uc, shared_ptr<CurveConverter>& cc, shared_ptr<SplineConverter>& sc, shared_ptr<Sweeper>& sw )
-		: m_geom_settings( gs ), m_unit_converter( uc ), m_curve_converter( cc ), m_spline_converter( sc ), m_sweeper( sw )
+	FaceConverter::FaceConverter( shared_ptr<GeometrySettings>& gs, shared_ptr<UnitConverter>& uc, shared_ptr<CurveConverter>& cc,
+								  shared_ptr<SplineConverter>& sc, shared_ptr<Sweeper>& sw, shared_ptr<ProfileCache>&	profile_cache ) :
+		m_geom_settings( gs ),
+		m_unit_converter( uc ),
+		m_curve_converter( cc ),
+		m_spline_converter( sc ),
+		m_sweeper( sw ),
+		m_profile_cache(profile_cache)
 	{
 	}
 
-	void FaceConverter::convertIfcSurface( const shared_ptr<IFC4X3::IfcSurface>& surface, shared_ptr<ItemShapeData>& item_data, shared_ptr<SurfaceProxy>& surface_proxy )
+	void FaceConverter::convertIfcSurface( const shared_ptr<IFC4X3::IfcSurface>& surface, shared_ptr<ItemShapeData>& item_data, shared_ptr<SurfaceProxy>& surface_proxy,
+										   std::vector<ConvertError>& errors )
 	{
 		//ENTITY IfcSurface ABSTRACT SUPERTYPE OF(ONEOF(IfcBoundedSurface, IfcElementarySurface, IfcSweptSurface))
 
@@ -118,7 +129,7 @@ namespace IFCC {
 				shared_ptr<IFC4X3::IfcSurface>& basis_surface = curve_bounded_surface->m_BasisSurface;
 				if( basis_surface )
 				{
-					convertIfcSurface( basis_surface, item_data, surface_proxy );
+					convertIfcSurface( basis_surface, item_data, surface_proxy, errors );
 				}
 
 
@@ -126,6 +137,7 @@ namespace IFCC {
 				//bool implicit_outer = curve_bounded_surface->m_ImplicitOuter;
 
 				// TODO: implement
+				errors.push_back({OT_GeometryConvert, -1, "CurveBoundedSurface not implemented" });
 #ifdef _DEBUG
 				std::cout << "IfcCurveBoundedSurface boundaries not implemented." << std::endl;
 #endif
@@ -137,7 +149,7 @@ namespace IFCC {
 				shared_ptr<IFC4X3::IfcSurface>& basis_surface = rectengular_trimmed_surface->m_BasisSurface;
 				if( basis_surface )
 				{
-					convertIfcSurface( basis_surface, item_data, surface_proxy );
+					convertIfcSurface( basis_surface, item_data, surface_proxy, errors );
 				}
 
 				//shared_ptr<IfcParameterValue>& u1 = rectengular_trimmed_surface->m_U1;
@@ -147,6 +159,7 @@ namespace IFCC {
 				//bool u_sense = rectengular_trimmed_surface->m_Usense;
 				//bool v_sense = rectengular_trimmed_surface->m_Vsense;
 				// TODO: implement
+				errors.push_back({OT_GeometryConvert, -1, "RectangularTrimmedSurface not implemented" });
 #ifdef _DEBUG
 				std::cout << "IfcRectangularTrimmedSurface U1, V1, U2, V2 not implemented." << std::endl;
 #endif
@@ -237,7 +250,11 @@ namespace IFCC {
 		if( dynamic_pointer_cast<IFC4X3::IfcSweptSurface>( surface ) )
 		{
 			// ENTITY IfcSweptSurface	ABSTRACT SUPERTYPE OF(ONEOF(IfcSurfaceOfLinearExtrusion, IfcSurfaceOfRevolution))
-			//shared_ptr<IfcProfileDef>& swept_surface_profile = swept_surface->m_SweptCurve;
+			shared_ptr<IFC4X3::IfcProfileDef>& swept_surface_profile = swept_surface->m_SweptCurve;
+			shared_ptr<ProfileConverter> profileCon = m_profile_cache->getProfileConverter(swept_surface_profile);
+
+			const std::vector<std::vector<vec2> >& swept_profile = profileCon->getCoordinates();
+
 			shared_ptr<IFC4X3::IfcAxis2Placement3D>& swept_surface_placement = swept_surface->m_Position;
 
 			shared_ptr<TransformData> swept_surface_transform;
@@ -249,15 +266,33 @@ namespace IFCC {
 			shared_ptr<IFC4X3::IfcSurfaceOfLinearExtrusion> linear_extrusion = dynamic_pointer_cast<IFC4X3::IfcSurfaceOfLinearExtrusion>( swept_surface );
 			if( linear_extrusion )
 			{
-				//shared_ptr<IfcDirection>& linear_extrusion_direction = linear_extrusion->m_ExtrudedDirection;
-				//shared_ptr<IfcLengthMeasure>& linear_extrusion_depth = linear_extrusion->m_Depth;
-				// TODO: implement
+				shared_ptr<IFC4X3::IfcDirection>& ifc_extrusion_direction = linear_extrusion->m_ExtrudedDirection;
+				if( ifc_extrusion_direction )
+				{
+					vec3 extrusion_direction = carve::geom::VECTOR(ifc_extrusion_direction->m_DirectionRatios[0]->m_value, ifc_extrusion_direction->m_DirectionRatios[1]->m_value, ifc_extrusion_direction->m_DirectionRatios[2]->m_value);
+
+					double factor = 1.0;
+					if( linear_extrusion->m_Depth )
+					{
+						factor = linear_extrusion->m_Depth->m_value;
+						extrusion_direction *= factor;
+					}
+
+					GeomProcessingParams params(m_geom_settings, surface.get(), this);
+					m_sweeper->extrude(swept_profile, extrusion_direction, item_data, params);
+				}
+
 				return;
+
+//				errors.push_back({OT_GeometryConvert, -1, "SurfaceOfLinearExtrusion not implemented" });
+//				// TODO: implement
+//				return;
 			}
 
 			shared_ptr<IFC4X3::IfcSurfaceOfRevolution> suface_of_revolution = dynamic_pointer_cast<IFC4X3::IfcSurfaceOfRevolution>( swept_surface );
 			if( suface_of_revolution )
 			{
+				errors.push_back({OT_GeometryConvert, -1, "SurfaceOfRevolution not implemented" });
 				// TODO: implement
 				return;
 			}
