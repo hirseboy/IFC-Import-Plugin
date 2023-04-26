@@ -19,7 +19,7 @@ MainWindow::MainWindow(QWidget *parent)
 	, ui(new Ui::MainWindow)
 {
 	ui->setupUi(this);
-	ui->actionSave->setEnabled(false);
+	ui->actionSave->setEnabled(true);
 
 	loadPlugins();
 }
@@ -100,17 +100,20 @@ void MainWindow::on_actionRead_ifc_triggered() {
 
 
 void MainWindow::on_actionSave_triggered() {
-//	QFileInfo finfo(ui->label_FileName->text());
-//	QString fnameSuggestion = finfo.absoluteDir().absolutePath() + "/" + finfo.baseName() + ".vicus";
-//	QString filename = QFileDialog::getSaveFileName(
-//							this,
-//							tr("Specify SIM-VICUS project file"),
-//							fnameSuggestion,
-//							tr("SIM-VICUS project file (*.vicus);;All files (*.*)"));
+	QFileInfo finfo(ui->label_FileName->text());
+	QString fnameSuggestion = finfo.absoluteDir().absolutePath() + "/" + finfo.baseName() + ".vicus";
+	QString filename = QFileDialog::getSaveFileName(
+							this,
+							tr("Specify SIM-VICUS project file"),
+							fnameSuggestion,
+							tr("SIM-VICUS project file (*.vicus);;All files (*.*)"));
 
-//	if(!filename.isEmpty()) {
-//		m_reader->writeXML(IBK::Path(filename.toStdString()));
-//	}
+	if(!filename.isEmpty()) {
+		QFile file(filename);
+		file.open(QIODevice::WriteOnly | QIODevice::Text);
+		QTextStream stream(&file);
+		stream << m_vicusProject;
+	}
 
 }
 
@@ -172,13 +175,11 @@ void MainWindow::runImport()
 	}
 	QString name = action->text();
 	SVImportPluginInterface* exp = m_importer.value(name);
+	m_vicusProject.clear();
 	if( exp ) {
-		QString project;
-		bool res = exp->import(this, project);
-		if(res) {
-			std::ofstream out("g:\\temp\\VicusProject.vicus");
-			out << project.toStdString();
-			out.close();
+		bool res = exp->import(this, m_vicusProject);
+		if(!res) {
+			m_vicusProject.clear();
 		}
 	}
 }

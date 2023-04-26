@@ -38,5 +38,7 @@ private:
 
 	void runImport();
 
+	QString m_vicusProject;
+
 };
 #endif // MainWindowH
