@@ -463,6 +463,8 @@ bool IFCReader::convert(bool useSpaceBoundaries) {
 				building->updateStoreys(m_elementEntitesShape, m_spaceEntitesShape, m_geometryConverter.getBuildingModel()->getUnitConverter(),
 									   m_buildingElements, m_openings, m_useSpaceBoundaries, m_convertErrors);
 			}
+
+
 		}
 		else {
 			m_convertErrors.push_back({OT_Site, -1, "No site"});
@@ -600,6 +602,25 @@ std::set<std::pair<int,int>> IFCReader::checkForIntersectedSpace() const {
 		}
 	}
 	return res;
+}
+
+std::set<std::pair<int, int> > IFCReader::checkForSpaceWithSameSpaceBoundaries() const {
+	std::set<std::pair<int,int>> res;
+	std::vector<std::shared_ptr<Space>> spaces = m_site.allSpaces();
+	if(spaces.size() < 2)
+		return res;
+
+	for(size_t i=0; i<spaces.size()-1; ++i) {
+		for(size_t j=i+1; j<spaces.size(); ++j) {
+			if(spaces[i]->shareSameSpaceBoundary(*spaces[j]))
+				res.insert({spaces[i]->m_id,spaces[j]->m_id});
+		}
+	}
+	return res;
+}
+
+std::vector<int> IFCReader::checkForWrongSurfaceIds() {
+	return m_instances.checkForWrongSurfaceIds(m_site);
 }
 
 bool IFCReader::flipPolygons() const {

@@ -101,6 +101,17 @@ public:
 	*/
 	std::set<std::pair<int,int>> checkForIntersectedSpace() const;
 
+	/*! Check if two spaces share the same space boundary.
+		\return Set of pairs of intersected spaces given by their ids
+	*/
+	std::set<std::pair<int,int>> checkForSpaceWithSameSpaceBoundaries() const;
+
+	/*! Check if a component instance is connected to a non existing surface.
+	 *  It returns a vector of component instance ids which are wrong.
+	 *  Everything is allright in case the vector is empty.
+	*/
+	std::vector<int> checkForWrongSurfaceIds();
+
 	/*! Return state of flip polygon.*/
 	bool flipPolygons() const;
 
