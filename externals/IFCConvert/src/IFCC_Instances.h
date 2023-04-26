@@ -38,11 +38,7 @@ public:
 	void collectComponentInstances(BuildingElementsCollector& elements, Database& database,
 								  const Site& site, std::vector<ConvertError>& errors);
 
-//	/*! Add all component instances and sub surface component instances to the given vicus project.
-//		\param idMap Map for mapping current ids to new VICUS ids.
-//	*/
-//	void addToVicusProject(VICUS::Project* project, std::map<int,int>& idMap);
-
+	std::vector<int> checkForWrongSurfaceIds(const Site& site);
 private:
 
 	/*! Collect component and subsurface component instances from building elements and other databases.

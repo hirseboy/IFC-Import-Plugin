@@ -26,7 +26,8 @@ TiXmlElement * Instances::writeXML(TiXmlElement * parent) const {
 		parent->LinkEndChild(child);
 
 		for(const auto& comInst : m_componentInstances) {
-			comInst.second.writeXML(child);
+//			if(comInst.second.m_sideASurfaceId > 0)
+				comInst.second.writeXML(child);
 		}
 	}
 
@@ -35,7 +36,8 @@ TiXmlElement * Instances::writeXML(TiXmlElement * parent) const {
 		parent->LinkEndChild(child);
 
 		for(const auto& comInst : m_subSurfaceComponentInstances) {
-			comInst.second.writeXML(child);
+//			if(comInst.second.m_sideASurfaceId > 0)
+				comInst.second.writeXML(child);
 		}
 	}
 
@@ -56,7 +58,11 @@ void Instances::collectNormalComponentInstances(BuildingElementsCollector& eleme
 			for(const auto& space : storey->spaces()) {
 				for(const auto& sb : space->spaceBoundaries()) {
 					// first loop is only for normal component instances
-					if(sb->isOpeningElement())
+					if(!sb->isConstructionElement())
+						continue;
+
+					// it makes no sense to add a space boundary with a non valid surface
+					if(!sb->surface().isValid())
 						continue;
 
 					// don't go further if the space boundary is already assigned
@@ -68,16 +74,26 @@ void Instances::collectNormalComponentInstances(BuildingElementsCollector& eleme
 						ci.m_id = GUID_maker::instance().guid();
 						ci.m_componentId = Database::m_missingComponentId;
 						ci.m_sideASurfaceId = sb->surface().id();
-						m_componentInstances[ci.m_id] = ci;
-						sb->m_componentInstanceId = ci.m_id;
+						if(ci.m_sideASurfaceId >= 0) {
+							m_componentInstances[ci.m_id] = ci;
+							sb->m_componentInstanceId = ci.m_id;
+						}
+						else {
+							errors.push_back(ConvertError{OT_Instance, sb->m_id, "Creating component instance - space boundary with non valid surface Id found"});
+						}
 					}
 					else if(sb->isVirtual()) {
 						ComponentInstance ci;
 						ci.m_id = GUID_maker::instance().guid();
 						ci.m_componentId = Database::m_virtualComponentId;
 						ci.m_sideASurfaceId = sb->surface().id();
-						m_componentInstances[ci.m_id] = ci;
-						sb->m_componentInstanceId = ci.m_id;
+						if(ci.m_sideASurfaceId >= 0) {
+							m_componentInstances[ci.m_id] = ci;
+							sb->m_componentInstanceId = ci.m_id;
+						}
+						else {
+							errors.push_back(ConvertError{OT_Instance, sb->m_id, "Creating component instance - space boundary with non valid surface Id found"});
+						}
 					}
 					else {
 						auto fitElem = std::find_if(
@@ -96,8 +112,13 @@ void Instances::collectNormalComponentInstances(BuildingElementsCollector& eleme
 								ci.m_componentId = fitComp->first;
 								ci.m_sideASurfaceId = sb->surface().id();
 								fitComp->second.updateComponentType(*sb);
-								m_componentInstances[ci.m_id] = ci;
-								sb->m_componentInstanceId = ci.m_id;
+								if(ci.m_sideASurfaceId >= 0 ) {
+									m_componentInstances[ci.m_id] = ci;
+									sb->m_componentInstanceId = ci.m_id;
+								}
+								else {
+									errors.push_back(ConvertError{OT_Instance, sb->m_id, "Creating component instance - space boundary with non valid surface Id found"});
+								}
 							}
 							else {
 								ConvertError err;
@@ -126,65 +147,86 @@ void Instances::collectSubSurfaceComponentInstances(BuildingElementsCollector& e
 	for(const auto& building : site.m_buildings) {
 		for(const auto& storey : building->storeys()) {
 			for(const auto& space : storey->spaces()) {
-				for(const auto& sb : space->spaceBoundaries()) {
-					if(!sb->isOpeningElement())
+				for(const auto& subsb : space->spaceBoundaries()) {
+					if(!subsb->isConstructionElement())
 						continue;
 
-					// don't go further if the space boundary is already assigned
-					if(sb->m_componentInstanceId > -1)
-						continue;
+					// go through all subsurfaces of the current space boundary
+					for(const auto& subsb : subsb->containedOpeningSpaceBoundaries()) {
+
+						// don't go further if the space boundary is already assigned
+						if(subsb->m_componentInstanceId > -1)
+							continue;
 
 
-					if(sb->isMissing()) {
-						ComponentInstance ci;
-						ci.m_id = GUID_maker::instance().guid();
-						ci.m_componentId = Database::m_missingComponentId;
-						ci.m_sideASurfaceId = sb->surface().id();
-						m_subSurfaceComponentInstances[ci.m_id] = ci;
-						sb->m_componentInstanceId = ci.m_id;
-					}
-					else if(sb->isVirtual()) {
-						ComponentInstance ci;
-						ci.m_id = GUID_maker::instance().guid();
-						ci.m_componentId = Database::m_virtualComponentId;
-						ci.m_sideASurfaceId = sb->surface().id();
-						m_subSurfaceComponentInstances[ci.m_id] = ci;
-						sb->m_componentInstanceId = ci.m_id;
-					}
-					else {
-						auto fitElem = std::find_if(
-										   elements.m_openingElements.begin(),
-										   elements.m_openingElements.end(),
-										   [sb](const auto& elem) {return elem->m_id == sb->m_elementEntityId; });
-						if(fitElem != elements.m_openingElements.end()) {
-							const std::shared_ptr<BuildingElement>& elem = *fitElem;
-							auto fitComp = std::find_if(
-											   database.m_subSurfaceComponents.begin(),
-											   database.m_subSurfaceComponents.end(),
-											   [elem](const auto& comp) {return comp.second.guid() == elem->m_guid; });
-							if(fitComp != database.m_subSurfaceComponents.end()) {
-								ComponentInstance ci;
-								ci.m_id = GUID_maker::instance().guid();
-								ci.m_subSurface = true;
-								ci.m_componentId = fitComp->first;
-								ci.m_sideASurfaceId = sb->surface().id();
+						if(subsb->isMissing()) {
+							ComponentInstance ci;
+							ci.m_id = GUID_maker::instance().guid();
+							ci.m_subSurface = true;
+							ci.m_componentId = Database::m_missingComponentId;
+							ci.m_sideASurfaceId = subsb->surface().id();
+							if(ci.m_sideASurfaceId >= 0) {
 								m_subSurfaceComponentInstances[ci.m_id] = ci;
-								sb->m_componentInstanceId = ci.m_id;
+								subsb->m_componentInstanceId = ci.m_id;
+							}
+							else {
+								errors.push_back(ConvertError{OT_Instance, subsb->m_id, "Creating subsurface component instance - space boundary with non valid surface Id found"});
+							}
+						}
+						else if(subsb->isVirtual()) {
+							ComponentInstance ci;
+							ci.m_id = GUID_maker::instance().guid();
+							ci.m_subSurface = true;
+							ci.m_componentId = Database::m_virtualComponentId;
+							ci.m_sideASurfaceId = subsb->surface().id();
+							if(ci.m_sideASurfaceId >= 0) {
+								m_subSurfaceComponentInstances[ci.m_id] = ci;
+								subsb->m_componentInstanceId = ci.m_id;
+							}
+							else {
+								errors.push_back(ConvertError{OT_Instance, subsb->m_id, "Creating subsurface component instance - space boundary with non valid surface Id found"});
+							}
+						}
+						else {
+							auto fitElem = std::find_if(
+										elements.m_openingElements.begin(),
+										elements.m_openingElements.end(),
+										[subsb](const auto& elem) {return elem->m_id == subsb->m_elementEntityId; });
+							if(fitElem != elements.m_openingElements.end()) {
+								const std::shared_ptr<BuildingElement>& elem = *fitElem;
+								auto fitComp = std::find_if(
+											database.m_subSurfaceComponents.begin(),
+											database.m_subSurfaceComponents.end(),
+											[elem](const auto& comp) {return comp.second.guid() == elem->m_guid; });
+								if(fitComp != database.m_subSurfaceComponents.end()) {
+									ComponentInstance ci;
+									ci.m_id = GUID_maker::instance().guid();
+									ci.m_subSurface = true;
+									ci.m_componentId = fitComp->first;
+									ci.m_sideASurfaceId = subsb->surface().id();
+									if(ci.m_sideASurfaceId >= 0) {
+										m_subSurfaceComponentInstances[ci.m_id] = ci;
+										subsb->m_componentInstanceId = ci.m_id;
+									}
+									else {
+										errors.push_back(ConvertError{OT_Instance, subsb->m_id, "Creating subsurface component instance - space boundary with non valid surface Id found"});
+									}
+								}
+								else {
+									ConvertError err;
+									err.m_objectType = OT_Instance;
+									err.m_objectID = subsb->m_id;
+									err.m_errorText = "Element for opening space boundary not found in components list";
+									errors.push_back(err);
+								}
 							}
 							else {
 								ConvertError err;
 								err.m_objectType = OT_Instance;
-								err.m_objectID = sb->m_id;
-								err.m_errorText = "Element for opening space boundary not found in components list";
+								err.m_objectID = subsb->m_id;
+								err.m_errorText = "Element ID in opening space boundary not found in element list";
 								errors.push_back(err);
 							}
-						}
-						else {
-							ConvertError err;
-							err.m_objectType = OT_Instance;
-							err.m_objectID = sb->m_id;
-							err.m_errorText = "Element ID in opening space boundary not found in element list";
-							errors.push_back(err);
 						}
 					}
 				}
@@ -192,6 +234,59 @@ void Instances::collectSubSurfaceComponentInstances(BuildingElementsCollector& e
 		}
 	}
 }
+
+static bool hasSurfaceId(SpaceBoundary* sb, int id) {
+	if(sb == nullptr)
+		return false;
+	if(sb->surface().id() == id)
+		return true;
+	for(const auto& ss : sb->surface().subSurfaces()) {
+		if(ss.id() == id)
+			return true;
+	}
+	return false;
+}
+
+static bool hasSubSurfaceId(SpaceBoundary* sb, int id) {
+	if(sb == nullptr)
+		return false;
+	for(const auto& ss : sb->surface().subSurfaces()) {
+		if(ss.id() == id)
+			return true;
+	}
+	return false;
+}
+
+static bool hasSurfaceId(const std::vector<std::shared_ptr<SpaceBoundary>>& sbs, int id) {
+	for(const auto& sb : sbs) {
+		if(hasSurfaceId(sb.get(), id))
+			return true;
+	}
+	return false;
+}
+
+static bool hasSubSurfaceId(const std::vector<std::shared_ptr<SpaceBoundary>>& sbs, int id) {
+	for(const auto& sb : sbs) {
+		if(hasSubSurfaceId(sb.get(), id))
+			return true;
+	}
+	return false;
+}
+
+std::vector<int> Instances::checkForWrongSurfaceIds(const Site& site) {
+	std::vector<int> res;
+	std::vector<std::shared_ptr<SpaceBoundary>> allSBs = site.allSpaceBoundaries();
+	for(const auto& ci : m_componentInstances) {
+		if(!hasSurfaceId(allSBs, ci.second.m_sideASurfaceId))
+			res.push_back(ci.second.m_id);
+	}
+	for(const auto& ci : m_subSurfaceComponentInstances) {
+		if(!hasSubSurfaceId(allSBs, ci.second.m_sideASurfaceId))
+			res.push_back(ci.second.m_id);
+	}
+	return res;
+}
+
 
 //void Instances::addToVicusProject(VICUS::Project* project, std::map<int,int>& idMap) {
 //	for(const auto& ci : m_componentInstances) {
