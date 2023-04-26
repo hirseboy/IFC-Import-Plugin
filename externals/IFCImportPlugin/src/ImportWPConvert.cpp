@@ -56,27 +56,60 @@ bool ImportWPConvert::isComplete() const {
 void ImportWPConvert::setText() {
 	IFCC::Logger::instance() << "setText start";
 
+	// check for equal space boundaries
 	std::vector<std::pair<int,int>> equalSBs;
 	int equalSBCount = 0;
-//	equalSBCount = m_reader->checkForEqualSpaceBoundaries(equalSBs);
+	equalSBCount = m_reader->checkForEqualSpaceBoundaries(equalSBs);
+
+	//check for unique sub surfaces
 	std::vector<std::pair<int,std::vector<int>>> multiSubsurfaces;
 	int multiSubCount = 0;
-//	multiSubCount = m_reader->checkForUniqueSubSurfacesInSpaces(multiSubsurfaces);
+	multiSubCount = m_reader->checkForUniqueSubSurfacesInSpaces(multiSubsurfaces);
+
+	// check for intersected spaces
 	std::set<std::pair<int,int>> intersectedSpaceIds;
-//	intersectedSpaceIds = m_reader->checkForIntersectedSpace();
+	intersectedSpaceIds = m_reader->checkForIntersectedSpace();
 	std::map<int,size_t> instersectionCounts;
 	for(auto isId : intersectedSpaceIds) {
 		++instersectionCounts[isId.first];
 	}
 	int spaceIntersectCount = intersectedSpaceIds.size();
-	if(m_convertSuccessfully && (equalSBCount > 0 || multiSubCount > 0 || spaceIntersectCount)) {
+
+	// check for shared space boundaries
+	std::set<std::pair<int,int>> sharedSpaceBoundaries;
+	sharedSpaceBoundaries = m_reader->checkForSpaceWithSameSpaceBoundaries();
+	std::map<int,size_t> sharedSpaceBoundaryCounts;
+	for(auto isId : sharedSpaceBoundaries) {
+		++sharedSpaceBoundaryCounts[isId.first];
+	}
+	int sharedSpaceBoundaryCount = intersectedSpaceIds.size();
+
+
+	if(m_convertSuccessfully && (equalSBCount > 0 || multiSubCount > 0 || spaceIntersectCount > 0 || sharedSpaceBoundaryCount > 0)) {
 		m_convertSuccessfully = false;
 	}
+
+	std::vector<int> wrongInstances = m_reader->checkForWrongSurfaceIds();
+	if(!wrongInstances.empty())
+		m_convertSuccessfully = false;
 
 	IFCC::Logger::instance() << "setText 1";
 
 	ui->textEdit->clear();
 	QStringList text;
+
+	// print out convert errors
+	const std::vector<IFCC::ConvertError>& errors = m_reader->convertErrors();
+	if(!errors.empty()) {
+		IFCC::Logger::instance() << "setText 31";
+		text << tr("<font color=\"#FF0000\">Conversion errors:</font>");
+		for( const auto& err : errors) {
+			text << QString("%1 for object '%2' with id: %3").arg(QString::fromStdString(err.m_errorText))
+					.arg(QString::fromStdString(IFCC::objectTypeToString(err.m_objectType))).arg(err.m_objectID);
+		}
+		text << "<br>";
+	}
+
 	if(m_convertSuccessfully) {
 		IFCC::Logger::instance() << "setText 2";
 		if(!m_reader->m_errorText.empty()) {
@@ -87,16 +120,6 @@ void ImportWPConvert::setText() {
 			text << "";
 		}
 		IFCC::Logger::instance() << "setText 3";
-		const std::vector<IFCC::ConvertError>& errors = m_reader->convertErrors();
-		if(!errors.empty()) {
-			IFCC::Logger::instance() << "setText 31";
-			text << tr("<font color=\"#FF0000\">Conversion errors:</font>");
-			for( const auto& err : errors) {
-				text << QString("%1 for object '%2' with id: %3").arg(QString::fromStdString(err.m_errorText))
-						.arg(QString::fromStdString(IFCC::objectTypeToString(err.m_objectType))).arg(err.m_objectID);
-			}
-			text << "<br>";
-		}
 		IFCC::Logger::instance() << "setText 4";
 		text << tr("File converted successfully.");
 //		text << m_reader->messages() << "";
@@ -122,13 +145,22 @@ void ImportWPConvert::setText() {
 				}
 			}
 		}
-		else if(equalSBCount > 0) {
+		if(sharedSpaceBoundaryCount > 0) {
+			text << tr("%1 spaces with shared space boundaries found.").arg(sharedSpaceBoundaryCount);
+			for(const auto& it : sharedSpaceBoundaryCounts) {
+				text << tr("Space %1 shares with %2 spaces at least one space boundary.").arg(it.first).arg(it.second);
+			}
+		}
+		if(equalSBCount > 0) {
 			text << tr("%1 space boundaries with identical surfaces found.").arg(equalSBCount);
 		}
-		else if(multiSubCount > 0) {
+		if(multiSubCount > 0) {
 			text << tr("%1 opening space boundaries found which are used more than once in one space.").arg(multiSubCount);
 		}
-		else {
+		if(wrongInstances.size() > 0) {
+			text << tr("%1 component instances found which have non valid surface ids.").arg(wrongInstances.size());
+		}
+		if(!m_reader->m_errorText.empty()) {
 			text << QString::fromStdString(m_reader->m_errorText);
 		}
 	}
