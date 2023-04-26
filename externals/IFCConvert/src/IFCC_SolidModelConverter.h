@@ -52,7 +52,7 @@ public:
 	virtual ~SolidModelConverter();
 
 	// ENTITY IfcSolidModel ABSTRACT SUPERTYPE OF(ONEOF(IfcCsgSolid, IfcManifoldSolidBrep, IfcSweptAreaSolid, IfcSweptDiskSolid))
-	void convertIfcSolidModel( const shared_ptr<IFC4X3::IfcSolidModel>& solid_model, shared_ptr<ItemShapeData> item_data );
+	void convertIfcSolidModel( const shared_ptr<IFC4X3::IfcSolidModel>& solid_model, shared_ptr<ItemShapeData> item_data, std::vector<ConvertError>& errors );
 
 	void convertIfcExtrudedAreaSolid( const shared_ptr<IFC4X3::IfcExtrudedAreaSolid>& extruded_area, shared_ptr<ItemShapeData> item_data );
 
@@ -60,15 +60,17 @@ public:
 
 	void convertIfcRevolvedAreaSolid( const shared_ptr<IFC4X3::IfcRevolvedAreaSolid>& revolved_area, shared_ptr<ItemShapeData> item_data );
 
-	void convertIfcBooleanResult( const shared_ptr<IFC4X3::IfcBooleanResult>& bool_result, shared_ptr<ItemShapeData> item_data );
+	void convertIfcBooleanResult( const shared_ptr<IFC4X3::IfcBooleanResult>& bool_result, shared_ptr<ItemShapeData> item_data, std::vector<ConvertError>& errors );
 
 	void convertIfcCsgPrimitive3D( const shared_ptr<IFC4X3::IfcCsgPrimitive3D>& csg_primitive, shared_ptr<ItemShapeData> item_data );
 
 	void extrudeBox( const std::vector<vec3>& boundary_points, const vec3& extrusion_vector, shared_ptr<carve::input::PolyhedronData>& box_data );
 
-	void convertIfcHalfSpaceSolid( const shared_ptr<IFC4X3::IfcHalfSpaceSolid>& half_space_solid, shared_ptr<ItemShapeData> item_data, const shared_ptr<ItemShapeData>& other_operand );
+	void convertIfcHalfSpaceSolid( const shared_ptr<IFC4X3::IfcHalfSpaceSolid>& half_space_solid, shared_ptr<ItemShapeData> item_data,
+								   const shared_ptr<ItemShapeData>& other_operand, std::vector<ConvertError>& errors );
 
-	void convertIfcBooleanOperand( const shared_ptr<IFC4X3::IfcBooleanOperand>& operand_select, shared_ptr<ItemShapeData> item_data, const shared_ptr<ItemShapeData>& other_operand );
+	void convertIfcBooleanOperand( const shared_ptr<IFC4X3::IfcBooleanOperand>& operand_select, shared_ptr<ItemShapeData> item_data,
+								   const shared_ptr<ItemShapeData>& other_operand, std::vector<ConvertError>& errors );
 
 	void convertIfcSectionedSpine( const shared_ptr<IFC4X3::IfcSectionedSpine>& spine, shared_ptr<ItemShapeData> item_data );
 };

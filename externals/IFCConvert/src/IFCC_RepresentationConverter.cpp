@@ -82,7 +82,7 @@ RepresentationConverter::RepresentationConverter( shared_ptr<GeometrySettings> g
 		m_placement_converter = shared_ptr<PlacementConverter>( new PlacementConverter( m_unit_converter ) );
 		m_curve_converter = shared_ptr<CurveConverter>( new CurveConverter( m_geom_settings, m_placement_converter, m_point_converter, m_spline_converter ) );
 		m_profile_cache = shared_ptr<ProfileCache>( new ProfileCache( m_curve_converter, m_spline_converter ) );
-		m_face_converter = shared_ptr<FaceConverter>( new FaceConverter( m_geom_settings, m_unit_converter, m_curve_converter, m_spline_converter, m_sweeper ) );
+		m_face_converter = shared_ptr<FaceConverter>( new FaceConverter( m_geom_settings, m_unit_converter, m_curve_converter, m_spline_converter, m_sweeper, m_profile_cache ) );
 		m_solid_converter = shared_ptr<SolidModelConverter>( new SolidModelConverter( m_geom_settings, m_point_converter, m_curve_converter, m_face_converter, m_profile_cache, m_sweeper ) );
 		m_tessel_converter = shared_ptr<TessellatedItemConverter>( new TessellatedItemConverter( m_unit_converter ) );
 
@@ -461,7 +461,7 @@ RepresentationConverter::RepresentationConverter( shared_ptr<GeometrySettings> g
 		shared_ptr<IfcBooleanResult> boolean_result = dynamic_pointer_cast<IfcBooleanResult>( geom_item );
 		if( boolean_result )
 		{
-			m_solid_converter->convertIfcBooleanResult( boolean_result, item_data );
+			m_solid_converter->convertIfcBooleanResult( boolean_result, item_data, errors );
 
 //			meshDump(*item_data->m_meshsets.front(), "Result after convertBoolean", "g:/temp/meshsets.txt");
 			return true;
@@ -475,7 +475,7 @@ RepresentationConverter::RepresentationConverter( shared_ptr<GeometrySettings> g
 				errors.push_back({OT_GeometryConvert, -1, "Advanced brep not implemented in " + std::to_string(item_data->m_ifc_item->m_tag)});
 				return false;
 			}
-			m_solid_converter->convertIfcSolidModel( solid_model, item_data );
+			m_solid_converter->convertIfcSolidModel( solid_model, item_data, errors );
 			return true;
 		}
 
@@ -531,7 +531,7 @@ RepresentationConverter::RepresentationConverter( shared_ptr<GeometrySettings> g
 		if( ifc_surface )
 		{
 			shared_ptr<SurfaceProxy> surface_proxy;
-			m_face_converter->convertIfcSurface( ifc_surface, item_data, surface_proxy );
+			m_face_converter->convertIfcSurface( ifc_surface, item_data, surface_proxy, errors );
 			return true;
 		}
 
@@ -601,7 +601,7 @@ RepresentationConverter::RepresentationConverter( shared_ptr<GeometrySettings> g
 				if( select_surface )
 				{
 					shared_ptr<SurfaceProxy> surface_proxy;
-					m_face_converter->convertIfcSurface( select_surface, item_data, surface_proxy );
+					m_face_converter->convertIfcSurface( select_surface, item_data, surface_proxy, errors );
 					continue;
 				}
 			}

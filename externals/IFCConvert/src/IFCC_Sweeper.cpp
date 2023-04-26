@@ -65,7 +65,26 @@ namespace IFCC {
 			{
 				if( it_bounds == faceLoopsInput.begin() )
 				{
-					break;
+					std::vector<array2d> polygons2dFlatVector;
+					GeomUtils::polygons2flatVec(loopPointsInput, polygons2dFlatVector);
+					if(loopPointsInput.size() == 2 && faceLoopsInput.size() == 1) {
+						shared_ptr<carve::input::PolyhedronData> meshOut( new carve::input::PolyhedronData() );
+
+						vec3 point3D0 = carve::geom::VECTOR(polygons2dFlatVector[0][0], polygons2dFlatVector[0][1], 0);
+						vec3 point3D1 = carve::geom::VECTOR(polygons2dFlatVector[1][0], polygons2dFlatVector[1][1], 0);
+						vec3 point3D0_top = point3D0 + extrusionVector;
+						vec3 point3D1_top = point3D1 + extrusionVector;
+						meshOut->addVertex(point3D0);
+						meshOut->addVertex(point3D1);
+						meshOut->addVertex(point3D1_top);
+						meshOut->addVertex(point3D0_top);
+						meshOut->addFace(0, 1, 2, 3);
+						itemData->addClosedPolyhedron(meshOut, params);
+						return;
+					}
+					else {
+						break;
+					}
 				}
 				else
 				{

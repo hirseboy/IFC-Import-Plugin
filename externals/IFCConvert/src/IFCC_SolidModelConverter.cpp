@@ -76,7 +76,8 @@ namespace IFCC {
 	}
 
 	// ENTITY IfcSolidModel ABSTRACT SUPERTYPE OF(ONEOF(IfcCsgSolid, IfcManifoldSolidBrep, IfcSweptAreaSolid, IfcSweptDiskSolid))
-	void SolidModelConverter::convertIfcSolidModel( const shared_ptr<IFC4X3::IfcSolidModel>& solid_model, shared_ptr<ItemShapeData> item_data )
+	void SolidModelConverter::convertIfcSolidModel( const shared_ptr<IFC4X3::IfcSolidModel>& solid_model, shared_ptr<ItemShapeData> item_data,
+													std::vector<ConvertError>& errors )
 	{
 		const double length_in_meter = m_curve_converter->getPointConverter()->getUnitConverter()->getLengthInMeterFactor();
 
@@ -172,7 +173,7 @@ namespace IFCC {
 				// apply reference curve
 				//shared_ptr<carve::input::PolylineSetData> reference_surface_data( new carve::input::PolylineSetData() );
 				shared_ptr<SurfaceProxy> surface_proxy;
-				m_face_converter->convertIfcSurface( ifc_reference_surface, item_data_solid, surface_proxy );
+				m_face_converter->convertIfcSurface( ifc_reference_surface, item_data_solid, surface_proxy, errors );
 
 				if( surface_proxy )
 				{
@@ -245,7 +246,7 @@ namespace IFCC {
 			shared_ptr<IFC4X3::IfcBooleanResult> csg_select_boolean_result = dynamic_pointer_cast<IFC4X3::IfcBooleanResult>( csg_select );
 			if( csg_select_boolean_result )
 			{
-				convertIfcBooleanResult( csg_select_boolean_result, item_data );
+				convertIfcBooleanResult( csg_select_boolean_result, item_data, errors );
 			}
 			else
 			{
@@ -788,7 +789,7 @@ namespace IFCC {
 		convertRevolvedAreaSolid( profile_coords_unchecked, axis_location, axis_direction, revolution_angle, item_data );
 	}
 
-	void SolidModelConverter::convertIfcBooleanResult( const shared_ptr<IFC4X3::IfcBooleanResult>& bool_result, shared_ptr<ItemShapeData> item_data )
+	void SolidModelConverter::convertIfcBooleanResult( const shared_ptr<IFC4X3::IfcBooleanResult>& bool_result, shared_ptr<ItemShapeData> item_data, std::vector<ConvertError>& errors )
 	{
 		shared_ptr<IFC4X3::IfcBooleanOperator>& ifc_boolean_operator = bool_result->m_Operator;
 		shared_ptr<IFC4X3::IfcBooleanOperand> ifc_first_operand = bool_result->m_FirstOperand;
@@ -821,11 +822,11 @@ namespace IFCC {
 		// convert the first operand
 		shared_ptr<ItemShapeData> first_operand_data( new ItemShapeData() );
 		shared_ptr<ItemShapeData> empty_operand;
-		convertIfcBooleanOperand( ifc_first_operand, first_operand_data, empty_operand );
+		convertIfcBooleanOperand( ifc_first_operand, first_operand_data, empty_operand, errors );
 
 		// convert the second operand
 		shared_ptr<ItemShapeData> second_operand_data( new ItemShapeData() );
-		convertIfcBooleanOperand( ifc_second_operand, second_operand_data, first_operand_data );
+		convertIfcBooleanOperand( ifc_second_operand, second_operand_data, first_operand_data, errors );
 
 		// for every first operand polyhedrons, apply all second operand polyhedrons
 		// for every first operand polyhedrons, apply all second operand polyhedrons
@@ -1170,7 +1171,8 @@ namespace IFCC {
 		box_data->addFace( 7, 3, 2 );
 	}
 
-	void SolidModelConverter::convertIfcHalfSpaceSolid( const shared_ptr<IFC4X3::IfcHalfSpaceSolid>& half_space_solid, shared_ptr<ItemShapeData> item_data, const shared_ptr<ItemShapeData>& other_operand )
+	void SolidModelConverter::convertIfcHalfSpaceSolid( const shared_ptr<IFC4X3::IfcHalfSpaceSolid>& half_space_solid, shared_ptr<ItemShapeData> item_data,
+														const shared_ptr<ItemShapeData>& other_operand, std::vector<ConvertError>& errors )
 	{
 		//ENTITY IfcHalfSpaceSolid SUPERTYPE OF(ONEOF(IfcBoxedHalfSpace, IfcPolygonalBoundedHalfSpace))
 		double length_factor = m_point_converter->getUnitConverter()->getLengthInMeterFactor();
@@ -1429,7 +1431,7 @@ namespace IFCC {
 				//shared_ptr<carve::input::PolylineSetData> surface_data( new carve::input::PolylineSetData() );
 				shared_ptr<ItemShapeData> surface_item_data( new ItemShapeData() );
 				shared_ptr<SurfaceProxy> surface_proxy;
-				m_face_converter->convertIfcSurface( base_surface, surface_item_data, surface_proxy );
+				m_face_converter->convertIfcSurface( base_surface, surface_item_data, surface_proxy, errors );
 				if( surface_item_data->m_polylines.size() > 0 )
 				{
 					shared_ptr<carve::input::PolylineSetData>& surface_data = surface_item_data->m_polylines[0];
@@ -1483,27 +1485,28 @@ namespace IFCC {
 		}
 	}
 
-	void SolidModelConverter::convertIfcBooleanOperand( const shared_ptr<IFC4X3::IfcBooleanOperand>& operand_select, shared_ptr<ItemShapeData> item_data, const shared_ptr<ItemShapeData>& other_operand )
+	void SolidModelConverter::convertIfcBooleanOperand( const shared_ptr<IFC4X3::IfcBooleanOperand>& operand_select, shared_ptr<ItemShapeData> item_data,
+														const shared_ptr<ItemShapeData>& other_operand, std::vector<ConvertError>& errors )
 	{
 		// TYPE IfcBooleanOperand = SELECT	(IfcBooleanResult	,IfcCsgPrimitive3D	,IfcHalfSpaceSolid	,IfcSolidModel);
 		shared_ptr<IFC4X3::IfcSolidModel> solid_model = dynamic_pointer_cast<IFC4X3::IfcSolidModel>( operand_select );
 		if( solid_model )
 		{
-			convertIfcSolidModel( solid_model, item_data );  // not necessary to catch GeometryWarningException here
+			convertIfcSolidModel( solid_model, item_data, errors );  // not necessary to catch GeometryWarningException here
 			return;
 		}
 
 		shared_ptr<IFC4X3::IfcHalfSpaceSolid> half_space_solid = dynamic_pointer_cast<IFC4X3::IfcHalfSpaceSolid>( operand_select );
 		if( half_space_solid )
 		{
-			convertIfcHalfSpaceSolid( half_space_solid, item_data, other_operand );
+			convertIfcHalfSpaceSolid( half_space_solid, item_data, other_operand, errors );
 			return;
 		}
 
 		shared_ptr<IFC4X3::IfcBooleanResult> boolean_result = dynamic_pointer_cast<IFC4X3::IfcBooleanResult>( operand_select );
 		if( boolean_result )
 		{
-			convertIfcBooleanResult( boolean_result, item_data );
+			convertIfcBooleanResult( boolean_result, item_data, errors );
 			return;
 		}
 
