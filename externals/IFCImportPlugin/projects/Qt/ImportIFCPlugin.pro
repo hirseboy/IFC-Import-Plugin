@@ -44,17 +44,27 @@ INCLUDEPATH = \
 
 CONFIG(debug, debug|release) {
 	OBJECTS_DIR = debug$${DIR_PREFIX}
-	DESTDIR = ../../../lib$${DIR_PREFIX}
 	windows {
-		DLLDESTDIR = ../../../../bin/debug$${DIR_PREFIX}
+                DESTDIR = ../../../lib$${DIR_PREFIX}
+                DLLDESTDIR = ../../../../bin/debug$${DIR_PREFIX}
 	}
+        else {
+            DESTDIR = ../../../../bin/debug$${DIR_PREFIX}
+        }
 }
 else {
 	OBJECTS_DIR = release
-	DESTDIR = ../../../lib$${DIR_PREFIX}
 	windows {
-		DLLDESTDIR = ../../../../bin/release$${DIR_PREFIX}
+                DESTDIR = ../../../lib$${DIR_PREFIX}
+                DLLDESTDIR = ../../../../bin/release$${DIR_PREFIX}
 	}
+        else {
+            DESTDIR = ../../../../bin/release$${DIR_PREFIX}
+        }
+}
+
+!windows {
+#    QMAKE_POST_LINK += ../../../lib$${DIR_PREFIX}/libImportIFCPlugin.so ../../../../bin/debug$${DIR_PREFIX}/libImportIFCPlugin.so
 }
 
 MOC_DIR = moc
