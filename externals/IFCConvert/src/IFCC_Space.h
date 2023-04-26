@@ -123,7 +123,7 @@ public:
 		\return If false no space boundaries with connected building elements can be found (\sa m_spaceBoundaryErrors).
 		In case of evaluated space boundaries for openings a connection will be set in the corresponding opening.
 	*/
-	void updateSpaceBoundaries(const objectShapeTypeVector_t& shapes,
+	bool updateSpaceBoundaries(const objectShapeTypeVector_t& shapes,
 							   shared_ptr<UnitConverter>& unit_converter,
 							   const BuildingElementsCollector& buildingElements,
 							   std::vector<Opening>& openings,
@@ -144,13 +144,19 @@ public:
 	/*! Check if some space boundaries have the same surface.
 		\param equalSBs vector of ids of the equal space boundaries
 	*/
-	void checkForEqualSpaceBoundaries(std::vector<std::pair<int,int>>& equalSBs);
+	void checkForEqualSpaceBoundaries(std::vector<std::pair<int,int>>& equalSBs) const;
 
 	/*! Check if the current space is intersected to the other one.*/
-	bool isIntersected(const Space& other);
+	bool isIntersected(const Space& other) const;
 
 	/*! Write the space in vicus xml format including space boundaries.*/
 	TiXmlElement * writeXML(TiXmlElement * parent, bool flipPolygons) const;
+
+	/*! Return true if the space contains a space boundary with the given GUID.*/
+	bool hasSpaceBoundary(const std::string& guid) const;
+
+	/*! Return true if the two spaces share one space boundary.*/
+	bool shareSameSpaceBoundary(const Space& space) const;
 
 	std::string									m_longName;			///< More detailed name of the space
 	/*! IFC space type. It can be:
@@ -223,7 +229,7 @@ private:
 		\param constructionElements Vector for all construction elements with own surfaces
 		\return Vector of evaluated space boundaries
 	*/
-	std::vector<std::shared_ptr<SpaceBoundary>> createSpaceBoundaries( const BuildingElementsCollector& buildingElements);
+	std::vector<std::shared_ptr<SpaceBoundary>> createSpaceBoundaries( const BuildingElementsCollector& buildingElements, std::vector<ConvertError>& errors);
 
 	/*! Try to find space boundaries for opening elements based on openings.
 		\param spaceBoundaries Result vector for adding new space boundaries
@@ -237,12 +243,13 @@ private:
 	/*! Create opening space boundaries by matching openings to existing space boundaries.*/
 	void createSpaceBoundariesForOpeningsFromSpaceBoundaries(std::vector<std::shared_ptr<SpaceBoundary>>& spaceBoundaries,
 															 const BuildingElementsCollector& buildingElements,
-															 std::vector<Opening>& openings);
+															 std::vector<Opening>& openings, std::vector<ConvertError>& errors);
 
 	std::vector<std::shared_ptr<SpaceBoundary>>				m_spaceBoundaries;	///< Space boundaries of the space
 	carve::math::Matrix										m_transformMatrix;	///< Matrix for geometry transformation from local to global coordinates
 	std::vector<Surface>									m_surfacesOrg;		///< Original surfaces from the IFC model converted into global coordinates
 	meshVector_t											m_meshSets;
+	std::vector<std::string>								m_spaceBoundaryGUIDs;
 };
 
 } // namespace IFCC
