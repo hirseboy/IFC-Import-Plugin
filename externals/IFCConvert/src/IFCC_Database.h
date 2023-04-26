@@ -12,9 +12,6 @@
 #include "IFCC_SubSurfaceComponent.h"
 #include "IFCC_BuildingElementsCollector.h"
 
-//namespace VICUS {
-//	class Project;
-//}
 
 namespace IFCC {
 

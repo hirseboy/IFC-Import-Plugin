@@ -88,7 +88,7 @@ void BuildingStorey::updateSpaces(const objectShapeTypeVector_t& shapes,
 								  std::vector<ConvertError>& errors) {
 
 	for(auto& space : m_spaces) {
-		space->updateSpaceBoundaries(shapes, unit_converter,	buildingElements, openings, useSpaceBoundaries, errors);
+		space->updateSpaceBoundaries(shapes, unit_converter, buildingElements, openings, useSpaceBoundaries, errors);
 	}
 }
 

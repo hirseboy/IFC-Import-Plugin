@@ -38,7 +38,7 @@ public:
 	bool set(std::shared_ptr<IFC4X3::IfcSpatialStructureElement> ifcElement, std::shared_ptr<ProductShapeData> productShape,
 			 const std::map<std::string,shared_ptr<ProductShapeData>>& buildings, std::vector<ConvertError>& errors);
 
-	/*! Return the internal surface vector.*/
+	/*! Return the internal surface vector for the site only.*/
 	const std::vector<Surface>& surfaces() const;
 
 	/*! Return a vector of all space boundaries in project.*/
