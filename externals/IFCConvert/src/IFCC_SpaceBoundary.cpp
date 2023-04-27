@@ -231,9 +231,19 @@ void SpaceBoundary::mergeSurface(const Surface& surf) {
 
 void SpaceBoundary::createSurfaceVect(const polyVector_t& polylines) {
 	m_surfaces.clear();
-	std::string name = "E:" + m_nameRelatedElement + "_S:" + m_nameRelatedSpace;
-	if(name.empty())
-		name = std::to_string(m_id);
+	std::string name;
+	if(!m_nameRelatedElement.empty()) {
+		name = "E:" + m_nameRelatedElement + "_S:" + m_nameRelatedSpace;
+	}
+	else {
+		if(isVirtual())
+			name = "Virtual SB";
+		else if(isMissing())
+			name = "SB with missing construction";
+		else
+			name = "Non valid SB";
+	}
+
 	for(const auto& polyvect3 : polylines) {
 		for(const auto& polyvect2 : polyvect3) {
 			for(const auto& polyvect1 : polyvect2) {
