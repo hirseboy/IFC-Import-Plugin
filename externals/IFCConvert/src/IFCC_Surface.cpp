@@ -476,8 +476,38 @@ void surfacesFromRepresentation(std::shared_ptr<ProductShapeData> productShape, 
 
 	if(referenceRep) {
 		///< \todo Implement
-		if(!bodyRep)
-			errors.push_back({objectType, objectId, "Geometric representation of type 'reference' cannot be evaluated."});
+//		if(!bodyRep)
+//			errors.push_back({objectType, objectId, "Geometric representation of type 'reference' cannot be evaluated."});
+		if(referenceRepCount > 1) {
+			errors.push_back({objectType, objectId, "more than one geometric representaion of type 'reference' found"});
+		}
+		meshVector_t meshSetClosedFinal;
+		meshVector_t meshSetOpenFinal;
+		for(const auto& shapeData : referenceRep->m_vec_item_data) {
+			const std::vector<shared_ptr<carve::mesh::MeshSet<3> > >& mc = shapeData->m_meshsets;
+			if(!mc.empty()) {
+				for(auto mSet : mc)
+					if(mSet.get() != nullptr) {
+						meshSetClosedFinal.push_back(mSet);
+					}
+					else {
+						errors.push_back({objectType, objectId, "Non valid mesh set found."});
+					}
+			}
+			const std::vector<shared_ptr<carve::mesh::MeshSet<3> > >& mo = shapeData->m_meshsets_open;
+			if(!mo.empty()) {
+				for(auto mSet : mo)
+					if(mSet.get() != nullptr) {
+						meshSetOpenFinal.push_back(mSet);
+					}
+					else {
+						errors.push_back({objectType, objectId, "Non valid mesh set found."});
+					}
+			}
+		}
+
+		surfacesFromMeshSets(meshSetClosedFinal, surfaces);
+		surfacesFromMeshSets(meshSetOpenFinal, surfaces);
 	}
 
 	if(surfaceRep) {
