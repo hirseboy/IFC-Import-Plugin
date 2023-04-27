@@ -412,7 +412,7 @@ void Space::createSpaceBoundariesForOpeningsFromSpaceBoundaries(std::vector<std:
 
 void Space::createSpaceBoundariesForOpeningsFromOpenings(std::vector<std::shared_ptr<SpaceBoundary>>& spaceBoundaries,
 											 const BuildingElementsCollector& buildingElements,
-											 const std::vector<Opening>& openings) {
+											 const std::vector<Opening>& openings, std::vector<ConvertError>& errors) {
 	if(openings.empty())
 		return;
 
@@ -423,9 +423,6 @@ void Space::createSpaceBoundariesForOpeningsFromOpenings(std::vector<std::shared
 		if(!construction->isSubSurfaceComponent())
 			continue;
 
-		if(construction->m_name == "EG-Fenster-6") {
-			int t2 = 0;
-		}
 		double maxConstructionThickness = 0;
 		if(construction->isSubSurfaceComponent() && !construction->m_openingProperties.m_constructionThicknesses.empty()) {
 			maxConstructionThickness = *std::max_element(construction->m_openingProperties.m_constructionThicknesses.begin(),
@@ -451,7 +448,7 @@ void Space::createSpaceBoundariesForOpeningsFromOpenings(std::vector<std::shared
 		}
 		// construction don't have a thickness
 		else {
-
+			errors.push_back(ConvertError{OT_Space, m_id, "Check for openings: opening without thickness found"});
 		}
 	} // loop over all opening constructions
 

@@ -241,7 +241,7 @@ private:
 	*/
 	void createSpaceBoundariesForOpeningsFromOpenings(std::vector<std::shared_ptr<SpaceBoundary>>& spaceBoundaries,
 													  const BuildingElementsCollector& buildingElements,
-													  const std::vector<Opening>& openings);
+													  const std::vector<Opening>& openings, std::vector<ConvertError>& errors);
 
 	/*! Create opening space boundaries by matching openings to existing space boundaries.*/
 	void createSpaceBoundariesForOpeningsFromSpaceBoundaries(std::vector<std::shared_ptr<SpaceBoundary>>& spaceBoundaries,
