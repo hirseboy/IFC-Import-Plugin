@@ -53,8 +53,10 @@ public:
 		return m_name;
 	}
 
-	/*! Flip the surfrace polygone.*/
-	void flip();
+	/*! Flip the surfrace polygone.
+		\param positive Flip polygone if it doesn't fit to the given rotation type
+	*/
+	void flip(bool positive);
 
 	/*! Write the subsurface in vicus xml format.*/
 	TiXmlElement * writeXML(TiXmlElement * parent) const;

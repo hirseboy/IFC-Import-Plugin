@@ -3,8 +3,6 @@
 
 #include <SVImportPluginInterface.h>
 
-#include <IFCC_IFCReader.h>
-
 #include "ImportIFCMessageHandler.h"
 
 #define IFCImportPlugin_iid "de.dresden-tu.arch.ibk.IFCImportPlugin/1.0"
@@ -21,9 +19,11 @@ public:
 	virtual QString title() const override;
 	virtual QString importMenuCaption() const override;
 	virtual void setLanguage(QString langId, QString appname) override;
+	QString IFCFileName() const;
 
 private:
 	ImportIFCMessageHandler m_msgHandler;
+	QString					m_ifcFileName;
 };
 
 #endif // IFCImportPlugin_H

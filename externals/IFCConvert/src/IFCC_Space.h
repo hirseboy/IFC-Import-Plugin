@@ -149,8 +149,11 @@ public:
 	/*! Check if the current space is intersected to the other one.*/
 	bool isIntersected(const Space& other) const;
 
-	/*! Write the space in vicus xml format including space boundaries.*/
-	TiXmlElement * writeXML(TiXmlElement * parent, bool flipPolygons) const;
+	/*! Write the space in vicus xml format including space boundaries.
+		\param parent Parent xml node
+		\param positiveRotation If true all polygons must have poitive rotation type othewise a negative one.
+	*/
+	TiXmlElement * writeXML(TiXmlElement * parent, bool positiveRotation) const;
 
 	/*! Return true if the space contains a space boundary with the given GUID.*/
 	bool hasSpaceBoundary(const std::string& guid) const;

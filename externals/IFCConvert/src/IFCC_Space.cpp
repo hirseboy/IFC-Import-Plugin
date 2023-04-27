@@ -775,7 +775,7 @@ bool Space::isIntersected(const Space& other) const {
 	return false;
 }
 
-TiXmlElement * Space::writeXML(TiXmlElement * parent, bool flipPolygons) const {
+TiXmlElement * Space::writeXML(TiXmlElement * parent, bool positiveRotation) const {
 	if (m_id == -1)
 		return nullptr;
 
@@ -795,8 +795,13 @@ TiXmlElement * Space::writeXML(TiXmlElement * parent, bool flipPolygons) const {
 		for(auto sb : m_spaceBoundaries) {
 			if(!sb->isOpeningElement()) {
 				Surface s = sb->surfaceWithSubsurfaces();
-				if(flipPolygons)
-					s.flip();
+
+				// check for rotation type
+				double area = s.signedArea();
+				bool isPositive = area >= 0;
+				if((isPositive && !positiveRotation) || (!isPositive && positiveRotation))
+					s.flip(positiveRotation);
+
 				s.writeXML(child);
 			}
 		}

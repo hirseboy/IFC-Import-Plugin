@@ -29,8 +29,11 @@ void SubSurface::set(int id, const std::string& name, int elementId) {
 	m_elementEntityId = elementId;
 }
 
-void SubSurface::flip() {
-	std::reverse(m_polyVect.begin(), m_polyVect.end());
+void SubSurface::flip(bool positive) {
+	double area = areaSignedPolygon(m_polyVect);
+	bool isPositive = area >= 0;
+	if((isPositive && !positive) || (!isPositive && positive))
+		std::reverse(m_polyVect.begin(), m_polyVect.end());
 }
 
 

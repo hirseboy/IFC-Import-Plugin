@@ -296,10 +296,25 @@ double Surface::area() const {
 	return areaPolygon(m_polyVect);
 }
 
-void Surface::flip() {
+double Surface::signedArea() const {
+	polygon2D_t poly2D = polygon2DInPlane();
+	return areaSignedPolygon(poly2D);
+}
+
+polygon2D_t Surface::polygon2DInPlane() const {
+	polygon2D_t polygon2DBase;
+	for(const IBKMK::Vector3D& vect : m_polyVect) {
+		IBKMK::Vector2D p2 = m_planeNormal.convert3DPoint(vect);
+		polygon2DBase.push_back(p2);
+	}
+
+	return polygon2DBase;
+}
+
+void Surface::flip(bool positive) {
 	std::reverse(m_polyVect.begin(), m_polyVect.end());
 	for(auto& sub : m_subSurfaces) {
-		sub.flip();
+		sub.flip(positive);
 	}
 }
 

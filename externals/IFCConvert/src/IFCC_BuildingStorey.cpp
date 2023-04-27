@@ -99,7 +99,7 @@ void BuildingStorey::updateSpaces(const objectShapeTypeVector_t& shapes,
 //}
 
 
-TiXmlElement * BuildingStorey::writeXML(TiXmlElement * parent, bool flipPolygons) const {
+TiXmlElement * BuildingStorey::writeXML(TiXmlElement * parent, bool positiveRotation) const {
 	if (m_id == -1)
 		return nullptr;
 
@@ -118,7 +118,7 @@ TiXmlElement * BuildingStorey::writeXML(TiXmlElement * parent, bool flipPolygons
 		e->LinkEndChild(child);
 
 		for( const auto& space : m_spaces) {
-			space->writeXML(child, flipPolygons);
+			space->writeXML(child, positiveRotation);
 		}
 	}
 	return e;

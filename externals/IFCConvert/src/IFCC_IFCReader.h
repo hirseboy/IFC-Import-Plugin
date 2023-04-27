@@ -45,8 +45,8 @@ public:
 		It should repair possible IFC problems.
 	*/
 	struct RepairFlags {
-		bool	m_flipPolygons		= false;		///< if true all polygones will be flipped before writing to xml
-		bool	m_removeDoubledSBs	= false;		///< remove space boundaries which contains the same surface
+		bool	positiveRotation	= true;		///< if true all polygones must have positive rotation type
+		bool	m_removeDoubledSBs	= false;	///< remove space boundaries which contains the same surface
 
 	};
 
@@ -112,13 +112,13 @@ public:
 	*/
 	std::vector<int> checkForWrongSurfaceIds();
 
-	/*! Return state of flip polygon.*/
-	bool flipPolygons() const;
+	/*! Return state of polygon rotation type setting.*/
+	bool positiveRotation() const;
 
 	/*! Set the state of flip polygon flag.
 		If this is true all polygons of the space boundaries will be flipped before they are saved.
 	*/
-	void setFlipPolygons(bool flipPolygons);
+	void setPolygonRotationType(bool positiveRotation);
 
 	/*! Return state of remove doubled space boundaries flag.*/
 	bool removeDoubledSBs() const;
@@ -150,6 +150,8 @@ public:
 	bool							m_convertCompletedSuccessfully;
 
 	const std::vector<ConvertError>& convertErrors() const;
+
+	const IBK::Path &filename() const;
 
 signals:
 	void progress(int val, QString text);

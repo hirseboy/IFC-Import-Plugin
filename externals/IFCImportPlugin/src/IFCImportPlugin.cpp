@@ -16,18 +16,20 @@ IFCImportPlugin::IFCImportPlugin(QObject *parent)
 }
 
 bool IFCImportPlugin::import(QWidget * parent, QString& projectText) {
-	IFCC::IFCReader			m_reader;
+	IFCC::IFCReader			reader;
 
-	ImportWizard wz(parent, &m_reader);
+	ImportWizard wz(parent, &reader);
 
 	if (wz.exec() == QDialog::Rejected)
 		return false;
 
-	if(m_reader.m_convertCompletedSuccessfully) {
-		m_reader.setVicusProjectText(projectText);
+	if(reader.m_convertCompletedSuccessfully) {
+		reader.setVicusProjectText(projectText);
+		m_ifcFileName = QString::fromStdString(reader.filename().str());
 		return true;
 	}
 
+	m_ifcFileName.clear();
 	return false;
 }
 
@@ -60,5 +62,9 @@ void IFCImportPlugin::setLanguage(QString langId, QString appname) {
 	m_msgHandler.setLogfileVerbosityLevel( IBK::VL_DEVELOPER );
 
 	QtExt::LanguageHandler::instance().installTranslator(langId);
+}
+
+QString IFCImportPlugin::IFCFileName() const {
+	return m_ifcFileName;
 }
 

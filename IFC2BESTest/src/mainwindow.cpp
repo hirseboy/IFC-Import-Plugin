@@ -4,6 +4,8 @@
 #include <QFileDialog>
 #include <QPluginLoader>
 
+#include <IFCImportPlugin.h>
+
 #include <fstream>
 
 #include <IBK_messages.h>
@@ -180,6 +182,10 @@ void MainWindow::runImport()
 		bool res = exp->import(this, m_vicusProject);
 		if(!res) {
 			m_vicusProject.clear();
+		}
+		else {
+//			IFCImportPlugin* importPlugin = static_cast<IFCImportPlugin*>(exp);
+//			ui->label_FileName->setText(importPlugin->IFCFileName());
 		}
 	}
 }

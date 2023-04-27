@@ -166,7 +166,7 @@ const SpaceBoundary* Site::spaceBoundaryWithId(int id) const {
 //}
 
 
-TiXmlElement * Site::writeXML(TiXmlElement * parent, bool flipPolygons) const {
+TiXmlElement * Site::writeXML(TiXmlElement * parent, bool positiveRotation) const {
 	if(m_buildings.empty())
 		return nullptr;
 
@@ -174,7 +174,7 @@ TiXmlElement * Site::writeXML(TiXmlElement * parent, bool flipPolygons) const {
 	parent->LinkEndChild(e);
 
 	for( const std::shared_ptr<Building>& building : m_buildings) {
-		building->writeXML(e, flipPolygons);
+		building->writeXML(e, positiveRotation);
 	}
 	return e;
 }

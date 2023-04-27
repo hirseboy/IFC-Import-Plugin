@@ -109,8 +109,18 @@ public:
 	/*! Return the area of the surface.*/
 	double area() const;
 
-	/*! Flip the surfrace polygone.*/
-	void flip();
+	/*! Return the signed area of the main polygon.
+		The sign represents the rotation type.
+	*/
+	double signedArea() const;
+
+	/*! Create a 2D polygone which lays in the plane of the current 3D polygon.*/
+	polygon2D_t polygon2DInPlane() const;
+
+	/*! Flip the surface polygone.
+		\param positive If true the subsurface polygones must have positive rotation otherwise negative.
+	*/
+	void flip(bool positive);
 
 	/*! Write the surface in vicus xml format including all subsurfaces.*/
 	TiXmlElement * writeXML(TiXmlElement * parent) const;

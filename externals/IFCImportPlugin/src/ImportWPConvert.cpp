@@ -45,7 +45,7 @@ void ImportWPConvert::initializePage() {
 bool ImportWPConvert::isComplete() const {
 	IFCC::Logger::instance() << "isComplete";
 
-	m_reader->setFlipPolygons(ui->checkBoxFlipSurfacePolygons->isChecked());
+	m_reader->setPolygonRotationType(ui->checkBoxPolygonsPositveRotation->isChecked());
 	bool ignoreErrors = ui->checkBoxIgnorErrors->isChecked();
 	if(ignoreErrors)
 		return true;

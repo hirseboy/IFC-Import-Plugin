@@ -92,7 +92,7 @@ void Building::updateStoreys(const objectShapeTypeVector_t& elementShapes,
 }
 
 
-TiXmlElement * Building::writeXML(TiXmlElement * parent, bool flipPolygons) const {
+TiXmlElement * Building::writeXML(TiXmlElement * parent, bool positiveRotation) const {
 	if (m_id == -1)
 		return nullptr;
 
@@ -109,7 +109,7 @@ TiXmlElement * Building::writeXML(TiXmlElement * parent, bool flipPolygons) cons
 		e->LinkEndChild(child);
 
 		for( const auto& storey : m_storeys) {
-			storey->writeXML(child, flipPolygons);
+			storey->writeXML(child, positiveRotation);
 		}
 	}
 	return e;

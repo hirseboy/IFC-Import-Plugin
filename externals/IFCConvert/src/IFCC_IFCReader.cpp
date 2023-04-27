@@ -357,6 +357,13 @@ void IFCReader::updateBuildingElements() {
 	}
 }
 
+const IBK::Path &IFCReader::filename() const {
+	if(m_readCompletedSuccessfully)
+		return m_filename;
+
+	return IBK::Path();
+}
+
 bool IFCReader::convert(bool useSpaceBoundaries) {
 
 	m_progressDialog.reset(new QProgressDialog("IFC Reader...", "Abort read", 0, 100));
@@ -623,12 +630,12 @@ std::vector<int> IFCReader::checkForWrongSurfaceIds() {
 	return m_instances.checkForWrongSurfaceIds(m_site);
 }
 
-bool IFCReader::flipPolygons() const {
-	return m_repairFlags.m_flipPolygons;
+bool IFCReader::positiveRotation() const {
+	return m_repairFlags.positiveRotation;
 }
 
-void IFCReader::setFlipPolygons(bool flipPolygons) {
-	m_repairFlags.m_flipPolygons = flipPolygons;
+void IFCReader::setPolygonRotationType(bool positiveRotation) {
+	m_repairFlags.positiveRotation = positiveRotation;
 }
 
 bool IFCReader::removeDoubledSBs() const {
@@ -669,7 +676,7 @@ void IFCReader::writeXML(const IBK::Path & filename) const {
 	TiXmlElement * e = new TiXmlElement("Project");
 	root->LinkEndChild(e);
 
-	m_site.writeXML(e, m_repairFlags.m_flipPolygons);
+	m_site.writeXML(e, m_repairFlags.positiveRotation);
 
 	m_instances.writeXML(e);
 
@@ -694,7 +701,7 @@ void IFCReader::setVicusProjectText(QString& projectText) {
 	TiXmlElement * e = new TiXmlElement("Project");
 	root->LinkEndChild(e);
 
-	m_site.writeXML(e, m_repairFlags.m_flipPolygons);
+	m_site.writeXML(e, m_repairFlags.positiveRotation);
 
 	m_instances.writeXML(e);
 

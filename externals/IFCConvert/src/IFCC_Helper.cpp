@@ -200,14 +200,29 @@ bool nearEqual(const IBKMK::Vector3D& v1, const IBKMK::Vector3D& v2) {
 }
 
 double areaPolygon(const std::vector<IBKMK::Vector3D>& poly) {
-	IBKMK::Vector3D tmp;
 	if(poly.empty())
 		return 0;
 
+	IBKMK::Vector3D tmp;
 	for(size_t i=0; i<poly.size()-1; ++i) {
 		tmp = tmp + poly[i].crossProduct(poly[(i+1)%poly.size()]);
 	}
 	return tmp.magnitude()*0.5;
+}
+
+double areaSignedPolygon(const std::vector<IBKMK::Vector2D>& poly) {
+	if(poly.empty())
+		return 0;
+
+	double area = 0;
+	unsigned int size = poly.size();
+	for(unsigned int i=0, j = size-1; i<size; ++i){
+		area += (poly[j].m_x + poly[i].m_x) * (poly[j].m_y - poly[i].m_y);
+		j=i;
+	}
+
+	area *= -0.5;
+	return area;
 }
 
 std::string guidFromObject(IfcRoot* object) {

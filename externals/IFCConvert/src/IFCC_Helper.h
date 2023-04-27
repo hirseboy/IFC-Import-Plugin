@@ -111,6 +111,11 @@ bool nearEqual(const IBKMK::Vector3D& v1, const IBKMK::Vector3D& v2);
 /*! Return the area of the given polygon.*/
 double areaPolygon(const std::vector<IBKMK::Vector3D>& poly);
 
+/*! Return the signed area of the given polygon.
+	The sign represents the rotation type.
+*/
+double areaSignedPolygon(const std::vector<IBKMK::Vector2D>& poly);
+
 /*! Return a string for the given object type.*/
 std::string objectTypeToString(BuildingElementTypes type);
 
