@@ -56,7 +56,7 @@ public:
 		It set a name, guid, related element, type and basic geometry.
 		\param ifcSpaceBoundary Original IFC space boundary element
 	*/
-	bool setFromIFC(std::shared_ptr<IFC4X3::IfcRelSpaceBoundary> ifcSpaceBoundary);
+	bool setFromIFC(std::shared_ptr<IFC4X3::IfcRelSpaceBoundary> ifcSpaceBoundary, std::vector<ConvertError>& errors);
 
 	/*! Initialise space boundary from a building element object.
 		It set a name, related element, related space and type. Geometry is not set.

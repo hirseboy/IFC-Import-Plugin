@@ -105,7 +105,7 @@ public:
 		Space boundaries will be created if the IFC data include some.
 		\param ifcSpace Original IFC space element
 	*/
-	bool set(std::shared_ptr<IFC4X3::IfcSpace> ifcSpace);
+	bool set(std::shared_ptr<IFC4X3::IfcSpace> ifcSpace, std::vector<ConvertError>& errors);
 
 	/*! Updates the space geometry from shape by calling fetchGeometry and transform.
 		Set the transformation matrix.

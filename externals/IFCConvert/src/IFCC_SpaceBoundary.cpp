@@ -38,7 +38,7 @@ SpaceBoundary::SpaceBoundary(int id) :
 
 }
 
-bool SpaceBoundary::setFromIFC(std::shared_ptr<IfcRelSpaceBoundary> ifcSpaceBoundary) {
+bool SpaceBoundary::setFromIFC(std::shared_ptr<IfcRelSpaceBoundary> ifcSpaceBoundary, std::vector<ConvertError>& errors) {
 	if(!EntityBase::set(dynamic_pointer_cast<IfcRoot>(ifcSpaceBoundary)))
 		return false;
 
@@ -59,13 +59,18 @@ bool SpaceBoundary::setFromIFC(std::shared_ptr<IfcRelSpaceBoundary> ifcSpaceBoun
 				m_guidRelatedSpace = guidFromObject(externalSpace.get());
 				m_nameRelatedSpace = label2s(externalSpace->m_Name);
 			}
+			else {
+				m_nameRelatedSpace = "No space";
+				errors.push_back(ConvertError{OT_SpaceBoundary, m_id, "No related space found for space boundary"});
+			}
 		}
 	}
 
 	if(ifcSpaceBoundary->m_PhysicalOrVirtualBoundary != nullptr) {
 		m_physicalOrVirtual = ifcSpaceBoundary->m_PhysicalOrVirtualBoundary->m_enum;
-//		if(m_physicalOrVirtual == IfcPhysicalOrVirtualEnum::ENUM_VIRTUAL)
-//			return false;
+		if(m_physicalOrVirtual == IfcPhysicalOrVirtualEnum::ENUM_VIRTUAL) {
+			m_nameRelatedElement = "Virtual";
+		}
 	}
 	if(ifcSpaceBoundary->m_InternalOrExternalBoundary != nullptr) {
 		m_internalOrExternal = ifcSpaceBoundary->m_InternalOrExternalBoundary->m_enum;
@@ -103,6 +108,10 @@ bool SpaceBoundary::setFromIFC(std::shared_ptr<IfcRelSpaceBoundary> ifcSpaceBoun
 	}
 
 	m_connectionGeometry = ifcSpaceBoundary->m_ConnectionGeometry;
+	if(!m_connectionGeometry) {
+		errors.push_back(ConvertError{OT_SpaceBoundary, m_id, "Space boundary don't have a geometry"});
+		return false;
+	}
 	return true;
 }
 

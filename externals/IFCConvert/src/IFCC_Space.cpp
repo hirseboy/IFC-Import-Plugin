@@ -21,7 +21,7 @@ Space::Space(int id) :
 {
 }
 
-bool Space::set(std::shared_ptr<IFC4X3::IfcSpace> ifcSpace) {
+bool Space::set(std::shared_ptr<IFC4X3::IfcSpace> ifcSpace, std::vector<ConvertError>& errors) {
 	if(!EntityBase::set(dynamic_pointer_cast<IFC4X3::IfcRoot>(ifcSpace)))
 		return false;
 
@@ -33,7 +33,7 @@ bool Space::set(std::shared_ptr<IFC4X3::IfcSpace> ifcSpace) {
 	for( const auto& bound : ifcSpace->m_BoundedBy_inverse) {
 		auto boundP = bound.lock();
 		std::shared_ptr<SpaceBoundary> sb = std::shared_ptr<SpaceBoundary>(new SpaceBoundary(GUID_maker::instance().guid()));
-		bool res = sb->setFromIFC(boundP);
+		bool res = sb->setFromIFC(boundP, errors);
 		if(res) {
 			m_spaceBoundaries.push_back(sb);
 			m_spaceBoundaryGUIDs.push_back(sb->m_guid);

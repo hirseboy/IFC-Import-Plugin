@@ -70,7 +70,7 @@ void BuildingStorey::fetchSpaces(const std::map<std::string,shared_ptr<ProductSh
 		for(const auto& opOrg : m_spacesOriginal) {
 			if(shape.first == guidFromObject(opOrg.get())) {
 				std::shared_ptr<Space> space = std::shared_ptr<Space>(new Space(GUID_maker::instance().guid()));
-				if(space->set(opOrg)) {
+				if(space->set(opOrg, errors)) {
 					m_spaces.push_back(space);
 					m_spaces.back()->update(shape.second, errors);
 				}
