@@ -57,6 +57,7 @@
 #include "IFCC_MeshUtils.h"
 #include "IFCC_Surface.h"
 #include "IFCC_RepresentationConverter.h"
+#include "IFCC_Clippertools.h"
 
 namespace IFCC {
 
@@ -89,6 +90,16 @@ std::string name2s(const std::shared_ptr<IfcIdentifier>& text) {
 	return std::string();
 }
 
+static std::vector<IBKMK::Vector3D> polygonFromVertices(const std::vector<carve::mesh::Vertex<3>* >& vertices) {
+	std::vector<IBKMK::Vector3D> poly(vertices.size());
+	for(size_t vi=0; vi<vertices.size(); ++vi) {
+		double x = vertices[vi]->v.x;
+		double y = vertices[vi]->v.y;
+		double z = vertices[vi]->v.z;
+		poly[vi].set(x,y,z);
+	}
+	return poly;
+}
 
 void convert(const carve::mesh::MeshSet<3>& meshSet, std::vector<std::vector<std::vector<IBKMK::Vector3D>>>&  polyvect) {
 	const carve::mesh::MeshSet<3>& currMesh = meshSet;
@@ -102,12 +113,20 @@ void convert(const carve::mesh::MeshSet<3>& meshSet, std::vector<std::vector<std
 			std::vector<carve::mesh::Vertex<3>* > vertices;
 			face->getVertices(vertices);
 			int numVert = vertices.size();
-			polyvect.back().push_back(std::vector<IBKMK::Vector3D>(numVert));
-			for(int vi=0; vi<numVert; ++vi) {
-				double x = vertices[vi]->v.x;
-				double y = vertices[vi]->v.y;
-				double z = vertices[vi]->v.z;
-				polyvect.back().back()[vi].set(x,y,z);
+			if(numVert == 0)
+				continue;
+
+			std::vector<IBKMK::Vector3D> poly = polygonFromVertices(vertices);
+			cleanPolygon(poly);
+			std::vector<polygon3D_t> polysSimple = simplifyPolygon(poly);
+			if(polysSimple.empty()) {
+				// this can only happe if the original polygon is not valid
+				polyvect.back().push_back(poly);
+			}
+			else {
+				for(const auto& p : polysSimple) {
+					polyvect.back().push_back(p);
+				}
 			}
 		}
 	}
@@ -223,6 +242,15 @@ double areaSignedPolygon(const std::vector<IBKMK::Vector2D>& poly) {
 
 	area *= -0.5;
 	return area;
+}
+
+double areaSignedPolygon(const std::vector<IBKMK::Vector3D>& poly) {
+	if(poly.empty())
+		return 0;
+
+	Surface surf(poly);
+
+	return surf.signedArea();
 }
 
 std::string guidFromObject(IfcRoot* object) {
@@ -471,6 +499,43 @@ bool isIntersected(carve::mesh::MeshSet<3>* a, carve::mesh::MeshSet<3>* b) {
 	catch(...) {
 		return false;
 	}
+}
+
+std::string dumpSurfaces(const std::vector<Surface> &surfaces) {
+	std::string res;
+	for(size_t i=0; i<surfaces.size(); ++i) {
+		res += "Surface: " + std::to_string(i) + "\n";
+		const Surface& surf = surfaces[i];
+		const auto& poly = surf.polygon();
+		for(size_t j=0; j<poly.size(); ++j) {
+			res += std::to_string(poly[j].m_x) + " : " + std::to_string(poly[j].m_y) + " : " +std::to_string(poly[j].m_z) + "\n";
+		}
+		res += "\n";
+	}
+	return res;
+}
+
+inline void safeNormalize(glm::dvec3& vec)
+{
+	double len = glm::length(vec);
+	if( len > EPS_DEFAULT )
+	{
+		vec = glm::normalize(vec);
+	}
+}
+
+bool windingOrderPositive(const std::vector<IBKMK::Vector2D>& polygon)
+{
+	const size_t num_points = polygon.size();
+	glm::dvec3 polygon_normal(glm::dvec3(0, 0, 0));
+	for( int k = 0; k < num_points; ++k )
+	{
+		const IBKMK::Vector2D& vertex_current = polygon[k];
+		const IBKMK::Vector2D& vertex_next = polygon[(k + 1) % num_points];
+		polygon_normal[2] += (vertex_current.m_x - vertex_next.m_x) * (vertex_current.m_y + vertex_next.m_y);
+	}
+	safeNormalize(polygon_normal);
+	return polygon_normal.z > 0;
 }
 
 

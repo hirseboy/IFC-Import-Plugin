@@ -21,6 +21,8 @@ class TiXmlElement;
 
 namespace IFCC {
 
+class Surface;
+
 /*! Class for creating project unique GUIDs starting with number 1.*/
 class GUID_maker {
 public:
@@ -116,6 +118,11 @@ double areaPolygon(const std::vector<IBKMK::Vector3D>& poly);
 */
 double areaSignedPolygon(const std::vector<IBKMK::Vector2D>& poly);
 
+/*! Return the signed area of the given polygon.
+	The sign represents the rotation type.
+*/
+double areaSignedPolygon(const std::vector<IBKMK::Vector3D>& poly);
+
 /*! Return a string for the given object type.*/
 std::string objectTypeToString(BuildingElementTypes type);
 
@@ -140,6 +147,8 @@ polyVector_t polylinesFromConnectionGeometry(std::shared_ptr<IFC4X3::IfcConnecti
 										  std::vector<ConvertError>& errors);
 
 bool isIntersected(carve::mesh::MeshSet<3>* a, carve::mesh::MeshSet<3>* b);
+
+std::string dumpSurfaces(const std::vector<IFCC::Surface>& surfaces);
 
 } // end namespace
 
