@@ -650,8 +650,11 @@ QString IFCReader::nameForId(int id, Name_Id_Type type) const {
 	switch(type) {
 		case NIT_Space: {
 			const Space* sp = m_site.spaceWithId(id);
-			if(sp != nullptr)
-				return QString::fromStdString(sp->m_name);
+			if(sp != nullptr) {
+				if(sp->m_longName.empty())
+						return QString::fromStdString(sp->m_name);
+				return QString::fromStdString(sp->m_longName);
+			}
 		}
 		case NIT_SpaceBoundary: {
 			const SpaceBoundary* sp = m_site.spaceBoundaryWithId(id);
