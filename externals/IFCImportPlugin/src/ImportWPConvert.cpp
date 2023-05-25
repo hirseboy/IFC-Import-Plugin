@@ -2,6 +2,7 @@
 #include "ui_ImportWPConvert.h"
 
 #include <QFileDialog>
+#include <QTextStream>
 
 #include <IFCC_IFCReader.h>
 #include <IFCC_Helper.h>
@@ -193,5 +194,21 @@ void ImportWPConvert::on_checkBoxIgnorErrors_toggled(bool checked) {
 
 void ImportWPConvert::on_checkBoxSpaceIntersectionDetails_clicked() {
 	setText();
+}
+
+
+void ImportWPConvert::on_pushButtonSaveLog_clicked() {
+	QString filename = QFileDialog::getSaveFileName(
+							this,
+							tr("Specify name for log file"),
+							"IFC_convert",
+							tr("Log file (*.log);;All files (*.*)"));
+
+	if(!filename.isEmpty()) {
+		QFile file(filename);
+		file.open(QIODevice::WriteOnly | QIODevice::Text);
+		QTextStream stream(&file);
+		stream << ui->textEdit->toPlainText();
+	}
 }
 

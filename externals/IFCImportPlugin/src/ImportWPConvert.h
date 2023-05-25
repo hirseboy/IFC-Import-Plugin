@@ -34,6 +34,8 @@ private slots:
 
 	void on_checkBoxSpaceIntersectionDetails_clicked();
 
+	void on_pushButtonSaveLog_clicked();
+
 private:
 	void initializePage() override;
 
