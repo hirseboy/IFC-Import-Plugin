@@ -25,6 +25,7 @@ public:
 	std::string				m_description;	///< Object description
 	std::string				m_guid;			///< GUID of the IFC object
 	int						m_id;			///< Unique id.
+	int						m_ifcId;		///< IFC entity id
 };
 
 } // namespace IFCC
