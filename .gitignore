@@ -46,3 +46,8 @@ lib_x64
 /SIM-VICUS/*
 /SIM-VICUS/!externals/
 
+/IFC2BESTest/projects/Qt/debug_x64/
+/IFC2BESTest/projects/Qt/moc/
+/IFC2BESTest/projects/Qt/ui/
+/bin/debug_x64/SimQuality.vicus
+/bin/release_x64/IFC2BESTest
