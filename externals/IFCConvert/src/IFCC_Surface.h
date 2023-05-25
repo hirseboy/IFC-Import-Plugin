@@ -41,6 +41,11 @@ public:
 	*/
 	Surface(const polygon3D_t& polygon);
 
+	/*! Create a surface from a 3D polygon.
+		\param polygon Single 3D polygon. It should be planar.
+	*/
+	Surface(const polygon3D_t& polygon, const std::vector<polygon3D_t>& childs);
+
 	void set(int id, int elementId, const std::string& name, bool isVirtual);
 
 	/*! Return the distance between two parallel surfaces in the unit of the coordinates.
@@ -173,6 +178,7 @@ private:
 	PositionType							m_positionType;
 	std::vector<IBKMK::Vector3D>			m_polyVect;
 	std::vector<SubSurface>					m_subSurfaces;
+	std::vector<Surface>					m_childSurfaces;
 	carve::geom::plane<3>					m_planeCarve;
 	PlaneNormal								m_planeNormal;
 };
@@ -193,20 +199,42 @@ struct Surface::IntersectionResult {
 		return false;
 	}
 
+	int holesWithChilds() const {
+		return m_holesIntersectionChildCount + m_holesBaseMinusClipChildCount + m_holesClipMinusBaseChildCount;
+	}
+
 	/*! Vector of intersection surfaces.*/
 	std::vector<Surface>				m_intersections;
+
+	/*! Vector of hole polygones for each existing intersection-polygon.
+		First dimension must be the same as m_intersections.
+	*/
+	std::vector<std::vector<Surface>>	m_holesIntersections;
+
+	/*! Total number of childs of all holes in intersections.*/
+	int									m_holesIntersectionChildCount = 0;
+
 	/*! Vector of surfaces from operation 'BasePolygon - ClipPolygon'*/
 	std::vector<Surface>				m_diffBaseMinusClip;
+
 	/*! Vector of hole surfaces for each existing diffBaseMinusClip-polygon.
 		First dimension must be the same as m_diffBaseMinusClip.
 	*/
 	std::vector<std::vector<Surface>>	m_holesBaseMinusClip;
+
+	/*! Total number of childs of all holes in BaseMinusClip.*/
+	int									m_holesBaseMinusClipChildCount = 0;
+
 	/*! Vector of surfaces from operation 'ClipPolygon - BasePolygon'*/
 	std::vector<Surface>				m_diffClipMinusBase;
+
 	/*! Vector of hole surfaces for each existing diffClipMinusBase-polygon.
 		First dimension must be the same as m_diffClipMinusBase.
 	*/
 	std::vector<std::vector<Surface>>	m_holesClipMinusBase;
+
+	/*! Total number of childs of all holes in ClipMinusBase.*/
+	int									m_holesClipMinusBaseChildCount = 0;
 };
 
 void surfacesFromRepresentation(std::shared_ptr<ProductShapeData> productShape, std::vector<Surface>& surfaces,
