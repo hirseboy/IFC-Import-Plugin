@@ -130,6 +130,22 @@ static conversionVectors2D_t create2DFrom3D(const polygon3D_t& baseVect, const p
 	return result;
 }
 
+/*! Create a 2D polygon in clipper path type from the given 3D polygon which lies on the given plane.
+	For correct conversion the 3D polygon must be plane parallel.
+	Internal conversion from double into int coordinates by using CONVERSION.
+	\param baseVect 3D polygon for conversion into 2D.
+	\param plane Plane in 3D in normal form for creating 2D polygon from 3D polygon.
+	\return 2D polygon in clipper type which lies in the given plane.
+*/
+static ClipperLib::Path createPathFrom3D(const polygon3D_t& baseVect, const PlaneNormal& plane) {
+	ClipperLib::Path result;
+
+	std::vector<IBKMK::Vector2D> tmp = create2DFrom3D(baseVect, plane);
+
+	result = toPath(tmp);
+	return result;
+}
+
 /*! Create two 2D polygons in clipper path type from the given two 3D polygons which lies on the given plane.
 	For correct conversion both 3D polygons must be plane parallel.
 	Internal conversion from double into int coordinates by using CONVERSION.
@@ -222,10 +238,11 @@ bool containHoles(const ClipperLib::PolyTree& polytree) {
 }
 
 static void dividePolyTree(const ClipperLib::PolyTree& polytree, std::vector<polygon3D_t>& outerPolygons, std::vector<std::vector<polygon3D_t>>& holes,
-						   const PlaneNormal& plane) {
+						   const PlaneNormal& plane, int& holeChildCount) {
 	int childCount = polytree.ChildCount();
 	std::vector<polygon3D_t>(childCount).swap(outerPolygons);
 	std::vector<std::vector<polygon3D_t>>(childCount).swap(holes);
+	holeChildCount = 0;
 
 	for(int i=0; i<childCount; ++i) {
 		ClipperLib::PolyNode* node = polytree.Childs[i];
@@ -241,9 +258,7 @@ static void dividePolyTree(const ClipperLib::PolyTree& polytree, std::vector<pol
 					holes[i].push_back(polygon3DFromPath(holeNode->Contour, plane));
 
 				// should not exist
-				if(holeNode->ChildCount() > 0) {
-
-				}
+				holeChildCount += holeNode->ChildCount();
 			}
 		}
 	}
@@ -270,17 +285,23 @@ IntersectionResult intersectPolygons2(const polygon3D_t& base, const polygon3D_t
 				return IntersectionResult();
 
 			result.m_intersections = tr1;
+			result.m_holesIntersections = std::vector<std::vector<polygon3D_t>>(tr1.size());
 		}
 		// a intersection should not contain holes
 		else {
-			return IntersectionResult();
+			std::vector<polygon3D_t> outerPolygonsI;
+			std::vector<std::vector<polygon3D_t>> holesI;
+			dividePolyTree(clipresult, outerPolygonsI, holesI, plane, result.m_holesIntersectionChildCount);
+			result.m_intersections = outerPolygonsI;
+			result.m_holesIntersections = holesI;
+//			return IntersectionResult();
 		}
 
 		clipresult.Clear();
 		clipper.Execute(ClipperLib::ctDifference, clipresult, ClipperLib::pftEvenOdd, ClipperLib::pftNonZero);
 		std::vector<polygon3D_t> outerPolygonsA;
 		std::vector<std::vector<polygon3D_t>> holesA;
-		dividePolyTree(clipresult, outerPolygonsA, holesA, plane);
+		dividePolyTree(clipresult, outerPolygonsA, holesA, plane, result.m_holesBaseMinusClipChildCount);
 		result.m_diffBaseMinusClip = outerPolygonsA;
 		result.m_holesBaseMinusClip = holesA;
 
@@ -291,7 +312,7 @@ IntersectionResult intersectPolygons2(const polygon3D_t& base, const polygon3D_t
 		clipper.Execute(ClipperLib::ctDifference, clipresult, ClipperLib::pftEvenOdd, ClipperLib::pftNonZero);
 		std::vector<polygon3D_t> outerPolygonsB;
 		std::vector<std::vector<polygon3D_t>> holesB;
-		dividePolyTree(clipresult, outerPolygonsB, holesB, plane);
+		dividePolyTree(clipresult, outerPolygonsB, holesB, plane, result.m_holesClipMinusBaseChildCount);
 		result.m_diffClipMinusBase = outerPolygonsB;
 		result.m_holesClipMinusBase = holesB;
 
@@ -304,6 +325,38 @@ IntersectionResult intersectPolygons2(const polygon3D_t& base, const polygon3D_t
 		return IntersectionResult();
 	}
 
+}
+
+std::vector<polygon3D_t> simplifyPolygon(const polygon3D_t &base) {
+	std::vector<polygon3D_t> res;
+	PlaneNormal plane(base);
+	ClipperLib::Path path = createPathFrom3D(base, plane);
+	if(path.empty())
+		return res;
+
+	ClipperLib::Paths pathesRes;
+	ClipperLib::SimplifyPolygon(path, pathesRes, ClipperLib::pftEvenOdd);
+
+	for(const auto& path : pathesRes) {
+		res.push_back(polygon3DFromPath(path, plane));
+	}
+
+	return res;
+}
+
+void cleanPolygon(polygon3D_t &base, double distance) {
+	PlaneNormal plane(base);
+	ClipperLib::Path path = createPathFrom3D(base, plane);
+	if(path.empty())
+		return;
+
+	ClipperLib::Path pathRes;
+	ClipperLib::CleanPolygon(path, pathRes, distance * CONVERSION);
+
+	if(pathRes.empty())
+		return;
+
+	base = polygon3DFromPath(pathRes, plane);
 }
 
 

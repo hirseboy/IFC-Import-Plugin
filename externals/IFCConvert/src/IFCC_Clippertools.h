@@ -28,18 +28,36 @@ struct IntersectionResult {
 
 	/*! Vector of intersection polygons.*/
 	std::vector<polygon3D_t>				m_intersections;
+
+	/*! Vector of hole polygones for each existing intersection-polygon.
+		First dimension must be the same as m_intersections.
+	*/
+	std::vector<std::vector<polygon3D_t>>	m_holesIntersections;
+
+	/*! Total number of childs of all holes in intersections.*/
+	int										m_holesIntersectionChildCount = 0;
+
 	/*! Vector of polygons from operation 'BasePolygon - ClipPolygon'*/
 	std::vector<polygon3D_t>				m_diffBaseMinusClip;
+
 	/*! Vector of hole polygones for each existing diffBaseMinusClip-polygon.
 		First dimension must be the same as m_diffBaseMinusClip.
 	*/
 	std::vector<std::vector<polygon3D_t>>	m_holesBaseMinusClip;
+
+	/*! Total number of childs of all holes in BaseMinusClip.*/
+	int										m_holesBaseMinusClipChildCount = 0;
+
 	/*! Vector of polygons from operation 'ClipPolygon - BasePolygon'*/
 	std::vector<polygon3D_t>				m_diffClipMinusBase;
+
 	/*! Vector of hole polygones for each existing diffClipMinusBase-polygon.
 		First dimension must be the same as m_diffClipMinusBase.
 	*/
 	std::vector<std::vector<polygon3D_t>>	m_holesClipMinusBase;
+
+	/*! Total number of childs of all holes in ClipMinusBase.*/
+	int										m_holesClipMinusBaseChildCount = 0;
 };
 
 /*! Polygon to_merge will be merged into polygon base.
@@ -68,6 +86,18 @@ polygon3D_t intersectPolygons(const polygon3D_t& base, const polygon3D_t& inters
 	\return All resulting polygons with holes (if exists). \sa IntersectionResult
 */
 IntersectionResult intersectPolygons2(const polygon3D_t& base, const polygon3D_t& intersectPoly, const PlaneNormal& plane);
+
+/*! Try to simplify the given polygon. It return a vector of resulting polygons.
+ *  The resulting vector is empty in case of errors like non valid base polygon.
+*/
+std::vector<polygon3D_t> simplifyPolygon(const polygon3D_t& base);
+
+/*! Clean the given polygon by checking close points and colinear lines.
+ *  The given polygon will be changed if some problems found.
+ *  \param base Base polygon to check
+ *  \param distance Minimum distance for close point checking in m
+*/
+void cleanPolygon(polygon3D_t &base, double distance = 1e-5);
 
 } // namespace IFCC
 
