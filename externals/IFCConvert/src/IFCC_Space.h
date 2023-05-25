@@ -234,6 +234,13 @@ private:
 	*/
 	std::vector<std::shared_ptr<SpaceBoundary>> createSpaceBoundaries( const BuildingElementsCollector& buildingElements, std::vector<ConvertError>& errors);
 
+	/*! Try to find space boundaries for construction elements by test of surface properties (parallel, distance, intersections).
+		Function will be called from evaluateSpaceBoundaries.
+		\param constructionElements Vector for all construction elements with own surfaces
+		\return Vector of evaluated space boundaries
+	*/
+	std::vector<std::shared_ptr<SpaceBoundary>> createSpaceBoundaries_2( const BuildingElementsCollector& buildingElements, std::vector<ConvertError>& errors);
+
 	/*! Try to find space boundaries for opening elements based on openings.
 		\param spaceBoundaries Result vector for adding new space boundaries
 		\param openingElements Vector of opening elements (window or door).
