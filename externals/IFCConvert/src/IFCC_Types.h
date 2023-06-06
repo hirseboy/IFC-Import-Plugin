@@ -95,6 +95,25 @@ struct ConvertError {
 	std::string	m_errorText;
 };
 
+struct ConvertOptions {
+	enum ConstructionMatching {
+		CM_MatchEachConstruction,
+		CM_MatchOnlyFirstConstruction,
+		CM_MatchFirstNConstructions,
+		CM_NoMatching
+	};
+
+	bool hasElementsForSpaceBoundaries(BuildingElementTypes type) const {
+		return m_elementsForSpaceBoundaries.find(type) != m_elementsForSpaceBoundaries.end();
+	}
+
+	std::set<BuildingElementTypes>	m_elementsForSpaceBoundaries;
+	double							m_distanceFactor = 3.0;
+	double							m_openingDistance = 0.5;
+	ConstructionMatching			m_matchingType = CM_MatchEachConstruction;
+	int								m_matchedConstructionNumbers = 2;
+};
+
 
 // some type definitions
 
