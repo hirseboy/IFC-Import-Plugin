@@ -7,6 +7,7 @@
 #include <IFCC_IFCReader.h>
 #include <IFCC_Helper.h>
 #include <IFCC_Logger.h>
+#include <IFCC_Types.h>
 
 #include <IBK_Path.h>
 
@@ -22,6 +23,38 @@ ImportWPConvert::ImportWPConvert(QWidget *parent, IFCC::IFCReader* reader) :
 
 	ui->pushButtonConvert->setEnabled(true);
 	ui->checkBoxUseSpaceBoundaries->setChecked(true);
+
+	QListWidgetItem *item = new QListWidgetItem(tr("Wall"));
+	item->setFlags(item->flags() | Qt::ItemIsUserCheckable);
+	item->setCheckState(Qt::Checked);
+	item->setData(Qt::UserRole, (int)IFCC::BET_Wall);
+	ui->listWidgetConstructionTypes->addItem(item);
+
+	item = new QListWidgetItem(tr("Slab"));
+	item->setFlags(item->flags() | Qt::ItemIsUserCheckable);
+	item->setCheckState(Qt::Checked);
+	item->setData(Qt::UserRole, (int)IFCC::BET_Slab);
+	ui->listWidgetConstructionTypes->addItem(item);
+
+	item = new QListWidgetItem(tr("Beam"));
+	item->setFlags(item->flags() | Qt::ItemIsUserCheckable);
+	item->setCheckState(Qt::Checked);
+	item->setData(Qt::UserRole, (int)IFCC::BET_Beam);
+	ui->listWidgetConstructionTypes->addItem(item);
+
+	item = new QListWidgetItem(tr("Covering"));
+	item->setFlags(item->flags() | Qt::ItemIsUserCheckable);
+	item->setCheckState(Qt::Checked);
+	item->setData(Qt::UserRole, (int)IFCC::BET_Covering);
+	ui->listWidgetConstructionTypes->addItem(item);
+
+	item = new QListWidgetItem(tr("Footing"));
+	item->setFlags(item->flags() | Qt::ItemIsUserCheckable);
+	item->setCheckState(Qt::Checked);
+	item->setData(Qt::UserRole, (int)IFCC::BET_Footing);
+	ui->listWidgetConstructionTypes->addItem(item);
+
+	ui->groupBoxMatchingSettings->setEnabled(false);
 }
 
 ImportWPConvert::~ImportWPConvert() {
@@ -36,17 +69,20 @@ void ImportWPConvert::initializePage() {
 	if(sbCount == 0) {
 		ui->labelSBDescription->setText(tr("There are no space boundaries in the IFC file"));
 		ui->checkBoxUseSpaceBoundaries->setChecked(false);
+		ui->groupBoxMatchingSettings->setEnabled(true);
 	}
 	else {
 		ui->labelSBDescription->setText(tr("There are %1 space boundaries in the IFC file").arg(sbCount));
 	}
+
+	ui->doubleSpinBoxMatchConstructionFactor->setValue(m_reader->convertOptions().m_distanceFactor);
+	ui->doubleSpinBoxMatchOpeningDistance->setValue(m_reader->convertOptions().m_openingDistance);
 }
 
 
 bool ImportWPConvert::isComplete() const {
 	IFCC::Logger::instance() << "isComplete";
 
-	m_reader->setPolygonRotationType(ui->checkBoxPolygonsPositveRotation->isChecked());
 	bool ignoreErrors = ui->checkBoxIgnorErrors->isChecked();
 	if(ignoreErrors)
 		return true;
@@ -170,8 +206,30 @@ void ImportWPConvert::setText() {
 	IFCC::Logger::instance() << "setText 7";
 }
 
+void ImportWPConvert::initElements() {
+	m_reader->clearElementsForSpaceBoundaries();
+	for(int i=0; i<ui->listWidgetConstructionTypes->count(); ++i) {
+		QListWidgetItem* item = ui->listWidgetConstructionTypes->item(i);
+		if(item->checkState() == Qt::Checked)
+			m_reader->setElementsForSpaceBoundaries(static_cast<IFCC::BuildingElementTypes>(item->data(Qt::UserRole).toInt()), true);
+	}
+
+	if(ui->radioButtonMatchingFull->isChecked())
+		m_reader->setConvertMatchingType(IFCC::ConvertOptions::CM_MatchEachConstruction);
+	else if(ui->radioButtonMatchingFirst->isChecked())
+		m_reader->setConvertMatchingType(IFCC::ConvertOptions::CM_MatchOnlyFirstConstruction);
+	else if(ui->radioButtonMatchingNConstructions->isChecked())
+		m_reader->setConvertMatchingType(IFCC::ConvertOptions::CM_MatchFirstNConstructions);
+	else
+		m_reader->setConvertMatchingType(IFCC::ConvertOptions::CM_NoMatching);
+
+	m_reader->setMatchingDistances(ui->doubleSpinBoxMatchConstructionFactor->value(), ui->doubleSpinBoxMatchOpeningDistance->value());
+}
+
 void ImportWPConvert::on_pushButtonConvert_clicked() {
 	ui->textEdit->setText(tr("Converting ..."));
+
+	initElements();
 	m_convertSuccessfully = m_reader->convert(ui->checkBoxUseSpaceBoundaries->isChecked());
 
 	IFCC::Logger::instance() << "convert successful " << m_convertSuccessfully;
@@ -210,5 +268,34 @@ void ImportWPConvert::on_pushButtonSaveLog_clicked() {
 		QTextStream stream(&file);
 		stream << ui->textEdit->toPlainText();
 	}
+}
+
+
+void ImportWPConvert::on_radioButtonMatchingFull_clicked() {
+	ui->listWidgetConstructionTypes->setEnabled(true);
+	ui->spinBoxMatchingNConstructions->setEnabled(false);
+}
+
+
+void ImportWPConvert::on_radioButtonMatchingFirst_clicked() {
+	ui->listWidgetConstructionTypes->setEnabled(true);
+	ui->spinBoxMatchingNConstructions->setEnabled(false);
+}
+
+
+void ImportWPConvert::on_radioButtonMatchingNConstructions_clicked() {
+	ui->listWidgetConstructionTypes->setEnabled(true);
+	ui->spinBoxMatchingNConstructions->setEnabled(true);
+}
+
+
+void ImportWPConvert::on_radioButtonMatchingNo_clicked() {
+	ui->listWidgetConstructionTypes->setEnabled(false);
+	ui->spinBoxMatchingNConstructions->setEnabled(false);
+}
+
+
+void ImportWPConvert::on_checkBoxUseSpaceBoundaries_clicked() {
+	ui->groupBoxMatchingSettings->setEnabled(!ui->checkBoxUseSpaceBoundaries->isChecked());
 }
 

@@ -36,11 +36,23 @@ private slots:
 
 	void on_pushButtonSaveLog_clicked();
 
+	void on_radioButtonMatchingFull_clicked();
+
+	void on_radioButtonMatchingFirst_clicked();
+
+	void on_radioButtonMatchingNConstructions_clicked();
+
+	void on_radioButtonMatchingNo_clicked();
+
+	void on_checkBoxUseSpaceBoundaries_clicked();
+
 private:
 	void initializePage() override;
 
 	/*! Create text from convert results and add it to the edit field.*/
 	void setText();
+
+	void initElements();
 
 	Ui::ImportWPConvert *ui;
 
