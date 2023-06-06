@@ -57,7 +57,8 @@ public:
 					  const BuildingElementsCollector& buildingElements,
 					  std::vector<Opening>& openings,
 					  bool useSpaceBoundaries,
-					  std::vector<ConvertError>& errors);
+					  std::vector<ConvertError>& errors,
+					  const ConvertOptions& convertOptions);
 
 //	/*! Update spaces and related space boundaries.
 //		\param constructionElements Vector for all construction elements (wall, slab, roof)
@@ -67,7 +68,7 @@ public:
 //	void updateSpaceConnections(BuildingElementsCollector& buildingElements, std::vector<Opening>& openings);
 
 	/*! Write the storey in vicus xml format including spaces.*/
-	TiXmlElement * writeXML(TiXmlElement * parent, bool positiveRotation) const;
+	TiXmlElement * writeXML(TiXmlElement * parent) const;
 
 //	/*! Create a VICUS building level object and return this.
 //		The returned object contains all transferable data.

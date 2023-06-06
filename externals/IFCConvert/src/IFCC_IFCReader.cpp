@@ -357,11 +357,33 @@ void IFCReader::updateBuildingElements() {
 	}
 }
 
+const ConvertOptions &IFCReader::convertOptions() const {
+	return m_convertOptions;
+}
+
 const IBK::Path &IFCReader::filename() const {
 	if(m_readCompletedSuccessfully)
 		return m_filename;
 
 	return IBK::Path();
+}
+
+bool IFCReader::hasElementsForSpaceBoundaries(BuildingElementTypes type) const {
+	return m_convertOptions.m_elementsForSpaceBoundaries.find(type) != m_convertOptions.m_elementsForSpaceBoundaries.end();
+}
+
+void IFCReader::setElementsForSpaceBoundaries(BuildingElementTypes type, bool set) {
+	if(set) {
+		m_convertOptions.m_elementsForSpaceBoundaries.insert(type);
+	}
+	else {
+		m_convertOptions.m_elementsForSpaceBoundaries.erase(type);
+	}
+}
+
+void IFCReader::setMatchingDistances(double constructionFactor, double openingDistance) {
+	m_convertOptions.m_distanceFactor = constructionFactor;
+	m_convertOptions.m_openingDistance = openingDistance;
 }
 
 bool IFCReader::convert(bool useSpaceBoundaries) {
@@ -468,7 +490,7 @@ bool IFCReader::convert(bool useSpaceBoundaries) {
 			for(auto& building : m_site.m_buildings) {
 				building->fetchStoreys(m_storeysShape, m_spaceEntitesShape);
 				building->updateStoreys(m_elementEntitesShape, m_spaceEntitesShape, m_geometryConverter.getBuildingModel()->getUnitConverter(),
-									   m_buildingElements, m_openings, m_useSpaceBoundaries, m_convertErrors);
+									   m_buildingElements, m_openings, m_useSpaceBoundaries, m_convertErrors, m_convertOptions);
 			}
 
 
@@ -630,14 +652,6 @@ std::vector<int> IFCReader::checkForWrongSurfaceIds() {
 	return m_instances.checkForWrongSurfaceIds(m_site);
 }
 
-bool IFCReader::positiveRotation() const {
-	return m_repairFlags.positiveRotation;
-}
-
-void IFCReader::setPolygonRotationType(bool positiveRotation) {
-	m_repairFlags.positiveRotation = positiveRotation;
-}
-
 bool IFCReader::removeDoubledSBs() const {
 	return m_repairFlags.m_removeDoubledSBs;
 }
@@ -679,7 +693,7 @@ void IFCReader::writeXML(const IBK::Path & filename) const {
 	TiXmlElement * e = new TiXmlElement("Project");
 	root->LinkEndChild(e);
 
-	m_site.writeXML(e, m_repairFlags.positiveRotation);
+	m_site.writeXML(e);
 
 	m_instances.writeXML(e);
 
@@ -704,7 +718,7 @@ void IFCReader::setVicusProjectText(QString& projectText) {
 	TiXmlElement * e = new TiXmlElement("Project");
 	root->LinkEndChild(e);
 
-	m_site.writeXML(e, m_repairFlags.positiveRotation);
+	m_site.writeXML(e);
 
 	m_instances.writeXML(e);
 

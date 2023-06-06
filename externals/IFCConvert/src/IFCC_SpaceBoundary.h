@@ -64,7 +64,7 @@ public:
 		\param elem Building element which is related to.
 		\param space Space which is related to.
 	*/
-	bool setFromBuildingElement(const std::string& name, const std::shared_ptr<BuildingElement>& elem,
+	void setFromBuildingElement(const std::string& name, const std::shared_ptr<BuildingElement>& elem,
 								const IFCC::Space& space);
 
 	/*! Copy content (exept id) from given space boundary.
@@ -107,11 +107,6 @@ public:
 		The returning vector will be empty in case of only one or no surfaces in surface vector.
 	*/
 	std::vector<std::shared_ptr<SpaceBoundary>> splitBySurfaces();
-
-	/*! Return all surfaces of this space.*/
-//	const std::vector<Surface>& surfaces() const {
-//		return m_surfaces;
-//	}
 
 	/*! Return the surface of this space boundary.*/
 	const Surface& surface() const 	{
@@ -193,6 +188,11 @@ public:
 
 	/*! Add a opening space boundarie to the vector of the contained space boundaries.*/
 	void addContainedOpeningSpaceBoundaries(const std::shared_ptr<SpaceBoundary>& newContainedOpeningSpaceBoundaries);
+
+	/*! Write the surface of the space boundary in vicus xml format.
+		\param parent Parent xml node
+	*/
+	TiXmlElement * writeXML(TiXmlElement * parent) const;
 
 	/*! Unique ID of the related building element.*/
 	int															m_elementEntityId;

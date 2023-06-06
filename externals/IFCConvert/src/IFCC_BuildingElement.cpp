@@ -52,6 +52,10 @@
 #include <ifcpp/IFC4X3/include/IfcLogical.h>
 
 #include <ifcpp/IFC4X3/include/IfcMaterialProperties.h>
+#include <ifcpp/IFC4X3/include/IfcProduct.h>
+#include <ifcpp/IFC4X3/include/IfcSpatialElement.h>
+#include <ifcpp/IFC4X3/include/IfcMaterialProperties.h>
+#include <ifcpp/IFC4X3/include/IfcRelContainedInSpatialStructure.h>
 #include <Carve/src/include/carve/carve.hpp>
 
 
@@ -442,7 +446,7 @@ void BuildingElement::setContainingElements(const std::vector<Opening>& openings
 	m_openingProperties.m_usedInConstructionIds.clear();
 	for(const auto& opId : m_usedFromOpenings) {
 		auto fit = std::find_if(openings.begin(), openings.end(),
-								[opId](const auto& op) {return op.m_id == opId; });
+								[opId](const auto& op) -> bool {return op.m_id == opId; });
 		if(fit != openings.end()) {
 			fit->insertContainingElementId(m_openingProperties.m_usedInConstructionIds);
 		}
@@ -457,7 +461,7 @@ void BuildingElement::setContainedConstructionThickesses(const std::vector<std::
 	for(int i=0; i<constructionIDCount; ++i) {
 		int constId = m_openingProperties.m_usedInConstructionIds[i];
 		auto fit = std::find_if(elements.begin(), elements.end(),
-								[constId](const auto& constr) {return constr->m_id == constId; });
+								[constId](const auto& constr) -> bool {return constr->m_id == constId; });
 		if(fit != elements.end()) {
 			m_openingProperties.m_constructionThicknesses.push_back((*fit)->thickness());
 		}

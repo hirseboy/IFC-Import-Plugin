@@ -127,7 +127,9 @@ public:
 							   shared_ptr<UnitConverter>& unit_converter,
 							   const BuildingElementsCollector& buildingElements,
 							   std::vector<Opening>& openings,
-							   bool useSpaceBoundaries, std::vector<ConvertError>& errors);
+							   bool useSpaceBoundaries,
+							   std::vector<ConvertError>& errors,
+							   const ConvertOptions& convertOptions);
 
 	/*! Return all space boundaries of this space.*/
 	const std::vector<std::shared_ptr<SpaceBoundary>>& spaceBoundaries() const;
@@ -151,9 +153,8 @@ public:
 
 	/*! Write the space in vicus xml format including space boundaries.
 		\param parent Parent xml node
-		\param positiveRotation If true all polygons must have poitive rotation type othewise a negative one.
 	*/
-	TiXmlElement * writeXML(TiXmlElement * parent, bool positiveRotation) const;
+	TiXmlElement * writeXML(TiXmlElement * parent) const;
 
 	/*! Return true if the space contains a space boundary with the given GUID.*/
 	bool hasSpaceBoundary(const std::string& guid) const;
@@ -225,21 +226,25 @@ private:
 		\param errors Vector of all conversion errors which occures here
 	*/
 	bool evaluateSpaceBoundariesFromConstruction(const BuildingElementsCollector& buildingElements,
-												 std::vector<Opening>& openings, std::vector<ConvertError>& errors);
+												 std::vector<Opening>& openings,
+												 std::vector<ConvertError>& errors,
+												 const ConvertOptions& convertOptions);
 
 	/*! Try to find space boundaries for construction elements by test of surface properties (parallel, distance, intersections).
 		Function will be called from evaluateSpaceBoundaries.
 		\param constructionElements Vector for all construction elements with own surfaces
 		\return Vector of evaluated space boundaries
 	*/
-	std::vector<std::shared_ptr<SpaceBoundary>> createSpaceBoundaries( const BuildingElementsCollector& buildingElements, std::vector<ConvertError>& errors);
+	std::vector<std::shared_ptr<SpaceBoundary>> createSpaceBoundaries( const BuildingElementsCollector& buildingElements, std::vector<ConvertError>& errors,
+																	   const ConvertOptions& convertOptions);
 
 	/*! Try to find space boundaries for construction elements by test of surface properties (parallel, distance, intersections).
 		Function will be called from evaluateSpaceBoundaries.
 		\param constructionElements Vector for all construction elements with own surfaces
 		\return Vector of evaluated space boundaries
 	*/
-	std::vector<std::shared_ptr<SpaceBoundary>> createSpaceBoundaries_2( const BuildingElementsCollector& buildingElements, std::vector<ConvertError>& errors);
+	std::vector<std::shared_ptr<SpaceBoundary>> createSpaceBoundaries_2( const BuildingElementsCollector& buildingElements, std::vector<ConvertError>& errors,
+																		 const ConvertOptions& convertOptions);
 
 	/*! Try to find space boundaries for opening elements based on openings.
 		\param spaceBoundaries Result vector for adding new space boundaries
@@ -253,7 +258,8 @@ private:
 	/*! Create opening space boundaries by matching openings to existing space boundaries.*/
 	void createSpaceBoundariesForOpeningsFromSpaceBoundaries(std::vector<std::shared_ptr<SpaceBoundary>>& spaceBoundaries,
 															 const BuildingElementsCollector& buildingElements,
-															 std::vector<Opening>& openings, std::vector<ConvertError>& errors);
+															 std::vector<Opening>& openings, std::vector<ConvertError>& errors,
+															 const ConvertOptions& convertOptions);
 
 	std::vector<std::shared_ptr<SpaceBoundary>>				m_spaceBoundaries;	///< Space boundaries of the space
 	carve::math::Matrix										m_transformMatrix;	///< Matrix for geometry transformation from local to global coordinates

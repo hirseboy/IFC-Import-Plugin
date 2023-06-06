@@ -115,7 +115,7 @@ bool SpaceBoundary::setFromIFC(std::shared_ptr<IfcRelSpaceBoundary> ifcSpaceBoun
 	return true;
 }
 
-bool SpaceBoundary::setFromBuildingElement(const std::string& name, const std::shared_ptr<BuildingElement>& elem,
+void SpaceBoundary::setFromBuildingElement(const std::string& name, const std::shared_ptr<BuildingElement>& elem,
 										   const Space& space) {
 	m_name = name;
 	setRelatingElementType(elem->type());
@@ -124,7 +124,6 @@ bool SpaceBoundary::setFromBuildingElement(const std::string& name, const std::s
 	m_nameRelatedElement = elem->m_name;
 	m_guidRelatedSpace = space.m_guid;
 	m_nameRelatedSpace = space.m_name;
-	return true;
 }
 
 void SpaceBoundary::setFromSpaceBoundary(const SpaceBoundary& sb, size_t surfaceIndex) {
@@ -145,6 +144,8 @@ void SpaceBoundary::setFromSpaceBoundary(const SpaceBoundary& sb, size_t surface
 	IBK_ASSERT(surfaceIndex > 0);
 	IBK_ASSERT(surfaceIndex < sb.m_surfaces.size());
 	m_surface = sb.m_surfaces[surfaceIndex];
+	std::string name = m_name + "-" + std::to_string(surfaceIndex);
+	m_surface.set(m_surface.id(), m_elementEntityId, name, m_surface.isVirtual());
 }
 
 void SpaceBoundary::setForMissingElement(const std::string& name, const Space& space, bool isOpening) {
@@ -208,8 +209,10 @@ bool SpaceBoundary::fetchGeometryFromBuildingElement(const Surface& surface) {
 	m_surfaces.clear();
 	if(surface.isValid()) {
 		std::string name = m_nameRelatedElement;
-		if(name.empty())
-			name = std::to_string(m_id);
+		if(name.empty()) {
+			name = m_name;
+//			name = std::to_string(m_id);
+		}
 		m_surface = surface;
 		m_surface.set(GUID_maker::instance().guid(), m_elementEntityId, name,
 							  m_physicalOrVirtual == IfcPhysicalOrVirtualEnum::ENUM_VIRTUAL);
@@ -273,6 +276,14 @@ const std::vector<std::shared_ptr<SpaceBoundary> >& SpaceBoundary::containedOpen
 
 void SpaceBoundary::addContainedOpeningSpaceBoundaries(const std::shared_ptr<SpaceBoundary>& containedOpeningSpaceBoundaries) {
 	m_containedOpeningSpaceBoundaries.push_back(containedOpeningSpaceBoundaries);
+}
+
+TiXmlElement *SpaceBoundary::writeXML(TiXmlElement *parent) const {
+	if(!isOpeningElement()) {
+		Surface s = surfaceWithSubsurfaces();
+
+		s.writeXML(parent);
+	}
 }
 
 } // namespace IFCC

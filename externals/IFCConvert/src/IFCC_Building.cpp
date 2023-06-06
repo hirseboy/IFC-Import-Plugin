@@ -83,16 +83,17 @@ void Building::updateStoreys(const objectShapeTypeVector_t& elementShapes,
 							 const BuildingElementsCollector& buildingElements,
 							 std::vector<Opening>& openings,
 							 bool useSpaceBoundaries,
-							 std::vector<ConvertError>& errors) {
+							 std::vector<ConvertError>& errors,
+							 const ConvertOptions& convertOptions) {
 
 	for(auto& storey : m_storeys) {
 		storey->fetchSpaces(spaceShapes, unit_converter, errors);
-		storey->updateSpaces(elementShapes, unit_converter, buildingElements, openings, useSpaceBoundaries, errors);
+		storey->updateSpaces(elementShapes, unit_converter, buildingElements, openings, useSpaceBoundaries, errors, convertOptions);
 	}
 }
 
 
-TiXmlElement * Building::writeXML(TiXmlElement * parent, bool positiveRotation) const {
+TiXmlElement * Building::writeXML(TiXmlElement * parent) const {
 	if (m_id == -1)
 		return nullptr;
 
@@ -109,7 +110,7 @@ TiXmlElement * Building::writeXML(TiXmlElement * parent, bool positiveRotation) 
 		e->LinkEndChild(child);
 
 		for( const auto& storey : m_storeys) {
-			storey->writeXML(child, positiveRotation);
+			storey->writeXML(child);
 		}
 	}
 	return e;

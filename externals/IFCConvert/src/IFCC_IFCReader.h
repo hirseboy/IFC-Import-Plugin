@@ -45,7 +45,6 @@ public:
 		It should repair possible IFC problems.
 	*/
 	struct RepairFlags {
-		bool	positiveRotation	= true;		///< if true all polygones must have positive rotation type
 		bool	m_removeDoubledSBs	= false;	///< remove space boundaries which contains the same surface
 
 	};
@@ -112,14 +111,6 @@ public:
 	*/
 	std::vector<int> checkForWrongSurfaceIds();
 
-	/*! Return state of polygon rotation type setting.*/
-	bool positiveRotation() const;
-
-	/*! Set the state of flip polygon flag.
-		If this is true all polygons of the space boundaries will be flipped before they are saved.
-	*/
-	void setPolygonRotationType(bool positiveRotation);
-
 	/*! Return state of remove doubled space boundaries flag.*/
 	bool removeDoubledSBs() const;
 
@@ -141,6 +132,24 @@ public:
 
 	QStringList statistic() const;
 
+	const std::vector<ConvertError>& convertErrors() const;
+
+	const IBK::Path &filename() const;
+
+	bool hasElementsForSpaceBoundaries(BuildingElementTypes type) const;
+
+	void setElementsForSpaceBoundaries(BuildingElementTypes type, bool set);
+
+	void clearElementsForSpaceBoundaries() {
+		m_convertOptions.m_elementsForSpaceBoundaries.clear();
+	}
+
+	void setConvertMatchingType(ConvertOptions::ConstructionMatching type) {
+		m_convertOptions.m_matchingType = type;
+	}
+
+	void setMatchingDistances(double constructionFactor, double openingDistance);
+
 	bool							m_hasError;				///< If true an error while reading IFC file was occured
 	bool							m_hasWarning;			///< If true an warning while reading IFC file was occured
 	std::string						m_errorText;			///< Text of error messages
@@ -149,9 +158,7 @@ public:
 	bool							m_readCompletedSuccessfully;
 	bool							m_convertCompletedSuccessfully;
 
-	const std::vector<ConvertError>& convertErrors() const;
-
-	const IBK::Path &filename() const;
+	const ConvertOptions &convertOptions() const;
 
 signals:
 	void progress(int val, QString text);
@@ -203,6 +210,8 @@ private:
 	Instances											m_instances;
 	/*! Vector of errors while converting.*/
 	std::vector<ConvertError>							m_convertErrors;
+	/*! Elements which are used for creating space boundaries.*/
+	ConvertOptions										m_convertOptions;
 
 
 	/*! Function for collecting messages from IFC reading process (error, warning, progress).*/

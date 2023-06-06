@@ -253,7 +253,7 @@ void Database::collectMaterialsAndConstructions(std::vector<std::shared_ptr<Buil
 			auto fit = std::find_if(
 						   m_materials.begin(),
 						   m_materials.end(),
-						   [name](const auto& mo) {return mo.second.m_name == name; });
+						   [name](const auto& mo) -> bool {return mo.second.m_name == name; });
 			if(fit == m_materials.end()) {
 				Material material;
 				material.m_id  = GUID_maker::instance().guid();
@@ -270,7 +270,7 @@ void Database::collectMaterialsAndConstructions(std::vector<std::shared_ptr<Buil
 		auto fit = std::find_if(
 					   m_constructions.begin(),
 					   m_constructions.end(),
-					   [currentConst](const auto& mo) {return mo.second == currentConst; });
+					   [currentConst](const auto& mo) -> bool {return mo.second == currentConst; });
 		if(fit == m_constructions.end()) {
 			currentConst.m_id = GUID_maker::instance().guid();
 			currentConst.m_name = "construction - " + std::to_string(currentConst.m_id);
@@ -303,7 +303,7 @@ void Database::collectWindowsAndGlazings(std::vector<std::shared_ptr<BuildingEle
 		auto fitGl = std::find_if(
 					   m_windowGlazings.begin(),
 					   m_windowGlazings.end(),
-					   [glazing](const auto& gl) {return gl.second == glazing; });
+					   [glazing](const auto& gl) -> bool {return gl.second == glazing; });
 		if(fitGl == m_windowGlazings.end()) {
 			glazing.m_id = GUID_maker::instance().guid();
 			glazing.m_name = "window glazing - " + std::to_string(glazing.m_id);
@@ -316,7 +316,7 @@ void Database::collectWindowsAndGlazings(std::vector<std::shared_ptr<BuildingEle
 		auto fitWi = std::find_if(
 					   m_windows.begin(),
 					   m_windows.end(),
-					   [window](const auto& wi) {return wi.second == window; });
+					   [window](const auto& wi) -> bool {return wi.second == window; });
 		if(fitWi == m_windows.end()) {
 			window.m_id = GUID_maker::instance().guid();
 			if(window.m_name.empty())

@@ -99,13 +99,13 @@ void Instances::collectNormalComponentInstances(BuildingElementsCollector& eleme
 						auto fitElem = std::find_if(
 										   constructionElements.begin(),
 										   constructionElements.end(),
-										   [sb](const auto& elem) {return elem->m_id == sb->m_elementEntityId; });
+										   [sb](const auto& elem) -> bool {return elem->m_id == sb->m_elementEntityId; });
 						if(fitElem != constructionElements.end()) {
 							const std::shared_ptr<BuildingElement>& elem = *fitElem;
 							auto fitComp = std::find_if(
 											   database.m_components.begin(),
 											   database.m_components.end(),
-											   [elem](const auto& comp) {return comp.second.m_guid == elem->m_guid; });
+											   [elem](const auto& comp) -> bool {return comp.second.m_guid == elem->m_guid; });
 							if(fitComp != database.m_components.end()) {
 								ComponentInstance ci;
 								ci.m_id = GUID_maker::instance().guid();
@@ -191,13 +191,13 @@ void Instances::collectSubSurfaceComponentInstances(BuildingElementsCollector& e
 							auto fitElem = std::find_if(
 										elements.m_openingElements.begin(),
 										elements.m_openingElements.end(),
-										[subsb](const auto& elem) {return elem->m_id == subsb->m_elementEntityId; });
+										[subsb](const auto& elem) -> bool {return elem->m_id == subsb->m_elementEntityId; });
 							if(fitElem != elements.m_openingElements.end()) {
 								const std::shared_ptr<BuildingElement>& elem = *fitElem;
 								auto fitComp = std::find_if(
 											database.m_subSurfaceComponents.begin(),
 											database.m_subSurfaceComponents.end(),
-											[elem](const auto& comp) {return comp.second.guid() == elem->m_guid; });
+											[elem](const auto& comp) -> bool {return comp.second.guid() == elem->m_guid; });
 								if(fitComp != database.m_subSurfaceComponents.end()) {
 									ComponentInstance ci;
 									ci.m_id = GUID_maker::instance().guid();
