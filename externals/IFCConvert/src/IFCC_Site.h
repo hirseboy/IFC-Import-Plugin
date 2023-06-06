@@ -57,7 +57,7 @@ public:
 //	std::vector<Space::SurfaceConnectionVectors> allSurfaceConnectionVectors() const;
 
 	/*! Write the site in vicus xml format including buildings.*/
-	TiXmlElement * writeXML(TiXmlElement * parent, bool positiveRotation) const;
+	TiXmlElement * writeXML(TiXmlElement * parent) const;
 
 	std::vector<std::shared_ptr<Building>>	m_buildings;	///< vector of pointers to building objects
 
