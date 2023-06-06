@@ -316,23 +316,32 @@ Surface::IntersectionResult Surface::intersect2(const Surface& other) const {
 	for(size_t i=0; i<tmp.m_intersections.size(); ++i) {
 		const polygon3D_t& poly = tmp.m_intersections[i];
 		if(poly.size() > 3 && areaPolygon(poly) > 1e-4) {
-			result.m_intersections.push_back(Surface(poly, tmp.m_holesIntersections[i]));
-			result.m_holesIntersections.push_back(std::vector<Surface>());
-			for(const polygon3D_t& hole : tmp.m_holesIntersections[i]) {
-				if(hole.size() > 3 && areaPolygon(hole) > 1e-4)
-					result.m_holesIntersections.back().push_back(hole);
+			Surface currentSurface(poly, tmp.m_holesIntersections[i]);
+			std::vector<Surface> simpleSurfaces = currentSurface.getSimplified();
+			for(size_t j=0; j<simpleSurfaces.size(); ++j) {
+				result.m_intersections.push_back(simpleSurfaces[j]);
+				result.m_holesIntersections.push_back(std::vector<Surface>());
+				for(const polygon3D_t& hole : tmp.m_holesIntersections[i]) {
+					if(hole.size() > 3 && areaPolygon(hole) > 1e-4)
+						result.m_holesIntersections.back().push_back(hole);
+				}
 			}
 		}
 	}
+
 	result.m_holesBaseMinusClipChildCount = tmp.m_holesBaseMinusClipChildCount;
 	for(size_t i=0; i<tmp.m_diffBaseMinusClip.size(); ++i) {
 		const polygon3D_t& poly = tmp.m_diffBaseMinusClip[i];
 		if(poly.size() > 3 && areaPolygon(poly) > 1e-4) {
-			result.m_diffBaseMinusClip.push_back(Surface(poly, tmp.m_holesBaseMinusClip[i]));
-			result.m_holesBaseMinusClip.push_back(std::vector<Surface>());
-			for(const polygon3D_t& hole : tmp.m_holesBaseMinusClip[i]) {
-				if(hole.size() > 3 && areaPolygon(hole) > 1e-4)
-					result.m_holesBaseMinusClip.back().push_back(hole);
+			Surface currentSurface(poly, tmp.m_holesBaseMinusClip[i]);
+			std::vector<Surface> simpleSurfaces = currentSurface.getSimplified();
+			for(size_t j=0; j<simpleSurfaces.size(); ++j) {
+				result.m_diffBaseMinusClip.push_back(simpleSurfaces[j]);
+				result.m_holesBaseMinusClip.push_back(std::vector<Surface>());
+				for(const polygon3D_t& hole : tmp.m_holesBaseMinusClip[i]) {
+					if(hole.size() > 3 && areaPolygon(hole) > 1e-4)
+						result.m_holesBaseMinusClip.back().push_back(hole);
+				}
 			}
 		}
 	}
@@ -340,11 +349,15 @@ Surface::IntersectionResult Surface::intersect2(const Surface& other) const {
 	for(size_t i=0; i<tmp.m_diffClipMinusBase.size(); ++i) {
 		const polygon3D_t& poly = tmp.m_diffClipMinusBase[i];
 		if(poly.size() > 3 && areaPolygon(poly) > 1e-4) {
-			result.m_diffClipMinusBase.push_back(Surface(poly, tmp.m_holesClipMinusBase[i]));
-			result.m_holesClipMinusBase.push_back(std::vector<Surface>());
-			for(const polygon3D_t& hole : tmp.m_holesClipMinusBase[i]) {
-				if(hole.size() > 3 && areaPolygon(hole) > 1e-4)
-					result.m_holesClipMinusBase.back().push_back(hole);
+			Surface currentSurface(poly, tmp.m_holesClipMinusBase[i]);
+			std::vector<Surface> simpleSurfaces = currentSurface.getSimplified();
+			for(size_t j=0; j<simpleSurfaces.size(); ++j) {
+				result.m_diffClipMinusBase.push_back(simpleSurfaces[j]);
+				result.m_holesClipMinusBase.push_back(std::vector<Surface>());
+				for(const polygon3D_t& hole : tmp.m_holesClipMinusBase[i]) {
+					if(hole.size() > 3 && areaPolygon(hole) > 1e-4)
+						result.m_holesClipMinusBase.back().push_back(hole);
+				}
 			}
 		}
 	}
@@ -407,6 +420,21 @@ void Surface::flip(bool positive) {
 	for(auto& sub : m_subSurfaces) {
 		sub.flip(positive);
 	}
+}
+
+std::vector<Surface> Surface::getSimplified() const {
+	std::vector<Surface> res;
+	std::vector<IBKMK::Vector3D> tmp = m_polyVect;
+	cleanPolygon(tmp);
+	std::vector<polygon3D_t> polysSimple = simplifyPolygon(tmp);
+
+	if(polysSimple.empty())
+		return res;
+
+	for(size_t i=0; i<polysSimple.size(); ++i) {
+		res.push_back(Surface(polysSimple[i]));
+	}
+	return res;
 }
 
 TiXmlElement * Surface::writeXML(TiXmlElement * parent) const {

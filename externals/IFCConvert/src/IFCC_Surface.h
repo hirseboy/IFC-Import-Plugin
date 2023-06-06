@@ -127,6 +127,13 @@ public:
 	*/
 	void flip(bool positive);
 
+	/*! Clean and simplify the internal polygon.
+	 *  This can lead to a splitting in more than one polygon.
+	 *  The function return all created surfaces including the original one.
+	 *  The internal surface will not be changed
+	*/
+	std::vector<Surface> getSimplified() const;
+
 	/*! Write the surface in vicus xml format including all subsurfaces.*/
 	TiXmlElement * writeXML(TiXmlElement * parent) const;
 
