@@ -70,6 +70,10 @@ public:
 	/*! Get the vector of opening construction ids connected to this opening.*/
 	const std::vector<int>& openingElementIds() const;
 
+	bool isConnectedToOpeningElement() const {
+		return !m_openingElementIds.empty();
+	}
+
 private:
 
 	/*! Transfor geometric shape data from local into global coordinate system.
