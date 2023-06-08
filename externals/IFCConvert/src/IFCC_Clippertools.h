@@ -78,6 +78,9 @@ polygon3D_t mergePolygons(const polygon3D_t& base, const polygon3D_t& to_merge, 
 */
 polygon3D_t intersectPolygons(const polygon3D_t& base, const polygon3D_t& intersectPoly, const PlaneNormal& plane);
 
+/*! Create an intersection with its own bounding rect.*/
+std::vector<polygon3D_t> intersectBoundingRect(const polygon3D_t& intersectPoly, const PlaneNormal& plane);
+
 /*! Calculates all polygons which can be calculated by intersection of intersectPoly into base.
 	The result will contain the intersection polygon, the rest base polygon and the rest inetsect polygon including existing holes.
 	\param base Base polygon for calculation intersection.

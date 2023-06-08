@@ -6,6 +6,8 @@
 
 #include <IBK_assert.h>
 
+#include <limits>
+
 #include <Carve/src/include/carve/carve.hpp>
 
 #include "IFCC_MeshUtils.h"
@@ -212,6 +214,56 @@ polygon3D_t intersectPolygons(const polygon3D_t& base, const polygon3D_t& inters
 	}
 	catch (...) {
 		return polygon3D_t();
+	}
+
+}
+
+ClipperLib::Path boundingPath(const ClipperLib::Path& base) {
+	int maxX = std::numeric_limits<int>::min();
+	int minX = std::numeric_limits<int>::max();
+	int maxY = std::numeric_limits<int>::min();
+	int minY = std::numeric_limits<int>::max();
+	for(const auto& p : base) {
+		if(p.X > maxX)
+			maxX = p.X;
+		if(p.X < minX)
+			minX = p.X;
+		if(p.Y > maxY)
+			maxY = p.Y;
+		if(p.Y < minY)
+			minY = p.Y;
+	}
+	ClipperLib::Path res;
+	res.push_back({minX,minY});
+	res.push_back({maxX,minY});
+	res.push_back({maxX,maxY});
+	res.push_back({minX,maxY});
+	return res;
+}
+
+std::vector<polygon3D_t> intersectBoundingRect(const polygon3D_t& intersectPoly, const PlaneNormal& plane) {
+	ClipperLib::Path clipPoly = createPathFrom3D(intersectPoly, plane);
+	ClipperLib::Path clipBound = boundingPath(clipPoly);
+	if(clipPoly.empty() || clipBound.empty())
+		return std::vector<polygon3D_t>();
+
+	try {
+		ClipperLib::Clipper clipper;
+		clipper.AddPath(clipBound, ClipperLib::ptSubject, true);
+		clipper.AddPath(clipPoly, ClipperLib::ptClip, true);
+		ClipperLib::Paths clipresult;
+		clipper.Execute(ClipperLib::ctIntersection, clipresult, ClipperLib::pftEvenOdd, ClipperLib::pftNonZero);
+		std::vector<polygon3D_t> result = polygons3DFromPaths(clipresult, plane);
+		if(result.empty())
+			return std::vector<polygon3D_t>();
+
+		return result;
+	}
+	catch (std::exception& e) {
+		return std::vector<polygon3D_t>();
+	}
+	catch (...) {
+		return std::vector<polygon3D_t>();
 	}
 
 }
