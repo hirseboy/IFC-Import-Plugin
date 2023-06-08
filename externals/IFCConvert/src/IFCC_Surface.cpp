@@ -6,6 +6,7 @@
 
 #include <IBK_math.h>
 #include <IBK_assert.h>
+#include <IBK_Line.h>
 
 #include <Carve/src/include/carve/carve.hpp>
 
@@ -376,6 +377,16 @@ std::vector<Surface> Surface::difference(const Surface& other) const {
 	return result;
 }
 
+std::vector<Surface> Surface::innerIntersection() const {
+	std::vector<polygon3D_t> polys = intersectBoundingRect(m_polyVect, m_planeNormal);
+	std::vector<Surface> result;
+	for(const polygon3D_t& poly : polys) {
+		if(!poly.empty() && areaPolygon(poly) > 1e-4)
+			result.push_back(Surface(poly));
+	}
+	return result;
+}
+
 
 bool Surface::merge(const Surface& subsurface) {
 	polygon3D_t result = mergePolygons(m_polyVect, subsurface.polygon(), m_planeNormal);
@@ -501,6 +512,48 @@ bool Surface::isValid() const {
 		}
 	}
 	return tempVect.size() > 2;
+}
+
+bool Surface::hasSimplePolygon() const {
+	polygon2D_t poly2D = polygon2DInPlane();
+
+
+	std::vector<IBK::Line>	lines;
+	for (unsigned int i=0, vertexCount = poly2D.size(); i<vertexCount; ++i) {
+		double ax1 = poly2D[i].m_x;
+		double ax2 = poly2D[(i+1) % vertexCount].m_x;
+		double ay1 = poly2D[i].m_y;
+		double ay2 = poly2D[(i+1) % vertexCount].m_y;
+		double rx = ax2-ax1;
+		double ry = ay2-ay1;
+
+		// zero line length check
+		if(rx*rx + ry*ry <= 0) {
+			return false;
+		}
+
+		lines.emplace_back(IBK::Line(IBK::point2D<double>(ax1,ay1), IBK::point2D<double>(ax2,ay2)));
+	}
+	if (lines.size() < 4)
+		return true;
+
+	for (unsigned int i=0; i<lines.size();++i) {
+		for (unsigned int j=0; j<lines.size()-2; ++j) {
+			unsigned int k1 = (i+1)%lines.size();
+			unsigned int k2 = (i-1);
+			if(i==0)
+				k2 = lines.size()-1;
+			if(i==j || k1 == j || k2 == j )
+				continue;
+			//int k = (i+j+2)%lines.size();
+			IBK::point2D<double> p;
+			IBK::point2D<double> p2;
+			if (lines[i].intersects(lines[j], p, p2) > 0)
+				return false;
+		}
+	}
+
+	return true;
 }
 
 void surfacesFromMeshSets(std::vector<shared_ptr<carve::mesh::MeshSet<3> > >& meshsets, std::vector<Surface>& surfaces) {
@@ -641,6 +694,33 @@ void surfacesFromRepresentation(std::shared_ptr<ProductShapeData> productShape, 
 			errors.push_back({objectType, objectId, "Geometric representation of type 'profile' cannot be evaluated."});
 	}
 
+	// check surfaces
+	if(objectType == OT_Space) {
+		std::vector<Surface> addedSurfaces;
+//		for(size_t i=0; i<surfaces.size(); ++i) {
+//			const Surface& surf = surfaces[i];
+//			std::vector<Surface> simpleSurfs = surf.getSimplified();
+//			if(!simpleSurfs.empty()) {
+//				surfaces[i] = simpleSurfs.front();
+//				if(simpleSurfs.size() > 1)
+//					addedSurfaces.insert(addedSurfaces.end(), simpleSurfs.begin()+1, simpleSurfs.end());
+//			}
+//		}
+//		surfaces.insert(surfaces.end(), addedSurfaces.begin(), addedSurfaces.end());
+		for(size_t i=0; i<surfaces.size(); ++i) {
+			Surface& surf = surfaces[i];
+			if(!surf.hasSimplePolygon()) {
+				std::vector<Surface> res = surf.innerIntersection();
+				if(!res.empty()) {
+					surf = res.front();
+					if(res.size()>1) {
+						addedSurfaces.insert(addedSurfaces.end(), res.begin()+1, res.end());
+					}
+				}
+				errors.push_back({objectType, objectId, "Created surface is not valid: " + std::to_string(i)});
+			}
+		}
+	}
 }
 
 static std::shared_ptr<RepresentationData> firstBodyRep(std::shared_ptr<ProductShapeData> productShape) {

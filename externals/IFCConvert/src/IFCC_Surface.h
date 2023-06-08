@@ -90,6 +90,8 @@ public:
 	*/
 	std::vector<Surface> difference(const Surface& other) const;
 
+	std::vector<Surface> innerIntersection() const;
+
 	/*! Merge the given subsurface into the current surface.
 		If the original surface was intersected by this subsurface the resulting surface is complete without holes.
 		The merging is performed in 2D level using clipper library (\sa mergePolygons).
@@ -175,6 +177,11 @@ public:
 	bool isMissing() const {
 		return m_elementEntityId == -1;
 	}
+
+	/*! Check if the basic 2D polygon have some line intersections.
+	 *  Same method is used in SIM-VICUS in order to che validity of polygons.
+	*/
+	bool hasSimplePolygon() const;
 
 
 private:
