@@ -230,6 +230,8 @@ private:
 	*/
 	bool typeByGuid(const std::string& guid, std::pair<BuildingElementTypes,std::shared_ptr<ProductShapeData>>& res);
 
+	void checkAndMatchOpeningsToConstructions();
+
 	bool		m_useSpaceBoundaries = true;
 
 	std::unique_ptr<QProgressDialog> m_progressDialog;

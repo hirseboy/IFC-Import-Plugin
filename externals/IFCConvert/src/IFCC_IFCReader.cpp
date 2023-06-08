@@ -477,6 +477,8 @@ bool IFCReader::convert(bool useSpaceBoundaries) {
 			m_convertErrors.push_back({OT_BuildingElement, elem->m_id, "Building element has no surface"});
 		}
 
+		checkAndMatchOpeningsToConstructions();
+
 
 		emit progress(95, "collectData");
 		m_database.collectData(m_buildingElements);
@@ -915,6 +917,40 @@ bool IFCReader::typeByGuid(const std::string& guid, std::pair<BuildingElementTyp
 		}
 	}
 	return false;
+}
+
+void IFCReader::checkAndMatchOpeningsToConstructions() {
+	for(Opening& opening : m_openings) {
+		if(opening.isConnectedToOpeningElement())
+			continue;
+
+		double currDist = 1e20;
+		int constructionId = -1;
+		for(const auto& elem : m_buildingElements.m_openingElements) {
+			for(size_t cosi=0; cosi<opening.surfaces().size(); ++cosi) {
+				const Surface& currentOpeningSurf = opening.surfaces()[cosi];
+
+				for(const Surface& constructionSurf : elem->surfaces()) {
+					double dist = currentOpeningSurf.distanceToParallelPlane(constructionSurf);
+					if(dist > m_convertOptions.m_openingDistance)
+						continue;
+
+					bool intersected = constructionSurf.isIntersected(currentOpeningSurf);
+					if(intersected) {
+						if(dist < currDist) {
+							currDist = dist;
+							constructionId = elem->m_id;
+						}
+					}
+				} // construction surface loop
+			} // opening surface loop
+
+		} // building element id loop
+
+		if(constructionId > -1)
+			opening.addOpeningElementId(constructionId);
+	} // opening loop
+
 }
 
 } // end namespace
