@@ -697,16 +697,6 @@ void surfacesFromRepresentation(std::shared_ptr<ProductShapeData> productShape, 
 	// check surfaces
 	if(objectType == OT_Space) {
 		std::vector<Surface> addedSurfaces;
-//		for(size_t i=0; i<surfaces.size(); ++i) {
-//			const Surface& surf = surfaces[i];
-//			std::vector<Surface> simpleSurfs = surf.getSimplified();
-//			if(!simpleSurfs.empty()) {
-//				surfaces[i] = simpleSurfs.front();
-//				if(simpleSurfs.size() > 1)
-//					addedSurfaces.insert(addedSurfaces.end(), simpleSurfs.begin()+1, simpleSurfs.end());
-//			}
-//		}
-//		surfaces.insert(surfaces.end(), addedSurfaces.begin(), addedSurfaces.end());
 		for(size_t i=0; i<surfaces.size(); ++i) {
 			Surface& surf = surfaces[i];
 			if(!surf.hasSimplePolygon()) {
@@ -720,6 +710,7 @@ void surfacesFromRepresentation(std::shared_ptr<ProductShapeData> productShape, 
 				errors.push_back({objectType, objectId, "Created surface is not valid: " + std::to_string(i)});
 			}
 		}
+		surfaces.insert(surfaces.end(), addedSurfaces.begin(), addedSurfaces.end());
 	}
 }
 
