@@ -78,6 +78,9 @@ polygon3D_t mergePolygons(const polygon3D_t& base, const polygon3D_t& to_merge, 
 */
 polygon3D_t intersectPolygons(const polygon3D_t& base, const polygon3D_t& intersectPoly, const PlaneNormal& plane);
 
+/*! Creat a simple bounding rectangle for the given path.*/
+ClipperLib::Path boundingPath(const ClipperLib::Path& base);
+
 /*! Create an intersection with its own bounding rect.*/
 std::vector<polygon3D_t> intersectBoundingRect(const polygon3D_t& intersectPoly, const PlaneNormal& plane);
 

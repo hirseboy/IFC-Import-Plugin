@@ -219,11 +219,12 @@ polygon3D_t intersectPolygons(const polygon3D_t& base, const polygon3D_t& inters
 }
 
 ClipperLib::Path boundingPath(const ClipperLib::Path& base) {
-	int maxX = std::numeric_limits<int>::min();
-	int minX = std::numeric_limits<int>::max();
-	int maxY = std::numeric_limits<int>::min();
-	int minY = std::numeric_limits<int>::max();
-	for(const auto& p : base) {
+	int maxX = base[0].X;
+	int minX = base[0].X;
+	int maxY = base[0].Y;
+	int minY = base[0].Y;
+	for(size_t i=1; i<base.size(); ++i) {
+		const ClipperLib::IntPoint& p = base[i];
 		if(p.X > maxX)
 			maxX = p.X;
 		if(p.X < minX)
