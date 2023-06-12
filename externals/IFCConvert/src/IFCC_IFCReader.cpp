@@ -654,6 +654,15 @@ std::vector<int> IFCReader::checkForWrongSurfaceIds() {
 	return m_instances.checkForWrongSurfaceIds(m_site);
 }
 
+int IFCReader::checkForNotRelatedOpenings() const {
+	int count = 0;
+	for(const Opening& op : m_openings) {
+		if(!op.hasSpaceBoundary())
+			++count;
+	}
+	return count;
+}
+
 bool IFCReader::removeDoubledSBs() const {
 	return m_repairFlags.m_removeDoubledSBs;
 }

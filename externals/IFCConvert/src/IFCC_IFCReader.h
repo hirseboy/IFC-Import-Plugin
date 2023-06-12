@@ -111,6 +111,9 @@ public:
 	*/
 	std::vector<int> checkForWrongSurfaceIds();
 
+	/*! Count the number of openings which are not related to a space boundary.*/
+	int checkForNotRelatedOpenings() const;
+
 	/*! Return state of remove doubled space boundaries flag.*/
 	bool removeDoubledSBs() const;
 
@@ -128,27 +131,48 @@ public:
 	/*! Create a VICUS project text based on the current content.*/
 	void setVicusProjectText(QString& projectText);
 
+	/*! Return a string list with all messages.*/
 	QStringList messages() const;
 
+	/*! Create an return a statistic text.*/
 	QStringList statistic() const;
 
+	/*! Return all errors found while converting.*/
 	const std::vector<ConvertError>& convertErrors() const;
 
+	/*! Return the name of the current IFC file.*/
 	const IBK::Path &filename() const;
 
+	/*! Return true if the given element type will be used for creating space boundaries by matching with space surfaces.*/
 	bool hasElementsForSpaceBoundaries(BuildingElementTypes type) const;
 
+	/*! Add the given element type to the list of types used for creating space boundaries by matching with space surfaces.*/
 	void setElementsForSpaceBoundaries(BuildingElementTypes type, bool set);
 
+	/*! Clear the elemnt matching type list.*/
 	void clearElementsForSpaceBoundaries() {
 		m_convertOptions.m_elementsForSpaceBoundaries.clear();
 	}
 
+	/*! Set the type usid for matching space boundaries.
+	 *  \li CM_MatchEachConstruction - use each construction and cut space surfaces
+	 *  \li CM_MatchOnlyFirstConstruction - use only the matching construction with the highest priority (distance, area, type)
+	 *  \li CM_MatchFirstNConstructions - use a given number of construction from the priority list
+	 *  \li CM_NoMatching - don't perform a matching. All space boundaries will have missing element type
+	 */
 	void setConvertMatchingType(ConvertOptions::ConstructionMatching type) {
 		m_convertOptions.m_matchingType = type;
 	}
 
+	/*! Set additional matching parameter.
+		\param constructionFactor Factor which will be multiplied with the construction thickness for maximum matching distance
+		\param openingDistance Maximum distance for matching openings to space boundaries
+	*/
 	void setMatchingDistances(double constructionFactor, double openingDistance);
+
+	/*! Return the current convert options.
+	*/
+	const ConvertOptions &convertOptions() const;
 
 	bool							m_hasError;				///< If true an error while reading IFC file was occured
 	bool							m_hasWarning;			///< If true an warning while reading IFC file was occured
@@ -158,8 +182,6 @@ public:
 	bool							m_readCompletedSuccessfully;
 	bool							m_convertCompletedSuccessfully;
 
-	const ConvertOptions &convertOptions() const;
-
 signals:
 	void progress(int val, QString text);
 
@@ -168,6 +190,8 @@ private slots:
 
 private:
 
+	/*! Helper function for updateing all building elements and collect them according type.
+	*/
 	void updateBuildingElements();
 
 	IBK::Path						m_filename;				///< IFC file
