@@ -116,6 +116,8 @@ public:
 	/*! Merge the internal surface with the given one.*/
 	void mergeSurface(const Surface& surf);
 
+	bool checkAndHealSurface(bool healing = true);
+
 
 	/*! Return the surface of this space boundary.*/
 	Surface surfaceWithSubsurfaces() const 	{

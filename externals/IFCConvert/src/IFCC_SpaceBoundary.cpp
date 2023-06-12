@@ -240,6 +240,23 @@ void SpaceBoundary::mergeSurface(const Surface& surf) {
 	m_surface.merge(surf);
 }
 
+bool SpaceBoundary::checkAndHealSurface(bool healing) {
+	bool res = m_surface.hasSimplePolygon();
+	if(!res && healing) {
+		std::vector<Surface> resSurfaces = m_surface.innerIntersection();
+		if(!resSurfaces.empty())
+			m_surface = resSurfaces.front();
+		else
+			return false;
+
+		if(resSurfaces.size() > 1)
+			return false;
+
+		res = m_surface.hasSimplePolygon();
+	}
+	return res;
+}
+
 
 void SpaceBoundary::createSurfaceVect(const polyVector_t& polylines) {
 	m_surfaces.clear();
