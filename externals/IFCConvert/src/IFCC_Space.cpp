@@ -830,7 +830,8 @@ bool Space::evaluateSpaceBoundaryGeometry(shared_ptr<UnitConverter>& unit_conver
 bool Space::evaluateSpaceBoundaryFromIFC(const objectShapeTypeVector_t& shapes,
 										 const BuildingElementsCollector& buildingElements,
 										 shared_ptr<UnitConverter>& unit_converter,
-										 std::vector<ConvertError>& errors) {
+										 std::vector<ConvertError>& errors,
+										 const ConvertOptions& convertOptions) {
 	// get space boundary types and set element id connections
 	evaluateSpaceBoundaryTypes(shapes, buildingElements);
 
@@ -850,11 +851,20 @@ bool Space::evaluateSpaceBoundaryFromIFC(const objectShapeTypeVector_t& shapes,
 		m_spaceBoundaries.insert(m_spaceBoundaries.begin(), splittedSBs.begin(), splittedSBs.end());
 	}
 
+	int wrongSurfaces = 0;
+	for(auto sb : m_spaceBoundaries) {
+		if(!sb->checkAndHealSurface(true))
+			++wrongSurfaces;
+	}
+	if(wrongSurfaces > 0) {
+		errors.push_back(ConvertError{OT_Space, m_id, "Space contains " + std::to_string(wrongSurfaces) + " space boundaries with non valid surface."});
+	}
+
 	// create two temporary vectors for construction space boundaries and opening space boundaries
 	std::vector<std::shared_ptr<SpaceBoundary>> constructionSBs;
 	std::vector<std::shared_ptr<SpaceBoundary>> openingSBs;
 	for(auto sb : m_spaceBoundaries) {
-		if(sb->isConstructionElement())
+		if(sb->isConstructionElement() || sb->isVirtual())
 			constructionSBs.push_back(sb);
 		if(sb->isOpeningElement())
 			openingSBs.push_back(sb);
@@ -862,6 +872,16 @@ bool Space::evaluateSpaceBoundaryFromIFC(const objectShapeTypeVector_t& shapes,
 
 	if(openingSBs.empty())
 		return true;
+
+	std::map<int,std::vector<int>> parallelOpeningSBs;
+	for(size_t ci=0; ci<constructionSBs.size(); ++ci) {
+		const Surface& constrSurf = constructionSBs[ci]->surface();
+		for(size_t oi=0; oi<openingSBs.size(); ++oi) {
+			const Surface& openingSurf = openingSBs[oi]->surface();
+			if(constrSurf.isParallelTo(openingSurf))
+				parallelOpeningSBs[ci].push_back(oi);
+		}
+	}
 
 	// try to find out which opening sb is related to which construction sb
 	std::vector<int> addedOpeningIds;
@@ -881,9 +901,9 @@ bool Space::evaluateSpaceBoundaryFromIFC(const objectShapeTypeVector_t& shapes,
 			// fetch thickness of construction element if exist
 			int elementId = constrSB->m_elementEntityId;
 			std::shared_ptr<BuildingElement> element = buildingElements.fromID(elementId);
-			double searchDist = 0.001;
+			double searchDist = convertOptions.m_openingDistance;
 			if(element)
-				searchDist = element->thickness();
+				searchDist = std::max(element->thickness(),searchDist);
 
 			// find subsurfaces in surfaces which have already cutted openings
 			// in this case surface and subsurface must have same points
@@ -917,23 +937,48 @@ bool Space::evaluateSpaceBoundaryFromIFC(const objectShapeTypeVector_t& shapes,
 				}
 			}
 		}
-		// check if and whay the opening isn't found
+		// check if and why the opening isn't found
 		int constructionCount = constructionSBs.size();
 		int failures = notParallel + wrongDistance + notIntersected;
+		std::string failureReasonString;
+		if(notParallel > 0)
+			failureReasonString += "NP: " + std::to_string(notParallel) +  " : ";
+		if(wrongDistance > 0)
+			failureReasonString += "WD: " + std::to_string(wrongDistance) +  " : ";
+		if(notIntersected > 0)
+			failureReasonString += "NI: " + std::to_string(notIntersected);
 		if(failures == constructionCount) {
-			errors.push_back(ConvertError{OT_Space, m_id, "Opening space boundary id '" + std::to_string(openingSB->m_id) + "' has no connection"});
+			errors.push_back(ConvertError{OT_Space, m_id, "Opening space boundary id '" + std::to_string(openingSB->m_id) + "' has no connection because " + failureReasonString});
 		}
 
 	}
-	std::vector<int> missingOpeningIds;
+
+	std::vector<std::shared_ptr<SpaceBoundary>> missingOpeningSBs;
 	for(auto openingSB : openingSBs) {
 		int id = openingSB->m_id;
-		if(std::find_if(addedOpeningIds.begin(),addedOpeningIds.end(), [id](int addedId) -> bool { return id == addedId; }) == addedOpeningIds.end())
-			missingOpeningIds.push_back(id);
+		if(std::find_if(addedOpeningIds.begin(),addedOpeningIds.end(), [id](int addedId) -> bool { return id == addedId; }) == addedOpeningIds.end()) {
+			missingOpeningSBs.push_back(openingSB);
+		}
 	}
 
-	if(missingOpeningIds.size() > 0)
-		errors.push_back(ConvertError{OT_Space, m_id, "Opening space boundaries without connection found"});
+	if(missingOpeningSBs.size() > 0) {
+		for(auto sb : missingOpeningSBs) {
+			std::map<int,int> distIndexMap;
+			errors.push_back(ConvertError{OT_Space, m_id, "Opening space boundary id '" + std::to_string(sb->m_ifcId) + "' is not connected to a construction space boundary"});
+//			for(size_t ci=0; ci<constructionSBs.size(); ++ci) {
+//				const Surface& constrSurf = constructionSBs[ci]->surface();
+//				if(constrSurf.isParallelTo(sb->surface()) && constrSurf.isIntersected(sb->surface())) {
+//					double dist = constrSurf.distanceToParallelPlane(sb->surface());
+//					distIndexMap[int(dist*10000)] = ci;
+//				}
+//			}
+//			if(!distIndexMap.empty()) {
+//				double dist = distIndexMap.begin()->first / 10000.0;
+//				int smallestIndex = distIndexMap.begin()->second;
+//			}
+		}
+	}
+
 	return true;
 }
 
@@ -966,7 +1011,7 @@ bool Space::updateSpaceBoundaries(const objectShapeTypeVector_t& shapes,
 	if(useSpaceBoundaries && !m_spaceBoundaries.empty()) {
 		// get space boundary types and set element id connections
 		// convert geometry and create surfaces
-		success = evaluateSpaceBoundaryFromIFC(shapes, buildingElements, unit_converter, errors);
+		success = evaluateSpaceBoundaryFromIFC(shapes, buildingElements, unit_converter, errors, convertOptions);
 	}
 	// try to evaluate space boundaries from building element entities
 	else {

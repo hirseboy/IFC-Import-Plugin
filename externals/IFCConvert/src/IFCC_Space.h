@@ -217,7 +217,8 @@ private:
 	bool evaluateSpaceBoundaryFromIFC(const objectShapeTypeVector_t& shapes,
 									  const BuildingElementsCollector& buildingElements,
 									  shared_ptr<UnitConverter>& unit_converter,
-									  std::vector<ConvertError>& errors);
+									  std::vector<ConvertError>& errors,
+									  const ConvertOptions& convertOptions);
 
 	/*! Is called from updateSpaceBoundaries in case IFC model doesn't contain space boundaries.
 		It try to evaluate space boundaries from construction elements and openings.
