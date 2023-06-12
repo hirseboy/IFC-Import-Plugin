@@ -121,6 +121,8 @@ void ImportWPConvert::setText() {
 	}
 	int sharedSpaceBoundaryCount = intersectedSpaceIds.size();
 
+	int notRelatedOpenings = m_reader->checkForNotRelatedOpenings();
+
 
 	if(m_convertSuccessfully && (equalSBCount > 0 || multiSubCount > 0 || spaceIntersectCount > 0 || sharedSpaceBoundaryCount > 0)) {
 		m_convertSuccessfully = false;
@@ -196,6 +198,9 @@ void ImportWPConvert::setText() {
 		}
 		if(wrongInstances.size() > 0) {
 			text << tr("%1 component instances found which have non valid surface ids.").arg(wrongInstances.size());
+		}
+		if(notRelatedOpenings > 0) {
+			text << tr("%1 openings don't have a connection to a space boundary.").arg(notRelatedOpenings);
 		}
 		if(!m_reader->m_errorText.empty()) {
 			text << QString::fromStdString(m_reader->m_errorText);

@@ -13,7 +13,7 @@
   <property name="windowTitle">
    <string>Convert IFC into VICUS</string>
   </property>
-  <layout class="QGridLayout" name="gridLayout">
+  <layout class="QGridLayout" name="gridLayout" rowstretch="0,0,0,0,0,0,0,0,1">
    <item row="1" column="1" colspan="2">
     <widget class="QLabel" name="labelSBDescription">
      <property name="text">
@@ -116,7 +116,7 @@
    <item row="4" column="0" colspan="3">
     <widget class="QGroupBox" name="groupBoxMatchingSettings">
      <property name="title">
-      <string>Matching settings</string>
+      <string>Matching settings for searching space boundaries</string>
      </property>
      <layout class="QGridLayout" name="gridLayout_4">
       <item row="0" column="0">
@@ -203,24 +203,33 @@
           </property>
          </widget>
         </item>
-        <item>
-         <widget class="QLabel" name="label_5">
-          <property name="text">
-           <string>Opening search distance</string>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QDoubleSpinBox" name="doubleSpinBoxMatchOpeningDistance"/>
-        </item>
-        <item>
-         <widget class="QLabel" name="label_6">
-          <property name="text">
-           <string>m</string>
-          </property>
-         </widget>
-        </item>
        </layout>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item row="2" column="0" colspan="3">
+    <widget class="QGroupBox" name="groupBoxGlobalMatching">
+     <property name="title">
+      <string>Global matching settings</string>
+     </property>
+     <layout class="QGridLayout" name="gridLayout_5">
+      <item row="0" column="0">
+       <widget class="QLabel" name="label_5">
+        <property name="text">
+         <string>Opening search distance</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="1">
+       <widget class="QDoubleSpinBox" name="doubleSpinBoxMatchOpeningDistance"/>
+      </item>
+      <item row="0" column="2">
+       <widget class="QLabel" name="label_6">
+        <property name="text">
+         <string>m</string>
+        </property>
+       </widget>
       </item>
      </layout>
     </widget>
