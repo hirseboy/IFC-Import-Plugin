@@ -30,7 +30,7 @@ public:
 	bool set(std::shared_ptr<IFC4X3::IfcSpatialStructureElement> ifcElement);
 
 	/*! Create storey vector from original vector and given shapes.*/
-	void fetchStoreys(const objectShapeGUIDMap_t& storeys, const objectShapeGUIDMap_t& spaces);
+	void fetchStoreys(const objectShapeGUIDMap_t& storeys, const objectShapeGUIDMap_t& spaces, bool onlyOne);
 
 	/*! Update storeys and related spaces and space boundaries.
 		\param elementShapes Product shape vector for all IfcElement based objects in project.
@@ -40,7 +40,7 @@ public:
 		\param openingElements Vector for all opening elements (window, door)
 		\param openings Vector for all openings (based on IfcOpeningElement)
 	*/
-	void updateStoreys(const objectShapeTypeVector_t& elementShapes,
+	bool updateStoreys(const objectShapeTypeVector_t& elementShapes,
 					   const objectShapeGUIDMap_t& spaceShapes,
 					   shared_ptr<UnitConverter>& unit_converter,
 					   const BuildingElementsCollector& buildingElements,

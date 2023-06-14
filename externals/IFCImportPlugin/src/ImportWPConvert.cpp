@@ -155,7 +155,8 @@ void ImportWPConvert::setText() {
 			IFCC::Logger::instance() << "setText 21";
 			text << tr("<font color=\"#FF0000\">Errors while converting:</font>");
 			QString errTxt = QString::fromStdString(m_reader->m_errorText);
-			text << errTxt.split("");
+			errTxt.replace("\n","<br>");
+			text << errTxt;
 			text << "";
 		}
 		IFCC::Logger::instance() << "setText 3";

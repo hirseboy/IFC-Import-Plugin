@@ -490,9 +490,15 @@ bool IFCReader::convert(bool useSpaceBoundaries) {
 			std::shared_ptr<IfcSpatialStructureElement> se = std::dynamic_pointer_cast<IfcSpatialStructureElement>(m_siteShape->m_ifc_object_definition.lock());
 			m_site.set(se, m_siteShape, m_buildingsShape, m_convertErrors);
 			for(auto& building : m_site.m_buildings) {
-				building->fetchStoreys(m_storeysShape, m_spaceEntitesShape);
-				building->updateStoreys(m_elementEntitesShape, m_spaceEntitesShape, m_geometryConverter.getBuildingModel()->getUnitConverter(),
+				building->fetchStoreys(m_storeysShape, m_spaceEntitesShape, m_site.m_buildings.size() == 1);
+				bool res = building->updateStoreys(m_elementEntitesShape, m_spaceEntitesShape, m_geometryConverter.getBuildingModel()->getUnitConverter(),
 									   m_buildingElements, m_openings, m_useSpaceBoundaries, m_convertErrors, m_convertOptions);
+				if( !res) {
+					m_convertErrors.push_back({OT_Building, -1, "No connection between building and storeys"});
+					m_errorText = "No connection between building and storeys";
+					m_hasError = true;
+					return false;
+				}
 			}
 
 
@@ -907,12 +913,12 @@ void IFCReader::messageTarget( void* ptr, shared_ptr<StatusCallback::Message> m 
 	if(m->m_message_type == StatusCallback::MESSAGE_TYPE_ERROR) {
 		myself->m_hasError = true;
 		myself->m_errorText = "Error from: " + reporting_function_str + " in " + position;
-		myself->m_errorText += m->m_message_text;
+		myself->m_errorText += m->m_message_text + "\n";
 	}
 	if(m->m_message_type == StatusCallback::MESSAGE_TYPE_WARNING) {
 		myself->m_hasWarning = true;
 		myself->m_warningText = "Error from: " + reporting_function_str + " in " + position;
-		myself->m_warningText += m->m_message_text;
+		myself->m_warningText += m->m_message_text + "\n";
 	}
 }
 

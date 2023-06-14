@@ -873,15 +873,15 @@ bool Space::evaluateSpaceBoundaryFromIFC(const objectShapeTypeVector_t& shapes,
 	if(openingSBs.empty())
 		return true;
 
-	std::map<int,std::vector<int>> parallelOpeningSBs;
-	for(size_t ci=0; ci<constructionSBs.size(); ++ci) {
-		const Surface& constrSurf = constructionSBs[ci]->surface();
-		for(size_t oi=0; oi<openingSBs.size(); ++oi) {
-			const Surface& openingSurf = openingSBs[oi]->surface();
-			if(constrSurf.isParallelTo(openingSurf))
-				parallelOpeningSBs[ci].push_back(oi);
-		}
-	}
+//	std::map<int,std::vector<int>> parallelOpeningSBs;
+//	for(size_t ci=0; ci<constructionSBs.size(); ++ci) {
+//		const Surface& constrSurf = constructionSBs[ci]->surface();
+//		for(size_t oi=0; oi<openingSBs.size(); ++oi) {
+//			const Surface& openingSurf = openingSBs[oi]->surface();
+//			if(constrSurf.isParallelTo(openingSurf))
+//				parallelOpeningSBs[ci].push_back(oi);
+//		}
+//	}
 
 	// try to find out which opening sb is related to which construction sb
 	std::vector<int> addedOpeningIds;

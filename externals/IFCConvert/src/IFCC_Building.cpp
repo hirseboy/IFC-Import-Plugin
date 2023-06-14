@@ -3,6 +3,7 @@
 #include <ifcpp/IFC4X3/include/IfcRelAggregates.h>
 #include <ifcpp/IFC4X3/include/IfcGloballyUniqueId.h>
 #include <ifcpp/IFC4X3/include/IfcBuilding.h>
+#include <ifcpp/IFC4X3/include/IfcSpatialStructureElement.h>
 
 
 #include <Carve/src/include/carve/carve.hpp>
@@ -45,7 +46,7 @@ bool Building::set(std::shared_ptr<IFC4X3::IfcSpatialStructureElement> ifcElemen
 	return true;
 }
 
-void Building::fetchStoreys(const objectShapeGUIDMap_t& storeys, const objectShapeGUIDMap_t& spaces) {
+void Building::fetchStoreys(const objectShapeGUIDMap_t& storeys, const objectShapeGUIDMap_t& spaces, bool onlyOne) {
 	if(storeys.empty()) {
 		std::shared_ptr<BuildingStorey> storey = std::shared_ptr<BuildingStorey>(new BuildingStorey(GUID_maker::instance().guid()));
 		if(m_spacesOriginal.empty()) {
@@ -63,21 +64,33 @@ void Building::fetchStoreys(const objectShapeGUIDMap_t& storeys, const objectSha
 	}
 	else {
 		for(const auto& shape : storeys) {
-			for(const auto& opOrg : m_storeysOriginal) {
-				std::string guid = guidFromObject(opOrg.get());
-				if(shape.first == guid) {
+			if(!m_storeysOriginal.empty()) {
+				for(const auto& opOrg : m_storeysOriginal) {
+					std::string guid = guidFromObject(opOrg.get());
+					if(shape.first == guid) {
+						std::shared_ptr<BuildingStorey> storey = std::shared_ptr<BuildingStorey>(new BuildingStorey(GUID_maker::instance().guid()));
+						if(storey->set(opOrg)) {
+							m_storeys.push_back(storey);
+						}
+						break;
+					}
+				}
+			}
+			else {
+				if(onlyOne) {
 					std::shared_ptr<BuildingStorey> storey = std::shared_ptr<BuildingStorey>(new BuildingStorey(GUID_maker::instance().guid()));
-					if(storey->set(opOrg)) {
+					std::shared_ptr<IFC4X3::IfcSpatialStructureElement> se = std::dynamic_pointer_cast<IFC4X3::IfcSpatialStructureElement>(shape.second->m_ifc_object_definition.lock());
+					if(se != nullptr) {
+						storey->set(se);
 						m_storeys.push_back(storey);
 					}
-					break;
 				}
 			}
 		}
 	}
 }
 
-void Building::updateStoreys(const objectShapeTypeVector_t& elementShapes,
+bool Building::updateStoreys(const objectShapeTypeVector_t& elementShapes,
 							 const objectShapeGUIDMap_t& spaceShapes,
 							 shared_ptr<UnitConverter>& unit_converter,
 							 const BuildingElementsCollector& buildingElements,
@@ -86,10 +99,15 @@ void Building::updateStoreys(const objectShapeTypeVector_t& elementShapes,
 							 std::vector<ConvertError>& errors,
 							 const ConvertOptions& convertOptions) {
 
+	if(m_storeys.empty()) {
+		errors.push_back(ConvertError{OT_Building, m_id, "Building id '" + std::to_string(m_ifcId) + "' has no storeys"});
+		return false;
+	}
 	for(auto& storey : m_storeys) {
 		storey->fetchSpaces(spaceShapes, unit_converter, errors);
 		storey->updateSpaces(elementShapes, unit_converter, buildingElements, openings, useSpaceBoundaries, errors, convertOptions);
 	}
+	return true;
 }
 
 
