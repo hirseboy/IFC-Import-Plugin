@@ -63,31 +63,35 @@ void ImportWPRead::on_pushButtonRead_clicked() {
 		int number = m_reader->totalNumberOfIFCEntities();
 		ui->textEdit->clear();
 		QStringList text;
-		text << tr("File read successfully with %1 IFC entities.<br>").arg(number);
-		text << tr("Project contains %1 buildings and %2 spaces.<br>").arg(buildings).arg(spaces);
-		ui->textEdit->setHtml(text.join("\n"));
+		text << tr("File read successfully with %1 IFC entities.").arg(number);
+		text << tr("Project contains %1 buildings and %2 spaces.").arg(buildings).arg(spaces);
+		ui->textEdit->setHtml(text.join("<br>"));
 	}
 	else {
 		QStringList text;
 		if(hasFatalErrors) {
-			text << tr("<font color=\"#FF0000\">Fatal error</font><br>");
-			text << tr("Missing objects<br>");
-			text << fatalError << "<br>";
+			text << tr("<font color=\"#FF0000\">Fatal error</font>");
+			text << tr("Missing objects");
+			text << fatalError;
 		}
 		if(!res){
 			if(!m_reader->m_errorText.empty()) {
+				QString errorText = QString::fromStdString(m_reader->m_errorText);
+				errorText.replace("\n", "<br>");
 				if(!ignoreError)
-					text << tr("<font color=\"#FF0000\">Read Errors:</font><br>");
+					text << tr("<font color=\"#FF0000\">Read Errors:</font>");
 				else
-					text << tr("Read Errors:<br>");
-				text << QString::fromStdString(m_reader->m_errorText) << "<br>";
+					text << tr("Read Errors:");
+				text << errorText;
 			}
 			if(!m_reader->m_warningText.empty()) {
-				text << tr("Read Warnings:<br>");
-				text << QString::fromStdString(m_reader->m_warningText) << "<br>";
+				text << tr("Read Warnings:");
+				QString warningText = QString::fromStdString(m_reader->m_warningText);
+				warningText.replace("\n", "<br>");
+				text << warningText;
 			}
 		}
-		ui->textEdit->setHtml(text.join("\n"));
+		ui->textEdit->setHtml(text.join("<br>"));
 		if(!ignoreError || hasFatalErrors)
 			m_readSuccessfully = false;
 	}
