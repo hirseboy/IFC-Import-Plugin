@@ -11,4 +11,4 @@ Uses https://github.com/ifcquery/ifcplusplus to read IFC files. Then converts/ex
 3) Go to externals and run _createLinuxSymlinks.sh_ on Linux or _createWindowsSoftlinks.bat_ on windows with admin priviliges. They create symlinks to the needed libraries from the SIM-VICUS repository. Please check afterwards if all symlinks are valid. Sometimes empty folders are beeing created, then just rerun the os specific script.
 4) take the project file from build/Qt/IFC-Import-Plugin.pro and open it in a QtCreator-Session
 5) Plugin should compile
-6) Copy the Ifc-Import-Plugin DLL inside the plugin-folder in SIM-VICUS
+6) Copy the Ifc-Import-Plugin DLL inside the plugin-folder in SIM-VICUS from "externals/lib_x64"
