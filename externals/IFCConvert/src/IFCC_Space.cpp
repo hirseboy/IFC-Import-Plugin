@@ -352,6 +352,7 @@ std::vector<std::shared_ptr<SpaceBoundary>> Space::createSpaceBoundaries_2(const
 	bool foundOne = false;
 	int loopCount = 0;
 
+
 	ConvertOptions::ConstructionMatching matchType = convertOptions.m_matchingType;
 
 	if(matchType != ConvertOptions::CM_NoMatching) {
@@ -373,6 +374,8 @@ std::vector<std::shared_ptr<SpaceBoundary>> Space::createSpaceBoundaries_2(const
 
 					if(!convertOptions.hasElementsForSpaceBoundaries(type))
 						continue;
+
+					int cid = construction->m_ifcId;
 
 					double dist = construction->thickness();
 					double maxConstructionDist = 0;
@@ -848,7 +851,7 @@ bool Space::evaluateSpaceBoundaryFromIFC(const objectShapeTypeVector_t& shapes,
 		}
 	}
 	if(!splittedSBs.empty()) {
-		m_spaceBoundaries.insert(m_spaceBoundaries.begin(), splittedSBs.begin(), splittedSBs.end());
+		m_spaceBoundaries.insert(m_spaceBoundaries.end(), splittedSBs.begin(), splittedSBs.end());
 	}
 
 	int wrongSurfaces = 0;
@@ -888,8 +891,6 @@ bool Space::evaluateSpaceBoundaryFromIFC(const objectShapeTypeVector_t& shapes,
 	for(auto openingSB : openingSBs) {
 		// check if the opening sb is already added
 		int id = openingSB->m_id;
-		if(std::find_if(addedOpeningIds.begin(),addedOpeningIds.end(), [id](int addedId) -> bool { return id == addedId; }) != addedOpeningIds.end())
-			continue;
 
 		const Surface& opSurf = openingSB->surface();
 		int notParallel = 0;
@@ -897,6 +898,9 @@ bool Space::evaluateSpaceBoundaryFromIFC(const objectShapeTypeVector_t& shapes,
 		int notIntersected = 0;
 		for(auto constrSB : constructionSBs ) {
 			const Surface& constrSurf = constrSB->surface();
+
+			if(std::find_if(addedOpeningIds.begin(),addedOpeningIds.end(), [id](int addedId) -> bool { return id == addedId; }) != addedOpeningIds.end())
+				continue;
 
 			// fetch thickness of construction element if exist
 			int elementId = constrSB->m_elementEntityId;
@@ -913,6 +917,7 @@ bool Space::evaluateSpaceBoundaryFromIFC(const objectShapeTypeVector_t& shapes,
 				constrSB->mergeSurface(opSurf);
 				constrSB->addContainedOpeningSpaceBoundaries(openingSB);
 				addedOpeningIds.push_back(openingSB->m_id);
+				continue;
 			}
 			// check for parallel and intersected surfaces
 			else {
@@ -922,6 +927,7 @@ bool Space::evaluateSpaceBoundaryFromIFC(const objectShapeTypeVector_t& shapes,
 					if(dist <= searchDist*1.1 && isIntersected) {
 						constrSB->addContainedOpeningSpaceBoundaries(openingSB);
 						addedOpeningIds.push_back(openingSB->m_id);
+						continue;
 					}
 					else {
 						if(dist > searchDist*1.1) {
