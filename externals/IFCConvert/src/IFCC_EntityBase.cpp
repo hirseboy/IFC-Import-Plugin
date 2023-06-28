@@ -21,10 +21,10 @@ bool EntityBase::set(std::shared_ptr<IFC4X3::IfcRoot> ifcObject) {
 	if(ifcObject == nullptr)
 		return false;
 
-	m_name = label2s(ifcObject->m_Name);
-	m_description = text2s(ifcObject->m_Description);
-	m_guid = ifcObject->m_GlobalId->m_value;
 	m_ifcId = ifcObject->m_tag;
+	m_name = label2s(ifcObject->m_Name);
+	m_description = text2s(ifcObject->m_Description) + " : " + std::to_string(m_ifcId);
+	m_guid = ifcObject->m_GlobalId->m_value;
 
 	return true;
 }
