@@ -321,7 +321,7 @@ GeometryConverter::~GeometryConverter() {}
 						double lengthFactor = m_ifc_model->getUnitConverter()->getLengthInMeterFactor();
 						PointConverter::convertIfcCartesianPoint(placement_location, m_siteOffset, lengthFactor);
 
-						if( m_siteOffset.length2() > 1000 * 1000 ) {
+						if( m_siteOffset.length2() > 0 ) {
 							for( double& coordinate : placement_location->m_Coordinates ) {
 								if( coordinate ) {
 									coordinate = 0;
@@ -544,6 +544,7 @@ GeometryConverter::~GeometryConverter() {}
 				std::string nameOfSpace;
 				if( dynamic_pointer_cast<IfcSpace>(object_def)) {
 					nameOfSpace = label2s(dynamic_pointer_cast<IfcSpace>(object_def)->m_LongName);
+					int ifc = object_def->m_tag;
 					int i=0;
 				}
 				if( dynamic_pointer_cast<IfcWall>(object_def)) {
