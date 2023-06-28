@@ -46,6 +46,12 @@ public:
 	*/
 	Surface(const polygon3D_t& polygon, const std::vector<polygon3D_t>& childs);
 
+	/*! Set the basic properties.
+	 *  \param id GUID of the surface
+	 *  \param elementId Id of the related element
+	 *  \param name Name of the surface - used for write to xml
+	 *  \param isVirtual If true its related to a virtual space boundary
+	*/
 	void set(int id, int elementId, const std::string& name, bool isVirtual);
 
 	/*! Return the distance between two parallel surfaces in the unit of the coordinates.
@@ -64,6 +70,9 @@ public:
 	const std::vector<IBKMK::Vector3D>& polygon() const {
 		return m_polyVect;
 	}
+
+	/*! Set a new in ternal üpolygon without changing the other parameter.*/
+	void setNewPolygon(const std::vector<IBKMK::Vector3D>&);
 
 	/*! Return true if the given surface intersects the original one.
 		\param other Other surface for checking.
@@ -90,14 +99,25 @@ public:
 	*/
 	std::vector<Surface> difference(const Surface& other) const;
 
+	/*! Perform an intersection with its own bonding rect.
+	 *  Return the resulten intersections.
+	 *  This can split the original surface into different ones in case of misfitted surface.
+	*/
 	std::vector<Surface> innerIntersection() const;
 
 	/*! Merge the given subsurface into the current surface.
 		If the original surface was intersected by this subsurface the resulting surface is complete without holes.
 		The merging is performed in 2D level using clipper library (\sa mergePolygons).
-		\return True if the subsurface had an intersection.
+		\return True if the subsurface has an intersection.
 	*/
 	bool merge(const Surface& subsurface);
+
+	/*! Merge the given subsurface into the current surface.
+		If the original surface was intersected by this subsurface the resulting surface is complete without holes.
+		The merging is performed in 2D level using clipper library (\sa mergePolygons).
+		\return True if the subsurface has an intersection.
+	*/
+	bool mergeOnlyThanPlanar(const Surface& subsurface);
 
 	/*! Add the given surface as subsurface to the internal subsurface list.
 		While this process the subsurface will be converted into SubSurface type which contains only a 2D polygon in the plane of the current surface.

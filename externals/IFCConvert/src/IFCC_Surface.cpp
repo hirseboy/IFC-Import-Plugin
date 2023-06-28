@@ -281,6 +281,10 @@ bool Surface::isEqualTo(const Surface& other) const {
 	return true;
 }
 
+void Surface::setNewPolygon(const std::vector<IBKMK::Vector3D> & polygon) {
+	m_polyVect = polygon;
+}
+
 
 std::vector<std::pair<size_t,size_t>> Surface::samePoints(const Surface& other) const {
 	std::vector<std::pair<size_t,size_t>> equalPoints;
@@ -381,8 +385,9 @@ std::vector<Surface> Surface::innerIntersection() const {
 	std::vector<polygon3D_t> polys = intersectBoundingRect(m_polyVect, m_planeNormal);
 	std::vector<Surface> result;
 	for(const polygon3D_t& poly : polys) {
-		if(!poly.empty() && areaPolygon(poly) > 1e-4)
+		if(!poly.empty() && areaPolygon(poly) > 1e-4) {
 			result.push_back(Surface(poly));
+		}
 	}
 	return result;
 }
@@ -390,6 +395,18 @@ std::vector<Surface> Surface::innerIntersection() const {
 
 bool Surface::merge(const Surface& subsurface) {
 	polygon3D_t result = mergePolygons(m_polyVect, subsurface.polygon(), m_planeNormal);
+	if(result.empty())
+		return false;
+
+	m_polyVect = result;
+	return true;
+}
+
+bool Surface::mergeOnlyThanPlanar(const Surface& surface) {
+	if(!IBK::near_zero(distanceToParallelPlane(surface)))
+		return false;
+
+	polygon3D_t result = mergePolygons(m_polyVect, surface.polygon(), m_planeNormal);
 	if(result.empty())
 		return false;
 
