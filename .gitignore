@@ -52,3 +52,10 @@ lib_x64
 /bin/debug_x64/SimQuality.vicus
 /bin/release_x64/IFC2BESTest
 /IFC2BESTest/projects/Qt/release_x64/
+/bin/release_x64/IfcDebug
+/data/Krankenhaus_withSB.vicus
+/data/Krankenhaus_woSB.vicus
+/data/NewProject 20.vicus
+/data/SimQuality_Analyse
+/data/SimVicus.vicus
+/data/SimVicus_2.vicus
