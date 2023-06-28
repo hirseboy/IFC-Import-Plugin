@@ -210,7 +210,7 @@ public:
 
 private:
 	/*! Create the surface vector from given polylines and set surface types.*/
-	void createSurfaceVect(const polyVector_t& polylines);
+	void createSurfaceVect(const polyVector_t& polylines, int ifcid);
 
 	std::string													m_guidRelatedElement;	///< GUID of the related building element
 	std::string													m_guidRelatedSpace;	///< GUID of the related space

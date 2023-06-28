@@ -144,8 +144,11 @@ void SpaceBoundary::setFromSpaceBoundary(const SpaceBoundary& sb, size_t surface
 	IBK_ASSERT(surfaceIndex > 0);
 	IBK_ASSERT(surfaceIndex < sb.m_surfaces.size());
 	m_surface = sb.m_surfaces[surfaceIndex];
-	std::string name = m_name + "-" + std::to_string(surfaceIndex);
-	m_surface.set(m_surface.id(), m_elementEntityId, name, m_surface.isVirtual());
+	std::string name = m_nameRelatedElement;
+	if(name.empty()) {
+		name = m_name;
+	}
+	m_surface.set(GUID_maker::instance().guid(), m_elementEntityId, name, isVirtual());
 }
 
 void SpaceBoundary::setForMissingElement(const std::string& name, const Space& space, bool isOpening) {
@@ -201,7 +204,7 @@ bool SpaceBoundary::fetchGeometryFromIFC(shared_ptr<UnitConverter>& unit_convert
 	if(polylines.empty())
 		return false;
 
-	createSurfaceVect(polylines);
+	createSurfaceVect(polylines, m_ifcId);
 	return true;
 }
 
@@ -244,10 +247,12 @@ bool SpaceBoundary::checkAndHealSurface(bool healing) {
 	bool res = m_surface.hasSimplePolygon();
 	if(!res && healing) {
 		std::vector<Surface> resSurfaces = m_surface.innerIntersection();
-		if(!resSurfaces.empty())
-			m_surface = resSurfaces.front();
-		else
+		if(resSurfaces.empty())
 			return false;
+
+		Surface copySurf = m_surface;
+		m_surface = resSurfaces.front();
+		m_surface.set(copySurf.id(), copySurf.elementId(), copySurf.name(), copySurf.isVirtual());
 
 		if(resSurfaces.size() > 1)
 			return false;
@@ -258,7 +263,7 @@ bool SpaceBoundary::checkAndHealSurface(bool healing) {
 }
 
 
-void SpaceBoundary::createSurfaceVect(const polyVector_t& polylines) {
+void SpaceBoundary::createSurfaceVect(const polyVector_t& polylines, int ifcid) {
 	m_surfaces.clear();
 	std::string name;
 	if(!m_nameRelatedElement.empty()) {
@@ -273,6 +278,8 @@ void SpaceBoundary::createSurfaceVect(const polyVector_t& polylines) {
 			name = "Non valid SB";
 	}
 
+	name += " : " + std::to_string(ifcid);
+
 	for(const auto& polyvect3 : polylines) {
 		for(const auto& polyvect2 : polyvect3) {
 			for(const auto& polyvect1 : polyvect2) {
@@ -283,6 +290,46 @@ void SpaceBoundary::createSurfaceVect(const polyVector_t& polylines) {
 					m_surfaces.back().setSurfaceType(m_internalOrExternal);
 				}
 			}
+		}
+	}
+
+	// try to heal non valid surfaces
+	std::vector<Surface> additionalSurfaces;
+	for(auto& surf : m_surfaces) {
+		if(!surf.hasSimplePolygon()) {
+			std::vector<Surface> tmp = surf.innerIntersection();
+			if(tmp.size() >= 1) {
+				surf.setNewPolygon(tmp.front().polygon());
+				for(size_t i=1; i<tmp.size(); ++i) {
+					additionalSurfaces.push_back(tmp[i]);
+					additionalSurfaces.back().set(GUID_maker::instance().guid(), m_elementEntityId, name,
+												  m_physicalOrVirtual == IfcPhysicalOrVirtualEnum::ENUM_VIRTUAL);
+					additionalSurfaces.back().setSurfaceType(m_internalOrExternal);
+				}
+			}
+		}
+	}
+	if(!additionalSurfaces.empty()) {
+		m_surfaces.insert(m_surfaces.end(), additionalSurfaces.begin(), additionalSurfaces.end());
+	}
+
+	// if have more than one surface try to merge
+	if(m_surfaces.size() > 1) {
+		std::vector<size_t> indicesToRemove;
+		Surface baseSurf = m_surfaces.front();
+		for(size_t i=1; i<m_surfaces.size(); ++i) {
+			if(baseSurf.mergeOnlyThanPlanar(m_surfaces[i])) {
+				indicesToRemove.push_back(i);
+			}
+		}
+		if(!indicesToRemove.empty()) {
+			std::vector<Surface> newSurfaces;
+			newSurfaces.push_back(baseSurf);
+			for(size_t i=1; i<m_surfaces.size(); ++i) {
+				if(std::find(indicesToRemove.begin(), indicesToRemove.end(), i) == indicesToRemove.end())
+					newSurfaces.push_back(m_surfaces[i]);
+			}
+			m_surfaces = newSurfaces;
 		}
 	}
 }
