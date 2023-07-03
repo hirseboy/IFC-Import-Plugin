@@ -132,6 +132,19 @@ const Space* Site::spaceWithId(int id) const {
 	return nullptr;
 }
 
+const Space* Site::spaceWithIfcId(int id) const {
+	for(const std::shared_ptr<Building>& building : m_buildings) {
+		const std::vector<std::shared_ptr<BuildingStorey>>& storeys = building->storeys();
+		for(const std::shared_ptr<BuildingStorey>& storey : storeys) {
+			const std::vector<std::shared_ptr<Space>>& spaces = storey->spaces();
+			for(const auto& space : spaces) {
+				if(space->m_ifcId == id)
+					return space.get();
+			}
+		}
+	}
+	return nullptr;
+}
 const SpaceBoundary* Site::spaceBoundaryWithId(int id) const {
 	std::vector<std::shared_ptr<SpaceBoundary>> res;
 	for(const std::shared_ptr<Building>& building : m_buildings) {

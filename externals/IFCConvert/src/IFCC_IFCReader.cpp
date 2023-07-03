@@ -621,7 +621,7 @@ int IFCReader::checkForUniqueSubSurfacesInSpaces(std::vector<std::pair<int,std::
 	for(const auto& space : spaces) {
 		std::vector<int> subRes = space->checkUniqueSubSurfaces();
 		if(!subRes.empty())
-			res.push_back({space->m_id, subRes});
+			res.push_back({space->m_ifcId, subRes});
 	}
 	return res.size();
 }
@@ -635,7 +635,7 @@ std::set<std::pair<int,int>> IFCReader::checkForIntersectedSpace() const {
 	for(size_t i=0; i<spaces.size()-1; ++i) {
 		for(size_t j=i+1; j<spaces.size(); ++j) {
 			if(spaces[i]->isIntersected(*spaces[j]))
-				res.insert({spaces[i]->m_id,spaces[j]->m_id});
+				res.insert({spaces[i]->m_ifcId,spaces[j]->m_ifcId});
 		}
 	}
 	return res;
@@ -650,7 +650,7 @@ std::set<std::pair<int, int> > IFCReader::checkForSpaceWithSameSpaceBoundaries()
 	for(size_t i=0; i<spaces.size()-1; ++i) {
 		for(size_t j=i+1; j<spaces.size(); ++j) {
 			if(spaces[i]->shareSameSpaceBoundary(*spaces[j]))
-				res.insert({spaces[i]->m_id,spaces[j]->m_id});
+				res.insert({spaces[i]->m_ifcId,spaces[j]->m_ifcId});
 		}
 	}
 	return res;
@@ -680,7 +680,7 @@ void IFCReader::setRemoveDoubledSBs(bool removeDoubledSBs) {
 QString IFCReader::nameForId(int id, Name_Id_Type type) const {
 	switch(type) {
 		case NIT_Space: {
-			const Space* sp = m_site.spaceWithId(id);
+			const Space* sp = m_site.spaceWithIfcId(id);
 			if(sp != nullptr) {
 				if(sp->m_longName.empty())
 						return QString::fromStdString(sp->m_name);

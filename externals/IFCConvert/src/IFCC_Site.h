@@ -50,6 +50,9 @@ public:
 	/*! Return a const reference of the space with the given id.*/
 	const Space* spaceWithId(int id) const;
 
+	/*! Return a const reference of the space with the given id.*/
+	const Space* spaceWithIfcId(int id) const;
+
 	/*! Return a const reference of the space boundary with the given id.*/
 	const SpaceBoundary* spaceBoundaryWithId(int id) const;
 
