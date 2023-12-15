@@ -112,6 +112,7 @@ struct ConvertOptions {
 	double							m_openingDistance = 0.5;
 	ConstructionMatching			m_matchingType = CM_MatchEachConstruction;
 	int								m_matchedConstructionNumbers = 2;
+	bool							m_matchOpeningsOnlyInWalls = false;
 };
 
 

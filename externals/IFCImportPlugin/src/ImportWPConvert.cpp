@@ -22,7 +22,8 @@ ImportWPConvert::ImportWPConvert(QWidget *parent, IFCC::IFCReader* reader) :
 //	setSubTitle(tr("You can load an IFC file."));
 
 	ui->pushButtonConvert->setEnabled(true);
-	ui->checkBoxUseSpaceBoundaries->setChecked(true);
+	ui->checkBoxUseSpaceBoundaries->setChecked(false);
+	ui->checkBoxMatchOpeningsInWalls->setChecked(false);
 
 	QListWidgetItem *item = new QListWidgetItem(tr("Wall"));
 	item->setFlags(item->flags() | Qt::ItemIsUserCheckable);
@@ -77,6 +78,7 @@ void ImportWPConvert::initializePage() {
 
 	ui->doubleSpinBoxMatchConstructionFactor->setValue(m_reader->convertOptions().m_distanceFactor);
 	ui->doubleSpinBoxMatchOpeningDistance->setValue(m_reader->convertOptions().m_openingDistance);
+	ui->checkBoxMatchOpeningsInWalls->setChecked(m_reader->convertOptions().m_matchOpeningsOnlyInWalls);
 }
 
 
@@ -223,6 +225,7 @@ void ImportWPConvert::initElements() {
 		m_reader->setConvertMatchingType(IFCC::ConvertOptions::CM_NoMatching);
 
 	m_reader->setMatchingDistances(ui->doubleSpinBoxMatchConstructionFactor->value(), ui->doubleSpinBoxMatchOpeningDistance->value());
+	m_reader->setOpeningMatchingInWalls(ui->checkBoxMatchOpeningsInWalls->isChecked());
 }
 
 void ImportWPConvert::on_pushButtonConvert_clicked() {

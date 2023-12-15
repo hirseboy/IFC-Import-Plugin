@@ -583,6 +583,10 @@ void Space::createSpaceBoundariesForOpeningsFromSpaceBoundaries(std::vector<std:
 		if(elem->m_containedOpenings.empty())
 			continue;
 
+		// look for openings only in walls
+		if(convertOptions.m_matchOpeningsOnlyInWalls && elem->type() != BET_Wall)
+			continue;
+
 		double thickness = elem->thickness();
 		if(thickness == 0)
 			thickness = 0.5;
@@ -664,6 +668,11 @@ void Space::createSpaceBoundariesForOpeningsFromSpaceBoundaries(std::vector<std:
 		for(const auto& spaceBoundary : spaceBoundaries) {
 			// openings can only be part of a construction space boundary
 			if(!spaceBoundary->isConstructionElement())
+				continue;
+
+
+			// look for openings only in walls
+			if(convertOptions.m_matchOpeningsOnlyInWalls && spaceBoundary->typeRelatedElement() != BET_Wall)
 				continue;
 
 			std::shared_ptr<BuildingElement> openingElem;

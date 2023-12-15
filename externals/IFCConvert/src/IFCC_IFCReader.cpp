@@ -386,6 +386,11 @@ void IFCReader::setMatchingDistances(double constructionFactor, double openingDi
 	m_convertOptions.m_openingDistance = openingDistance;
 }
 
+void IFCReader::setOpeningMatchingInWalls(bool useOnlyWalls) {
+	m_convertOptions.m_matchOpeningsOnlyInWalls = useOnlyWalls;
+}
+
+
 bool IFCReader::convert(bool useSpaceBoundaries) {
 
 	m_progressDialog.reset(new QProgressDialog("IFC Reader...", "Abort read", 0, 100));

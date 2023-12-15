@@ -170,6 +170,9 @@ public:
 	*/
 	void setMatchingDistances(double constructionFactor, double openingDistance);
 
+	/*! Set the flag in order to limit the opening matching only to walls.*/
+	void setOpeningMatchingInWalls(bool useOnlyWalls);
+
 	/*! Return the current convert options.
 	*/
 	const ConvertOptions &convertOptions() const;
