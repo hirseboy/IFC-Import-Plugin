@@ -38,7 +38,7 @@ QString IFCImportPlugin::title() const {
 }
 
 QString IFCImportPlugin::importMenuCaption() const {
-	return tr("Import IFC file");
+	return tr("Import IFC file ...");
 }
 
 void IFCImportPlugin::setLanguage(QString langId, QString appname) {
@@ -61,8 +61,8 @@ void IFCImportPlugin::setLanguage(QString langId, QString appname) {
 	// adjust log file verbosity
 	m_msgHandler.setLogfileVerbosityLevel( IBK::VL_DEVELOPER );
 
+	// reset appname to find correct translation file
 	QtExt::Directories::appname = "ImportIFCPlugin";
-
 	QtExt::LanguageHandler::instance().installTranslator(langId);
 }
 
