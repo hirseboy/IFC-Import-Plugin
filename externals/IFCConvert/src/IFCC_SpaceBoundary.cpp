@@ -348,6 +348,7 @@ TiXmlElement *SpaceBoundary::writeXML(TiXmlElement *parent) const {
 
 		s.writeXML(parent);
 	}
+	return parent;
 }
 
 } // namespace IFCC

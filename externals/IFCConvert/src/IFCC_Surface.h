@@ -208,8 +208,8 @@ private:
 	std::string								m_name;
 	int										m_id;
 	int										m_elementEntityId;
-	bool									m_virtualSurface;
 	PositionType							m_positionType;
+	bool									m_virtualSurface;
 	std::vector<IBKMK::Vector3D>			m_polyVect;
 	std::vector<SubSurface>					m_subSurfaces;
 	std::vector<Surface>					m_childSurfaces;

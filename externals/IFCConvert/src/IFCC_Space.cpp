@@ -162,15 +162,6 @@ std::vector<std::shared_ptr<SpaceBoundary>> Space::createSpaceBoundaries(const B
 	std::vector<std::shared_ptr<BuildingElement>> constructionElements = buildingElements.allConstructionElements();
 
 
-	if(m_name == "A2.25") {
-		std::string surfSpace = dumpSurfaces(surfaces);
-		std::string dump;
-		dump = "Space A2.25 \n";
-		dump += surfSpace;
-		std::ofstream out("/home/fechner/temp/space_surfaces_org.txt");
-		out << dump;
-	}
-
 	for(const auto& construction : constructionElements) {
 		double dist = construction->thickness();
 		double maxConstructionDist = 0;
@@ -183,18 +174,6 @@ std::vector<std::shared_ptr<SpaceBoundary>> Space::createSpaceBoundaries(const B
 				dist = maxConstructionDist;
 			else
 				dist = 1.0e-4;
-		}
-
-		if(m_name == "A2.25" && (construction->m_ifcId == 60525 || construction->m_ifcId == 50176 || construction->m_ifcId == 52161)) {
-			std::string surfSpace = dumpSurfaces(surfaces);
-			std::string surfConstr = dumpSurfaces(construction->surfaces());
-			std::string dump;
-			dump = "Space A2.25 \n";
-			dump += surfSpace;
-			dump += "\nConstruction 60525\n";
-			dump += surfConstr;
-			std::ofstream out("/home/fechner/temp/space_surfaces.txt");
-			out << dump;
 		}
 
 		MatchResult indices = findFirstSurfaceMatchIndex(construction->surfaces(), surfaces, dist*2);
@@ -641,7 +620,7 @@ void Space::createSpaceBoundariesForOpeningsFromSpaceBoundaries(std::vector<std:
 			for(size_t cosi=0; cosi<currOp.surfaces().size(); ++cosi) {
 				const Surface& currentOpeningSurf = currOp.surfaces()[cosi];
 				double dist = currentOpeningSurf.distanceToParallelPlane(spaceBoundary->surface());
-				if(dist <= 1e6) {
+				if(dist <= 2) {
 					if(currentOpeningSurf.isIntersected(spaceBoundary->surface())) {
 						Surface intersectionResult = spaceBoundary->surface().intersect(currentOpeningSurf);
 						if(intersectionResult.isValid()) {
