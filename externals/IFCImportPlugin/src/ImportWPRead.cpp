@@ -14,8 +14,8 @@ ImportWPRead::ImportWPRead(QWidget *parent, IFCC::IFCReader* reader) :
 	m_readSuccessfully(false)
 {
 	ui->setupUi(this);
-	setTitle(tr("Read IFC file"));
-	setSubTitle(tr("You can load an IFC file."));
+	setTitle(tr("IFC file"));
+	setSubTitle(tr("You can specify and read an IFC file."));
 
 	ui->pushButtonRead->setEnabled(false);
 	ui->checkBoxIgnoreReadError->setChecked(true);
