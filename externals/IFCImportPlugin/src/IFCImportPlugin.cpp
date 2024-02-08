@@ -61,6 +61,8 @@ void IFCImportPlugin::setLanguage(QString langId, QString appname) {
 	// adjust log file verbosity
 	m_msgHandler.setLogfileVerbosityLevel( IBK::VL_DEVELOPER );
 
+	QtExt::Directories::appname = "ImportIFCPlugin";
+
 	QtExt::LanguageHandler::instance().installTranslator(langId);
 }
 
