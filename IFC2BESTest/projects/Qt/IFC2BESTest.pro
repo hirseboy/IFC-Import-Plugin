@@ -64,7 +64,8 @@ INCLUDEPATH = \
 	../../../externals/IBK/src \
 	../../../externals/IBKMK/src \
 	../../../externals/TiCPP/src \
-	../../../externals/IFCImportPlugin/src
+	../../../externals/IFCImportPlugin/src \
+	../../../externals/GEGExportPlugin/src
 
 DEPENDPATH = $${INCLUDEPATH}
 

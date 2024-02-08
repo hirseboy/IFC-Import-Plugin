@@ -3,8 +3,9 @@
 
 #include <QFileDialog>
 #include <QPluginLoader>
+#include <QMessageBox>
 
-#include <IFCImportPlugin.h>
+//#include <IFCImportPlugin.h>
 
 #include <fstream>
 
@@ -148,6 +149,10 @@ void MainWindow::loadPlugins() {
 				m_importer.insert(import->title(), import);
 				import->setLanguage("de", "IFC2BESTest");
 			}
+			if(SVExportPluginInterface* exportPlugin = dynamic_cast<SVExportPluginInterface*>(loader.instance())) {
+				m_exporter.insert(exportPlugin->title(), exportPlugin);
+				exportPlugin->setLanguage("de", "IFC2BESTest");
+			}
 		}
 		else {
 			if(filename == "ImportIFCPlugin.dll") {
@@ -164,6 +169,14 @@ void MainWindow::loadPlugins() {
 			connect(act, &QAction::triggered,
 					this, &MainWindow::runImport);
 //			connect(act, SIGNAL(triggered(QAction*)), this, SLOT(runImport(QAction*)));
+		}
+	}
+	if(!m_importer.empty()) {
+		QMenu* exportMenu = ui->menuPlugins;
+		for(const auto& name : m_exporter.keys()) {
+			QAction* act = exportMenu->addAction(name);
+			connect(act, &QAction::triggered,
+					this, &MainWindow::runExport);
 		}
 	}
 }
@@ -186,6 +199,36 @@ void MainWindow::runImport()
 		else {
 //			IFCImportPlugin* importPlugin = static_cast<IFCImportPlugin*>(exp);
 //			ui->label_FileName->setText(importPlugin->IFCFileName());
+		}
+	}
+}
+
+void MainWindow::runExport() {
+	QAction * action = qobject_cast<QAction *>(sender());
+	if (action == nullptr) {
+		IBK::IBK_Message("Invalid call to onExportPluginTriggered()", IBK::MSG_ERROR);
+		return;
+	}
+	QString name = action->text();
+	SVExportPluginInterface* exp = m_exporter.value(name);
+	if( exp ) {
+		QString filename = QFileDialog::getOpenFileName(this, tr("Open vicus file"), QString(),
+														tr("SIM-VICUS project file (*.vicus);;All files (*.*)"));
+		if(!filename.isEmpty()) {
+			QFile file(filename);
+			file.open(QFile::ReadOnly);
+			if(!file.isOpen()) {
+				QMessageBox::critical(this, tr("File error"), tr("Error while open file '%1'").arg(filename));
+				return;
+			}
+			QTextStream stream(&file);
+			QString projectText = stream.readAll();
+			bool res = exp->getProject(this, projectText);
+			if(!res) {
+				QMessageBox::critical(this, tr("File error"), tr("Error while read file '%1'").arg(filename));
+				return;
+			}
+
 		}
 	}
 }

@@ -3,9 +3,8 @@
 
 #include <QMainWindow>
 
-//#include <IFCC_IFCReader.h>
-
 #include <SVImportPluginInterface.h>
+#include <SVExportPluginInterface.h>
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -26,17 +25,20 @@ private slots:
 
 	void on_actionSave_triggered();
 
+	void runImport();
+
+	void runExport();
+
 private:
 	Ui::MainWindow *ui;
 //	std::unique_ptr<IFCC::IFCReader>	m_reader;
 	QMap<QString,SVImportPluginInterface*>	m_importer;
+	QMap<QString,SVExportPluginInterface*>	m_exporter;
 
 
 	QStringList statistic() const;
 
 	void loadPlugins();
-
-	void runImport();
 
 	QString m_vicusProject;
 
