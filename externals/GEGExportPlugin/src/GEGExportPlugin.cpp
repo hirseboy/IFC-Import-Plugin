@@ -1,47 +1,64 @@
-#include "IFCImportPlugin.h"
+#include "GEGExportPlugin.h"
 
 #include <IBK_messages.h>
+#include <IBK_NotificationHandler.h>
 
-#include <IFCC_IFCReader.h>
+#include <QProgressDialog>
 
 #include <QtExt_Directories.h>
 #include <QtExt_LanguageHandler.h>
+#include <QtExt_Conversions.h>
+
+#include <VICUS_Project.h>
 
 #include <QDir>
 
-#include "ImportWizard.h"
+class ProgressNotifyer : public IBK::NotificationHandler {
+public:
+	void notify() override {}
+	void notify(double percentage, const char *txt) override;
+	QProgressDialog		*m_prgDlg = nullptr;
+};
 
-IFCImportPlugin::IFCImportPlugin(QObject *parent)
+void ProgressNotifyer::notify(double percentage, const char *txt) {
+	if(m_prgDlg == nullptr)
+		return;
+
+	m_prgDlg->setValue((int)(m_prgDlg->maximum() * percentage));
+	m_prgDlg->setLabelText(txt);
+	qApp->processEvents();
+}
+
+GEGExportPlugin::GEGExportPlugin(QObject *parent)
 {
 }
 
-bool IFCImportPlugin::import(QWidget * parent, QString& projectText) {
-	IFCC::IFCReader			reader;
-
-	ImportWizard wz(parent, &reader);
-
-	if (wz.exec() == QDialog::Rejected)
+bool GEGExportPlugin::getProject(QWidget * parent, const QString& projectText) {
+	VICUS::Project project;
+	try {
+		std::unique_ptr<ProgressNotifyer> notifyer(new ProgressNotifyer);
+		notifyer->m_prgDlg = new QProgressDialog(QString(), QString(), 0, 100, nullptr);
+		notifyer->m_prgDlg->setWindowTitle(tr("Import project"));
+		notifyer->m_prgDlg->setMinimumDuration(0);
+		notifyer->notify(0, "");
+		project.readImportedXML(projectText, notifyer.get());
+	}
+	catch(IBK::Exception& e) {
 		return false;
-
-	if(reader.m_convertCompletedSuccessfully) {
-		reader.setVicusProjectText(projectText);
-		m_ifcFileName = QString::fromStdString(reader.filename().str());
-		return true;
 	}
 
-	m_ifcFileName.clear();
-	return false;
+	return true;
 }
 
-QString IFCImportPlugin::title() const {
+QString GEGExportPlugin::title() const {
+	return tr("Export GEG file");
+}
+
+QString GEGExportPlugin::exportMenuCaption() const {
 	return tr("Import IFC file");
 }
 
-QString IFCImportPlugin::importMenuCaption() const {
-	return tr("Import IFC file");
-}
-
-void IFCImportPlugin::setLanguage(QString langId, QString appname) {
+void GEGExportPlugin::setLanguage(QString langId, QString appname) {
 	QtExt::Directories::appname = appname;
 	QtExt::Directories::devdir = appname;
 
@@ -55,7 +72,7 @@ void IFCImportPlugin::setLanguage(QString langId, QString appname) {
 	IBK::MessageHandlerRegistry::instance().setMessageHandler( &m_msgHandler );
 	std::string errmsg;
 	std::string logfile = QtExt::Directories::userDataDir().toStdString();
-	logfile += "/IFCImportPlugin.log";
+	logfile += "/GEGExportPlugin.log";
 	m_msgHandler.openLogFile(logfile, false, errmsg);
 
 	// adjust log file verbosity
@@ -66,7 +83,8 @@ void IFCImportPlugin::setLanguage(QString langId, QString appname) {
 	QtExt::LanguageHandler::instance().installTranslator(langId);
 }
 
-QString IFCImportPlugin::IFCFileName() const {
-	return m_ifcFileName;
+bool GEGExportPlugin::exportGEGFile(const QString& filename) {
+
+	return false;
 }
 

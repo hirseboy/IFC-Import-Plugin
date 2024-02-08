@@ -25,32 +25,55 @@ contains(QT_ARCH, i386): {
 	DIR_PREFIX = _x64
 }
 
+QMAKE_LIBDIR += ../../../../externals/lib$${DIR_PREFIX}
+
+LIBS += -L../../../../externals/lib$${DIR_PREFIX}
+
+LIBS += \
+		-lQtExt \
+		-lDataIO \
+		-lCCM \
+	-lTiCPP \
+	-lIBKMK \
+	-lVicus \
+	-lNandrad \
+	-lIBK
+
+win32:LIBS += -liphlpapi
+win32:LIBS += -lshell32
+
+win32-msvc* {
+	QMAKE_CXXFLAGS += /std:c++17
+}
+
 INCLUDEPATH = \
 	../../src \
 	../../../../externals/IBK/src \
 	../../../../externals/IBKMK/src \
 	../../../../externals/TiCPP/src \
-	../../../../externals/QtExt/src 
+	../../../../externals/Nandrad/src \
+	../../../../externals/Vicus/src \
+	../../../../externals/QtExt/src
 
 CONFIG(debug, debug|release) {
 	OBJECTS_DIR = debug$${DIR_PREFIX}
 	windows {
-                DESTDIR = ../../../lib$${DIR_PREFIX}
-                DLLDESTDIR = ../../../../bin/debug$${DIR_PREFIX}
+				DESTDIR = ../../../lib$${DIR_PREFIX}
+				DLLDESTDIR = ../../../../bin/debug$${DIR_PREFIX}
 	}
-        else {
-            DESTDIR = ../../../../bin/debug$${DIR_PREFIX}
-        }
+		else {
+			DESTDIR = ../../../../bin/debug$${DIR_PREFIX}
+		}
 }
 else {
 	OBJECTS_DIR = release
 	windows {
-                DESTDIR = ../../../lib$${DIR_PREFIX}
-                DLLDESTDIR = ../../../../bin/release$${DIR_PREFIX}
+				DESTDIR = ../../../lib$${DIR_PREFIX}
+				DLLDESTDIR = ../../../../bin/release$${DIR_PREFIX}
 	}
-        else {
-            DESTDIR = ../../../../bin/release$${DIR_PREFIX}
-        }
+		else {
+			DESTDIR = ../../../../bin/release$${DIR_PREFIX}
+		}
 }
 
 !windows {
@@ -63,8 +86,8 @@ UI_DIR = ui
 SOURCES += \
 	../../src/GEGExportPlugin.cpp \
 	../../src/GEGExportMessageHandler.cpp \
-	../../src/ExportWPConvert.cpp \
-	../../src/ExportWPRead.cpp \
+#	../../src/ExportWPConvert.cpp \
+#	../../src/ExportWPRead.cpp \
 	../../src/ExportWizard.cpp
 
 HEADERS += \
@@ -72,26 +95,9 @@ HEADERS += \
 	../../src/SVCommonPluginInterface.h \
 	../../src/SVExportPluginInterface.h \
 	../../src/GEGExportPlugin.h \
-	../../src/ExportWPConvert.h \
-	../../src/ExportWPRead.h \
+#	../../src/ExportWPConvert.h \
+#	../../src/ExportWPRead.h \
 	../../src/ExportWizard.h
-
-QMAKE_LIBDIR += ../../../../externals/lib$${DIR_PREFIX}
-
-LIBS += -L../../../../externals/lib$${DIR_PREFIX}
-
-LIBS += \
-        -lQtExt \
-	-lTiCPP \
-	-lIBKMK \
-	-lIBK
-
-win32:LIBS += -liphlpapi
-win32:LIBS += -lshell32
-
-win32-msvc* {
-	QMAKE_CXXFLAGS += /std:c++17
-}
 
 # Default rules for deployment.
 # unix {
@@ -100,8 +106,8 @@ win32-msvc* {
 # !isEmpty(target.path): INSTALLS += target
 
 FORMS += \
-	../../src/ExportWPConvert.ui \
-	../../src/ExportWPRead.ui \
+#	../../src/ExportWPConvert.ui \
+#	../../src/ExportWPRead.ui \
 	../../src/ExportWizard.ui
 
 TRANSLATIONS += ../../resources/translations/GEGExportPlugin_de.ts

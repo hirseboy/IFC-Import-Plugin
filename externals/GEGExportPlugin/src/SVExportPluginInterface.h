@@ -28,7 +28,9 @@ public:
 
 		\note Do not allow exceptions to leave this function, so wrap everything into a try-catch clause!
 	*/
-	virtual bool export(QWidget * parent, QString& projectText) = 0;
+	virtual bool getProject(QWidget * parent, const QString& projectText) = 0;
+
+	virtual bool exportGEGFile(const QString& filename) = 0;
 };
 
 

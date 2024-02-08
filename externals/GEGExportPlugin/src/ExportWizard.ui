@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>ImportWizard</class>
- <widget class="QWizard" name="ImportWizard">
+ <class>ExportWizard</class>
+ <widget class="QWizard" name="ExportWizard">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>IFC Import Wizard</string>
+   <string>IFC Export Wizard</string>
   </property>
   <widget class="QWizardPage" name="wizardPage2"/>
  </widget>

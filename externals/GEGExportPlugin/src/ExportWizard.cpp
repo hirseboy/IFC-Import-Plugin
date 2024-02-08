@@ -1,15 +1,9 @@
-#include "ImportWizard.h"
-#include "ui_ImportWizard.h"
+#include "ExportWizard.h"
+#include "ui_ExportWizard.h"
 
-#include "ImportWPRead.h"
-#include "ImportWPConvert.h"
-
-ImportWizard::ImportWizard(QWidget *parent, IFCC::IFCReader* reader) :
+ExportWizard::ExportWizard(QWidget *parent) :
 	QWizard(parent),
-	ui(new Ui::ImportWizard),
-	m_pageRead(new ImportWPRead(this, reader)),
-	m_pageConvert(new ImportWPConvert(this, reader)),
-	m_reader(reader)
+	ui(new Ui::ExportWizard)
 {
 	ui->setupUi(this);
 
@@ -17,14 +11,11 @@ ImportWizard::ImportWizard(QWidget *parent, IFCC::IFCReader* reader) :
 
 	setWizardStyle(QWizard::ModernStyle);
 
-	setWindowTitle(tr("Import IFC Assistant"));
+	setWindowTitle(tr("Export GEG Assistant"));
 	setMinimumWidth(800);
-
-	addPage(m_pageRead);
-	addPage(m_pageConvert);
 }
 
-ImportWizard::~ImportWizard() {
+ExportWizard::~ExportWizard() {
 	delete ui;
 }
 

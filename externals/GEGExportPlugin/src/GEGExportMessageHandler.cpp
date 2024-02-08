@@ -1,15 +1,15 @@
-#include "ImportIFCMessageHandler.h"
+#include "GEGExportMessageHandler.h"
 
-ImportIFCMessageHandler::ImportIFCMessageHandler(QObject *parent) :
+GEGExportMessageHandler::GEGExportMessageHandler(QObject *parent) :
 	QObject(parent)
 {
 }
 
-ImportIFCMessageHandler::~ImportIFCMessageHandler() {
+GEGExportMessageHandler::~GEGExportMessageHandler() {
 }
 
 
-void ImportIFCMessageHandler::msg(const std::string& msg,
+void GEGExportMessageHandler::msg(const std::string& msg,
 	IBK::msg_type_t t,
 	const char * func_id,
 	int verbose_level)

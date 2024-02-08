@@ -1,9 +1,9 @@
 {
-	"title":"IFC-Import-Plugin",
-	"short-description":"en:This is a import plugin for IFC files.|de:Dies ist ein Import-Plugin für IFC Dateien.",
-	"long-description":"en:This import plugin should import IFC files in STEP format.|de:Dieses Plugin soll IFC Dateien im STEP Format einlesen.",
+	"title":"GEG-Export-Plugin",
+	"short-description":"en:This is a export plugin for GEG software.|de:Dies ist ein Export-Plugin für GEG Software.",
+	"long-description":"en:This export plugin should wxport a csv file for use in Daemmwerk.|de:Dieses Plugin soll csv Dateien für die Software Dämmwerk exportieren.",
 	"version":"1.0.0",
-	"vicus-version":"1.0",
+	"vicus-version":"1.0-2.0",
 	"webpage":"https://sim-vicus.de",
 	"author":"Heiko Fechner",
 	"license":"LGPL 2 or newer"

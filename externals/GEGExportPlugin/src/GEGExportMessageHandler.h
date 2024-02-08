@@ -1,15 +1,15 @@
-#ifndef ImportIFCMessageHandlerH
-#define ImportIFCMessageHandlerH
+#ifndef GEGExportMessageHandlerH
+#define GEGExportMessageHandlerH
 
 #include <QObject>
 #include <IBK_MessageHandler.h>
 
-class ImportIFCMessageHandler : public QObject, public IBK::MessageHandler
+class GEGExportMessageHandler : public QObject, public IBK::MessageHandler
 {
 	Q_OBJECT
 public:
-	explicit ImportIFCMessageHandler(QObject *parent = nullptr);
-	virtual ~ImportIFCMessageHandler();
+	explicit GEGExportMessageHandler(QObject *parent = nullptr);
+	virtual ~GEGExportMessageHandler();
 
 
 	/*! Overloaded to received msg info. */
@@ -25,4 +25,4 @@ signals:
 	void msgReceived(int type, QString msg);
 };
 
-#endif // ImportIFCMessageHandlerH
+#endif // GEGExportMessageHandlerH

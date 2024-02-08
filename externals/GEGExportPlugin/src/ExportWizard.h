@@ -1,37 +1,25 @@
-#ifndef ImportWizardH
-#define ImportWizardH
+#ifndef ExportWizardH
+#define ExportWizardH
 
 #include <QWizard>
 
 //#include <VICUS_Project.h>
 
-class ImportWPRead;
-class ImportWPConvert;
-
-namespace IFCC {
-	class IFCReader;
-}
-
 namespace Ui {
-class ImportWizard;
+class ExportWizard;
 }
 
-class ImportWizard : public QWizard
+class ExportWizard : public QWizard
 {
 	Q_OBJECT
 
 public:
-	explicit ImportWizard(QWidget *parent, IFCC::IFCReader* reader);
-	~ImportWizard();
+	explicit ExportWizard(QWidget *parent);
+	~ExportWizard();
 
 private:
 
-	Ui::ImportWizard *	ui;
-
-	ImportWPRead*		m_pageRead;
-	ImportWPConvert*	m_pageConvert;
-
-	IFCC::IFCReader*	m_reader;
+	Ui::ExportWizard *	ui;
 };
 
-#endif // ImportWizardH
+#endif // ExportWizardH

@@ -1,29 +1,29 @@
-#ifndef IFCImportPlugin_H
-#define IFCImportPlugin_H
+#ifndef IFCExportPlugin_H
+#define IFCExportPlugin_H
 
-#include <SVImportPluginInterface.h>
+#include <SVExportPluginInterface.h>
 
-#include "ImportIFCMessageHandler.h"
+#include "GEGExportMessageHandler.h"
 
-#define IFCImportPlugin_iid "de.dresden-tu.arch.ibk.IFCImportPlugin/1.0"
+#define GEGExportPlugin_iid "de.dresden-tu.arch.ibk.GEGExportPlugin/1.0"
 
-class IFCImportPlugin : public QObject, public SVImportPluginInterface
+class GEGExportPlugin : public QObject, public SVExportPluginInterface
 {
 	Q_OBJECT
-	Q_PLUGIN_METADATA(IID IFCImportPlugin_iid FILE "metadata.json")
-	Q_INTERFACES(SVImportPluginInterface)
+	Q_PLUGIN_METADATA(IID GEGExportPlugin_iid FILE "metadata.json")
+	Q_INTERFACES(SVExportPluginInterface)
 
 public:
-	explicit IFCImportPlugin(QObject *parent = nullptr);
-	virtual bool import(QWidget * parent, QString& projectText) override;
+	explicit GEGExportPlugin(QObject *parent = nullptr);
+	virtual bool getProject(QWidget * parent, const QString& projectText) override;
 	virtual QString title() const override;
-	virtual QString importMenuCaption() const override;
+	virtual QString exportMenuCaption() const override;
 	virtual void setLanguage(QString langId, QString appname) override;
-	QString IFCFileName() const;
+	bool exportGEGFile(const QString& filename) override;
 
 private:
-	ImportIFCMessageHandler m_msgHandler;
+	GEGExportMessageHandler m_msgHandler;
 	QString					m_ifcFileName;
 };
 
-#endif // IFCImportPlugin_H
+#endif // IFCExportPlugin_H

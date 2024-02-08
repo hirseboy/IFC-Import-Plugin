@@ -3,7 +3,7 @@
 goto check_permissions
 
 :create_symlinks
-	set lib_list=IBK lib_x64 QtExt IBKMK clipper TiCPP
+	set lib_list=IBK lib_x64 QtExt IBKMK clipper TiCPP Nandrad Vicus CCM DataIO
 
 	(for %%a in (%lib_list%) do (
 	   echo -----------------------------
