@@ -11,147 +11,7 @@
 
 namespace IFCC {
 
-/*! Matrix for rotation of 3D geometry objects (3x3).*/
-class RotationMatrix {
-public:
-	/*! Matrix data with different access possibilities.*/
-	union {
-		double m_m[3][3];	///< As matrix
-		double m_v[9];		///< As vector
-		/*! as single variables.*/
-		struct {
-			double m_11, m_12, m_13;
-			double m_21, m_22, m_23;
-			double m_31, m_32, m_33;
-		};
-	};
-
-	/*! Constructor with single variables.*/
-	RotationMatrix(double __11, double __21, double __31, double __12, double __22,
-				   double __32, double __13, double __23, double __33);
-
-	/*! Constructor with matrix data.*/
-	RotationMatrix(double m[3][3]);
-
-	/*! Constructor with plain vector.*/
-	RotationMatrix(double v[9]);
-
-	/*! Standard constructor. Create a identity matrix.*/
-	RotationMatrix();
-
-	/*! Return a LU factorized version.*/
-	RotationMatrix lu() const;
-
-	/*! Backsolving with given result vector of size 3.
-		Can only be used with an LU factorized matrix.*/
-	void backsolve(double * b) const;
-
-	/*! Create inverse of rotation matrix.*/
-	bool inverse(RotationMatrix& invMat) const;
-
-	/*! Equality operator.*/
-	friend bool operator==(const RotationMatrix& A, const RotationMatrix& B);
-
-	/*! Non-equal operator.*/
-	friend bool operator!=(const RotationMatrix& A, const RotationMatrix& B);
-
-	/*! Product of rotation matrix with 3D vector.*/
-	friend IBKMK::Vector3D operator*(const RotationMatrix& A, const IBKMK::Vector3D& b);
-
-	/*! Product of 3D vector with rotation matrix.*/
-	friend IBKMK::Vector3D& operator*=(IBKMK::Vector3D& b, const RotationMatrix& A);
-
-	/*! Product of two matrices.*/
-	friend RotationMatrix operator*(const RotationMatrix& A, const RotationMatrix& B);
-
-private:
-	/*! Helper function for determinant.*/
-	double determinantOfMinor( int theRowHeightY, int theColumnWidthX ) const;
-
-	/*! Determinant of matrix. Helper function for inverse.*/
-	double determinant() const;
-};
-
-/*! Transformation matrix for 3D objects (4x4).*/
-class TransformationMatrix {
-public:
-	/*! Matrix data with different access possibilities.*/
-	union {
-		double m_m[4][4];	///< as matrix
-		double m_v[16];		///< as vector
-		/*! as single variables.*/
-		struct {
-			// transposed
-			double m_11, m_12, m_13, m_14;
-			double m_21, m_22, m_23, m_24;
-			double m_31, m_32, m_33, m_34;
-			double m_41, m_42, m_43, m_44;
-		};
-	};
-
-	/*! Constructor with single variables.*/
-	TransformationMatrix(double __11, double __21, double __31, double __41,
-						 double __12, double __22, double __32, double __42,
-						 double __13, double __23, double __33, double __43,
-						 double __14, double __24, double __34, double __44);
-
-	/*! Constructor with matrix data.*/
-	TransformationMatrix(double m[4][4]);
-
-	/*! Constructor with plain vector.*/
-	TransformationMatrix(double v[16]);
-
-	/*! Standard constructor. Create a identity matrix.*/
-	TransformationMatrix();
-
-	/*! Return a LU factorized version.*/
-	TransformationMatrix lu();
-
-	/*! Backsolving with given result vector of size 3.
-		Can only be used with an LU factorized matrix.*/
-	void backsolve(double * b);
-
-	/*! Matrix element cleaning. Set all elements near zero to zero and all elements near one to one.*/
-	void clean();
-
-	/*! Create inverse of transformation matrix.
-		Return a deafult matrix in case of errors (singularities).
-	*/
-	TransformationMatrix inverse();
-
-	/*! Equality operator.*/
-	friend bool operator==(const TransformationMatrix& A, const TransformationMatrix& B);
-
-	/*! Non-equal operator.*/
-	friend bool operator!=(const TransformationMatrix& A, const TransformationMatrix& B);
-
-	/*! Return product of matrix with a 3D vector.*/
-	friend IBKMK::Vector3D operator*(const TransformationMatrix& A, const IBKMK::Vector3D& b);
-
-	/*! Product of 3D vector with transformation matrix.*/
-	friend IBKMK::Vector3D& operator*=(IBKMK::Vector3D& b, const TransformationMatrix& A);
-
-	/*! Product of two matrices.*/
-	friend TransformationMatrix operator*(const TransformationMatrix& A, const TransformationMatrix& B);
-
-	/*! Return transformation matrix rotated by given angle around given axis.*/
-	friend TransformationMatrix ROT(double angle, const IBKMK::Vector3D& axis);
-
-	/*! Return transformation matrix rotated by given angle around axis given by coordinates.*/
-	friend TransformationMatrix ROT(double angle, double x, double y, double z);
-
-	/*! Return transformation matrix translated by given coordinates.*/
-	friend TransformationMatrix TRANS(double x, double y, double z);
-
-	/*! Return transformation matrix translated by given vector.*/
-	friend TransformationMatrix TRANS(const IBKMK::Vector3D& v);
-
-	/*! Return transformation matrix scaled by given coordinates.*/
-	friend TransformationMatrix SCALE(double x, double y, double z);
-
-	/*! Return transformation matrix scaled by given vector.*/
-	friend TransformationMatrix SCALE(const IBKMK::Vector3D& v);
-};
+class RotationMatrix;
 
 /*! Class represents a plane in 3D given in Hesse normal form.*/
 class PlaneHesseNormal
@@ -193,6 +53,15 @@ public:
 	/*! Standard constructor. Create a non valid object.*/
 	PlaneNormal();
 
+	/*! Standard destructor.*/
+	~PlaneNormal();
+
+	/*! Standard copy constructor.*/
+	PlaneNormal(const PlaneNormal&);
+
+	/*! Copy assignment operator.*/
+	PlaneNormal& operator=(const PlaneNormal&);
+
 	/*! Constructor create a object from given plane in Hesse normal form for the given position.
 		\param plane Plane in Hesse normal form
 		\param pos Position vector for new plane
@@ -225,12 +94,12 @@ public:
 	IBKMK::Vector3D			m_ly;					///< Y-axis
 	IBKMK::Vector3D			m_lz;					///< Z-axis
 
-	RotationMatrix			m_rotationMatrix;		///< Rotation matrix for using in convert3DPoint
-	RotationMatrix			m_rotationMatrixInv;	///< Inverse rotation matrix for using in convert3DPointInv.
-
 private:
 	/*! Evaluates the plane classification.*/
 	void setPlaneProperties(const PlaneHesseNormal& plane);
+
+	std::unique_ptr<RotationMatrix>	m_rotationMatrix;		///< Rotation matrix for using in convert3DPoint
+	std::unique_ptr<RotationMatrix>	m_rotationMatrixInv;	///< Inverse rotation matrix for using in convert3DPointInv.
 };
 
 } // namespace IFCC

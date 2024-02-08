@@ -399,6 +399,7 @@ std::vector<polygon3D_t> simplifyPolygon(const polygon3D_t &base) {
 
 void cleanPolygon(polygon3D_t &base, double distance) {
 	PlaneNormal plane(base);
+
 	ClipperLib::Path path = createPathFrom3D(base, plane);
 	if(path.empty())
 		return;
