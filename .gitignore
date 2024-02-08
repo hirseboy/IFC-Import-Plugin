@@ -59,3 +59,5 @@ lib_x64
 /data/SimQuality_Analyse
 /data/SimVicus.vicus
 /data/SimVicus_2.vicus
+/externals/IFCConvert/src/IFCC_GeometricHelperClasses_kopie.cpp
+/externals/IFCConvert/src/IFCC_GeometricHelperClasses_kopie.h
