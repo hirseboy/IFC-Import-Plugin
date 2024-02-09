@@ -30,7 +30,7 @@ greaterThan(QT_MAJOR_VERSION, 4) {
 		}
 	}
 	else {
-		CONFIG += shared
+		CONFIG += shared_and_static build_all
 	}
 
 # disable warning for unsafe functions if using MS compiler
