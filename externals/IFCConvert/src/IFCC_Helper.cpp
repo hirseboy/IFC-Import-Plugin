@@ -186,6 +186,15 @@ void faceDump(carve::mesh::Face<3>* face, const std::string& name, const IBK::Pa
 	}
 }
 
+bool checkMesh(const carve::mesh::MeshSet<3>& meshset) {
+	for(auto& mesh : meshset.meshes) {
+		for(auto& face : mesh->faces) {
+			if(face->edge == nullptr)
+				return false;
+		}
+	}
+	return true;
+}
 
 void simplifyMesh(meshVector_t& meshVector, bool removeLowVolume) {
 
@@ -197,6 +206,9 @@ void simplifyMesh(meshVector_t& meshVector, bool removeLowVolume) {
 	int meshSetCount = meshVector.size();
 	size_t removedMeshes = 0;
 	for(int i=0; i<meshSetCount; ++i) {
+		if(!checkMesh(*meshVector[i])) {
+			return;
+		}
 		removedMeshes += simplifier.mergeCoplanarFaces(meshVector[i].get(), MINIMUM_NORMAL_ANGLE);
 	// The following functions can open or destroy the mesh
 //		simplifier.simplify(meshVector[i].get(), 1e-6, 1e-6, MINIMUM_NORMAL_ANGLE, 1e-6);
