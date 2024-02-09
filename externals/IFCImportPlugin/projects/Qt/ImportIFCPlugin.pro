@@ -91,14 +91,14 @@ QMAKE_LIBDIR += ../../../../externals/lib$${DIR_PREFIX}
 LIBS += -L../../../../externals/lib$${DIR_PREFIX}
 
 LIBS += \
-        -lIFCConvert \
-        -lclipper \
-        -lifcplusplus \
-	-lCarve \
-        -lQtExt \
-	-lTiCPP \
-	-lIBKMK \
-	-lIBK
+	../../../../externals/lib$${DIR_PREFIX}/libIFCConvert.a \
+	../../../../externals/lib$${DIR_PREFIX}/libclipper.a \
+	../../../../externals/lib$${DIR_PREFIX}/libifcplusplus.a \
+	../../../../externals/lib$${DIR_PREFIX}/libCarve.a \
+	../../../../externals/lib$${DIR_PREFIX}/libQtExt.a \
+	../../../../externals/lib$${DIR_PREFIX}/libTiCPP.a \
+	../../../../externals/lib$${DIR_PREFIX}/libIBKMK.a \
+	../../../../externals/lib$${DIR_PREFIX}/libIBK.a
 
 win32:LIBS += -liphlpapi
 win32:LIBS += -lshell32
