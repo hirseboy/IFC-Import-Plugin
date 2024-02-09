@@ -10,14 +10,18 @@
 #include <QtExt_Conversions.h>
 
 #include <VICUS_Project.h>
+#include <VICUS_Constants.h>
 
 #include <QDir>
+
+#include "GEGZone.h"
+
 
 class ProgressNotifyer : public IBK::NotificationHandler {
 public:
 	void notify() override {}
 	void notify(double percentage, const char *txt) override;
-	QProgressDialog		*m_prgDlg = nullptr;
+	std::unique_ptr<QProgressDialog> m_prgDlg;
 };
 
 void ProgressNotifyer::notify(double percentage, const char *txt) {
@@ -37,7 +41,7 @@ bool GEGExportPlugin::getProject(QWidget * parent, const QString& projectText) {
 	VICUS::Project project;
 	try {
 		std::unique_ptr<ProgressNotifyer> notifyer(new ProgressNotifyer);
-		notifyer->m_prgDlg = new QProgressDialog(QString(), QString(), 0, 100, nullptr);
+		notifyer->m_prgDlg.reset(new QProgressDialog(QString(), QString(), 0, 100, nullptr));
 		notifyer->m_prgDlg->setWindowTitle(tr("Import project"));
 		notifyer->m_prgDlg->setMinimumDuration(0);
 		notifyer->notify(0, "");
@@ -45,6 +49,28 @@ bool GEGExportPlugin::getProject(QWidget * parent, const QString& projectText) {
 	}
 	catch(IBK::Exception& e) {
 		return false;
+	}
+
+	if(project.m_buildings.size() == 0 || project.m_buildings.size()) {
+		return false;
+	}
+
+	std::vector<GEGZone>	zones;
+
+	for( const auto& storey : project.m_buildings.front().m_buildingLevels) {
+		for( auto room : storey.m_rooms) {
+			zones.push_back(GEGZone());
+			if(room.m_netFloorArea <= 0)
+				room.calculateFloorArea();
+			zones.back().m_ANGF = room.m_netFloorArea;
+			if(room.m_volume <= 0)
+				room.calculateVolume();
+			zones.back().m_Vi = room.m_volume;;
+			zones.back().m_Ve = room.m_volume;
+			if(room.m_idZoneTemplate != VICUS::INVALID_ID) {
+
+			}
+		}
 	}
 
 	return true;
