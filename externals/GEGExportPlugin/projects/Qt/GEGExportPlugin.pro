@@ -25,19 +25,19 @@ contains(QT_ARCH, i386): {
 	DIR_PREFIX = _x64
 }
 
-QMAKE_LIBDIR += ../../../../externals/lib$${DIR_PREFIX}
+QMAKE_LIBDIR += ../../../lib$${DIR_PREFIX}
 
-LIBS += -L../../../../externals/lib$${DIR_PREFIX}
+LIBS += -L../../../lib$${DIR_PREFIX}
 
 LIBS += \
-		-lQtExt \
-		-lDataIO \
-		-lCCM \
-	-lTiCPP \
-	-lIBKMK \
-	-lVicus \
-	-lNandrad \
-	-lIBK
+	../../../lib$${DIR_PREFIX}/libQtExt.a \
+	../../../lib$${DIR_PREFIX}/libDataIO.a \
+	../../../lib$${DIR_PREFIX}/libCCM.a \
+	../../../lib$${DIR_PREFIX}/libTiCPP.a \
+	../../../lib$${DIR_PREFIX}/libIBKMK.a \
+	../../../lib$${DIR_PREFIX}/libVicus.a \
+	../../../lib$${DIR_PREFIX}/libNandrad.a \
+	../../../lib$${DIR_PREFIX}/libIBK.a
 
 win32:LIBS += -liphlpapi
 win32:LIBS += -lshell32
@@ -48,12 +48,12 @@ win32-msvc* {
 
 INCLUDEPATH = \
 	../../src \
-	../../../../externals/IBK/src \
-	../../../../externals/IBKMK/src \
-	../../../../externals/TiCPP/src \
-	../../../../externals/Nandrad/src \
-	../../../../externals/Vicus/src \
-	../../../../externals/QtExt/src
+	../../../IBK/src \
+	../../../IBKMK/src \
+	../../../TiCPP/src \
+	../../../Nandrad/src \
+	../../..//Vicus/src \
+	../../../QtExt/src
 
 CONFIG(debug, debug|release) {
 	OBJECTS_DIR = debug$${DIR_PREFIX}
@@ -86,17 +86,15 @@ UI_DIR = ui
 SOURCES += \
 	../../src/GEGExportPlugin.cpp \
 	../../src/GEGExportMessageHandler.cpp \
-#	../../src/ExportWPConvert.cpp \
-#	../../src/ExportWPRead.cpp \
-	../../src/ExportWizard.cpp
+	../../src/ExportWizard.cpp \
+	../../src/GEGZone.cpp
 
 HEADERS += \
 	../../src/GEGExportMessageHandler.h \
+	../../src/GEGZone.h \
 	../../src/SVCommonPluginInterface.h \
 	../../src/SVExportPluginInterface.h \
 	../../src/GEGExportPlugin.h \
-#	../../src/ExportWPConvert.h \
-#	../../src/ExportWPRead.h \
 	../../src/ExportWizard.h
 
 # Default rules for deployment.
@@ -106,8 +104,6 @@ HEADERS += \
 # !isEmpty(target.path): INSTALLS += target
 
 FORMS += \
-#	../../src/ExportWPConvert.ui \
-#	../../src/ExportWPRead.ui \
 	../../src/ExportWizard.ui
 
 TRANSLATIONS += ../../resources/translations/GEGExportPlugin_de.ts
