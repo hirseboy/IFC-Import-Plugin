@@ -1,0 +1,743 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<VicusProject fileVersion="1.1">
+	<ProjectInfo>
+		<Created>Do. Feb. 8 11:11:14 2024</Created>
+		<LastEdited>Do. Feb. 8 11:11:14 2024</LastEdited>
+	</ProjectInfo>
+	<Project>
+		<SolverParameter>
+			<IBK:Parameter name="RelTol" unit="---">1e-05</IBK:Parameter>
+			<IBK:Parameter name="AbsTol" unit="---">1e-10</IBK:Parameter>
+			<IBK:Parameter name="MaxTimeStep" unit="h">1</IBK:Parameter>
+			<IBK:Parameter name="MinTimeStep" unit="s">1e-08</IBK:Parameter>
+			<IBK:Parameter name="InitialTimeStep" unit="s">0.1</IBK:Parameter>
+			<IBK:Parameter name="NonlinSolverConvCoeff" unit="---">0.1</IBK:Parameter>
+			<IBK:Parameter name="IterativeSolverConvCoeff" unit="---">0.05</IBK:Parameter>
+			<IBK:Parameter name="DiscMinDx" unit="mm">2</IBK:Parameter>
+			<IBK:Parameter name="DiscStretchFactor" unit="---">4</IBK:Parameter>
+			<IBK:Parameter name="ViewfactorTileWidth" unit="cm">50</IBK:Parameter>
+			<IBK:Parameter name="SurfaceDiscretizationDensity" unit="---">1</IBK:Parameter>
+			<IBK:Parameter name="ControlTemperatureTolerance" unit="K">1e-05</IBK:Parameter>
+			<IBK:Parameter name="HydraulicNetworkAbsTol" unit="---">0.001</IBK:Parameter>
+			<IBK:Parameter name="HydraulicNetworkMassFluxScale" unit="---">1000</IBK:Parameter>
+			<IBK:IntPara name="PreILUWidth">3</IBK:IntPara>
+			<IBK:IntPara name="MaxKrylovDim">50</IBK:IntPara>
+			<IBK:IntPara name="MaxNonlinIter">3</IBK:IntPara>
+			<IBK:IntPara name="MaxOrder">5</IBK:IntPara>
+			<IBK:IntPara name="DiscMaxElementsPerLayer">20</IBK:IntPara>
+			<IBK:Flag name="DetectMaxTimeStep">true</IBK:Flag>
+			<IBK:Flag name="KinsolDisableLineSearch">false</IBK:Flag>
+		</SolverParameter>
+		<SimulationParameter>
+			<IBK:Parameter name="InitialTemperature" unit="C">20</IBK:Parameter>
+			<IBK:Parameter name="InitialRelativeHumidity" unit="%">50</IBK:Parameter>
+			<IBK:Parameter name="DomesticWaterSensitiveHeatGainFraction" unit="---">0</IBK:Parameter>
+			<IBK:IntPara name="StartYear">2001</IBK:IntPara>
+			<Interval>
+				<IBK:Parameter name="Start" unit="d">0</IBK:Parameter>
+				<IBK:Parameter name="End" unit="d">365</IBK:Parameter>
+			</Interval>
+			<SolarLoadsDistributionModel>
+				<DistributionType>SurfaceTypeFactor</DistributionType>
+				<IBK:Parameter name="RadiationLoadFractionZone" unit="---">0.1</IBK:Parameter>
+				<IBK:Parameter name="RadiationLoadFractionFloor" unit="---">0.5</IBK:Parameter>
+				<IBK:Parameter name="RadiationLoadFractionCeiling" unit="---">0.2</IBK:Parameter>
+				<IBK:Parameter name="RadiationLoadFractionWalls" unit="---">0.3</IBK:Parameter>
+			</SolarLoadsDistributionModel>
+		</SimulationParameter>
+		<Location>
+			<IBK:Parameter name="Longitude" unit="Deg">13.1</IBK:Parameter>
+			<IBK:Parameter name="Albedo" unit="%">0.2</IBK:Parameter>
+			<IBK:Flag name="PerezDiffuseRadiationModel">true</IBK:Flag>
+			<TimeZone>13</TimeZone>
+		</Location>
+		<Outputs>
+			<IBK:Flag name="CreateDefaultZoneOutputs">true</IBK:Flag>
+		</Outputs>
+		<ViewSettings>
+			<CameraTranslation>0 -100 50</CameraTranslation>
+			<RotationMatrix>
+				<Wp>0.866025</Wp>
+				<X>0.5</X>
+				<Y>0</Y>
+				<Z>0</Z>
+			</RotationMatrix>
+			<FarDistance>10000</FarDistance>
+			<GridPlanes>
+				<GridPlane color="#ffffff" width="200" spacing="10">
+					<Offset>0 0 0</Offset>
+					<Normal>0 0 1</Normal>
+					<LocalX>1 0 0</LocalX>
+				</GridPlane>
+			</GridPlanes>
+		</ViewSettings>
+		<Buildings>
+			<Building id="204" displayName="FZK-Haus">
+				<BuildingLevels>
+					<BuildingLevel id="205" displayName="Dachgeschoss">
+						<Elevation>0</Elevation>
+						<Height>3</Height>
+						<Rooms>
+							<Room id="207" displayName="Galerie">
+								<Surfaces>
+									<Surface id="225" displayName="E:Slab-033_S:7 : 78389" displayColor="#566094">
+										<Polygon3D offset="4.695 4.01001 2.7" normal="0 0 -1" localX="1 -1.09283e-05 0">0 0, 2.74517 3.38813e-21, 2.74505 3.70997, 4.05439e-05 3.71</Polygon3D>
+									</Surface>
+									<Surface id="227" displayName="E:Slab-033_S:7 : 78418" displayColor="#566094">
+										<Polygon3D offset="11.7 4.25001 2.7" normal="0 0 -1" localX="-1 0 0">0 0, 4.05 0, 4.05 5.44999, 0 5.44999</Polygon3D>
+									</Surface>
+									<Surface id="228" displayName="E:Slab-033_S:7 : 78448" displayColor="#566094">
+										<Polygon3D offset="0.30001 4.01 2.7" normal="0 0 -1" localX="1 0 0">0 0, 4.39499 0, 4.39499 3.71, 0 3.71</Polygon3D>
+									</Surface>
+									<Surface id="229" displayName="E:Slab-033_S:7 : 78476" displayColor="#566094">
+										<Polygon3D offset="0.3 5.99001 2.7" normal="0 0 -1" localX="0 1 0">0 0, 3.70999 0, 3.70999 3.5, 0 3.5</Polygon3D>
+									</Surface>
+									<Surface id="230" displayName="E:Slab-033_S:7 : 78504" displayColor="#566094">
+										<Polygon3D offset="4.04 9.69999 2.7" normal="0 0 -1" localX="1 0 0">0 0, 3.37 0, 3.37 3.70999, 0 3.70999</Polygon3D>
+									</Surface>
+									<Surface id="231" displayName="E:Slab-033_S:7 : 78536" displayColor="#566094">
+										<Polygon3D offset="3.8 4.23001 2.7" normal="-2.0188e-15 -2.20692e-16 -1" localX="0 1 0">0 0, 0.02 0, 0.02 -3.5, 1.51999 -3.5, 1.51999 3.61, 0 3.61</Polygon3D>
+									</Surface>
+									<Surface id="232" displayName="E:Slab-033_S:7 : 78564" displayColor="#566094">
+										<Polygon3D offset="7.41 4.01002 2.7" normal="0 0 -1" localX="-1 0 0">0 0, 3.61 0, 3.61 0.01998, 0 0.01998</Polygon3D>
+									</Surface>
+									<Surface id="233" displayName="E:Virtual_S:7 : 78592" displayColor="#963214">
+										<Polygon3D offset="7.44001 0.300004 2.7" normal="0 0 1" localX="1 -9.38969e-07 0">0 0, 4.25999 0, 4.25999 3.71, 0.000166516 3.70998</Polygon3D>
+									</Surface>
+									<Surface id="235" displayName="E:Dach-2_S:7 : 78769" displayColor="#963214">
+										<Polygon3D offset="0.3 5 6.08675" normal="1.54074e-33 -0.499999 0.866026" localX="0 -0.866026 -0.499999">0 0, 5.42709 0, 5.42709 11.4, 0 11.4</Polygon3D>
+									</Surface>
+									<Surface id="236" displayName="E:Dach-1_S:7 : 78798" displayColor="#963214">
+										<Polygon3D offset="11.7 5 6.08675" normal="1.54074e-33 0.499999 0.866026" localX="0 0.866026 -0.499999">0 0, 5.42709 0, 5.42709 11.4, 0 11.4</Polygon3D>
+									</Surface>
+									<Surface id="237" displayName="E:Slab-033_S:7 : 78839" displayColor="#566094">
+										<Polygon3D offset="7.65 4.03 2.7" normal="0 0 -1" localX="-1 4.90201e-06 0">0 0, 4.07996 0, 4.07996 0.19998, 9.80402e-07 0.2</Polygon3D>
+									</Surface>
+									<Surface id="239" displayName="E:Wand-Ext-OG-3_S:7 : 79018" displayColor="#c8c88c">
+										<SubSurfaces>
+											<SubSurface id="238" displayName="E:OG-Fenster-1_S:7 : 78987">
+												<Polygon2D>0.569903 1.96791, 0.55643 1.92071, 0.54764 1.87246, 0.543625 1.82354, 0.544434 1.77449, 0.55004 1.72574, 0.560396 1.67777, 0.575404 1.63106, 0.594919 1.58604, 0.618761 1.54316, 0.646687 1.5028, 0.678428 1.46539, 0.713684 1.43127, 0.75212 1.40075, 0.793357 1.37417, 0.837006 1.35175, 0.882638 1.33371, 0.929819 1.32025, 0.978097 1.31146, 1.027 1.30745, 1.07606 1.30826, 1.1248 1.31386, 1.17277 1.32422, 1.21948 1.33923, 1.2645 1.35874, 1.30739 1.38258, 1.34774 1.4105, 1.38515 1.44226, 1.41929 1.4775, 1.44979 1.51594, 1.47638 1.55718, 1.4988 1.60082, 1.51682 1.64644, 1.5303 1.69362, 1.53907 1.74191, 1.54309 1.7908, 1.54228 1.83986, 1.53668 1.88861, 1.52632 1.93657, 1.51131 1.98329, 1.49179 2.0283, 1.46796 2.0712, 1.44003 2.11154, 1.40829 2.14895, 1.37303 2.18308, 1.3346 2.21358, 1.29336 2.24017, 1.24971 2.26259, 1.20408 2.28062, 1.15689 2.2941, 1.10862 2.30288, 1.05972 2.30689, 1.01066 2.30609, 0.961904 2.30048, 0.913945 2.29013, 0.867238 2.27512, 0.822213 2.25559, 0.779323 2.23176, 0.738983 2.20385, 0.701562 2.1721, 0.667443 2.13684, 0.636935 2.09841, 0.610355 2.05717, 0.587944 2.01354</Polygon2D>
+											</SubSurface>
+										</SubSurfaces>
+										<Polygon3D offset="11.7 5 6.08674" normal="1 9.86076e-33 -8.41093e-17" localX="0 -0.866026 -0.499999">0 0, 5.42709 4.44089e-16, 5.76369 0.583009, -2.37695 5.283, -2.71355 4.69999</Polygon3D>
+									</Surface>
+									<Surface id="240" displayName="E:Wand-Ext-OG-4_S:7 : 79047" displayColor="#c8c88c">
+										<Polygon3D offset="11.7 0.3 2.70001" normal="0 -1 0" localX="0 0 1">0 0, 0.6732 0, 0.6732 11.4, 0 11.4</Polygon3D>
+									</Surface>
+									<Surface id="241" displayName="E:Wand-Ext-OG-1_S:7 : 79078" displayColor="#c8c88c">
+										<SubSurfaces>
+											<SubSurface id="234" displayName="E:OG-Fenster-2_S:7 : 78740">
+												<Polygon2D>1.39752 4.20959, 1.44513 4.22152, 1.49133 4.23803, 1.53569 4.25903, 1.57777 4.28424, 1.61719 4.31347, 1.65355 4.34642, 1.68649 4.38278, 1.71572 4.42219, 1.74094 4.46428, 1.76193 4.50865, 1.77846 4.55483, 1.79038 4.60243, 1.79759 4.65097, 1.79999 4.69998, 1.79759 4.749, 1.79039 4.79752, 1.77846 4.84511, 1.76193 4.89133, 1.74095 4.93567, 1.71572 4.97777, 1.68649 5.01718, 1.65354 5.05354, 1.61719 5.08648, 1.57778 5.11572, 1.53569 5.14094, 1.49134 5.16193, 1.44513 5.17845, 1.39754 5.19038, 1.34899 5.19758, 1.29999 5.19998, 1.25099 5.19758, 1.20246 5.19038, 1.15487 5.17846, 1.10866 5.16192, 1.06431 5.14095, 1.02223 5.11572, 0.982814 5.08649, 0.946458 5.05353, 0.913502 5.01718, 0.88428 4.97777, 0.859045 4.93568, 0.838066 4.89133, 0.821543 4.84513, 0.809614 4.79753, 0.802417 4.749, 0.800009 4.69999, 0.802417 4.65098, 0.809617 4.60244, 0.821537 4.55484, 0.838073 4.50865, 0.859045 4.46429, 0.884271 4.4222, 0.91351 4.38279, 0.946454 4.34643, 0.982814 4.31348, 1.02223 4.28425, 1.06431 4.25902, 1.10867 4.23805, 1.15486 4.22151, 1.20247 4.2096, 1.251 4.20239, 1.29999 4.19999, 1.34899 4.2024</Polygon2D>
+											</SubSurface>
+										</SubSurfaces>
+										<Polygon3D offset="0.3 0.30001 2.70001" normal="-1 1.62197e-24 2.62841e-18" localX="0 0 1">0 0, 0.6732 0, 3.38673 4.69999, 0.6732 9.39999, 0 9.39999</Polygon3D>
+									</Surface>
+									<Surface id="242" displayName="E:Wand-Ext-OG-2_S:7 : 79107" displayColor="#c8c88c">
+										<Polygon3D offset="0.3 9.7 2.70001" normal="0 1 0" localX="0 0 1">0 0, 0.6732 0, 0.6732 11.4, 0 11.4</Polygon3D>
+									</Surface>
+								</Surfaces>
+							</Room>
+						</Rooms>
+					</BuildingLevel>
+					<BuildingLevel id="206" displayName="Erdgeschoss">
+						<Elevation>0</Elevation>
+						<Height>3</Height>
+						<Rooms>
+							<Room id="243" displayName="Wohnen">
+								<Surfaces>
+									<Surface id="313" displayName="E:Wand-Int-ERDG-4_S:5 : 77287" displayColor="#c8c88c">
+										<Polygon3D offset="11.7 4.01 2.5" normal="0 1 0" localX="0 0 -1">0 0, 2.5 0, 2.5 4.05, 0 4.05</Polygon3D>
+									</Surface>
+									<Surface id="314" displayName="E:Virtual_S:5 : 77326" displayColor="#c8c88c">
+										<Polygon3D offset="7.41 4.01 9.98778e-06" normal="0 1 0" localX="-1 0 0">0 0, 2.715 0, 2.715 2.49999, 0 2.49999</Polygon3D>
+									</Surface>
+									<Surface id="315" displayName="E:Slab-033_S:5 : 77359" displayColor="#963214">
+										<Polygon3D offset="4.695 0.30002 2.5" normal="0 0 1" localX="1 -5.82878e-06 0">0 0, 2.745 0, 2.74514 3.70998, -1.16247e-05 3.70998</Polygon3D>
+									</Surface>
+									<Surface id="317" displayName="E:Virtual_S:5 : 77397" displayColor="#c8c88c">
+										<Polygon3D offset="4.695 4.01 0" normal="-1 0 0" localX="0 -1 0">0 0, 3.71 0, 3.71 2.5, 0 2.5</Polygon3D>
+									</Surface>
+									<Surface id="318" displayName="E:Virtual_S:5 : 77426" displayColor="#566094">
+										<Polygon3D offset="11.7 4.00999 2.5" normal="0 0 -1" localX="0 -1 0">0 0, 3.71001 0, 3.70999 4.25999, 1e-05 4.25983</Polygon3D>
+									</Surface>
+									<Surface id="319" displayName="E:Bodenplatte_S:5 : 77456" displayColor="#566094">
+										<Polygon3D offset="4.69501 0.30001 -0" normal="0 0 -1" localX="-2.69543e-06 1 0">0 0, 3.70999 0, 3.70997 7.005, -1.88814e-05 7.00499</Polygon3D>
+									</Surface>
+									<Surface id="320" displayName="E:Wand-Ext-ERDG-4_S:5 : 77484" displayColor="#c8c88c">
+										<SubSurfaces>
+											<SubSurface id="322" displayName="E:Terrassentuer_S:5 : 77541">
+												<Polygon2D>2.30999 -9.98212e-06, 2.30999 2.37499, 0.3 2.37499, 0.3 -9.98212e-06</Polygon2D>
+											</SubSurface>
+											<SubSurface id="323" displayName="E:EG-Fenster-5_S:5 : 77570">
+												<Polygon2D>5.515 1.99999, 3.515 1.99999, 3.515 0.79999, 5.515 0.79999</Polygon2D>
+											</SubSurface>
+										</SubSurfaces>
+										<Polygon3D offset="4.695 0.3 9.98212e-06" normal="0 -1 0" localX="1 0 0">0 0, 7.005 0, 7.005 2.49999, 0 2.49999</Polygon3D>
+									</Surface>
+									<Surface id="321" displayName="E:Wand-Ext-ERDG-3_S:5 : 77513" displayColor="#c8c88c">
+										<SubSurfaces>
+											<SubSurface id="324" displayName="E:EG-Fenster-9_S:5 : 77599">
+												<Polygon2D>0.90498 1.99999, 0.90498 0.79999, 2.90498 0.79999, 2.90498 1.99999</Polygon2D>
+											</SubSurface>
+										</SubSurfaces>
+										<Polygon3D offset="11.7 0.30002 9.9851e-06" normal="1 0 0" localX="0 1 0">0 0, 3.70998 0, 3.70998 2.49999, 0 2.49999</Polygon3D>
+									</Surface>
+								</Surfaces>
+							</Room>
+							<Room id="255" displayName="Bad">
+								<Surfaces>
+									<Surface id="325" displayName="E:Wand-Int-ERDG-2_S:3 : 76801" displayColor="#c8c88c">
+										<Polygon3D offset="7.41 9.7 0" normal="1 0 0" localX="0 0 1">0 0, 2.5 0, 2.5 3.71, 0 3.71</Polygon3D>
+									</Surface>
+									<Surface id="326" displayName="E:Slab-033_S:3 : 76830" displayColor="#963214">
+										<Polygon3D offset="7.41 5.99002 2.5" normal="0 0 1" localX="0 1 0">0 0, 3.70998 0, 3.70998 3.37, 0 3.37</Polygon3D>
+									</Surface>
+									<Surface id="327" displayName="E:Wand-Int-ERDG-3_S:3 : 76858" displayColor="#c8c88c">
+										<SubSurfaces>
+											<SubSurface id="328" displayName="E:Innentuer-2_S:3 : 76887">
+												<Polygon2D>1e-05 1.30751, 2.01 1.30751, 2.01 2.1925, 1e-05 2.1925</Polygon2D>
+											</SubSurface>
+										</SubSurfaces>
+										<Polygon3D offset="7.41 5.99 0" normal="0 -1 0" localX="0 0 1">0 0, 2.5 0, 2.5 3.37, 0 3.37</Polygon3D>
+									</Surface>
+									<Surface id="329" displayName="E:Wand-Int-ERDG-1_S:3 : 76916" displayColor="#c8c88c">
+										<Polygon3D offset="4.04 9.7 0" normal="-1 0 0" localX="0 -1 0">0 0, 3.71 0, 3.71 2.5, 0 2.5</Polygon3D>
+									</Surface>
+									<Surface id="330" displayName="E:Bodenplatte_S:3 : 76945" displayColor="#566094">
+										<Polygon3D offset="7.41 9.7 0" normal="0 0 -1" localX="0 -1 0">0 0, 3.71 0, 3.71 3.37, 0 3.37</Polygon3D>
+									</Surface>
+									<Surface id="331" displayName="E:Wand-Ext-ERDG-2_S:3 : 76973" displayColor="#c8c88c">
+										<SubSurfaces>
+											<SubSurface id="332" displayName="E:EG-Fenster-2_S:3 : 77001">
+												<Polygon2D>1.99999 2.61999, 0.79999 2.61999, 0.79999 0.61999, 1.99999 0.61999</Polygon2D>
+											</SubSurface>
+										</SubSurfaces>
+										<Polygon3D offset="4.04001 9.7 9.98212e-06" normal="0 1 0" localX="0 0 1">0 0, 2.49999 0, 2.49999 3.36999, 0 3.36999</Polygon3D>
+									</Surface>
+								</Surfaces>
+							</Room>
+							<Room id="264" displayName="K�che">
+								<Surfaces>
+									<Surface id="333" displayName="E:Virtual_S:6 : 78126" displayColor="#c8c88c">
+										<Polygon3D offset="4.695 4.01 0" normal="-1 0 0" localX="0 -1 0">0 0, 3.71 0, 3.71 2.5, 0 2.5</Polygon3D>
+									</Surface>
+									<Surface id="334" displayName="E:Virtual_S:6 : 78155" displayColor="#c8c88c">
+										<Polygon3D offset="4.69499 4.01 2.49999" normal="0 -1 0" localX="-1 0 0">0 0, 0.89499 0, 0.89499 2.49999, 0 2.49999</Polygon3D>
+									</Surface>
+									<Surface id="335" displayName="E:Wand-Int-ERDG-5_S:6 : 78183" displayColor="#c8c88c">
+										<Polygon3D offset="0.3 4.01 0" normal="0 1 0" localX="0 0 1">0 0, 2.5 0, 2.5 3.5, 0 3.5</Polygon3D>
+									</Surface>
+									<Surface id="336" displayName="E:Slab-033_S:6 : 78213" displayColor="#963214">
+										<Polygon3D offset="4.69499 0.3 2.5" normal="0 0 1" localX="0 1 0">0 0, 3.71 0, 3.71 4.39499, 0 4.39499</Polygon3D>
+									</Surface>
+									<Surface id="337" displayName="E:Bodenplatte_S:6 : 78243" displayColor="#566094">
+										<Polygon3D offset="4.69499 4.01 0" normal="0 0 -1" localX="2.69542e-06 -1 0">0 0, 3.71 0, 3.70999 4.395, -1.18463e-05 4.39499</Polygon3D>
+									</Surface>
+									<Surface id="338" displayName="E:Wand-Ext-ERDG-4_S:6 : 78271" displayColor="#c8c88c">
+										<SubSurfaces>
+											<SubSurface id="340" displayName="E:EG-Fenster-4_S:6 : 78327">
+												<Polygon2D>3.48999 2.14999, 1.48999 2.14999, 1.48999 0.94999, 3.48999 0.94999</Polygon2D>
+											</SubSurface>
+										</SubSurfaces>
+										<Polygon3D offset="0.30001 0.3 9.98212e-06" normal="0 -1 0" localX="1 0 0">0 0, 4.39499 0, 4.39499 2.49999, 0 2.49999</Polygon3D>
+									</Surface>
+									<Surface id="339" displayName="E:Wand-Ext-ERDG-1_S:6 : 78299" displayColor="#c8c88c">
+										<SubSurfaces>
+											<SubSurface id="341" displayName="E:EG-Fenster-7_S:6 : 78356">
+												<Polygon2D>2.14999 0.90499, 2.14999 2.90499, 0.94999 2.90499, 0.94999 0.90499</Polygon2D>
+											</SubSurface>
+										</SubSurfaces>
+										<Polygon3D offset="0.3 0.30001 9.9851e-06" normal="-1 0 0" localX="0 0 1">0 0, 2.49999 0, 2.49999 3.70999, 0 3.70999</Polygon3D>
+									</Surface>
+								</Surfaces>
+							</Room>
+							<Room id="274" displayName="Buero">
+								<Surfaces>
+									<Surface id="342" displayName="E:Wand-Int-ERDG-1_S:2 : 77030" displayColor="#c8c88c">
+										<Polygon3D offset="3.8 9.7 2.5" normal="1 0 0" localX="0 -1 0">0 0, 3.71 0, 3.71 2.5, 0 2.5</Polygon3D>
+									</Surface>
+									<Surface id="343" displayName="E:Slab-033_S:2 : 77059" displayColor="#963214">
+										<Polygon3D offset="0.3 5.99002 2.5" normal="0 0 1" localX="1 0 0">0 0, 3.5 0, 3.5 3.70998, 0 3.70998</Polygon3D>
+									</Surface>
+									<Surface id="344" displayName="E:Wand-Int-ERDG-3_S:2 : 77087" displayColor="#c8c88c">
+										<SubSurfaces>
+											<SubSurface id="345" displayName="E:Innentuer-3_S:2 : 77115">
+												<Polygon2D>2.49999 2.19249, 0.49 2.19249, 0.49 1.3075, 2.49999 1.3075</Polygon2D>
+											</SubSurface>
+										</SubSurfaces>
+										<Polygon3D offset="0.3 5.99 2.5" normal="0 -1 0" localX="0 0 -1">0 0, 2.5 0, 2.5 3.5, 0 3.5</Polygon3D>
+									</Surface>
+									<Surface id="346" displayName="E:Bodenplatte_S:2 : 77144" displayColor="#566094">
+										<Polygon3D offset="3.8 9.7 0" normal="0 0 -1" localX="0 -1 0">0 0, 3.71 0, 3.71 3.5, 0 3.5</Polygon3D>
+									</Surface>
+									<Surface id="347" displayName="E:Wand-Ext-ERDG-2_S:2 : 77172" displayColor="#c8c88c">
+										<SubSurfaces>
+											<SubSurface id="349" displayName="E:EG-Fenster-1_S:2 : 77229">
+												<Polygon2D>1.99999 2.75, 0.79999 2.75, 0.79999 0.75, 1.99999 0.75</Polygon2D>
+											</SubSurface>
+										</SubSurfaces>
+										<Polygon3D offset="0.3 9.7 9.98212e-06" normal="0 1 0" localX="0 0 1">0 0, 2.49999 0, 2.49999 3.5, 0 3.5</Polygon3D>
+									</Surface>
+									<Surface id="348" displayName="E:Wand-Ext-ERDG-1_S:2 : 77200" displayColor="#c8c88c">
+										<SubSurfaces>
+											<SubSurface id="350" displayName="E:EG-Fenster-6_S:2 : 77258">
+												<Polygon2D>1.20499 1.99999, 1.20499 0.79999, 3.20498 0.79999, 3.20498 1.99999</Polygon2D>
+											</SubSurface>
+										</SubSurfaces>
+										<Polygon3D offset="0.3 9.69998 9.9851e-06" normal="-1 0 0" localX="0 -1 0">0 0, 3.70998 0, 3.70998 2.49999, 0 2.49999</Polygon3D>
+									</Surface>
+								</Surfaces>
+							</Room>
+							<Room id="284" displayName="Flur">
+								<Surfaces>
+									<Surface id="351" displayName="E:Virtual_S:1 : 77638" displayColor="#c8c88c">
+										<Polygon3D offset="4.69499 4.01 2.49999" normal="0 -1 0" localX="-1 0 0">0 0, 0.89499 0, 0.89499 2.49999, 0 2.49999</Polygon3D>
+									</Surface>
+									<Surface id="352" displayName="E:Wand-Int-ERDG-5_S:1 : 77668" displayColor="#c8c88c">
+										<Polygon3D offset="0.3 4.25 2.5" normal="0 -1 0" localX="0 0 -1">0 0, 2.5 0, 2.5 3.5, 0 3.5</Polygon3D>
+									</Surface>
+									<Surface id="353" displayName="E:Virtual_S:1 : 77697" displayColor="#c8c88c">
+										<Polygon3D offset="4.695 4.01 2.49999" normal="0 1 0" localX="1 0 0">0 0, 2.715 0, 2.715 2.49999, 0 2.49999</Polygon3D>
+									</Surface>
+									<Surface id="354" displayName="E:Wand-Int-ERDG-3_S:1 : 77725" displayColor="#c8c88c">
+										<SubSurfaces>
+											<SubSurface id="355" displayName="E:Innentuer-3_S:1 : 77753">
+												<Polygon2D>2.00999 2.19249, 0 2.19249, 0 1.3075, 2.00999 1.3075</Polygon2D>
+											</SubSurface>
+										</SubSurfaces>
+										<Polygon3D offset="0.3 5.75 0" normal="0 1 0" localX="0 0 1">0 0, 2.5 0, 2.5 3.5, 0 3.5</Polygon3D>
+									</Surface>
+									<Surface id="356" displayName="E:Wand-Int-ERDG-3_S:1 : 77781" displayColor="#c8c88c">
+										<SubSurfaces>
+											<SubSurface id="357" displayName="E:Innentuer-2_S:1 : 77809">
+												<Polygon2D>0.49001 1.30751, 2.5 1.30751, 2.5 2.1925, 0.49001 2.1925</Polygon2D>
+											</SubSurface>
+										</SubSurfaces>
+										<Polygon3D offset="7.41 5.75 2.5" normal="0 1 0" localX="0 0 -1">0 0, 2.5 0, 2.5 3.37, 0 3.37</Polygon3D>
+									</Surface>
+									<Surface id="358" displayName="E:Wand-Int-ERDG-2_S:1 : 77837" displayColor="#c8c88c">
+										<SubSurfaces>
+											<SubSurface id="359" displayName="E:Innentuer-1_S:1 : 77865">
+												<Polygon2D>0.49001 0.30751, 2.5 0.30751, 2.5 1.1925, 0.49001 1.1925</Polygon2D>
+											</SubSurface>
+										</SubSurfaces>
+										<Polygon3D offset="7.41 4.25 2.5" normal="1 0 0" localX="0 0 -1">0 0, 2.5 0, 2.5 1.5, 0 1.5</Polygon3D>
+									</Surface>
+									<Surface id="360" displayName="E:Slab-033_S:1 : 77897" displayColor="#963214">
+										<Polygon3D offset="0.3 4.25001 2.5" normal="0 0 1" localX="1 0 0">0 0, 3.5 0, 3.5 -0.02001, 7.11 -0.02001, 7.11 1.49999, 0 1.49999</Polygon3D>
+									</Surface>
+									<Surface id="361" displayName="E:Slab-033_S:1 : 77925" displayColor="#963214">
+										<Polygon3D offset="7.41 4.01001 2.5" normal="0 0 1" localX="0 1 0">0 0, 0.01999 0, 0.01999 3.61, 0 3.61</Polygon3D>
+									</Surface>
+									<Surface id="362" displayName="E:Virtual_S:1 : 77953" displayColor="#c8c88c">
+										<Polygon3D offset="7.41 4.23 2.5" normal="0 1 0" localX="0 0 -1">0 0, 0.24 0, 0.24 3.61, 0 3.61</Polygon3D>
+									</Surface>
+									<Surface id="363" displayName="E:Virtual_S:1 : 77981" displayColor="#566094">
+										<Polygon3D offset="3.8 4.03 2.26" normal="0 0 -1" localX="0 1 0">0 0, 0.2 0, 0.2 3.61, 0 3.61</Polygon3D>
+									</Surface>
+									<Surface id="364" displayName="E:Virtual_S:1 : 78009" displayColor="#c8c88c">
+										<Polygon3D offset="7.41 4.03 2.5" normal="0 -1 0" localX="-1 0 0">0 0, 3.61 0, 3.61 0.24, 0 0.24</Polygon3D>
+									</Surface>
+									<Surface id="365" displayName="E:Bodenplatte_S:1 : 78041" displayColor="#566094">
+										<Polygon3D offset="7.40999 5.75 0" normal="0 0 -1" localX="0 -1 0">0 0, 1.74 0, 1.74 3.60999, 1.5 3.60999, 1.5 7.10999, 0 7.10999</Polygon3D>
+									</Surface>
+									<Surface id="366" displayName="E:Wand-Ext-ERDG-1_S:1 : 78069" displayColor="#c8c88c">
+										<SubSurfaces>
+											<SubSurface id="367" displayName="E:Haustuer_S:1 : 78097">
+												<Polygon2D>2.49998 1.25499, 0.48999 1.25499, 0.48999 0.245, 2.49998 0.245</Polygon2D>
+											</SubSurface>
+										</SubSurfaces>
+										<Polygon3D offset="0.3 5.75 2.49999" normal="-1 0 0" localX="0 0 -1">0 0, 2.49999 0, 2.49999 1.5, 0 1.5</Polygon3D>
+									</Surface>
+								</Surfaces>
+							</Room>
+							<Room id="302" displayName="Schlafzimmer">
+								<Surfaces>
+									<Surface id="368" displayName="E:Wand-Int-ERDG-4_S:4 : 76511" displayColor="#c8c88c">
+										<Polygon3D offset="11.7 4.25 0" normal="0 -1 0" localX="0 0 1">0 0, 2.5 0, 2.5 4.05, 0 4.05</Polygon3D>
+									</Surface>
+									<Surface id="369" displayName="E:Wand-Int-ERDG-2_S:4 : 76541" displayColor="#c8c88c">
+										<Polygon3D offset="7.65 9.7 2.5" normal="-1 0 0" localX="0 0 -1">0 0, 2.5 0, 2.5 3.71, 0 3.71</Polygon3D>
+									</Surface>
+									<Surface id="370" displayName="E:Wand-Int-ERDG-2_S:4 : 76570" displayColor="#c8c88c">
+										<SubSurfaces>
+											<SubSurface id="371" displayName="E:Innentuer-1_S:4 : 76598">
+												<Polygon2D>0.49001 0.30751, 2.5 0.30751, 2.5 1.1925, 0.49001 1.1925</Polygon2D>
+											</SubSurface>
+										</SubSurfaces>
+										<Polygon3D offset="7.65 5.75 2.5" normal="-1 0 0" localX="0 0 -1">0 0, 2.5 0, 2.5 1.5, 0 1.5</Polygon3D>
+									</Surface>
+									<Surface id="372" displayName="E:Slab-033_S:4 : 76627" displayColor="#963214">
+										<Polygon3D offset="11.7 4.25001 2.5" normal="0 0 1" localX="0 1 0">0 0, 5.44999 0, 5.44999 4.05, 0 4.05</Polygon3D>
+									</Surface>
+									<Surface id="373" displayName="E:Bodenplatte_S:4 : 76656" displayColor="#566094">
+										<Polygon3D offset="11.7 9.69999 0" normal="0 0 -1" localX="0 -1 0">0 0, 5.44999 0, 5.44999 4.05, 0 4.05</Polygon3D>
+									</Surface>
+									<Surface id="374" displayName="E:Wand-Ext-ERDG-2_S:4 : 76685" displayColor="#c8c88c">
+										<SubSurfaces>
+											<SubSurface id="376" displayName="E:EG-Fenster-3_S:4 : 76743">
+												<Polygon2D>0.90499 1.99999, 0.90499 0.79999, 2.90499 0.79999, 2.90499 1.99999</Polygon2D>
+											</SubSurface>
+										</SubSurfaces>
+										<Polygon3D offset="11.7 9.7 9.98212e-06" normal="0 1 0" localX="-1 0 0">0 0, 4.05 0, 4.05 2.49999, 0 2.49999</Polygon3D>
+									</Surface>
+									<Surface id="375" displayName="E:Wand-Ext-ERDG-3_S:4 : 76714" displayColor="#c8c88c">
+										<SubSurfaces>
+											<SubSurface id="377" displayName="E:EG-Fenster-8_S:4 : 76772">
+												<Polygon2D>1.99999 1.19763, 1.99999 3.19761, 0.79999 3.19761, 0.79999 1.19763</Polygon2D>
+											</SubSurface>
+										</SubSurfaces>
+										<Polygon3D offset="11.7 9.7 9.9851e-06" normal="1 0 0" localX="0 0 1">0 0, 2.49999 0, 2.49999 5.45, 0 5.45</Polygon3D>
+									</Surface>
+								</Surfaces>
+							</Room>
+						</Rooms>
+					</BuildingLevel>
+				</BuildingLevels>
+			</Building>
+		</Buildings>
+		<ComponentInstances>
+			<ComponentInstance id="378" idComponent="170" idSideASurface="225" />
+			<ComponentInstance id="379" idComponent="170" idSideASurface="227" />
+			<ComponentInstance id="380" idComponent="170" idSideASurface="228" />
+			<ComponentInstance id="381" idComponent="170" idSideASurface="229" />
+			<ComponentInstance id="382" idComponent="170" idSideASurface="230" />
+			<ComponentInstance id="383" idComponent="170" idSideASurface="231" />
+			<ComponentInstance id="384" idComponent="170" idSideASurface="232" />
+			<ComponentInstance id="385" idComponent="169" idSideASurface="235" />
+			<ComponentInstance id="386" idComponent="167" idSideASurface="236" />
+			<ComponentInstance id="387" idComponent="170" idSideASurface="237" />
+			<ComponentInstance id="388" idComponent="181" idSideASurface="239" />
+			<ComponentInstance id="389" idComponent="180" idSideASurface="240" />
+			<ComponentInstance id="390" idComponent="171" idSideASurface="241" />
+			<ComponentInstance id="391" idComponent="175" idSideASurface="242" />
+			<ComponentInstance id="392" idComponent="177" idSideASurface="313" />
+			<ComponentInstance id="393" idComponent="170" idSideASurface="315" />
+			<ComponentInstance id="394" idComponent="168" idSideASurface="319" />
+			<ComponentInstance id="395" idComponent="173" idSideASurface="320" />
+			<ComponentInstance id="396" idComponent="176" idSideASurface="321" />
+			<ComponentInstance id="397" idComponent="179" idSideASurface="325" />
+			<ComponentInstance id="398" idComponent="170" idSideASurface="326" />
+			<ComponentInstance id="399" idComponent="182" idSideASurface="327" />
+			<ComponentInstance id="400" idComponent="178" idSideASurface="329" />
+			<ComponentInstance id="401" idComponent="168" idSideASurface="330" />
+			<ComponentInstance id="402" idComponent="174" idSideASurface="331" />
+			<ComponentInstance id="403" idComponent="172" idSideASurface="335" />
+			<ComponentInstance id="404" idComponent="170" idSideASurface="336" />
+			<ComponentInstance id="405" idComponent="168" idSideASurface="337" />
+			<ComponentInstance id="406" idComponent="173" idSideASurface="338" />
+			<ComponentInstance id="407" idComponent="183" idSideASurface="339" />
+			<ComponentInstance id="408" idComponent="178" idSideASurface="342" />
+			<ComponentInstance id="409" idComponent="170" idSideASurface="343" />
+			<ComponentInstance id="410" idComponent="182" idSideASurface="344" />
+			<ComponentInstance id="411" idComponent="168" idSideASurface="346" />
+			<ComponentInstance id="412" idComponent="174" idSideASurface="347" />
+			<ComponentInstance id="413" idComponent="183" idSideASurface="348" />
+			<ComponentInstance id="414" idComponent="172" idSideASurface="352" />
+			<ComponentInstance id="415" idComponent="182" idSideASurface="354" />
+			<ComponentInstance id="416" idComponent="182" idSideASurface="356" />
+			<ComponentInstance id="417" idComponent="179" idSideASurface="358" />
+			<ComponentInstance id="418" idComponent="170" idSideASurface="360" />
+			<ComponentInstance id="419" idComponent="170" idSideASurface="361" />
+			<ComponentInstance id="420" idComponent="168" idSideASurface="365" />
+			<ComponentInstance id="421" idComponent="183" idSideASurface="366" />
+			<ComponentInstance id="422" idComponent="177" idSideASurface="368" />
+			<ComponentInstance id="423" idComponent="179" idSideASurface="369" />
+			<ComponentInstance id="424" idComponent="179" idSideASurface="370" />
+			<ComponentInstance id="425" idComponent="170" idSideASurface="372" />
+			<ComponentInstance id="426" idComponent="168" idSideASurface="373" />
+			<ComponentInstance id="427" idComponent="174" idSideASurface="374" />
+			<ComponentInstance id="428" idComponent="176" idSideASurface="375" />
+		</ComponentInstances>
+		<SubSurfaceComponentInstances>
+			<SubSurfaceComponentInstance id="429" idSubSurfaceComponent="200" idSideASurface="238" />
+			<SubSurfaceComponentInstance id="430" idSubSurfaceComponent="198" idSideASurface="234" />
+			<SubSurfaceComponentInstance id="431" idSubSurfaceComponent="189" idSideASurface="322" />
+			<SubSurfaceComponentInstance id="432" idSubSurfaceComponent="203" idSideASurface="323" />
+			<SubSurfaceComponentInstance id="433" idSubSurfaceComponent="201" idSideASurface="324" />
+			<SubSurfaceComponentInstance id="434" idSubSurfaceComponent="188" idSideASurface="328" />
+			<SubSurfaceComponentInstance id="435" idSubSurfaceComponent="202" idSideASurface="332" />
+			<SubSurfaceComponentInstance id="436" idSubSurfaceComponent="199" idSideASurface="340" />
+			<SubSurfaceComponentInstance id="437" idSubSurfaceComponent="193" idSideASurface="341" />
+			<SubSurfaceComponentInstance id="438" idSubSurfaceComponent="192" idSideASurface="345" />
+			<SubSurfaceComponentInstance id="439" idSubSurfaceComponent="196" idSideASurface="349" />
+			<SubSurfaceComponentInstance id="440" idSubSurfaceComponent="197" idSideASurface="350" />
+			<SubSurfaceComponentInstance id="441" idSubSurfaceComponent="192" idSideASurface="355" />
+			<SubSurfaceComponentInstance id="442" idSubSurfaceComponent="188" idSideASurface="357" />
+			<SubSurfaceComponentInstance id="443" idSubSurfaceComponent="190" idSideASurface="359" />
+			<SubSurfaceComponentInstance id="444" idSubSurfaceComponent="191" idSideASurface="367" />
+			<SubSurfaceComponentInstance id="445" idSubSurfaceComponent="190" idSideASurface="371" />
+			<SubSurfaceComponentInstance id="446" idSubSurfaceComponent="195" idSideASurface="376" />
+			<SubSurfaceComponentInstance id="447" idSubSurfaceComponent="194" idSideASurface="377" />
+		</SubSurfaceComponentInstances>
+		<PlainGeometry />
+		<EmbeddedDatabase>
+			<Materials>
+				<Material id="154" displayName="Solid 397409098">
+					<Category>Miscellaneous</Category>
+					<EpdCategorySet />
+				</Material>
+				<Material id="156" displayName="Stahlbeton 65690">
+					<Category>Miscellaneous</Category>
+					<EpdCategorySet />
+				</Material>
+				<Material id="158" displayName="Leichtbeton 102890359">
+					<Category>Miscellaneous</Category>
+					<EpdCategorySet />
+				</Material>
+				<Material id="161" displayName="Solid">
+					<Category>Miscellaneous</Category>
+					<EpdCategorySet />
+				</Material>
+				<Material id="163" displayName="Radial Gradient Fill 1515460218">
+					<Category>Miscellaneous</Category>
+					<EpdCategorySet />
+				</Material>
+				<Material id="165" displayName="Holz">
+					<Category>Miscellaneous</Category>
+					<EpdCategorySet />
+				</Material>
+			</Materials>
+			<Constructions>
+				<Construction id="9" displayName="virtual" />
+				<Construction id="10" displayName="missing" />
+				<Construction id="155" displayName="construction - 155">
+					<MaterialLayers>
+						<MaterialLayer idMaterial="154">
+							<IBK:Parameter name="Thickness" unit="m">0.2</IBK:Parameter>
+						</MaterialLayer>
+					</MaterialLayers>
+				</Construction>
+				<Construction id="157" displayName="construction - 157">
+					<MaterialLayers>
+						<MaterialLayer idMaterial="156">
+							<IBK:Parameter name="Thickness" unit="m">0.2</IBK:Parameter>
+						</MaterialLayer>
+					</MaterialLayers>
+				</Construction>
+				<Construction id="159" displayName="construction - 159">
+					<MaterialLayers>
+						<MaterialLayer idMaterial="158">
+							<IBK:Parameter name="Thickness" unit="m">0.3</IBK:Parameter>
+						</MaterialLayer>
+					</MaterialLayers>
+				</Construction>
+				<Construction id="160" displayName="construction - 160">
+					<MaterialLayers>
+						<MaterialLayer idMaterial="158">
+							<IBK:Parameter name="Thickness" unit="m">0.24</IBK:Parameter>
+						</MaterialLayer>
+					</MaterialLayers>
+				</Construction>
+				<Construction id="162" displayName="construction - 162">
+					<MaterialLayers>
+						<MaterialLayer idMaterial="161">
+							<IBK:Parameter name="Thickness" unit="m">0.01</IBK:Parameter>
+						</MaterialLayer>
+					</MaterialLayers>
+				</Construction>
+				<Construction id="164" displayName="construction - 164">
+					<MaterialLayers>
+						<MaterialLayer idMaterial="163">
+							<IBK:Parameter name="Thickness" unit="m">0.01</IBK:Parameter>
+						</MaterialLayer>
+					</MaterialLayers>
+				</Construction>
+				<Construction id="166" displayName="construction - 166">
+					<MaterialLayers>
+						<MaterialLayer idMaterial="165">
+							<IBK:Parameter name="Thickness" unit="m">0.01</IBK:Parameter>
+						</MaterialLayer>
+					</MaterialLayers>
+				</Construction>
+			</Constructions>
+			<Windows>
+				<Window id="133" displayName="EG-Fenster-7" idGlazingSystem="132" />
+				<Window id="135" displayName="EG-Fenster-8" idGlazingSystem="134" />
+				<Window id="137" displayName="EG-Fenster-3" idGlazingSystem="136" />
+				<Window id="139" displayName="EG-Fenster-1" idGlazingSystem="138" />
+				<Window id="141" displayName="EG-Fenster-6" idGlazingSystem="140" />
+				<Window id="143" displayName="OG-Fenster-2" idGlazingSystem="142" />
+				<Window id="145" displayName="EG-Fenster-4" idGlazingSystem="144" />
+				<Window id="147" displayName="OG-Fenster-1" idGlazingSystem="146" />
+				<Window id="149" displayName="EG-Fenster-9" idGlazingSystem="148" />
+				<Window id="151" displayName="EG-Fenster-2" idGlazingSystem="150" />
+				<Window id="153" displayName="EG-Fenster-5" idGlazingSystem="152" />
+			</Windows>
+			<WindowGlazingSystems>
+				<WindowGlazingSystem id="132" displayName="window glazing - 132" modelType="Simple" />
+				<WindowGlazingSystem id="134" displayName="window glazing - 134" modelType="Simple" />
+				<WindowGlazingSystem id="136" displayName="window glazing - 136" modelType="Simple" />
+				<WindowGlazingSystem id="138" displayName="window glazing - 138" modelType="Simple" />
+				<WindowGlazingSystem id="140" displayName="window glazing - 140" modelType="Simple" />
+				<WindowGlazingSystem id="142" displayName="window glazing - 142" modelType="Simple" />
+				<WindowGlazingSystem id="144" displayName="window glazing - 144" modelType="Simple" />
+				<WindowGlazingSystem id="146" displayName="window glazing - 146" modelType="Simple" />
+				<WindowGlazingSystem id="148" displayName="window glazing - 148" modelType="Simple" />
+				<WindowGlazingSystem id="150" displayName="window glazing - 150" modelType="Simple" />
+				<WindowGlazingSystem id="152" displayName="window glazing - 152" modelType="Simple" />
+			</WindowGlazingSystems>
+			<Components>
+				<Component id="167" displayName="Dach-1">
+					<Type>FloorToAir</Type>
+					<IdConstruction>155</IdConstruction>
+				</Component>
+				<Component id="168" displayName="Bodenplatte">
+					<Type>FloorToAir</Type>
+					<IdConstruction>157</IdConstruction>
+				</Component>
+				<Component id="169" displayName="Dach-2">
+					<Type>FloorToAir</Type>
+					<IdConstruction>155</IdConstruction>
+				</Component>
+				<Component id="170" displayName="Slab-033">
+					<Type>Ceiling</Type>
+					<IdConstruction>155</IdConstruction>
+				</Component>
+				<Component id="171" displayName="Wand-Ext-OG-1">
+					<Type>OutsideWall</Type>
+					<IdConstruction>159</IdConstruction>
+				</Component>
+				<Component id="172" displayName="Wand-Int-ERDG-5">
+					<Type>InsideWall</Type>
+					<IdConstruction>160</IdConstruction>
+				</Component>
+				<Component id="173" displayName="Wand-Ext-ERDG-4">
+					<Type>OutsideWall</Type>
+					<IdConstruction>159</IdConstruction>
+				</Component>
+				<Component id="174" displayName="Wand-Ext-ERDG-2">
+					<Type>OutsideWall</Type>
+					<IdConstruction>159</IdConstruction>
+				</Component>
+				<Component id="175" displayName="Wand-Ext-OG-2">
+					<Type>OutsideWall</Type>
+					<IdConstruction>159</IdConstruction>
+				</Component>
+				<Component id="176" displayName="Wand-Ext-ERDG-3">
+					<Type>OutsideWall</Type>
+					<IdConstruction>159</IdConstruction>
+				</Component>
+				<Component id="177" displayName="Wand-Int-ERDG-4">
+					<Type>InsideWall</Type>
+					<IdConstruction>160</IdConstruction>
+				</Component>
+				<Component id="178" displayName="Wand-Int-ERDG-1">
+					<Type>InsideWall</Type>
+					<IdConstruction>160</IdConstruction>
+				</Component>
+				<Component id="179" displayName="Wand-Int-ERDG-2">
+					<Type>InsideWall</Type>
+					<IdConstruction>160</IdConstruction>
+				</Component>
+				<Component id="180" displayName="Wand-Ext-OG-4">
+					<Type>OutsideWall</Type>
+					<IdConstruction>159</IdConstruction>
+				</Component>
+				<Component id="181" displayName="Wand-Ext-OG-3">
+					<Type>OutsideWall</Type>
+					<IdConstruction>159</IdConstruction>
+				</Component>
+				<Component id="182" displayName="Wand-Int-ERDG-3">
+					<Type>InsideWall</Type>
+					<IdConstruction>160</IdConstruction>
+				</Component>
+				<Component id="183" displayName="Wand-Ext-ERDG-1">
+					<Type>OutsideWall</Type>
+					<IdConstruction>159</IdConstruction>
+				</Component>
+				<Component id="184" displayName="Pfette-2-1">
+					<Type>Miscellaneous</Type>
+					<IdConstruction>162</IdConstruction>
+				</Component>
+				<Component id="185" displayName="First">
+					<Type>Miscellaneous</Type>
+					<IdConstruction>162</IdConstruction>
+				</Component>
+				<Component id="186" displayName="Pfette-1-1">
+					<Type>Miscellaneous</Type>
+					<IdConstruction>162</IdConstruction>
+				</Component>
+				<Component id="187" displayName="Unterzug-1">
+					<Type>Miscellaneous</Type>
+					<IdConstruction>164</IdConstruction>
+				</Component>
+				<Component id="1000002" displayName="virtual">
+					<Type>Miscellaneous</Type>
+					<IdConstruction>9</IdConstruction>
+				</Component>
+				<Component id="1000003" displayName="missing">
+					<Type>Miscellaneous</Type>
+					<IdConstruction>10</IdConstruction>
+				</Component>
+			</Components>
+			<SubSurfaceComponents>
+				<SubSurfaceComponent id="188" displayName="Innentuer-2">
+					<Type>Door</Type>
+					<IdConstruction>166</IdConstruction>
+				</SubSurfaceComponent>
+				<SubSurfaceComponent id="189" displayName="Terrassentuer">
+					<Type>Door</Type>
+					<IdConstruction>10</IdConstruction>
+				</SubSurfaceComponent>
+				<SubSurfaceComponent id="190" displayName="Innentuer-1">
+					<Type>Door</Type>
+					<IdConstruction>166</IdConstruction>
+				</SubSurfaceComponent>
+				<SubSurfaceComponent id="191" displayName="Haustuer">
+					<Type>Door</Type>
+					<IdConstruction>10</IdConstruction>
+				</SubSurfaceComponent>
+				<SubSurfaceComponent id="192" displayName="Innentuer-3">
+					<Type>Door</Type>
+					<IdConstruction>166</IdConstruction>
+				</SubSurfaceComponent>
+				<SubSurfaceComponent id="193" displayName="EG-Fenster-7">
+					<Type>Window</Type>
+					<IdWindow>133</IdWindow>
+				</SubSurfaceComponent>
+				<SubSurfaceComponent id="194" displayName="EG-Fenster-8">
+					<Type>Window</Type>
+					<IdWindow>135</IdWindow>
+				</SubSurfaceComponent>
+				<SubSurfaceComponent id="195" displayName="EG-Fenster-3">
+					<Type>Window</Type>
+					<IdWindow>137</IdWindow>
+				</SubSurfaceComponent>
+				<SubSurfaceComponent id="196" displayName="EG-Fenster-1">
+					<Type>Window</Type>
+					<IdWindow>139</IdWindow>
+				</SubSurfaceComponent>
+				<SubSurfaceComponent id="197" displayName="EG-Fenster-6">
+					<Type>Window</Type>
+					<IdWindow>141</IdWindow>
+				</SubSurfaceComponent>
+				<SubSurfaceComponent id="198" displayName="OG-Fenster-2">
+					<Type>Window</Type>
+					<IdWindow>143</IdWindow>
+				</SubSurfaceComponent>
+				<SubSurfaceComponent id="199" displayName="EG-Fenster-4">
+					<Type>Window</Type>
+					<IdWindow>145</IdWindow>
+				</SubSurfaceComponent>
+				<SubSurfaceComponent id="200" displayName="OG-Fenster-1">
+					<Type>Window</Type>
+					<IdWindow>147</IdWindow>
+				</SubSurfaceComponent>
+				<SubSurfaceComponent id="201" displayName="EG-Fenster-9">
+					<Type>Window</Type>
+					<IdWindow>149</IdWindow>
+				</SubSurfaceComponent>
+				<SubSurfaceComponent id="202" displayName="EG-Fenster-2">
+					<Type>Window</Type>
+					<IdWindow>151</IdWindow>
+				</SubSurfaceComponent>
+				<SubSurfaceComponent id="203" displayName="EG-Fenster-5">
+					<Type>Window</Type>
+					<IdWindow>153</IdWindow>
+				</SubSurfaceComponent>
+			</SubSurfaceComponents>
+		</EmbeddedDatabase>
+		<FMIDescription />
+	</Project>
+</VicusProject>
