@@ -1,0 +1,53 @@
+*** Beispieldatei für DÄMMWERK Bauteilimport
+*** Kennwort "Bauteil" für neues Bauteil
+*** BtTyp: 1-Decke gegen außen, Dachdecke, 2-Decke zum Dachraum, hinterlüftet, 3-Außenwand / Außentür, 4-AW hinterlüftet, 5-AW gegen Erdreich, 6/12-Trennwand,
+***        8-Kellerdecke, 9-Fußboden zum Erdreich, 7/13/14/15-Whg-Trenndecken, 16-Decke nach unten hinterlüftet, 17-Decke aufgeständert, 20-Fenster 
+*** oder k.A. -> später einstellen  
+*** folgende Zeilen = Baustoffparameter, Schichten von innen nach außen
+*** Typ (DW) = DÄMMWERK Baustoffgruppe oder k.A. 
+**************************************** Beginn Struktur
+* Bauteil;Beschreibung 1;BtTyp;
+* Baustoffname 1;Rohdichte kg/m³;Schichtdicke m;Flächengewicht kg/m²;lambda-Wert W/(mK);R-Wert m²K/W;mü min;mü max;cspez J/(kgK);Typ (DW); 
+* Baustoffname 2;Rohdichte kg/m³;Schichtdicke m;Flächengewicht kg/m²;lambda-Wert W/(mK);R-Wert m²K/W;mü min;mü max;cspez J/(kgK);Typ (DW); 
+* Baustoffname 3;...
+* Bauteil;Beschreibung 2;Bttyp;
+* Baustoffname 1;Rohdichte kg/m³;Schichtdicke m;Flächengewicht kg/m²;lambda-Wert W/(mK);R-Wert m²K/W;mü min;mü max;cspez J/(kgK);Typ (DW); 
+* Baustoffname 2;...
+* Baustoffname 3;...
+*************************************** Ende Struktur
+*************************************** Beginn Beispieldaten
+Bauteil;AW4-Außenwand;3;
+Innenputz;1200,00;0,015;18,00;1,000;0,015;10,0;10,0;1000;13;
+Beton 2300 (1% Stahl);2300,00;0,240;552,00;2,300;0,104;80,0;130,0;1000;
+Dämmung;20,00;0,160;3,20;0,035;4,571;20,0;100,0;2100;52;
+Putz;1800,00;0,015;27,00;1,000;0,015;15,0;35,0;1010;11;
+Bauteil;Fenster3Scheiben;20;
+Glas;0,00;0,004;0,00;0,000;0,000;-1500,0;-1500,0;830;83;
+Scheibenzwischenraum;0,00;0,012;0,00;0,000;0,000;1,0;1,0;1080;100;
+Glas;0,00;0,004;0,00;0,000;0,000;-1500,0;-1500,0;830;83;
+Scheibenzwischenraum;0,00;0,012;0,00;0,000;0,000;1,0;1,0;1080;100;
+Glas;0,00;0,004;0,00;0,000;0,000;-1500,0;-1500,0;830;83;
+Bauteil;BP1-Sohle-Keller;9;
+Beton 2300 (1% Stahl);2300,00;0,300;690,00;2,300;0,130;80,0;130,0;1000;21;
+Dämmung;25,00;0,120;3,00;0,040;3,000;80,0;250,0;1480;53;
+Bauteil;DE2-Decke-Keller;8;
+Bodenbelag;2000,00;0,010;20,00;1,000;0,010;50,0;100,0;1000;82;
+Zementestrich;2000,00;0,060;120,00;1,400;0,043;15,0;35,0;1000;16;
+Dämmung;20,00;0,060;1,20;0,035;1,714;20,0;100,0;2100;52;
+Beton 2300 (1% Stahl);2300,00;0,300;690,00;2,300;0,130;80,0;130,0;1000;21;
+Dämmung;20,00;0,100;2,00;0,035;2,857;1,0;1,0;830;51;
+Bauteil;DE1-Decke-Tiefgarage;8;
+Bodenbelag;2000,00;0,010;20,00;1,000;0,010;50,0;100,0;1000;82;
+Zementestrich;2000,00;0,060;120,00;1,400;0,043;15,0;35,0;1000;16;
+Dämmung;20,00;0,060;1,20;0,035;1,714;20,0;100,0;2100;52;
+Beton 2300 (1% Stahl);2300,00;0,300;690,00;2,300;0,130;80,0;130,0;1000;
+Dämmung;20,00;0,100;2,00;0,035;2,857;1,0;1,0;830;51;
+Bauteil;DA1_Dach;1;
+Beton 2300 (1% Stahl);2300,00;0,200;460,00;2,300;0,087;80,0;130,0;1000;21;
+Bitumenbahn;1100,00;0,004;4,40;0,230;0,017;50000,0;50000,0;1000;72;
+Grunddämmung;20,00;0,100;2,00;0,027;3,704;20,0;100,0;2100;52;
+Gefälledämmung;20,00;0,100;2,00;0,027;3,704;20,0;100,0;2100;52;
+Kunststoffdachbahn ;1500,00;0,002;3,00;0,000;0,000;10000,0;30000,0;1500;73;
+Wurzelschutzfolie ;0,00;0,000;0,40;0,000;0,000;100000,0;100000,0;1000;74;
+Begrünungssubstrat;1000,00;0,080;80,00;0,000;0,000;3,0;3,0;1000;120;
+************************************** Ende Beispieldaten
