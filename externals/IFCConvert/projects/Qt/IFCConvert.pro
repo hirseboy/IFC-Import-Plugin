@@ -39,6 +39,7 @@ SOURCES +=  \
 	../../src/IFCC_BuildingElement.cpp \
 	../../src/IFCC_BuildingElementsCollector.cpp \
 	../../src/IFCC_BuildingStorey.cpp \
+	../../src/IFCC_CSG_Adapter.cpp \
 	../../src/IFCC_Clippertools.cpp \
 	../../src/IFCC_Component.cpp \
 	../../src/IFCC_ComponentInstance.cpp \
@@ -47,12 +48,15 @@ SOURCES +=  \
 	../../src/IFCC_Database.cpp \
 	../../src/IFCC_EntityBase.cpp \
 	../../src/IFCC_FaceConverter.cpp \
+	../../src/IFCC_GeomUtils.cpp \
 	../../src/IFCC_GeometricHelperClasses.cpp \
 	../../src/IFCC_GeometryInputData.cpp \
+	../../src/IFCC_GeometrySettings.cpp \
 	../../src/IFCC_Helper.cpp \
 	../../src/IFCC_IFCReader.cpp \
 	../../src/IFCC_Instances.cpp \
 	../../src/IFCC_Material.cpp \
+	../../src/IFCC_MeshOps.cpp \
 	../../src/IFCC_MeshUtils.cpp \
 	../../src/IFCC_Opening.cpp \
 	../../src/IFCC_PointConverter.cpp \
@@ -82,6 +86,7 @@ HEADERS +=  \
 	../../src/IFCC_BuildingElement.h \
 	../../src/IFCC_BuildingElementsCollector.h \
 	../../src/IFCC_BuildingStorey.h \
+	../../src/IFCC_CSG_Adapter.h \
 	../../src/IFCC_Clippertools.h \
 	../../src/IFCC_Component.h \
 	../../src/IFCC_ComponentInstance.h \
@@ -90,13 +95,16 @@ HEADERS +=  \
 	../../src/IFCC_Database.h \
 	../../src/IFCC_EntityBase.h \
 	../../src/IFCC_FaceConverter.h \
+	../../src/IFCC_GeomUtils.h \
 	../../src/IFCC_GeometricHelperClasses.h \
 	../../src/IFCC_GeometryInputData.h \
+	../../src/IFCC_GeometrySettings.h \
 	../../src/IFCC_Helper.h \
 	../../src/IFCC_IFCReader.h \
 	../../src/IFCC_Instances.h \
 	../../src/IFCC_Logger.h \
 	../../src/IFCC_Material.h \
+	../../src/IFCC_MeshOps.h \
 	../../src/IFCC_MeshUtils.h \
 	../../src/IFCC_Opening.h \
 	../../src/IFCC_PointConverter.h \

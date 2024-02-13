@@ -119,7 +119,7 @@ namespace IFCC {
 				PolyInputCache3D poly_cache(CARVE_EPSILON);
 //				bool mergeAlignedEdges = true;
 				GeomProcessingParams params( m_geom_settings, outer_boundary.get(),  this );
-				MeshUtils::createTriangulated3DFace( face_loops, poly_cache, params );
+				MeshUtils::create3DFace( face_loops, poly_cache, params );
 				item_data->addOpenPolyhedron( poly_cache.m_poly_data, CARVE_EPSILON );
 				item_data->applyTransformToItem( curve_bounded_plane_matrix );
 			}
@@ -378,7 +378,7 @@ namespace IFCC {
 				GeomUtils::unClosePolygon(loop);
 			}
 
-			MeshUtils::createTriangulated3DFace( face_loops, poly_cache, params );
+			MeshUtils::create3DFace( face_loops, poly_cache, params );
 		}
 
 		// IfcFaceList can be a closed or open shell

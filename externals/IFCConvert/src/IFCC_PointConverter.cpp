@@ -18,10 +18,10 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OU
 #define _USE_MATH_DEFINES
 #include <math.h>
 
-#include <ifcpp/geometry/GeomUtils.h>
 
 #include <ifcpp/IFC4X3/include/IfcVertexPoint.h>
 
+#include "IFCC_GeomUtils.h"
 #include "IFCC_PointConverter.h"
 
 namespace IFCC {

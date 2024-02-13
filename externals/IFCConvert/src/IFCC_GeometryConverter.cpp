@@ -38,8 +38,8 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OU
 #include <carve/carve.hpp>
 
 #include <ifcpp/geometry/IncludeCarveHeaders.h>
-#include <ifcpp/geometry/CSG_Adapter.h>
 
+#include "IFCC_CSG_Adapter.h"
 #include "IFCC_GeometryInputData.h"
 #include "IFCC_RepresentationConverter.h"
 #include "IFCC_Helper.h"
@@ -541,18 +541,23 @@ GeometryConverter::~GeometryConverter() {}
 #endif
 					ifc_project_data = product_geom_input_data;
 				}
-				std::string nameOfSpace;
+				std::string nameOfSpaceLong;
+				std::string nameOfSpaceShort;
 				if( dynamic_pointer_cast<IfcSpace>(object_def)) {
-					nameOfSpace = label2s(dynamic_pointer_cast<IfcSpace>(object_def)->m_LongName);
-					int ifc = object_def->m_tag;
-					int i=0;
+					nameOfSpaceLong = label2s(dynamic_pointer_cast<IfcSpace>(object_def)->m_LongName);
+					nameOfSpaceShort = label2s(dynamic_pointer_cast<IfcSpace>(object_def)->m_Name);
+//					if(nameOfSpaceLong == "Halle - generelle Anforderungen" || nameOfSpaceShort == "Halle - generelle Anforderungen") {
+//						int ifc = object_def->m_tag;
+
+//					}
+//					int i=0;
 				}
 				if( dynamic_pointer_cast<IfcWall>(object_def)) {
-					nameOfSpace = label2s(dynamic_pointer_cast<IfcWall>(object_def)->m_Name);
+					nameOfSpaceShort = label2s(dynamic_pointer_cast<IfcWall>(object_def)->m_Name);
 					int i=0;
 				}
 				if( dynamic_pointer_cast<IfcDoor>(object_def)) {
-					nameOfSpace = label2s(dynamic_pointer_cast<IfcDoor>(object_def)->m_Name);
+					nameOfSpaceShort = label2s(dynamic_pointer_cast<IfcDoor>(object_def)->m_Name);
 					int i=0;
 				}
 

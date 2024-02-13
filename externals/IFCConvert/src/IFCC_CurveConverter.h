@@ -19,8 +19,6 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OU
 
 #include <ifcpp/model/BuildingObject.h>
 
-#include <ifcpp/geometry/GeomUtils.h>
-#include <ifcpp/geometry/GeometrySettings.h>
 //#include <ifcpp/geometry/GeomDebugDump.h>
 
 #include <ifcpp/IFC4X3/include/IfcEdge.h>
@@ -33,6 +31,8 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OU
 
 #include <ifcpp/geometry/IncludeCarveHeaders.h>
 
+#include "IFCC_GeomUtils.h"
+#include "IFCC_GeometrySettings.h"
 #include "IFCC_SplineConverter.h"
 #include "IFCC_PointConverter.h"
 #include "IFCC_PlacementConverter.h"

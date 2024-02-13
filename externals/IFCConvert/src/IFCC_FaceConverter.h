@@ -19,8 +19,6 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OU
 */
 
 #include <ifcpp/model/BuildingObject.h>
-#include <ifcpp/geometry/GeomUtils.h>
-#include <ifcpp/geometry/GeometrySettings.h>
 #include <ifcpp/model/StatusCallback.h>
 #include <ifcpp/model/UnitConverter.h>
 
@@ -28,6 +26,8 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OU
 #include <ifcpp/IFC4X3/include/IfcCartesianPoint.h>
 #include <ifcpp/IFC4X3/EntityFactory.h>
 
+#include "IFCC_GeomUtils.h"
+#include "IFCC_GeometrySettings.h"
 #include "IFCC_Sweeper.h"
 #include "IFCC_SplineConverter.h"
 #include "IFCC_CurveConverter.h"

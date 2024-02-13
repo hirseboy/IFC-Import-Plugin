@@ -19,8 +19,6 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OU
 #include "IFCC_Types.h"
 
 #include <unordered_set>
-#include <ifcpp/geometry/StylesConverter.h>
-#include <ifcpp/geometry/GeometrySettings.h>
 #include <ifcpp/model/BasicTypes.h>
 #include <ifcpp/model/StatusCallback.h>
 #include <ifcpp/model/UnitConverter.h>
@@ -64,6 +62,8 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OU
 
 #include <ifcpp/geometry/IncludeCarveHeaders.h>
 
+#include "IFCC_GeomUtils.h"
+#include "IFCC_GeometrySettings.h"
 #include "IFCC_Sweeper.h"
 #include "IFCC_GeometryInputData.h"
 #include "IFCC_SplineConverter.h"
@@ -692,8 +692,8 @@ RepresentationConverter::RepresentationConverter( shared_ptr<GeometrySettings> g
 			}
 
 			GeomProcessingParams params( m_geom_settings, outer_boundary.get(),  this );
-			PolyInputCache3D poly_cache(params.epsMergePoints);
-			MeshUtils::createTriangulated3DFace( face_loops, poly_cache, params);
+			PolyInputCache3D poly_cache(params.m_epsMergePoints);
+			MeshUtils::create3DFace( face_loops, poly_cache, params);
 			double CARVE_EPSILON = m_geom_settings->getEpsilonCoplanarDistance();
 			item_data->addOpenPolyhedron( poly_cache.m_poly_data, CARVE_EPSILON );
 
@@ -837,7 +837,7 @@ RepresentationConverter::RepresentationConverter( shared_ptr<GeometrySettings> g
 					}
 
 					GeomProcessingParams params( m_geom_settings, topo_face.get(),  this );
-					MeshUtils::createTriangulated3DFace( face_loops, poly_cache_top_face, params );
+					MeshUtils::create3DFace( face_loops, poly_cache_top_face, params );
 				}
 			}
 			if( poly_cache_top_face.m_poly_data )
@@ -866,8 +866,8 @@ RepresentationConverter::RepresentationConverter( shared_ptr<GeometrySettings> g
 				}
 
 				GeomProcessingParams params( m_geom_settings, topo_face.get(),  this );
-				PolyInputCache3D poly_cache_top_face( params.epsMergePoints);
-				MeshUtils::createTriangulated3DFace( face_loops, poly_cache_top_face, params );
+				PolyInputCache3D poly_cache_top_face( params.m_epsMergePoints);
+				MeshUtils::create3DFace( face_loops, poly_cache_top_face, params );
 
 				if( poly_cache_top_face.m_poly_data )
 				{

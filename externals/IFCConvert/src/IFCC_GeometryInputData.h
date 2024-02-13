@@ -24,21 +24,19 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OU
 #include <ifcpp/geometry/AppearanceData.h>
 #include <ifcpp/model/BasicTypes.h>
 #include <ifcpp/model/BuildingObject.h>
-#include <ifcpp/geometry/GeometrySettings.h>
-//#include <ifcpp/model/BuildingException.h>
 #include <ifcpp/IFC4X3/include/IfcObjectPlacement.h>
 #include <ifcpp/IFC4X3/include/IfcObjectDefinition.h>
-//#include <ifcpp/IFC4X3/include/IfcProduct.h>
 #include <ifcpp/IFC4X3/include/IfcRepresentation.h>
-//#include <ifcpp/IFC4X3/include/IfcTextStyle.h>
 #include <ifcpp/geometry/IncludeCarveHeaders.h>
-#include <ifcpp/geometry/GeomUtils.h>
 
 //namespace GeomDebugDump
 //{
 //	static void dumpMeshset(carve::mesh::MeshSet<3>* meshset, const glm::vec4& color, bool move_offset = true);
 //	static void dumpMeshsetOpenEdges(const shared_ptr<carve::mesh::MeshSet<3> >& meshset, const glm::vec4& colorInput, bool checkZeroAreaFaces, bool move_offset);
 //}
+
+#include "IFCC_GeomUtils.h"
+#include "IFCC_GeometrySettings.h"
 
 namespace IFCC {
 

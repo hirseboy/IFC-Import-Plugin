@@ -418,6 +418,7 @@ bool IFCReader::convert(bool useSpaceBoundaries) {
 		emit progress(20, "convertGeometry");
 		// convert IFC geometric representations into Carve geometry
 		const double length_in_meter = m_geometryConverter.getBuildingModel()->getUnitConverter()->getLengthInMeterFactor();
+//		m_geometryConverter.getGeomSettings()->
 		m_geometryConverter.setCsgEps(1.5e-08 * length_in_meter);
 		m_geometryConverter.convertGeometry(subtractOpenings, m_convertErrors);
 

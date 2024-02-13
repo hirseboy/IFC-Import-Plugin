@@ -93,7 +93,6 @@ bool ImportWPConvert::isComplete() const {
 }
 
 void ImportWPConvert::setText() {
-	IFCC::Logger::instance() << "setText start";
 
 	// check for equal space boundaries
 	std::vector<std::pair<int,int>> equalSBs;
@@ -107,7 +106,7 @@ void ImportWPConvert::setText() {
 
 	// check for intersected spaces
 	std::set<std::pair<int,int>> intersectedSpaceIds;
-	intersectedSpaceIds = m_reader->checkForIntersectedSpace();
+//	intersectedSpaceIds = m_reader->checkForIntersectedSpace();
 	std::map<int,size_t> instersectionCounts;
 	for(auto isId : intersectedSpaceIds) {
 		++instersectionCounts[isId.first];
@@ -150,7 +149,6 @@ void ImportWPConvert::setText() {
 
 	if(m_convertSuccessfully) {
 		if(!m_reader->m_errorText.empty()) {
-			IFCC::Logger::instance() << "setText 21";
 			text << tr("<font color=\"#FF0000\">Errors while converting:</font>");
 			QString errTxt = QString::fromStdString(m_reader->m_errorText);
 			errTxt.replace("\n","<br>");
@@ -202,9 +200,6 @@ void ImportWPConvert::setText() {
 			text << QString::fromStdString(m_reader->m_errorText);
 		}
 	}
-	IFCC::Logger::instance() << "setText 6 " << text.size() ;
-	ui->textEdit->setHtml(text.join("<br>"));
-	IFCC::Logger::instance() << "setText 7";
 }
 
 void ImportWPConvert::initElements() {

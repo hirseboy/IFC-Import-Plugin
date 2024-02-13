@@ -29,7 +29,7 @@ namespace IFCC {
 		// TODO: complete and test
 		if( faceLoopsInput.size() == 0 )
 		{
-			messageCallback("faceLoopsInput.size() == 0", StatusCallback::MESSAGE_TYPE_WARNING, __FUNC__, params.ifc_entity);
+			messageCallback("faceLoopsInput.size() == 0", StatusCallback::MESSAGE_TYPE_WARNING, __FUNC__, params.m_ifc_entity);
 			return;
 		}
 
@@ -192,7 +192,7 @@ namespace IFCC {
 		{
 			std::stringstream err;
 			err << "std::abs( signed_area ) < 1.e-10";
-			messageCallback(err.str().c_str(), StatusCallback::MESSAGE_TYPE_MINOR_WARNING, __FUNC__, params.ifc_entity);
+			messageCallback(err.str().c_str(), StatusCallback::MESSAGE_TYPE_MINOR_WARNING, __FUNC__, params.m_ifc_entity);
 		}
 
 		if( faceLoopsTriangulate.size() == 0 )
@@ -318,13 +318,13 @@ namespace IFCC {
 		const size_t num_curve_points = curve_points.size();
 		if( num_curve_points < 2 )
 		{
-			messageCallback( "num curve points < 2", StatusCallback::MESSAGE_TYPE_WARNING, __FUNC__, params.ifc_entity );
+			messageCallback( "num curve points < 2", StatusCallback::MESSAGE_TYPE_WARNING, __FUNC__, params.m_ifc_entity );
 			return;
 		}
 
 		if( !item_data )
 		{
-			messageCallback( "!item_data", StatusCallback::MESSAGE_TYPE_WARNING, __FUNC__, params.ifc_entity );
+			messageCallback( "!item_data", StatusCallback::MESSAGE_TYPE_WARNING, __FUNC__, params.m_ifc_entity );
 			return;
 		}
 
@@ -347,11 +347,11 @@ namespace IFCC {
 		double use_radius_inner = radius_inner;
 		if( radius_inner > radius )
 		{
-			messageCallback( "radius_inner > radius", StatusCallback::MESSAGE_TYPE_WARNING, __FUNC__, params.ifc_entity );
+			messageCallback( "radius_inner > radius", StatusCallback::MESSAGE_TYPE_WARNING, __FUNC__, params.m_ifc_entity );
 			use_radius_inner = radius;
 		}
 
-		double CARVE_EPSILON = params.epsMergePoints;
+		double CARVE_EPSILON = params.m_epsMergePoints;
 		vec3 local_z( carve::geom::VECTOR( 0, 0, 1 ) );
 		vec3 curve_point_first = curve_points[0];
 		vec3 curve_point_second = curve_points[1];
@@ -544,7 +544,7 @@ namespace IFCC {
 				}
 				else
 				{
-					messageCallback( "no intersection found", StatusCallback::MESSAGE_TYPE_WARNING, __FUNC__, params.ifc_entity );
+					messageCallback( "no intersection found", StatusCallback::MESSAGE_TYPE_WARNING, __FUNC__, params.m_ifc_entity );
 				}
 
 				poly_data->addVertex( vertex );
@@ -565,7 +565,7 @@ namespace IFCC {
 					}
 					else
 					{
-						messageCallback( "no intersection found", StatusCallback::MESSAGE_TYPE_WARNING, __FUNC__, params.ifc_entity );
+						messageCallback( "no intersection found", StatusCallback::MESSAGE_TYPE_WARNING, __FUNC__, params.m_ifc_entity );
 					}
 
 					//inner_shape_points[jj] = vertex;
@@ -596,7 +596,7 @@ namespace IFCC {
 		{
 			if( inner_shape_points.size() != num_vertices_outer )
 			{
-				messageCallback( "inner_shape_points.size() != num_vertices_outer", StatusCallback::MESSAGE_TYPE_WARNING, __FUNC__, params.ifc_entity );
+				messageCallback( "inner_shape_points.size() != num_vertices_outer", StatusCallback::MESSAGE_TYPE_WARNING, __FUNC__, params.m_ifc_entity );
 			}
 
 			// add points for inner shape
@@ -666,7 +666,7 @@ namespace IFCC {
 		}
 		catch( BuildingException& exception )
 		{
-			messageCallback( exception.what(), StatusCallback::MESSAGE_TYPE_WARNING, "", params.ifc_entity );  // calling function already in e.what()
+			messageCallback( exception.what(), StatusCallback::MESSAGE_TYPE_WARNING, "", params.m_ifc_entity );  // calling function already in e.what()
 		}
 	}
 
@@ -933,13 +933,13 @@ namespace IFCC {
 	{
 		if (profile_paths_input.size() == 0)
 		{
-			messageCallback("profile_paths.size() == 0", StatusCallback::MESSAGE_TYPE_WARNING, __FUNC__, params.ifc_entity);
+			messageCallback("profile_paths.size() == 0", StatusCallback::MESSAGE_TYPE_WARNING, __FUNC__, params.m_ifc_entity);
 			return;
 		}
 		const size_t num_curve_points = profile_paths_input.size();
 		if (num_curve_points < 2)
 		{
-			messageCallback("num curve points < 2", StatusCallback::MESSAGE_TYPE_WARNING, __FUNC__, params.ifc_entity);
+			messageCallback("num curve points < 2", StatusCallback::MESSAGE_TYPE_WARNING, __FUNC__, params.m_ifc_entity);
 			return;
 		}
 
@@ -965,7 +965,7 @@ namespace IFCC {
 			{
 				std::vector<int> face_indexes;
 				std::vector<std::vector<vec2> > face_loops_used_for_triangulation;
-				triangulateLoops(profile_paths, face_loops_used_for_triangulation, face_indexes, params.ifc_entity);
+				triangulateLoops(profile_paths, face_loops_used_for_triangulation, face_indexes, params.m_ifc_entity);
 
 				size_t num_points_in_all_loops = 0;
 				for (size_t ii = 0; ii < face_loops_used_for_triangulation.size(); ++ii)
@@ -1065,7 +1065,7 @@ namespace IFCC {
 						}
 						else
 						{
-							messageCallback("no intersection found", StatusCallback::MESSAGE_TYPE_WARNING, __FUNC__, params.ifc_entity);
+							messageCallback("no intersection found", StatusCallback::MESSAGE_TYPE_WARNING, __FUNC__, params.m_ifc_entity);
 						}
 					}
 				}
@@ -1094,7 +1094,7 @@ namespace IFCC {
 
 							if (tri_idx_a >= num_poly_points || tri_idx_next >= num_poly_points || tri_idx_up >= num_poly_points || tri_idx_next_up >= num_poly_points)
 							{
-								messageCallback("invalid triangle index", StatusCallback::MESSAGE_TYPE_WARNING, __FUNC__, params.ifc_entity);
+								messageCallback("invalid triangle index", StatusCallback::MESSAGE_TYPE_WARNING, __FUNC__, params.m_ifc_entity);
 								continue;
 							}
 
@@ -1118,7 +1118,7 @@ namespace IFCC {
 						size_t tri_idx_c = face_indexes[ii + 3];
 						if (tri_idx_a >= num_poly_points || tri_idx_b >= num_poly_points || tri_idx_c >= num_poly_points)
 						{
-							messageCallback("invalid triangle index", StatusCallback::MESSAGE_TYPE_WARNING, __FUNC__, params.ifc_entity);
+							messageCallback("invalid triangle index", StatusCallback::MESSAGE_TYPE_WARNING, __FUNC__, params.m_ifc_entity);
 							ii += num_face_vertices;
 							continue;
 						}
@@ -1130,7 +1130,7 @@ namespace IFCC {
 						size_t tri_idx_c_back_cap = tri_idx_c + num_poly_points - num_points_in_all_loops;
 						if (tri_idx_a_back_cap >= num_poly_points || tri_idx_b_back_cap >= num_poly_points || tri_idx_c_back_cap >= num_poly_points)
 						{
-							messageCallback("invalid triangle index", StatusCallback::MESSAGE_TYPE_WARNING, __FUNC__, params.ifc_entity);
+							messageCallback("invalid triangle index", StatusCallback::MESSAGE_TYPE_WARNING, __FUNC__, params.m_ifc_entity);
 							ii += num_face_vertices;
 							continue;
 						}
@@ -1149,7 +1149,7 @@ namespace IFCC {
 					}
 					else
 					{
-						messageCallback("num_face_vertices != 3", StatusCallback::MESSAGE_TYPE_WARNING, __FUNC__, params.ifc_entity);
+						messageCallback("num_face_vertices != 3", StatusCallback::MESSAGE_TYPE_WARNING, __FUNC__, params.m_ifc_entity);
 					}
 					ii += num_face_vertices;
 				}
@@ -1160,7 +1160,7 @@ namespace IFCC {
 				}
 				catch (BuildingException & exception)
 				{
-					messageCallback(exception.what(), StatusCallback::MESSAGE_TYPE_WARNING, "", params.ifc_entity);  // calling function already in e.what()
+					messageCallback(exception.what(), StatusCallback::MESSAGE_TYPE_WARNING, "", params.m_ifc_entity);  // calling function already in e.what()
 				}
 
 			}

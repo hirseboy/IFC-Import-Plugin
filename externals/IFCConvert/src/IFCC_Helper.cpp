@@ -207,14 +207,26 @@ void simplifyMesh(meshVector_t& meshVector, bool removeLowVolume) {
 	size_t removedMeshes = 0;
 	for(int i=0; i<meshSetCount; ++i) {
 		if(!checkMesh(*meshVector[i])) {
-			return;
+			continue;
 		}
-		removedMeshes += simplifier.mergeCoplanarFaces(meshVector[i].get(), MINIMUM_NORMAL_ANGLE);
-	// The following functions can open or destroy the mesh
-//		simplifier.simplify(meshVector[i].get(), 1e-6, 1e-6, MINIMUM_NORMAL_ANGLE, 1e-6);
-//		simplifier.improveMesh_conservative(meshVector[i].get());
-		if(removeLowVolume)
-			simplifier.removeLowVolumeManifolds( meshVector[i].get(), 1e-8 );
+		try {
+//			carve::mesh::MeshSet<3> storedMeshset = *meshVector[i];
+			MeshSetInfo info;
+			bool checkRes = MeshUtils::checkMeshSetPointers(meshVector[i], false, info);
+			if(!checkRes)
+				continue;
+
+			removedMeshes += simplifier.mergeCoplanarFaces(meshVector[i].get(), MINIMUM_NORMAL_ANGLE);
+			// The following functions can open or destroy the mesh
+			//		simplifier.simplify(meshVector[i].get(), 1e-6, 1e-6, MINIMUM_NORMAL_ANGLE, 1e-6);
+			//		simplifier.improveMesh_conservative(meshVector[i].get());
+			if(removeLowVolume)
+				simplifier.removeLowVolumeManifolds( meshVector[i].get(), 1e-8 );
+		}
+		catch(std::runtime_error& e) {
+			MeshUtils::fixMeshset(meshVector[i].get(), 0.001, false, false);
+			continue;
+		}
 	}
 
 }

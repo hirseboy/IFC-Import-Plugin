@@ -678,7 +678,7 @@ static bool checkFaceIndices(PolyInputCache3D& inputData )
 			return false;
 		}
 
-		double CARVE_EPSILON = params.epsMergePoints;
+		double CARVE_EPSILON = params.m_epsMergePoints;
 
 #ifdef _DEBUG
 		shared_ptr<carve::input::PolyhedronData> poly_data_copy(poly_data);
@@ -695,11 +695,11 @@ static bool checkFaceIndices(PolyInputCache3D& inputData )
 
 		std::map<std::string, std::string> mesh_input_options;
 		shared_ptr<carve::mesh::MeshSet<3> > meshsetUnchanged(poly_data->createMesh(mesh_input_options, CARVE_EPSILON));
-		bool correct = checkPolyhedronData(poly_data, params.minFaceArea);
+		bool correct = checkPolyhedronData(poly_data, params.m_minFaceArea);
 		if( !correct )
 		{
-			fixPolyhedronData(poly_data, params.minFaceArea);
-			bool correct2 = checkPolyhedronData(poly_data, params.minFaceArea);
+			fixPolyhedronData(poly_data, params.m_minFaceArea);
+			bool correct2 = checkPolyhedronData(poly_data, params.m_minFaceArea);
 			if( !correct2 )
 			{
 //				std::cout << "failed to correct polyhedron data\n";
@@ -1146,7 +1146,7 @@ static bool checkFaceIndices(PolyInputCache3D& inputData )
 	{
 		if( !matrix_identity_checked )
 		{
-			if( GeomUtils::isMatrixIdentity( matrix ) )
+			if( IFCC::GeomUtils::isMatrixIdentity( matrix ) )
 			{
 				return;
 			}

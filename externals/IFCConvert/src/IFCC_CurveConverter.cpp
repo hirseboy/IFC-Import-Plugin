@@ -987,8 +987,8 @@ CurveConverter::CurveConverter(shared_ptr<GeometrySettings>& gs, shared_ptr<Plac
 				}
 			}
 
-			GeomUtils::removeDuplicates(loop_points);
-			GeomUtils::closePolygon(loop_points);
+			IFCC::GeomUtils::removeDuplicates(loop_points);
+			IFCC::GeomUtils::closePolygon(loop_points);
 			return;
 		}
 	}

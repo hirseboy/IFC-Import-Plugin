@@ -22,7 +22,6 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OU
 #include <math.h>
 
 #include <ifcpp/model/BuildingObject.h>
-#include <ifcpp/geometry/GeometrySettings.h>
 #include <ifcpp/geometry/IncludeCarveHeaders.h>
 
 #include <ifcpp/model/BasicTypes.h>
@@ -32,6 +31,8 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OU
 #include <ifcpp/IFC4X3/include/IfcCartesianPoint.h>
 #include <ifcpp/IFC4X3/include/IfcLengthMeasure.h>
 #include <ifcpp/IFC4X3/include/IfcVertex.h>
+
+#include "IFCC_GeometrySettings.h"
 
 namespace IFCC {
 

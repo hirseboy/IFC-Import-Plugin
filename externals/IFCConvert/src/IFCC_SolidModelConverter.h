@@ -18,8 +18,6 @@ FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTH
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-#include <ifcpp/geometry/GeomUtils.h>
-
 #include <ifcpp/IFC4X3/include/IfcBooleanResult.h>
 #include <ifcpp/IFC4X3/include/IfcCsgPrimitive3D.h>
 #include <ifcpp/IFC4X3/include/IfcExtrudedAreaSolid.h>
@@ -28,6 +26,7 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OU
 #include <ifcpp/IFC4X3/include/IfcSectionedSpine.h>
 #include <ifcpp/IFC4X3/include/IfcSolidModel.h>
 
+#include "IFCC_GeomUtils.h"
 #include "IFCC_PointConverter.h"
 #include "IFCC_ProfileCache.h"
 #include "IFCC_FaceConverter.h"

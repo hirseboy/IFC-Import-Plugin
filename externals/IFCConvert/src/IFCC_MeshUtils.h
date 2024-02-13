@@ -19,13 +19,12 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OU
 */
 
 #include <ifcpp/geometry/IncludeCarveHeaders.h>
-#include <ifcpp/geometry/GeomUtils.h>
-//#include "GeomDebugDump.h"
 #include <ifcpp/model/StatusCallback.h>
-#include <ifcpp/geometry/GeometrySettings.h>
 #include <earcut/include/mapbox/earcut.hpp>
 #include <manifold/src/manifold/include/manifold.h>
 
+#include "IFCC_GeomUtils.h"
+#include "IFCC_GeometrySettings.h"
 #include "IFCC_GeometryInputData.h"
 
 namespace IFCC {
@@ -93,6 +92,9 @@ namespace MeshUtils
 
 	void checkFaceLoops(const carve::mesh::Face<3>* face);
 
+	void checkFaceLoops( carve::mesh::Mesh<3>* mesh);
+
+	void checkFaceLoops(carve::mesh::MeshSet<3>* meshset);
 
 	void fixMeshset(carve::mesh::MeshSet<3>* meshset, double CARVE_EPSILON, bool shouldBeClosedManifold, bool dumpMeshes);
 
@@ -100,6 +102,8 @@ namespace MeshUtils
 							 vec3& intersectionPoint);
 
 	void createTriangulated3DFace(const std::vector<std::vector<vec3> >& inputBounds3D, PolyInputCache3D& meshOut, GeomProcessingParams& params );
+
+	void create3DFace(const std::vector<std::vector<vec3> >& inputBounds3D, PolyInputCache3D& meshOut, GeomProcessingParams& params );
 
 	///\brief method intersectOpenEdges: Intersect open edges of MeshSet with closed edges, and split the open edges in case of intersection
 	///\param[in/out] meshset: MeshSet with open edges. If fix is found, a new MeshSet is assigned to the smart pointer
@@ -125,6 +129,22 @@ namespace MeshUtils
 	void polyhedronFromMesh(const carve::mesh::Mesh<3>* mesh, PolyInputCache3D& polyInput);
 
 	bool addFacesReversed(const PolyInputCache3D& poly_cache_source, PolyInputCache3D& poly_cache_target);
+
+	bool checkMeshSetValidAndClosed(const shared_ptr<carve::mesh::MeshSet<3>>& meshset, MeshSetInfo& info, double CARVE_EPSILON );
+
+	bool checkMeshSetValidAndClosed(const shared_ptr<carve::mesh::MeshSet<3>>& meshset, MeshSetInfo& info, double eps, bool tryToFixIfNotValid, bool dumpMeshes);
+
+	double computeFaceArea(const carve::mesh::Face<3>* face);
+
+	void getFacesInMeshSet(shared_ptr<carve::mesh::MeshSet<3> >& meshsetInput, std::set<carve::mesh::Face<3>* >& mapAllFaces);
+
+	bool checkMeshSetNonNegativeAndClosed(const shared_ptr<carve::mesh::MeshSet<3>> mesh_set, double CARVE_EPSILON);
+
+	bool checkMeshsetTriangulated(const shared_ptr<carve::mesh::MeshSet<3>>& meshset);
+
+	void removeZeroAreaFacesInMesh(carve::mesh::Mesh<3>* mesh, double epsMinFaceArea, double CARVE_EPSILON);
+
+	void removeZeroAreaFacesInMeshSet(shared_ptr<carve::mesh::MeshSet<3> >& meshsetInput, double epsMinFaceArea, double CARVE_EPSILON);
 
 } // end namespace MeshUtils
 

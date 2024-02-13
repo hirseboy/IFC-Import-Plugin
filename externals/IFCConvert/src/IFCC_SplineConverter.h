@@ -18,13 +18,13 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OU
 #pragma once
 
 #include <ifcpp/model/BuildingObject.h>
-#include <ifcpp/geometry/GeometrySettings.h>
 #include <ifcpp/model/BasicTypes.h>
 #include <ifcpp/model/StatusCallback.h>
 
 #include <ifcpp/IFC4X3/include/IfcBSplineCurve.h>
 #include <ifcpp/IFC4X3/include/IfcBSplineSurface.h>
 
+#include "IFCC_GeometrySettings.h"
 #include "IFCC_PointConverter.h"
 
 namespace IFCC {
