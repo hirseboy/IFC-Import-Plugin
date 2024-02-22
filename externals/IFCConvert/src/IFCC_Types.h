@@ -113,6 +113,7 @@ struct ConvertOptions {
 	ConstructionMatching			m_matchingType = CM_MatchEachConstruction;
 	int								m_matchedConstructionNumbers = 2;
 	bool							m_matchOpeningsOnlyInWalls = false;
+	double							m_minimumSurfaceArea = 0.001;
 };
 
 
