@@ -16,6 +16,13 @@ class ImportWPConvert : public QWizardPage
 	Q_OBJECT
 
 public:
+
+	enum MatchingMainType {
+		MMT_FullMatching,
+		MMT_MediumMatching,
+		MMT_NoMatching
+	};
+
 	explicit ImportWPConvert(QWidget *parent, IFCC::IFCReader* reader);
 	~ImportWPConvert();
 
@@ -46,6 +53,10 @@ private slots:
 
 	void on_checkBoxUseSpaceBoundaries_clicked();
 
+	void on_checkBoxAdvancedSettings_toggled(bool checked);
+
+	void on_comboBoxMatchingType_currentIndexChanged(int index);
+
 private:
 	void initializePage() override;
 
@@ -54,11 +65,15 @@ private:
 
 	void initElements();
 
+	void setMatching(MatchingMainType type);
+
 	Ui::ImportWPConvert *ui;
 
 	IFCC::IFCReader*	m_reader;
 
 	bool m_convertSuccessfully;
+
+	MatchingMainType	m_matchingType = MMT_MediumMatching;
 };
 
 #endif // ImportWPConvert_H

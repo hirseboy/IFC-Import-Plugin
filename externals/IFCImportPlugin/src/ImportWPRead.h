@@ -30,6 +30,8 @@ private slots:
 
 	void on_pushButtonRead_clicked();
 
+	void on_lineEditIFCFile_textChanged(const QString &arg1);
+
 private:
 	Ui::ImportWPRead *ui;
 

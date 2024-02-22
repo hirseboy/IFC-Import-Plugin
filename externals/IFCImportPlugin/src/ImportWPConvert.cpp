@@ -55,22 +55,65 @@ ImportWPConvert::ImportWPConvert(QWidget *parent, IFCC::IFCReader* reader) :
 	item->setData(Qt::UserRole, (int)IFCC::BET_Footing);
 	ui->listWidgetConstructionTypes->addItem(item);
 
-	ui->groupBoxMatchingSettings->setEnabled(false);
+	ui->comboBoxMatchingType->addItem(tr("Full matching"), MMT_FullMatching);
+	ui->comboBoxMatchingType->addItem(tr("Medium matching"), MMT_MediumMatching);
+	ui->comboBoxMatchingType->addItem(tr("No matching"), MMT_NoMatching);
+	ui->comboBoxMatchingType->setCurrentIndex(1);
+	setMatching(MMT_MediumMatching);
+
+	ui->checkBoxAdvancedSettings->setChecked(false);
+	ui->widgetAdvancedSettings->setVisible(false);
 }
 
 ImportWPConvert::~ImportWPConvert() {
 	delete ui;
 }
 
+void ImportWPConvert::setMatching(MatchingMainType type) {
+	bool hasSBs = ui->checkBoxUseSpaceBoundaries->isChecked();
+	switch(type) {
+		case MMT_FullMatching: {
+				ui->radioButtonMatchingFull->setChecked(true);
+				break;
+			}
+		case MMT_MediumMatching: {
+				ui->radioButtonMatchingFirst->setChecked(true);
+				break;
+			}
+		case MMT_NoMatching: {
+				ui->radioButtonMatchingNo->setChecked(true);
+				break;
+			}
+	}
+	if(!hasSBs) {
+		switch(type) {
+			case MMT_FullMatching: {
+					ui->labelMatchingDescription->setText(tr("Check each construction for matches with space surfaces."));
+					break;
+				}
+			case MMT_MediumMatching: {
+					ui->labelMatchingDescription->setText(tr("Check only the most possible constructions for matching with space surfaces."));
+					break;
+				}
+			case MMT_NoMatching: {
+					ui->labelMatchingDescription->setText(tr("No matching test. All created space boundaries doesn't have constructions. No windows or doors possible."));
+					break;
+				}
+		}
+
+	}
+}
 
 void ImportWPConvert::initializePage() {
 	ui->textEdit->clear();
 	int sbCount = m_reader->numberOfIFCSpaceBoundaries();
-	ui->checkBoxUseSpaceBoundaries->setEnabled(sbCount > 0);
-	if(sbCount == 0) {
+	bool useSpaceBoundaries = sbCount > 0;
+	ui->checkBoxUseSpaceBoundaries->setEnabled(useSpaceBoundaries);
+	ui->checkBoxUseSpaceBoundaries->setChecked(useSpaceBoundaries);
+	ui->comboBoxMatchingType->setEnabled(!useSpaceBoundaries);
+	ui->checkBoxAdvancedSettings->setEnabled(!useSpaceBoundaries);
+	if(!useSpaceBoundaries) {
 		ui->labelSBDescription->setText(tr("There are no space boundaries in the IFC file"));
-		ui->checkBoxUseSpaceBoundaries->setChecked(false);
-		ui->groupBoxMatchingSettings->setEnabled(true);
 	}
 	else {
 		ui->labelSBDescription->setText(tr("There are %1 space boundaries in the IFC file").arg(sbCount));
@@ -79,15 +122,12 @@ void ImportWPConvert::initializePage() {
 	ui->doubleSpinBoxMatchConstructionFactor->setValue(m_reader->convertOptions().m_distanceFactor);
 	ui->doubleSpinBoxMatchOpeningDistance->setValue(m_reader->convertOptions().m_openingDistance);
 	ui->checkBoxMatchOpeningsInWalls->setChecked(m_reader->convertOptions().m_matchOpeningsOnlyInWalls);
+
 }
 
 
 bool ImportWPConvert::isComplete() const {
 	IFCC::Logger::instance() << "isComplete";
-
-	bool ignoreErrors = ui->checkBoxIgnorErrors->isChecked();
-	if(ignoreErrors)
-		return true;
 
 	return m_convertSuccessfully;
 }
@@ -148,6 +188,7 @@ void ImportWPConvert::setText() {
 	}
 
 	if(m_convertSuccessfully) {
+		text << tr("Converting was successful");
 		if(!m_reader->m_errorText.empty()) {
 			text << tr("<font color=\"#FF0000\">Errors while converting:</font>");
 			QString errTxt = QString::fromStdString(m_reader->m_errorText);
@@ -200,6 +241,7 @@ void ImportWPConvert::setText() {
 			text << QString::fromStdString(m_reader->m_errorText);
 		}
 	}
+	ui->textEdit->setHtml(text.join("<br>"));
 }
 
 void ImportWPConvert::initElements() {
@@ -228,11 +270,10 @@ void ImportWPConvert::on_pushButtonConvert_clicked() {
 
 	initElements();
 	m_convertSuccessfully = m_reader->convert(ui->checkBoxUseSpaceBoundaries->isChecked());
-
-	IFCC::Logger::instance() << "convert successful " << m_convertSuccessfully;
 	setText();
 
-	IFCC::Logger::instance() << "setText";
+	if(ui->checkBoxIgnorErrors->isChecked())
+		m_convertSuccessfully = true;
 
 	emit completeChanged();
 }
@@ -294,5 +335,25 @@ void ImportWPConvert::on_radioButtonMatchingNo_clicked() {
 
 void ImportWPConvert::on_checkBoxUseSpaceBoundaries_clicked() {
 	ui->groupBoxMatchingSettings->setEnabled(!ui->checkBoxUseSpaceBoundaries->isChecked());
+	ui->comboBoxMatchingType->setEnabled(!ui->checkBoxUseSpaceBoundaries->isChecked());
+	ui->checkBoxAdvancedSettings->setEnabled(!ui->checkBoxUseSpaceBoundaries->isChecked());
+	if(ui->checkBoxUseSpaceBoundaries->isChecked()) {
+		ui->labelMatchingDescription->setText(tr("No matching"));
+	}
+	else {
+		MatchingMainType type = static_cast<MatchingMainType>(ui->comboBoxMatchingType->currentData().toInt());
+		setMatching(type);
+	}
+}
+
+
+void ImportWPConvert::on_checkBoxAdvancedSettings_toggled(bool checked) {
+	ui->widgetAdvancedSettings->setVisible(checked);
+}
+
+
+void ImportWPConvert::on_comboBoxMatchingType_currentIndexChanged(int index) {
+	MatchingMainType type = static_cast<MatchingMainType>(ui->comboBoxMatchingType->currentData().toInt());
+	setMatching(type);
 }
 

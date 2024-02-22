@@ -20,6 +20,8 @@ ImportWPRead::ImportWPRead(QWidget *parent, IFCC::IFCReader* reader) :
 	ui->pushButtonRead->setEnabled(false);
 	ui->checkBoxIgnoreReadError->setChecked(true);
 
+	ui->textEdit->setHtml(tr("The reading of the IFC file will start immidiately after enter a valid filename."));
+
 }
 
 ImportWPRead::~ImportWPRead() {
@@ -39,8 +41,10 @@ void ImportWPRead::on_toolButtonOpenIFCFile_clicked() {
 	else {
 		ui->lineEditIFCFile->clear();
 		ui->pushButtonRead->setEnabled(false);
+		ui->textEdit->setHtml(tr("No filename."));
+
 	}
-	ui->textEdit->clear();
+//	ui->textEdit->clear();
 }
 
 
@@ -66,6 +70,7 @@ void ImportWPRead::on_pushButtonRead_clicked() {
 		text << tr("File read successfully with %1 IFC entities.").arg(number);
 		text << tr("Project contains %1 buildings and %2 spaces.").arg(buildings).arg(spaces);
 		ui->textEdit->setHtml(text.join("<br>"));
+		qApp->processEvents();
 	}
 	else {
 		QStringList text;
@@ -92,9 +97,23 @@ void ImportWPRead::on_pushButtonRead_clicked() {
 			}
 		}
 		ui->textEdit->setHtml(text.join("<br>"));
+		qApp->processEvents();
 		if(!ignoreError || hasFatalErrors)
 			m_readSuccessfully = false;
 	}
 	emit completeChanged();
+}
+
+
+void ImportWPRead::on_lineEditIFCFile_textChanged(const QString &arg1) {
+	QFileInfo finfo(arg1);
+	if(finfo.isFile()) {
+		ui->textEdit->setHtml(tr("Filename is valid. Start reading."));
+		qApp->processEvents();
+		on_pushButtonRead_clicked();
+	}
+	else {
+		ui->textEdit->setHtml(tr("This is not a valid filename."));
+	}
 }
 
