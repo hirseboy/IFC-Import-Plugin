@@ -86,19 +86,19 @@ HEADERS += \
 	../../src/ImportWPRead.h \
 	../../src/ImportWizard.h
 
-QMAKE_LIBDIR += ../../../../externals/lib$${DIR_PREFIX}
+QMAKE_LIBDIR += ../../../lib$${DIR_PREFIX}
 
-LIBS += -L../../../../externals/lib$${DIR_PREFIX}
+LIBS += -L../../../lib$${DIR_PREFIX}
 
 LIBS += \
-	../../../../externals/lib$${DIR_PREFIX}/libIFCConvert.a \
-	../../../../externals/lib$${DIR_PREFIX}/libclipper.a \
-	../../../../externals/lib$${DIR_PREFIX}/libifcplusplus.a \
-	../../../../externals/lib$${DIR_PREFIX}/libCarve.a \
-	../../../../externals/lib$${DIR_PREFIX}/libQtExt.a \
-	../../../../externals/lib$${DIR_PREFIX}/libTiCPP.a \
-	../../../../externals/lib$${DIR_PREFIX}/libIBKMK.a \
-	../../../../externals/lib$${DIR_PREFIX}/libIBK.a
+	../../../lib$${DIR_PREFIX}/libIFCConvert.a \
+	../../../lib$${DIR_PREFIX}/libclipper.a \
+	../../../lib$${DIR_PREFIX}/libifcplusplus.a \
+	../../../lib$${DIR_PREFIX}/libCarve.a \
+	../../../lib$${DIR_PREFIX}/libQtExt.a \
+	../../../lib$${DIR_PREFIX}/libTiCPP.a \
+	../../../lib$${DIR_PREFIX}/libIBKMK.a \
+	../../../lib$${DIR_PREFIX}/libIBK.a
 
 win32:LIBS += -liphlpapi
 win32:LIBS += -lshell32
