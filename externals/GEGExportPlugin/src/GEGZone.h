@@ -3,19 +3,24 @@
 
 #include <QString>
 
-class GEGZone
-{
-public:
-	GEGZone();
+#include "GEGRoom.h"
+#include "GEGSurface.h"
 
-	int		m_id;
-	QString	m_name;
-	double	m_TiSoll;
-	double	m_TiSollWE;
-	double	m_ANGF;
-	double	m_Vi;
-	double	m_Ve;
-	int		m_zoneId;
+class GEGZone {
+public:
+	GEGZone(int id = -1) :
+		m_id(id)
+	{}
+
+	void update();
+
+	int						m_id = -1;
+	QString					m_name;
+	std::vector<GEGRoom>	m_rooms;
+	double					m_totalANGF = 0;
+	double					m_totalVi = 0;
+	double					m_totalVe = 0;
+	std::vector<GEGSurface>	m_surfaces;
 };
 
 #endif // GEGZoneH

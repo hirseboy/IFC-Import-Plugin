@@ -25,55 +25,34 @@ contains(QT_ARCH, i386): {
 	DIR_PREFIX = _x64
 }
 
-QMAKE_LIBDIR += ../../../lib$${DIR_PREFIX}
-
-LIBS += -L../../../lib$${DIR_PREFIX}
-
-LIBS += \
-	../../../lib$${DIR_PREFIX}/libQtExt.a \
-	../../../lib$${DIR_PREFIX}/libDataIO.a \
-	../../../lib$${DIR_PREFIX}/libCCM.a \
-	../../../lib$${DIR_PREFIX}/libTiCPP.a \
-	../../../lib$${DIR_PREFIX}/libIBKMK.a \
-	../../../lib$${DIR_PREFIX}/libVicus.a \
-	../../../lib$${DIR_PREFIX}/libNandrad.a \
-	../../../lib$${DIR_PREFIX}/libIBK.a
-
-win32:LIBS += -liphlpapi
-win32:LIBS += -lshell32
-
-win32-msvc* {
-	QMAKE_CXXFLAGS += /std:c++17
-}
-
 INCLUDEPATH = \
 	../../src \
 	../../../IBK/src \
 	../../../IBKMK/src \
 	../../../TiCPP/src \
 	../../../Nandrad/src \
-	../../..//Vicus/src \
+	../../../Vicus/src \
 	../../../QtExt/src
 
 CONFIG(debug, debug|release) {
 	OBJECTS_DIR = debug$${DIR_PREFIX}
 	windows {
-				DESTDIR = ../../../lib$${DIR_PREFIX}
-				DLLDESTDIR = ../../../../bin/debug$${DIR_PREFIX}
+		DESTDIR = ../../../lib$${DIR_PREFIX}
+		DLLDESTDIR = ../../../../bin/debug$${DIR_PREFIX}
 	}
-		else {
-			DESTDIR = ../../../../bin/debug$${DIR_PREFIX}
-		}
+	else {
+	    DESTDIR = ../../../../bin/debug$${DIR_PREFIX}
+	}
 }
 else {
 	OBJECTS_DIR = release
 	windows {
-				DESTDIR = ../../../lib$${DIR_PREFIX}
-				DLLDESTDIR = ../../../../bin/release$${DIR_PREFIX}
+		DESTDIR = ../../../lib$${DIR_PREFIX}
+		DLLDESTDIR = ../../../../bin/release$${DIR_PREFIX}
 	}
-		else {
-			DESTDIR = ../../../../bin/release$${DIR_PREFIX}
-		}
+	else {
+	    DESTDIR = ../../../../bin/release$${DIR_PREFIX}
+	}
 }
 
 !windows {
@@ -84,18 +63,48 @@ MOC_DIR = moc
 UI_DIR = ui
 
 SOURCES += \
+	../../src/GEGConstruction.cpp \
 	../../src/GEGExportPlugin.cpp \
 	../../src/GEGExportMessageHandler.cpp \
 	../../src/ExportWizard.cpp \
+	../../src/GEGMaterial.cpp \
+	../../src/GEGRoom.cpp \
+	../../src/GEGSurface.cpp \
 	../../src/GEGZone.cpp
 
 HEADERS += \
+	../../src/GEGConstruction.h \
 	../../src/GEGExportMessageHandler.h \
+	../../src/GEGMaterial.h \
+	../../src/GEGRoom.h \
+	../../src/GEGSurface.h \
 	../../src/GEGZone.h \
 	../../src/SVCommonPluginInterface.h \
 	../../src/SVExportPluginInterface.h \
 	../../src/GEGExportPlugin.h \
 	../../src/ExportWizard.h
+
+QMAKE_LIBDIR += ../../../lib$${DIR_PREFIX}
+
+LIBS += -L../../../lib$${DIR_PREFIX}
+
+LIBS += \
+	../../../lib$${DIR_PREFIX}/libQtExt.a \
+	../../../lib$${DIR_PREFIX}/libDataIO.a \
+	../../../lib$${DIR_PREFIX}/libCCM.a \
+	../../../lib$${DIR_PREFIX}/libVicus.a \
+	../../../lib$${DIR_PREFIX}/libNandrad.a \
+	../../../lib$${DIR_PREFIX}/libTiCPP.a \
+	../../../lib$${DIR_PREFIX}/libIBKMK.a \
+	../../../lib$${DIR_PREFIX}/libIBK.a
+
+win32:LIBS += -liphlpapi
+win32:LIBS += -lshell32
+
+win32-msvc* {
+	QMAKE_CXXFLAGS += /std:c++17
+}
+
 
 # Default rules for deployment.
 # unix {

@@ -11,6 +11,8 @@
 
 #include <VICUS_Project.h>
 #include <VICUS_Constants.h>
+#include <VICUS_utilities.h>
+#include <VICUS_ZoneTemplate.h>
 
 #include <QDir>
 
@@ -46,32 +48,57 @@ bool GEGExportPlugin::getProject(QWidget * parent, const QString& projectText) {
 		notifyer->m_prgDlg->setMinimumDuration(0);
 		notifyer->notify(0, "");
 		project.readImportedXML(projectText, notifyer.get());
+		project.updatePointers();
 	}
 	catch(IBK::Exception& e) {
 		return false;
 	}
 
-	if(project.m_buildings.size() == 0 || project.m_buildings.size()) {
+	if(project.m_buildings.size() == 0 || project.m_buildings.size() > 1) {
 		return false;
 	}
 
-	std::vector<GEGZone>	zones;
+	std::vector<GEGRoom>	rooms;
+	std::vector<GEGConstruction>	constructions;
+	int	nonValidUsageId = -1;
+	int id = 0;
+	int surfaceId = 1;
 
-	for( const auto& storey : project.m_buildings.front().m_buildingLevels) {
-		for( auto room : storey.m_rooms) {
-			zones.push_back(GEGZone());
-			if(room.m_netFloorArea <= 0)
-				room.calculateFloorArea();
-			zones.back().m_ANGF = room.m_netFloorArea;
-			if(room.m_volume <= 0)
-				room.calculateVolume();
-			zones.back().m_Vi = room.m_volume;;
-			zones.back().m_Ve = room.m_volume;
-			if(room.m_idZoneTemplate != VICUS::INVALID_ID) {
+	for( auto& storey : project.m_buildings.front().m_buildingLevels) {
+		for( auto& room : storey.m_rooms) {
+			rooms.push_back(GEGRoom(id++));
+			GEGRoom& currRoom = rooms.back();
+			currRoom.set(room, project, nonValidUsageId);
 
+			// get surfaces
+			for(const auto& surf : room.m_surfaces) {
+				currRoom.m_surfaces.push_back(GEGSurface(surfaceId++));
+				GEGSurface& currSurf = currRoom.m_surfaces.back();
+				currSurf.m_zoneId = currRoom.m_id;
+				GEGConstruction constr = currSurf.set(surf, project);
+				if(constr.valid())
+					constructions.push_back(constr);
+				else {
+					if(!constr.m_errors.isEmpty())
+						m_errors << constr.m_errors;
+				}
 			}
 		}
 	}
+
+	std::map<int,GEGZone> zones;
+	for(auto& room : rooms) {
+		zones[room.m_zoneTemplateId].m_rooms.push_back(room);
+	}
+
+	id = 1;
+	for(auto& zoneIt : zones) {
+		GEGZone& zone = zoneIt.second;
+		zone.m_id = id++;
+		zone.update();
+		m_zones.push_back(zone);
+	}
+
 
 	return true;
 }
