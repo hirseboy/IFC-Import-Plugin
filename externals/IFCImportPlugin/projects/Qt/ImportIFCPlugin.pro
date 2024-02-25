@@ -45,22 +45,22 @@ INCLUDEPATH = \
 CONFIG(debug, debug|release) {
 	OBJECTS_DIR = debug$${DIR_PREFIX}
 	windows {
-                DESTDIR = ../../../lib$${DIR_PREFIX}
-                DLLDESTDIR = ../../../../bin/debug$${DIR_PREFIX}
+				DESTDIR = ../../../lib$${DIR_PREFIX}
+				DLLDESTDIR = ../../../../bin/debug$${DIR_PREFIX}
 	}
-        else {
-            DESTDIR = ../../../../bin/debug$${DIR_PREFIX}
-        }
+		else {
+			DESTDIR = ../../../../bin/debug$${DIR_PREFIX}
+		}
 }
 else {
 	OBJECTS_DIR = release
 	windows {
-                DESTDIR = ../../../lib$${DIR_PREFIX}
-                DLLDESTDIR = ../../../../bin/release$${DIR_PREFIX}
+				DESTDIR = ../../../lib$${DIR_PREFIX}
+				DLLDESTDIR = ../../../../bin/release$${DIR_PREFIX}
 	}
-        else {
-            DESTDIR = ../../../../bin/release$${DIR_PREFIX}
-        }
+		else {
+			DESTDIR = ../../../../bin/release$${DIR_PREFIX}
+		}
 }
 
 !windows {
@@ -90,6 +90,18 @@ QMAKE_LIBDIR += ../../../lib$${DIR_PREFIX}
 
 LIBS += -L../../../lib$${DIR_PREFIX}
 
+windows {
+	LIBS += \
+		-lQtExt \
+		-lIFCConvert \
+		-lclipper \
+		-lifcplusplus \
+		-lCarve \
+		-lTiCPP \
+		-lIBKMK \
+		-lIBK
+}
+else {
 LIBS += \
 	../../../lib$${DIR_PREFIX}/libIFCConvert.a \
 	../../../lib$${DIR_PREFIX}/libclipper.a \
@@ -99,6 +111,7 @@ LIBS += \
 	../../../lib$${DIR_PREFIX}/libTiCPP.a \
 	../../../lib$${DIR_PREFIX}/libIBKMK.a \
 	../../../lib$${DIR_PREFIX}/libIBK.a
+}
 
 win32:LIBS += -liphlpapi
 win32:LIBS += -lshell32
