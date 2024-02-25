@@ -59,7 +59,7 @@ bool GEGExportPlugin::getProject(QWidget * parent, const QString& projectText) {
 	}
 
 	std::vector<GEGRoom>	rooms;
-	std::vector<GEGConstruction>	constructions;
+	std::map<int,GEGConstruction>	constructions;
 	int	nonValidUsageId = -1;
 	int id = 0;
 	int surfaceId = 1;
@@ -76,8 +76,10 @@ bool GEGExportPlugin::getProject(QWidget * parent, const QString& projectText) {
 				GEGSurface& currSurf = currRoom.m_surfaces.back();
 				currSurf.m_zoneId = currRoom.m_id;
 				GEGConstruction constr = currSurf.set(surf, project);
-				if(constr.valid())
-					constructions.push_back(constr);
+				if(constr.valid()) {
+					if(constructions.find(constr.m_constructionId) == constructions.end())
+						constructions[constr.m_constructionId] = constr;
+				}
 				else {
 					if(!constr.m_errors.isEmpty())
 						m_errors << constr.m_errors;
