@@ -41,7 +41,7 @@ CONFIG(debug, debug|release) {
 		DLLDESTDIR = ../../../../bin/debug$${DIR_PREFIX}
 	}
 	else {
-	    DESTDIR = ../../../../bin/debug$${DIR_PREFIX}
+		DESTDIR = ../../../../bin/debug$${DIR_PREFIX}
 	}
 }
 else {
@@ -51,7 +51,7 @@ else {
 		DLLDESTDIR = ../../../../bin/release$${DIR_PREFIX}
 	}
 	else {
-	    DESTDIR = ../../../../bin/release$${DIR_PREFIX}
+		DESTDIR = ../../../../bin/release$${DIR_PREFIX}
 	}
 }
 
@@ -88,7 +88,19 @@ QMAKE_LIBDIR += ../../../lib$${DIR_PREFIX}
 
 LIBS += -L../../../lib$${DIR_PREFIX}
 
-LIBS += \
+windows {
+	LIBS += \
+		-lQtExt \
+		-lDataIO \
+		-lCCM \
+		-lVicus \
+		-lNandrad \
+		-lTiCPP \
+		-lIBKMK \
+		-lIBK
+}
+else {
+	LIBS += \
 	../../../lib$${DIR_PREFIX}/libQtExt.a \
 	../../../lib$${DIR_PREFIX}/libDataIO.a \
 	../../../lib$${DIR_PREFIX}/libCCM.a \
@@ -97,6 +109,7 @@ LIBS += \
 	../../../lib$${DIR_PREFIX}/libTiCPP.a \
 	../../../lib$${DIR_PREFIX}/libIBKMK.a \
 	../../../lib$${DIR_PREFIX}/libIBK.a
+}
 
 win32:LIBS += -liphlpapi
 win32:LIBS += -lshell32
