@@ -63,6 +63,7 @@ MOC_DIR = moc
 UI_DIR = ui
 
 SOURCES += \
+	../../src/ExportWPRead.cpp \
 	../../src/GEGConstruction.cpp \
 	../../src/GEGExportPlugin.cpp \
 	../../src/GEGExportMessageHandler.cpp \
@@ -73,6 +74,7 @@ SOURCES += \
 	../../src/GEGZone.cpp
 
 HEADERS += \
+	../../src/ExportWPRead.h \
 	../../src/GEGConstruction.h \
 	../../src/GEGExportMessageHandler.h \
 	../../src/GEGMaterial.h \
@@ -126,6 +128,7 @@ win32-msvc* {
 # !isEmpty(target.path): INSTALLS += target
 
 FORMS += \
+	../../src/ExportWPRead.ui \
 	../../src/ExportWizard.ui
 
 TRANSLATIONS += ../../resources/translations/GEGExportPlugin_de.ts

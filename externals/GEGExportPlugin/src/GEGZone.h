@@ -12,6 +12,8 @@ public:
 		m_id(id)
 	{}
 
+	GEGZone(const GEGRoom& room, int id);
+
 	void update();
 
 	int						m_id = -1;

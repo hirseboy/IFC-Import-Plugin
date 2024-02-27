@@ -17,6 +17,7 @@
 #include <QDir>
 
 #include "GEGZone.h"
+#include "ExportWizard.h"
 
 
 class ProgressNotifyer : public IBK::NotificationHandler {
@@ -40,6 +41,7 @@ GEGExportPlugin::GEGExportPlugin(QObject *parent)
 }
 
 bool GEGExportPlugin::getProject(QWidget * parent, const QString& projectText) {
+
 	VICUS::Project project;
 	try {
 		std::unique_ptr<ProgressNotifyer> notifyer(new ProgressNotifyer);
@@ -54,55 +56,11 @@ bool GEGExportPlugin::getProject(QWidget * parent, const QString& projectText) {
 		return false;
 	}
 
-	if(project.m_buildings.size() == 0 || project.m_buildings.size() > 1) {
+	ExportWizard wz(parent, &project);
+
+	if (wz.exec() == QDialog::Rejected)
 		return false;
-	}
 
-	std::vector<GEGRoom>	rooms;
-	std::map<int,GEGConstruction>	constructions;
-	int	nonValidUsageId = -1;
-	int id = 0;
-	int surfaceId = 1;
-
-	for( auto& storey : project.m_buildings.front().m_buildingLevels) {
-		for( auto& room : storey.m_rooms) {
-			rooms.push_back(GEGRoom(id++));
-			GEGRoom& currRoom = rooms.back();
-			currRoom.set(room, project, nonValidUsageId);
-
-			// get surfaces
-			for(const auto& surf : room.m_surfaces) {
-				currRoom.m_surfaces.push_back(GEGSurface(surfaceId++));
-				GEGSurface& currSurf = currRoom.m_surfaces.back();
-				currSurf.m_zoneId = currRoom.m_id;
-				GEGConstruction constr = currSurf.set(surf, project);
-				if(constr.valid()) {
-					if(constructions.find(constr.m_constructionId) == constructions.end())
-						constructions[constr.m_constructionId] = constr;
-				}
-				else {
-					if(!constr.m_errors.isEmpty())
-						m_errors << constr.m_errors;
-				}
-			}
-		}
-	}
-
-	std::map<int,GEGZone> zones;
-	for(auto& room : rooms) {
-		zones[room.m_zoneTemplateId].m_rooms.push_back(room);
-	}
-
-	id = 1;
-	for(auto& zoneIt : zones) {
-		GEGZone& zone = zoneIt.second;
-		zone.m_id = id++;
-		zone.update();
-		m_zones.push_back(zone);
-	}
-
-
-	return true;
 }
 
 QString GEGExportPlugin::title() const {
@@ -110,7 +68,7 @@ QString GEGExportPlugin::title() const {
 }
 
 QString GEGExportPlugin::exportMenuCaption() const {
-	return tr("Import IFC file");
+	return tr("Export GEG file");
 }
 
 void GEGExportPlugin::setLanguage(QString langId, QString appname) {
@@ -133,7 +91,7 @@ void GEGExportPlugin::setLanguage(QString langId, QString appname) {
 	// adjust log file verbosity
 	m_msgHandler.setLogfileVerbosityLevel( IBK::VL_DEVELOPER );
 
-	QtExt::Directories::appname = "ImportIFCPlugin";
+	QtExt::Directories::appname = "ExportGEGPlugin";
 
 	QtExt::LanguageHandler::instance().installTranslator(langId);
 }

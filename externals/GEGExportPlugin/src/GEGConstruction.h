@@ -11,6 +11,7 @@
 namespace VICUS {
 	class Construction;
 	class Project;
+	class Window;
 }
 
 class GEGConstruction
@@ -20,7 +21,9 @@ public:
 		m_id(id)
 	{}
 
-	void set(const VICUS::Construction& constr, const VICUS::Project& project);
+	bool set(const VICUS::Construction& constr, const VICUS::Project& project);
+
+	bool set(const VICUS::Window& window, const VICUS::Project& project);
 
 	double calculateUValue(double ri, double re);
 
@@ -34,6 +37,8 @@ public:
 	QString										m_name;
 	std::vector<std::pair<double,GEGMaterial>>	m_layers;
 	QStringList									m_errors;
+	bool										m_isWindow = false;
+	double										m_glazingUValue = 0;
 };
 
 #endif // GEGConstructionH

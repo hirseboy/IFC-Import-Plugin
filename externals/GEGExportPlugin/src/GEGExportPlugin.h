@@ -1,10 +1,9 @@
-#ifndef IFCExportPlugin_H
-#define IFCExportPlugin_H
+#ifndef GEGExportPlugin_H
+#define GEGExportPlugin_H
 
 #include <SVExportPluginInterface.h>
 
 #include "GEGExportMessageHandler.h"
-#include "GEGZone.h"
 
 #define GEGExportPlugin_iid "de.dresden-tu.arch.ibk.GEGExportPlugin/1.0"
 
@@ -24,9 +23,6 @@ public:
 
 private:
 	GEGExportMessageHandler m_msgHandler;
-	QString					m_ifcFileName;
-	std::vector<GEGZone>	m_zones;
-	QStringList				m_errors;
 };
 
-#endif // IFCExportPlugin_H
+#endif // GEGExportPlugin_H

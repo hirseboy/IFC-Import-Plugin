@@ -1,9 +1,13 @@
 #include "ExportWizard.h"
 #include "ui_ExportWizard.h"
 
-ExportWizard::ExportWizard(QWidget *parent) :
+#include "ExportWPRead.h"
+
+ExportWizard::ExportWizard(QWidget *parent, VICUS::Project* project) :
 	QWizard(parent),
-	ui(new Ui::ExportWizard)
+	ui(new Ui::ExportWizard),
+	m_project(project),
+	m_pageRead(new ExportWPRead(this, project))
 {
 	ui->setupUi(this);
 
@@ -13,6 +17,8 @@ ExportWizard::ExportWizard(QWidget *parent) :
 
 	setWindowTitle(tr("Export GEG Assistant"));
 	setMinimumWidth(800);
+
+	addPage(m_pageRead);
 }
 
 ExportWizard::~ExportWizard() {
