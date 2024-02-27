@@ -1,0 +1,1303 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<VicusProject fileVersion="0.9">
+	<ProjectInfo>
+		<Created>Mi Okt 5 15:11:20 2022</Created>
+		<LastEdited>Fr Nov 25 15:07:20 2022</LastEdited>
+	</ProjectInfo>
+	<Project>
+		<SolverParameter>
+			<Integrator>CVODE</Integrator>
+			<LesSolver>KLU</LesSolver>
+			<Preconditioner>ILU</Preconditioner>
+		</SolverParameter>
+		<SimulationParameter>
+			<IBK:IntPara name="StartYear">2019</IBK:IntPara>
+			<Interval>
+				<IBK:Parameter name="Start" unit="d">0</IBK:Parameter>
+				<IBK:Parameter name="End" unit="a">1</IBK:Parameter>
+			</Interval>
+			<SolarLoadsDistributionModel>
+				<DistributionType>AreaWeighted</DistributionType>
+				<IBK:Parameter name="RadiationLoadFractionZone" unit="%">50</IBK:Parameter>
+				<IBK:Parameter name="RadiationLoadFractionFloor" unit="%">80</IBK:Parameter>
+				<IBK:Parameter name="RadiationLoadFractionCeiling" unit="%">10</IBK:Parameter>
+				<IBK:Parameter name="RadiationLoadFractionWalls" unit="%">10</IBK:Parameter>
+			</SolarLoadsDistributionModel>
+		</SimulationParameter>
+		<Location>
+			<IBK:Parameter name="Latitude" unit="Deg">51.09969916</IBK:Parameter>
+			<IBK:Parameter name="Longitude" unit="Deg">13.69019172</IBK:Parameter>
+			<IBK:Parameter name="Albedo" unit="---">0.2</IBK:Parameter>
+			<TimeZone>1</TimeZone>
+			<ClimateFilePath>${Project Directory}/Klima/TRY2015_510997136902_Jahr.dat</ClimateFilePath>
+		</Location>
+		<Outputs>
+			<Grids>
+				<OutputGrid name="Stundenwerte">
+					<Intervals>
+						<Interval>
+							<IBK:Parameter name="Start" unit="d">0</IBK:Parameter>
+							<IBK:Parameter name="StepSize" unit="h">1</IBK:Parameter>
+						</Interval>
+					</Intervals>
+				</OutputGrid>
+			</Grids>
+			<IBK:Flag name="CreateDefaultZoneOutputs">true</IBK:Flag>
+		</Outputs>
+		<ViewSettings>
+			<CameraTranslation>-11.5323 -16.2906 15.6297</CameraTranslation>
+			<RotationMatrix>
+				<Wp>-0.821024</Wp>
+				<X>-0.489427</X>
+				<Y>0.15135</Y>
+				<Z>0.254223</Z>
+			</RotationMatrix>
+			<FarDistance>10000</FarDistance>
+			<GridPlanes>
+				<GridPlane color="#ffffff" width="500" spacing="10">
+					<Offset>0 0 0</Offset>
+					<Normal>0 0 1</Normal>
+					<LocalX>1 0 0</LocalX>
+				</GridPlane>
+			</GridPlanes>
+		</ViewSettings>
+		<Buildings>
+			<Building id="4" displayName="Heiko">
+				<BuildingLevels>
+					<BuildingLevel id="5" displayName="EG">
+						<Elevation>0</Elevation>
+						<Height>2.7</Height>
+						<Rooms>
+							<Room id="27" displayName="EG_Zimmer">
+								<IdZoneTemplate>1082501</IdZoneTemplate>
+								<IBK:Parameter name="Area" unit="m2">13.49</IBK:Parameter>
+								<IBK:Parameter name="Volume" unit="m3">44.51371034</IBK:Parameter>
+								<Surfaces>
+									<Surface id="42" displayName="Wall" displayColor="#c8c88c">
+										<SubSurfaces>
+											<SubSurface id="308" displayName="Fenster_4">
+												<Polygon2D>0.83 2.04555, 0.83 0.88555, 2.48 0.88555, 2.48 2.04555</Polygon2D>
+											</SubSurface>
+										</SubSurfaces>
+										<Polygon3D offset="0.684998 4.46 1.3" normal="0 1 0" localX="0 0 1">0 0, 3.3 0, 3.3 2.87, 0 2.87</Polygon3D>
+									</Surface>
+									<Surface id="43" displayName="Wall(2)" displayColor="#c8c88c">
+										<Polygon3D offset="3.555 4.46 1.3" normal="1 0 -0" localX="0 0 1">0 0, 3.3 0, 3.3 4.7, 0 4.7</Polygon3D>
+									</Surface>
+									<Surface id="44" displayName="GroundFloor_2" displayColor="#566094">
+										<Polygon3D offset="3.555 4.46 1.3" normal="-0 -0 -1" localX="0 -1 0">0 0, 4.7 0, 4.7 2.87, 0 2.87</Polygon3D>
+									</Surface>
+									<Surface id="45" displayName="Wall(1)_2" displayColor="#c8c88c">
+										<Polygon3D offset="0.684998 -0.24 1.3" normal="-1 0 0" localX="0 0 1">0 0, 3.3 0, 3.3 4.7, 0 4.7</Polygon3D>
+									</Surface>
+									<Surface id="46" displayName="Wall(3)_2" displayColor="#c8c88c">
+										<Polygon3D offset="3.555 -0.24 1.3" normal="0 -1 0" localX="0 0 1">0 0, 3.3 0, 3.3 2.87, 0 2.87</Polygon3D>
+									</Surface>
+									<Surface id="47" displayName="Roof_5" displayColor="#963214">
+										<Polygon3D offset="3.555 3.46 4.6" normal="0 -0 1" localX="0 1 0">0 0, 1 0, 1 2.87, 0 2.87</Polygon3D>
+									</Surface>
+									<Surface id="48" displayName="Roof_6" displayColor="#963214">
+										<Polygon3D offset="0.684998 3.46 4.6" normal="-0 0 1" localX="0 -1 0">0 0, 3.7 0, 3.7 2.87, 0 2.87</Polygon3D>
+									</Surface>
+								</Surfaces>
+							</Room>
+							<Room id="28" displayName="EG_Flur1">
+								<IdZoneTemplate>1082501</IdZoneTemplate>
+								<IBK:Parameter name="Area" unit="m2">9.92</IBK:Parameter>
+								<IBK:Parameter name="Volume" unit="m3">32.75085693</IBK:Parameter>
+								<Surfaces>
+									<Surface id="49" displayName="Wall(4)" displayColor="#c8c88c">
+										<Polygon3D offset="3.555 -0.46 4.6" normal="1 0 0" localX="0 -1 0">0 0, 3 0, 3 3.3, 0 3.3</Polygon3D>
+									</Surface>
+									<Surface id="50" displayName="Wall(8)" displayColor="#c8c88c">
+										<SubSurfaces>
+											<SubSurface id="309" displayName="Fenster_19">
+												<Polygon2D>1.2 3.2, 0.1 3.2, 0.1 1, 1.2 1</Polygon2D>
+											</SubSurface>
+										</SubSurfaces>
+										<Polygon3D offset="2.365 -4.46 4.6" normal="-0 -1 -0" localX="-1 0 0">0 0, 1.25 0, 1.25 3.3, 0 3.3</Polygon3D>
+									</Surface>
+									<Surface id="51" displayName="Wall(9)_3" displayColor="#c8c88c">
+										<Polygon3D offset="0.684998 -0.46 1.3" normal="0 1 0" localX="0 0 1">0 0, 3.3 0, 3.3 2.87, 0 2.87</Polygon3D>
+									</Surface>
+									<Surface id="52" displayName="GroundFloor(1)_2" displayColor="#566094">
+										<Polygon3D offset="0.684998 -0.46 1.3" normal="0 0 -1" localX="1 0 0">0 0, 2.87 0, 2.87 3, 1.68 3, 1.68 4, 0.43 4, 0.43 3.15, 0 3.15</Polygon3D>
+									</Surface>
+									<Surface id="53" displayName="Wall(5)_2" displayColor="#c8c88c">
+										<Polygon3D offset="2.365 -3.57 1.3" normal="1 0 0" localX="0 1 0">0 0, 0.11 0, 0.11 3.3, 0 3.3</Polygon3D>
+									</Surface>
+									<Surface id="54" displayName="Wall(5)_5" displayColor="#c8c88c">
+										<Polygon3D offset="2.365 -3.57 4.6" normal="1 0 0" localX="0 -1 0">0 0, 0.89 0, 0.89 3.3, 0 3.3</Polygon3D>
+									</Surface>
+									<Surface id="55" displayName="Wall(6)_4" displayColor="#c8c88c">
+										<Polygon3D offset="2.475 -3.46 4.6" normal="-0 -1 -0" localX="-1 0 0">0 0, 0.11 0, 0.11 3.3, 0 3.3</Polygon3D>
+									</Surface>
+									<Surface id="56" displayName="Wall(6)_5" displayColor="#c8c88c">
+										<Polygon3D offset="2.475 -3.46 1.3" normal="0 -1 0" localX="1 0 0">0 0, 1.08 0, 1.08 3.3, 0 3.3</Polygon3D>
+									</Surface>
+									<Surface id="57" displayName="Wall(7)_4" displayColor="#c8c88c">
+										<Polygon3D offset="1.115 -3.72 4.6" normal="-1 0 0" localX="0 1 0">0 0, 0.11 0, 0.11 3.3, 0 3.3</Polygon3D>
+									</Surface>
+									<Surface id="58" displayName="Wall(7)_5" displayColor="#c8c88c">
+										<Polygon3D offset="1.115 -3.72 1.3" normal="-1 0 0" localX="0 -1 0">0 0, 0.74 0, 0.74 3.3, 0 3.3</Polygon3D>
+									</Surface>
+									<Surface id="59" displayName="Wall(10)_2" displayColor="#c8c88c">
+										<Polygon3D offset="0.684998 -1.66 4.6" normal="-1 0 0" localX="0 1 0">0 0, 0.12 0, 0.12 3.3, 0 3.3</Polygon3D>
+									</Surface>
+									<Surface id="60" displayName="Wall(10)_6" displayColor="#c8c88c">
+										<Polygon3D offset="0.684998 -1.66 1.3" normal="-1 0 0" localX="0 -1 0">0 0, 1.95 0, 1.95 3.3, 0 3.3</Polygon3D>
+									</Surface>
+									<Surface id="61" displayName="Wall(10)_7" displayColor="#c8c88c">
+										<Polygon3D offset="0.684998 -1.54 4.6" normal="-1 0 0" localX="0 1 0">0 0, 1.08 0, 1.08 3.3, 0 3.3</Polygon3D>
+									</Surface>
+									<Surface id="62" displayName="Wall(11)_2" displayColor="#c8c88c">
+										<Polygon3D offset="1.065 -3.61 1.3" normal="0 -1 0" localX="1 0 0">0 0, 0.05 0, 0.05 3.3, 0 3.3</Polygon3D>
+									</Surface>
+									<Surface id="63" displayName="Wall(11)_5" displayColor="#c8c88c">
+										<Polygon3D offset="1.065 -3.61 4.6" normal="-0 -1 -0" localX="-1 0 0">0 0, 0.38 0, 0.38 3.3, 0 3.3</Polygon3D>
+									</Surface>
+									<Surface id="64" displayName="Roof(1)_6" displayColor="#963214">
+										<Polygon3D offset="3.555 -0.46 4.6" normal="0 0 1" localX="-1 0 0">0 0, 2.87 0, 2.87 3.15, 2.44 3.15, 2.44 4, 1.19 4, 1.19 3, 0 3</Polygon3D>
+									</Surface>
+								</Surfaces>
+							</Room>
+							<Room id="29" displayName="Raum3">
+								<IdZoneTemplate>1082503</IdZoneTemplate>
+								<IBK:Parameter name="Area" unit="m2">0.96</IBK:Parameter>
+								<IBK:Parameter name="Volume" unit="m3">3.17196</IBK:Parameter>
+								<Surfaces>
+									<Surface id="65" displayName="Wall(12)" displayColor="#c8c88c">
+										<Polygon3D offset="3.555 -3.57 4.6" normal="1 0 0" localX="0 -1 0">0 0, 0.89 0, 0.89 3.3, 0 3.3</Polygon3D>
+									</Surface>
+									<Surface id="66" displayName="Wall(15)" displayColor="#c8c88c">
+										<SubSurfaces>
+											<SubSurface id="310" displayName="Fenster_5">
+												<Polygon2D>0.850586 2.47, 0.220586 2.47, 0.220586 0.82, 0.850586 0.82</Polygon2D>
+											</SubSurface>
+										</SubSurfaces>
+										<Polygon3D offset="3.555 -4.46 4.6" normal="-0 -1 -0" localX="-1 0 0">0 0, 1.08 0, 1.08 3.3, 0 3.3</Polygon3D>
+									</Surface>
+									<Surface id="67" displayName="Wall(14)_2" displayColor="#c8c88c">
+										<Polygon3D offset="2.475 -4.46 4.6" normal="-1 0 0" localX="0 1 0">0 0, 0.89 0, 0.89 3.3, 0 3.3</Polygon3D>
+									</Surface>
+									<Surface id="68" displayName="Wall(13)_3" displayColor="#c8c88c">
+										<Polygon3D offset="2.475 -3.57 1.3" normal="0 1 0" localX="0 0 1">0 0, 3.3 0, 3.3 1.08, 0 1.08</Polygon3D>
+									</Surface>
+									<Surface id="69" displayName="GroundFloor(2)_2" displayColor="#566094">
+										<Polygon3D offset="2.475 -4.46 1.3" normal="0 0 -1" localX="0 1 0">0 0, 0.89 0, 0.89 1.08, 0 1.08</Polygon3D>
+									</Surface>
+									<Surface id="70" displayName="Roof(2)_4" displayColor="#963214">
+										<Polygon3D offset="3.555 -4.46 4.6" normal="0 -0 1" localX="0 1 0">0 0, 0.89 0, 0.89 1.08, 0 1.08</Polygon3D>
+									</Surface>
+								</Surfaces>
+							</Room>
+							<Room id="30" displayName="Raum4">
+								<IdZoneTemplate>1082503</IdZoneTemplate>
+								<IBK:Parameter name="Area" unit="m2">0.28</IBK:Parameter>
+								<IBK:Parameter name="Volume" unit="m3">0.927961628</IBK:Parameter>
+								<Surfaces>
+									<Surface id="71" displayName="Wall(19)" displayColor="#c8c88c">
+										<Polygon3D offset="1.065 -4.46 4.6" normal="-0 -1 -0" localX="-1 0 0">0 0, 0.38 0, 0.38 3.3, 0 3.3</Polygon3D>
+									</Surface>
+									<Surface id="72" displayName="Wall(16)_3" displayColor="#c8c88c">
+										<Polygon3D offset="1.065 -3.72 4.6" normal="1 0 0" localX="0 -1 0">0 0, 0.74 0, 0.74 3.3, 0 3.3</Polygon3D>
+									</Surface>
+									<Surface id="73" displayName="Wall(17)_2" displayColor="#c8c88c">
+										<Polygon3D offset="0.684998 -3.72 4.6" normal="-0 1 0" localX="1 0 0">0 0, 0.38 0, 0.38 3.3, 0 3.3</Polygon3D>
+									</Surface>
+									<Surface id="74" displayName="GroundFloor(3)_2" displayColor="#566094">
+										<Polygon3D offset="0.684998 -3.72 1.3" normal="0 0 -1" localX="1 0 0">0 0, 0.38 0, 0.38 0.74, 0 0.74</Polygon3D>
+									</Surface>
+									<Surface id="75" displayName="Wall(18)_2" displayColor="#c8c88c">
+										<Polygon3D offset="0.684998 -4.46 4.6" normal="-1 0 0" localX="0 1 0">0 0, 0.74 0, 0.74 3.3, 0 3.3</Polygon3D>
+									</Surface>
+									<Surface id="76" displayName="Roof(3)_5" displayColor="#963214">
+										<Polygon3D offset="1.065 -3.72 4.6" normal="0 0 1" localX="-1 0 0">0 0, 0.38 0, 0.38 0.74, 0 0.74</Polygon3D>
+									</Surface>
+								</Surfaces>
+							</Room>
+							<Room id="31" displayName="EG_Wohnungszimmer">
+								<IdZoneTemplate>1082501</IdZoneTemplate>
+								<IBK:Parameter name="Area" unit="m2">22</IBK:Parameter>
+								<IBK:Parameter name="Volume" unit="m3">72.59998413</IBK:Parameter>
+								<Surfaces>
+									<Surface id="77" displayName="Wall(20)" displayColor="#c8c88c">
+										<SubSurfaces>
+											<SubSurface id="311" displayName="Tuer">
+												<Polygon2D>1e-05 1.8, 1e-05 0.96, 1.82001 0.96, 1.82001 1.8</Polygon2D>
+											</SubSurface>
+										</SubSurfaces>
+										<Polygon3D offset="-3.555 3.46 1.3" normal="0 1 0" localX="0 0 1">0 0, 3.3 0, 3.3 2, 0 2</Polygon3D>
+									</Surface>
+									<Surface id="78" displayName="Wall(21)" displayColor="#c8c88c">
+										<SubSurfaces>
+											<SubSurface id="312" displayName="Fenster_2">
+												<Polygon2D>0.83 1.5288, 0.83 0.368796, 2.48 0.368796, 2.48 1.5288</Polygon2D>
+											</SubSurface>
+										</SubSurfaces>
+										<Polygon3D offset="-3.555 -1.54 1.3" normal="-1 0 0" localX="0 0 1">0 0, 3.3 0, 3.3 5, 0 5</Polygon3D>
+									</Surface>
+									<Surface id="79" displayName="Wall(24)" displayColor="#c8c88c">
+										<SubSurfaces>
+											<SubSurface id="313" displayName="Fenster_3">
+												<Polygon2D>0.83 1.60301, 0.83 0.443009, 2.48 0.443009, 2.48 1.60301</Polygon2D>
+											</SubSurface>
+										</SubSurfaces>
+										<Polygon3D offset="-1.555 4.46 1.3" normal="0 1 0" localX="0 0 1">0 0, 3.3 0, 3.3 2, 0 2</Polygon3D>
+									</Surface>
+									<Surface id="80" displayName="Wall(25)" displayColor="#c8c88c">
+										<Polygon3D offset="-1.555 3.46 1.3" normal="-1 0 0" localX="0 0 1">0 0, 3.3 0, 3.3 1, 0 1</Polygon3D>
+									</Surface>
+									<Surface id="81" displayName="Wall(23)_4" displayColor="#c8c88c">
+										<Polygon3D offset="0.444998 -0.46 1.3" normal="1 0 0" localX="0 1 0">0 0, 0.22 0, 0.22 3.3, 0 3.3</Polygon3D>
+									</Surface>
+									<Surface id="82" displayName="Wall(23)_5" displayColor="#c8c88c">
+										<Polygon3D offset="0.444998 -0.24 1.3" normal="1 0 0" localX="0 1 0">0 0, 4.7 0, 4.7 3.3, 0 3.3</Polygon3D>
+									</Surface>
+									<Surface id="83" displayName="Wall(23)_6" displayColor="#c8c88c">
+										<Polygon3D offset="0.444998 -0.46 4.6" normal="1 0 0" localX="0 -1 0">0 0, 1.08 0, 1.08 3.3, 0 3.3</Polygon3D>
+									</Surface>
+									<Surface id="84" displayName="GroundFloor(4)_4" displayColor="#566094">
+										<Polygon3D offset="0.444998 -0.240001 1.3" normal="-0 -0 -1" localX="0 -1 0">0 0, 0.219998 0, 0.219998 4, 0 4</Polygon3D>
+									</Surface>
+									<Surface id="85" displayName="GroundFloor(4)_5" displayColor="#566094">
+										<Polygon3D offset="-3.555 -0.240001 1.3" normal="0 0 -1" localX="0 1 0">0 0, 3.7 0, 3.7 2, 4.7 2, 4.7 4, 0 4</Polygon3D>
+									</Surface>
+									<Surface id="86" displayName="GroundFloor(4)_6" displayColor="#566094">
+										<Polygon3D offset="0.444998 -0.459999 1.3" normal="-0 -0 -1" localX="0 -1 0">0 0, 1.08 0, 1.08 4, 0 4</Polygon3D>
+									</Surface>
+									<Surface id="87" displayName="Wall(22)_2" displayColor="#c8c88c">
+										<Polygon3D offset="0.444998 -1.54 1.3" normal="0 -1 0" localX="0 0 1">0 0, 3.3 0, 3.3 4, 0 4</Polygon3D>
+									</Surface>
+									<Surface id="88" displayName="Roof(4)_5" displayColor="#963214">
+										<Polygon3D offset="0.444998 -0.459999 4.6" normal="0 -0 1" localX="0 1 0">0 0, 0.219999 0, 0.219999 4, 0 4</Polygon3D>
+									</Surface>
+									<Surface id="89" displayName="Roof(4)_6" displayColor="#963214">
+										<Polygon3D offset="-3.555 -0.459999 4.6" normal="-0 0 1" localX="0 -1 0">0 0, 1.08 0, 1.08 4, 0 4</Polygon3D>
+									</Surface>
+									<Surface id="90" displayName="Roof(4)_7" displayColor="#963214">
+										<Polygon3D offset="0.444998 3.46 4.6" normal="0 -0 1" localX="0 1 0">0 0, 1 0, 1 2, 0 2</Polygon3D>
+									</Surface>
+									<Surface id="91" displayName="Roof(4)_8" displayColor="#963214">
+										<Polygon3D offset="-3.555 3.46 4.6" normal="-0 0 1" localX="0 -1 0">0 0, 3.7 0, 3.7 4, 0 4</Polygon3D>
+									</Surface>
+								</Surfaces>
+							</Room>
+							<Room id="32" displayName="EG_Kueche">
+								<IdZoneTemplate>1082501</IdZoneTemplate>
+								<IBK:Parameter name="Area" unit="m2">11.2</IBK:Parameter>
+								<IBK:Parameter name="Volume" unit="m3">36.95999384</IBK:Parameter>
+								<Surfaces>
+									<Surface id="92" displayName="Wall(32)" displayColor="#c8c88c">
+										<SubSurfaces>
+											<SubSurface id="314" displayName="Fenster_1">
+												<Polygon2D>0.83 1.86082, 0.83 0.860825, 2.48 0.860825, 2.48 1.86082</Polygon2D>
+											</SubSurface>
+										</SubSurfaces>
+										<Polygon3D offset="-3.555 -4.46 1.3" normal="-1 0 0" localX="0 0 1">0 0, 3.3 0, 3.3 2.8, 0 2.8</Polygon3D>
+									</Surface>
+									<Surface id="93" displayName="Wall(33)" displayColor="#c8c88c">
+										<SubSurfaces>
+											<SubSurface id="315" displayName="Fenster">
+												<Polygon2D>0.83 1.22058, 0.83 0.480576, 2.48 0.480576, 2.48 1.22058</Polygon2D>
+											</SubSurface>
+										</SubSurfaces>
+										<Polygon3D offset="0.444998 -4.46 1.3" normal="0 -1 0" localX="0 0 1">0 0, 3.3 0, 3.3 4, 0 4</Polygon3D>
+									</Surface>
+									<Surface id="94" displayName="Wall(30)_4" displayColor="#c8c88c">
+										<Polygon3D offset="0.444998 -3.61 1.3" normal="1 0 0" localX="0 1 0">0 0, 1.95 0, 1.95 3.3, 0 3.3</Polygon3D>
+									</Surface>
+									<Surface id="95" displayName="Wall(30)_5" displayColor="#c8c88c">
+										<Polygon3D offset="0.444998 -3.72 1.3" normal="1 0 0" localX="0 1 0">0 0, 0.11 0, 0.11 3.3, 0 3.3</Polygon3D>
+									</Surface>
+									<Surface id="96" displayName="Wall(30)_6" displayColor="#c8c88c">
+										<Polygon3D offset="0.444998 -3.72 4.6" normal="1 0 0" localX="0 -1 0">0 0, 0.74 0, 0.74 3.3, 0 3.3</Polygon3D>
+									</Surface>
+									<Surface id="97" displayName="Wall(31)_2" displayColor="#c8c88c">
+										<Polygon3D offset="-3.555 -1.66 1.3" normal="0 1 0" localX="0 0 1">0 0, 3.3 0, 3.3 4, 0 4</Polygon3D>
+									</Surface>
+									<Surface id="98" displayName="GroundFloor(6)_2" displayColor="#566094">
+										<Polygon3D offset="-3.555 -1.66 1.3" normal="0 0 -1" localX="1 0 0">0 0, 4 0, 4 2.8, 0 2.8</Polygon3D>
+									</Surface>
+									<Surface id="99" displayName="Roof(6)_2" displayColor="#963214">
+										<Polygon3D offset="0.444998 -1.66 4.6" normal="0 0 1" localX="-1 0 0">0 0, 4 0, 4 2.8, 0 2.8</Polygon3D>
+									</Surface>
+								</Surfaces>
+							</Room>
+						</Rooms>
+					</BuildingLevel>
+					<BuildingLevel id="329" displayName="OG1">
+						<Elevation>0</Elevation>
+						<Height>2.7</Height>
+						<Rooms>
+							<Room id="37" displayName="OG1_Schlafzimmer">
+								<IdZoneTemplate>1082501</IdZoneTemplate>
+								<IBK:Parameter name="Area" unit="m2">26.31</IBK:Parameter>
+								<IBK:Parameter name="Volume" unit="m3">74.97495</IBK:Parameter>
+								<Surfaces>
+									<Surface id="132" displayName="Wall(45)" displayColor="#c8c88c">
+										<Polygon3D offset="3.555 3.46 4.84" normal="1 0 -0" localX="0 0 1">0 0, 2.85 0, 2.85 3.7, 0 3.7</Polygon3D>
+									</Surface>
+									<Surface id="133" displayName="Wall(46)" displayColor="#c8c88c">
+										<Polygon3D offset="-3.555 3.46 4.84" normal="0 1 0" localX="0 0 1">0 0, 2.85 0, 2.85 7.11, 0 7.11</Polygon3D>
+									</Surface>
+									<Surface id="134" displayName="Wall(47)" displayColor="#c8c88c">
+										<SubSurfaces>
+											<SubSurface id="320" displayName="Fenster_11">
+												<Polygon2D>0.83 3.17872, 0.83 2.17872, 2.33 2.17872, 2.33 3.17872</Polygon2D>
+											</SubSurface>
+										</SubSurfaces>
+										<Polygon3D offset="-3.555 -0.24 4.84" normal="-1 0 0" localX="0 0 1">0 0, 2.85 0, 2.85 3.7, 0 3.7</Polygon3D>
+									</Surface>
+									<Surface id="135" displayName="Floor(2)_11" displayColor="#566094">
+										<Polygon3D offset="0.444998 3.46 4.84" normal="0 0 -1" localX="1 0 0">0 0, 0.24 0, 0.24 3.7, 0 3.7</Polygon3D>
+									</Surface>
+									<Surface id="136" displayName="Floor(2)_12" displayColor="#566094">
+										<Polygon3D offset="0.684998 3.46 4.84" normal="0 0 -1" localX="1 0 0">0 0, 2.87 0, 2.87 3.7, 0 3.7</Polygon3D>
+									</Surface>
+									<Surface id="137" displayName="Floor(2)_13" displayColor="#566094">
+										<Polygon3D offset="0.444998 -0.24 4.84" normal="0 0 -1" localX="-1 0 0">0 0, 4 0, 4 3.7, 0 3.7</Polygon3D>
+									</Surface>
+									<Surface id="138" displayName="Roof(9)_8" displayColor="#963214">
+										<Polygon3D offset="3.555 3.46 7.69" normal="0 0 1" localX="-1 0 0">0 0, 7.11 0, 7.11 3.7, 0 3.7</Polygon3D>
+									</Surface>
+									<Surface id="139" displayName="Wall(44)_4" displayColor="#c8c88c">
+										<Polygon3D offset="0.444998 -0.24 4.84" normal="0 -1 0" localX="1 0 0">0 0, 0.24 0, 0.24 2.85, 0 2.85</Polygon3D>
+									</Surface>
+									<Surface id="140" displayName="Wall(44)_5" displayColor="#c8c88c">
+										<Polygon3D offset="0.444998 -0.24 7.69" normal="-0 -1 -0" localX="-1 0 0">0 0, 4 0, 4 2.85, 0 2.85</Polygon3D>
+									</Surface>
+									<Surface id="141" displayName="Wall(44)_6" displayColor="#c8c88c">
+										<Polygon3D offset="0.684998 -0.24 4.84" normal="0 -1 0" localX="1 0 0">0 0, 2.87 0, 2.87 2.85, 0 2.85</Polygon3D>
+									</Surface>
+								</Surfaces>
+							</Room>
+							<Room id="38" displayName="OG1_Flur">
+								<IdZoneTemplate>1082501</IdZoneTemplate>
+								<IBK:Parameter name="Area" unit="m2">11.47</IBK:Parameter>
+								<IBK:Parameter name="Volume" unit="m3">32.71800629</IBK:Parameter>
+								<Surfaces>
+									<Surface id="142" displayName="Wall(50)" displayColor="#c8c88c">
+										<SubSurfaces>
+											<SubSurface id="321" displayName="Fenster_6">
+												<Polygon2D>0.83 0.850512, 0.83 0.110512, 2.33 0.110512, 2.33 0.850512</Polygon2D>
+											</SubSurface>
+											<SubSurface id="322" displayName="Fenster_7">
+												<Polygon2D>0.83 2.10213, 0.83 1.36213, 2.33 1.36213, 2.33 2.10213</Polygon2D>
+											</SubSurface>
+										</SubSurfaces>
+										<Polygon3D offset="3.555 -4.46 4.84" normal="0 -1 0" localX="0 0 1">0 0, 2.85 0, 2.85 2.87, 0 2.87</Polygon3D>
+									</Surface>
+									<Surface id="143" displayName="Wall(51)" displayColor="#c8c88c">
+										<Polygon3D offset="3.555 -0.46 4.84" normal="1 7.5e-07 -0" localX="0 0 1">0 0, 2.85 0, 2.85 4, 0 4</Polygon3D>
+									</Surface>
+									<Surface id="144" displayName="Floor(3)_8" displayColor="#566094">
+										<Polygon3D offset="2.475 -3.57 4.84" normal="0 -0 -1" localX="0 -1 0">0 0, 0.89 0, 0.89 0.11, -0.11 0.11, -0.11 -1.08, 0 -1.08</Polygon3D>
+									</Surface>
+									<Surface id="145" displayName="Floor(3)_9" displayColor="#566094">
+										<Polygon3D offset="1.065 -3.72 4.84" normal="-0 -0 -1" localX="-1 0 0">0 0, 0.38 0, 0.38 0.11, -0.05 0.11, -0.05 -0.74, 0 -0.74</Polygon3D>
+									</Surface>
+									<Surface id="146" displayName="Floor(3)_10" displayColor="#566094">
+										<Polygon3D offset="1.115 -3.61 4.84" normal="-0 -0 -1" localX="-1 0 0">0 0, 0.43 0, 0.43 3.15, -2.44 3.15, -2.44 0.15, -1.25 0.15, -1.25 -0.85, 0 -0.85</Polygon3D>
+									</Surface>
+									<Surface id="147" displayName="Floor(3)_11" displayColor="#566094">
+										<Polygon3D offset="2.475 -3.57 4.84" normal="0 0 -1" localX="1 0 0">0 0, 1.08 0, 1.08 0.89, 0 0.89</Polygon3D>
+									</Surface>
+									<Surface id="148" displayName="Floor(3)_12" displayColor="#566094">
+										<Polygon3D offset="1.065 -3.72 4.84" normal="-0 -0 -1" localX="0 -1 0">0 0, 0.74 0, 0.74 0.38, 0 0.38</Polygon3D>
+									</Surface>
+									<Surface id="149" displayName="Wall(48)_4" displayColor="#c8c88c">
+										<Polygon3D offset="0.684998 -0.46 4.84" normal="0 1 0" localX="0 0 1">0 0, 2.85 0, 2.85 2.87, 0 2.87</Polygon3D>
+									</Surface>
+									<Surface id="150" displayName="Roof(10)_18" displayColor="#963214">
+										<Polygon3D offset="0.684998 -4.46 7.69" normal="0 0 1" localX="1 0 0">0 0, 2.87 0, 2.87 4, 0 4</Polygon3D>
+									</Surface>
+									<Surface id="151" displayName="Wall(49)_6" displayColor="#c8c88c">
+										<Polygon3D offset="0.684998 -1.54 4.84" normal="-1 0 0" localX="0 -1 0">0 0, 0.12 0, 0.12 2.85, 0 2.85</Polygon3D>
+									</Surface>
+									<Surface id="152" displayName="Wall(49)_7" displayColor="#c8c88c">
+										<Polygon3D offset="0.684998 -1.54 7.69" normal="-1 0 0" localX="0 1 0">0 0, 1.08 0, 1.08 2.85, 0 2.85</Polygon3D>
+									</Surface>
+									<Surface id="153" displayName="Wall(49)_8" displayColor="#c8c88c">
+										<Polygon3D offset="0.684998 -1.66 4.84" normal="-1 0 0" localX="0 -1 0">0 0, 2.8 0, 2.8 2.85, 0 2.85</Polygon3D>
+									</Surface>
+								</Surfaces>
+							</Room>
+							<Room id="39" displayName="OG1_Zimmer">
+								<IdZoneTemplate>1082501</IdZoneTemplate>
+								<IBK:Parameter name="Area" unit="m2">11.2</IBK:Parameter>
+								<IBK:Parameter name="Volume" unit="m3">31.91999468</IBK:Parameter>
+								<Surfaces>
+									<Surface id="154" displayName="Wall(52)" displayColor="#c8c88c">
+										<SubSurfaces>
+											<SubSurface id="323" displayName="Fenster_9">
+												<Polygon2D>0.83 2.42842, 0.83 1.42842, 2.33 1.42842, 2.33 2.42842</Polygon2D>
+											</SubSurface>
+										</SubSurfaces>
+										<Polygon3D offset="0.444998 -4.46 4.84" normal="0 -1 0" localX="0 0 1">0 0, 2.85 0, 2.85 4, 0 4</Polygon3D>
+									</Surface>
+									<Surface id="155" displayName="Wall(55)" displayColor="#c8c88c">
+										<SubSurfaces>
+											<SubSurface id="324" displayName="Fenster_8">
+												<Polygon2D>0.83 1.86082, 0.83 0.86082, 2.33 0.86082, 2.33 1.86082</Polygon2D>
+											</SubSurface>
+										</SubSurfaces>
+										<Polygon3D offset="-3.555 -4.46 4.84" normal="-1 0 0" localX="0 0 1">0 0, 2.85 0, 2.85 2.8, 0 2.8</Polygon3D>
+									</Surface>
+									<Surface id="156" displayName="Floor(4)_2" displayColor="#566094">
+										<Polygon3D offset="-3.555 -1.66 4.84" normal="0 0 -1" localX="1 0 0">0 0, 4 0, 4 2.8, 0 2.8</Polygon3D>
+									</Surface>
+									<Surface id="157" displayName="Wall(53)_2" displayColor="#c8c88c">
+										<Polygon3D offset="0.444998 -1.66 4.84" normal="1 0 -0" localX="0 0 1">0 0, 2.85 0, 2.85 2.8, 0 2.8</Polygon3D>
+									</Surface>
+									<Surface id="158" displayName="Roof(11)_8" displayColor="#963214">
+										<Polygon3D offset="0.444998 -1.66 7.69" normal="0 0 1" localX="-1 0 0">0 0, 4 0, 4 2.8, 0 2.8</Polygon3D>
+									</Surface>
+									<Surface id="159" displayName="Wall(54)_2" displayColor="#c8c88c">
+										<Polygon3D offset="-3.555 -1.66 4.84" normal="0 1 0" localX="0 0 1">0 0, 2.85 0, 2.85 4, 0 4</Polygon3D>
+									</Surface>
+								</Surfaces>
+							</Room>
+							<Room id="40" displayName="OG1_Badzimmer">
+								<IdZoneTemplate>1082502</IdZoneTemplate>
+								<IBK:Parameter name="Area" unit="m2">4.32</IBK:Parameter>
+								<IBK:Parameter name="Volume" unit="m3">12.31200175</IBK:Parameter>
+								<Surfaces>
+									<Surface id="160" displayName="Wall(2)_2" displayColor="#c8c88c">
+										<SubSurfaces>
+											<SubSurface id="325" displayName="Fenster_10">
+												<Polygon2D>1.00267 2.02, 0.262673 2.02, 0.262673 0.52, 1.00267 0.52</Polygon2D>
+											</SubSurface>
+										</SubSurfaces>
+										<Polygon3D offset="-3.555 -1.54 7.69" normal="-1 0 0" localX="0 1 0">0 0, 1.08 0, 1.08 2.85, 0 2.85</Polygon3D>
+									</Surface>
+									<Surface id="161" displayName="Floor_3" displayColor="#566094">
+										<Polygon3D offset="-3.555 -0.459999 4.84" normal="0 0 -1" localX="1 0 0">0 0, 4 0, 4 1.08, 0 1.08</Polygon3D>
+									</Surface>
+									<Surface id="162" displayName="Wall(1)_4" displayColor="#c8c88c">
+										<Polygon3D offset="-3.555 -0.459999 7.69" normal="-0 1 0" localX="1 0 0">0 0, 4 0, 4 2.85, 0 2.85</Polygon3D>
+									</Surface>
+									<Surface id="163" displayName="Wall_2" displayColor="#c8c88c">
+										<Polygon3D offset="0.444998 -0.459999 7.69" normal="1 0 0" localX="0 -1 0">0 0, 1.08 0, 1.08 2.85, 0 2.85</Polygon3D>
+									</Surface>
+									<Surface id="164" displayName="Wall(3)_4" displayColor="#c8c88c">
+										<Polygon3D offset="0.444998 -1.54 7.69" normal="-0 -1 -0" localX="-1 0 0">0 0, 4 0, 4 2.85, 0 2.85</Polygon3D>
+									</Surface>
+									<Surface id="165" displayName="Roof_7" displayColor="#963214">
+										<Polygon3D offset="0.444998 -0.459999 7.69" normal="0 0 1" localX="-1 0 0">0 0, 4 0, 4 1.08, 0 1.08</Polygon3D>
+									</Surface>
+								</Surfaces>
+							</Room>
+						</Rooms>
+					</BuildingLevel>
+					<BuildingLevel id="330" displayName="DG">
+						<Elevation>0</Elevation>
+						<Height>2.7</Height>
+						<Rooms>
+							<Room id="41" displayName="Dach">
+								<IdZoneTemplate>1082503</IdZoneTemplate>
+								<IBK:Parameter name="Area" unit="m2">56.31</IBK:Parameter>
+								<IBK:Parameter name="Volume" unit="m3">89.21447712</IBK:Parameter>
+								<Surfaces>
+									<Surface id="166" displayName="Roof(8)" displayColor="#c8c88c">
+										<Polygon3D offset="3.555 -4.46 7.93" normal="1 3.78788e-07 3.40909e-06" localX="-3.78788e-07 1 0">0 0, 7.92 0, 3.96 3.96</Polygon3D>
+									</Surface>
+									<Surface id="167" displayName="Roof(9)_1" displayColor="#963214">
+										<SubSurfaces>
+											<SubSurface id="326" displayName="Fenster_18">
+												<Polygon2D>3.4 1.2, 4.4 1.2, 4.4 2.2, 3.4 2.2</Polygon2D>
+											</SubSurface>
+										</SubSurfaces>
+										<Polygon3D offset="-3.555 3.46 7.93" normal="-0.68062 -2.5781e-07 0.732637" localX="3.78788e-07 -1 0">0 0, 7.92 4.23516e-22, 3.96 5.81823</Polygon3D>
+									</Surface>
+									<Surface id="168" displayName="Roof(10)_1" displayColor="#963214">
+										<SubSurfaces>
+											<SubSurface id="327" displayName="Fenster_17">
+												<Polygon2D>1 1.2, 2.3 1.2, 2.3 2.2, 1 2.2</Polygon2D>
+											</SubSurface>
+										</SubSurfaces>
+										<Polygon3D offset="3.555 3.46 7.93" normal="0 0.707107 0.707107" localX="-1 0 0">0 0, 7.11 0, 2.84735 5.60029, 1.2e-05 5.60029</Polygon3D>
+									</Surface>
+									<Surface id="169" displayName="Roof(11)_1" displayColor="#963214">
+										<SubSurfaces>
+											<SubSurface id="328" displayName="Fenster_16">
+												<Polygon2D>1.20001 2.11, 1.2 0.809997, 2.2 0.809994, 2.20001 2.10999</Polygon2D>
+											</SubSurface>
+										</SubSurfaces>
+										<Polygon3D offset="3.555 -4.46 7.93" normal="0 -0.707107 0.707107" localX="-2.67843e-06 0.707107 0.707107">0 0, 5.60029 1.69407e-21, 5.60029 2.84734, 1.90437e-05 7.11</Polygon3D>
+									</Surface>
+									<Surface id="170" displayName="Floor(2)_14" displayColor="#566094">
+										<Polygon3D offset="0.444998 -1.54 7.93" normal="-0 0 -1" localX="0 1 0">0 0, 1.08 0, 1.08 -4, 1.3 -4, 1.3 3.11, 1.08 3.11, 1.08 0.24, -2.92 0.24, -2.92 0, -0.12 0, -0.12 -4, 0 -4</Polygon3D>
+									</Surface>
+									<Surface id="171" displayName="Floor(2)_15" displayColor="#566094">
+										<Polygon3D offset="0.444998 -0.459999 7.93" normal="-0 -0 -1" localX="0 -1 0">0 0, 1.08 0, 1.08 4, 0 4</Polygon3D>
+									</Surface>
+									<Surface id="172" displayName="Floor(2)_16" displayColor="#566094">
+										<Polygon3D offset="0.444998 -1.66 7.93" normal="-0 -0 -1" localX="0 -1 0">0 0, 2.8 0, 2.8 4, 0 4</Polygon3D>
+									</Surface>
+									<Surface id="173" displayName="Floor(2)_17" displayColor="#566094">
+										<Polygon3D offset="0.684998 -0.46 7.93" normal="0 0 -1" localX="1 0 0">0 0, 2.87 0, 2.87 4, 0 4</Polygon3D>
+									</Surface>
+									<Surface id="174" displayName="Floor(2)_18" displayColor="#566094">
+										<Polygon3D offset="-3.555 -0.24 7.93" normal="0 0 -1" localX="0 1 0">0 0, 3.7 0, 3.7 7.11, 0 7.11</Polygon3D>
+									</Surface>
+								</Surfaces>
+							</Room>
+						</Rooms>
+					</BuildingLevel>
+					<BuildingLevel id="331" displayName="KG">
+						<Elevation>0</Elevation>
+						<Height>2.7</Height>
+						<Rooms>
+							<Room id="33" displayName="KG 01">
+								<IdZoneTemplate>1082503</IdZoneTemplate>
+								<IBK:Parameter name="Area" unit="m2">16</IBK:Parameter>
+								<IBK:Parameter name="Volume" unit="m3">35.999997</IBK:Parameter>
+								<Surfaces>
+									<Surface id="100" displayName="Floor(1)" displayColor="#566094">
+										<Polygon3D offset="-3.555 -0.459999 -1.19" normal="0 0 -1" localX="1 0 0">0 0, 4 0, 4 4, 0 4</Polygon3D>
+									</Surface>
+									<Surface id="101" displayName="Wall(6)_2" displayColor="#c8c88c">
+										<SubSurfaces>
+											<SubSurface id="316" displayName="Fenster_13">
+												<Polygon2D>0.396984 1.49771, 0.396984 0.797711, 0.996984 0.797711, 0.996984 1.49771</Polygon2D>
+											</SubSurface>
+										</SubSurfaces>
+										<Polygon3D offset="-3.555 -4.46 -0.0650001" normal="-1 0 0" localX="0 0 1">0 0, 1.125 0, 1.125 4, 0 4</Polygon3D>
+									</Surface>
+									<Surface id="102" displayName="Wall(7)_2" displayColor="#c8c88c">
+										<SubSurfaces>
+											<SubSurface id="317" displayName="Fenster_12">
+												<Polygon2D>0.404 2.26966, 0.404 1.56965, 0.987784 1.56965, 0.987784 2.26966</Polygon2D>
+											</SubSurface>
+										</SubSurfaces>
+										<Polygon3D offset="0.444998 -4.46 -0.0650001" normal="0 -1 0" localX="0 0 1">0 0, 1.125 0, 1.125 4, 0 4</Polygon3D>
+									</Surface>
+									<Surface id="103" displayName="Roof(1)_7" displayColor="#963214">
+										<Polygon3D offset="0.444998 -1.54 1.06" normal="0 -0 1" localX="0 1 0">0 0, 1.08 0, 1.08 4, 0 4</Polygon3D>
+									</Surface>
+									<Surface id="104" displayName="Roof(1)_8" displayColor="#963214">
+										<Polygon3D offset="0.444998 -1.66 1.06" normal="0 -0 1" localX="0 1 0">0 0, 0.12 0, 0.12 4, 0 4</Polygon3D>
+									</Surface>
+									<Surface id="105" displayName="Roof(1)_9" displayColor="#963214">
+										<Polygon3D offset="-3.555 -1.66 1.06" normal="-0 0 1" localX="0 -1 0">0 0, 2.8 0, 2.8 4, 0 4</Polygon3D>
+									</Surface>
+									<Surface id="106" displayName="Wall(4)_2" displayColor="#c8c88c">
+										<Polygon3D offset="0.444998 -0.459999 -1.19" normal="1 0 -0" localX="0 0 1">0 0, 2.25 0, 2.25 4, 0 4</Polygon3D>
+									</Surface>
+									<Surface id="107" displayName="Wall(5)_6" displayColor="#c8c88c">
+										<Polygon3D offset="-3.555 -0.459999 -1.19" normal="0 1 0" localX="0 0 1">0 0, 2.25 0, 2.25 4, 0 4</Polygon3D>
+									</Surface>
+									<Surface id="332" displayName="Wall(6)_2" displayColor="#c8c88c">
+										<Polygon3D offset="-3.555 -4.46 -1.19" normal="-1 0 0" localX="0 0 1">0 0, 1.125 0, 1.125 4, 0 4</Polygon3D>
+									</Surface>
+									<Surface id="333" displayName="Wall(7)_2" displayColor="#c8c88c">
+										<Polygon3D offset="0.444995 -4.46 -1.19" normal="0 -1 0" localX="0 0 1">0 0, 1.125 0, 1.125 4, 0 4</Polygon3D>
+									</Surface>
+								</Surfaces>
+							</Room>
+							<Room id="34" displayName="KG 02">
+								<IdZoneTemplate>1082503</IdZoneTemplate>
+								<IBK:Parameter name="Area" unit="m2">16.8</IBK:Parameter>
+								<IBK:Parameter name="Volume" unit="m3">37.79999595</IBK:Parameter>
+								<Surfaces>
+									<Surface id="108" displayName="Floor(2)_1" displayColor="#566094">
+										<Polygon3D offset="-1.555 4.46 -1.19" normal="0 0 -1" localX="1 0 0">0 0, 2 0, 2 4.7, -2 4.7, -2 1, 0 1</Polygon3D>
+									</Surface>
+									<Surface id="109" displayName="Wall(8)_2" displayColor="#c8c88c">
+										<Polygon3D offset="-3.555 3.46 -0.0650001" normal="0 1 0" localX="0 0 1">0 0, 1.125 0, 1.125 2, 0 2</Polygon3D>
+									</Surface>
+									<Surface id="110" displayName="Wall(9)_2" displayColor="#c8c88c">
+										<Polygon3D offset="-3.555 -0.240001 1.06" normal="-1 0 0" localX="0 1 0">0 0, 3.7 0, 3.7 1.125, 0 1.125</Polygon3D>
+									</Surface>
+									<Surface id="111" displayName="Wall(12)_2" displayColor="#c8c88c">
+										<SubSurfaces>
+											<SubSurface id="318" displayName="Fenster_14">
+												<Polygon2D>0.404 1.2511, 0.404 0.551095, 0.987784 0.551095, 0.987784 1.2511</Polygon2D>
+											</SubSurface>
+										</SubSurfaces>
+										<Polygon3D offset="-1.555 4.46 -0.0650001" normal="0 1 0" localX="0 0 1">0 0, 1.125 0, 1.125 2, 0 2</Polygon3D>
+									</Surface>
+									<Surface id="112" displayName="Wall(13)_2" displayColor="#c8c88c">
+										<Polygon3D offset="-1.555 3.46 -0.0650001" normal="-1 0 0" localX="0 0 1">0 0, 1.125 0, 1.125 1, 0 1</Polygon3D>
+									</Surface>
+									<Surface id="113" displayName="Roof(2)_5" displayColor="#963214">
+										<Polygon3D offset="-3.555 -0.240001 1.06" normal="0 0 1" localX="1 0 0">0 0, 4 0, 4 4.7, 2 4.7, 2 3.7, 0 3.7</Polygon3D>
+									</Surface>
+									<Surface id="114" displayName="Wall(10)_8" displayColor="#c8c88c">
+										<Polygon3D offset="0.444998 -0.240001 1.06" normal="-0 -1 -0" localX="-1 0 0">0 0, 4 0, 4 2.25, 0 2.25</Polygon3D>
+									</Surface>
+									<Surface id="115" displayName="Wall(11)_6" displayColor="#c8c88c">
+										<Polygon3D offset="0.444998 4.46 -1.19" normal="1 0 -0" localX="0 0 1">0 0, 2.25 0, 2.25 4.7, 0 4.7</Polygon3D>
+									</Surface>
+									<Surface id="337" displayName="Wall(8)_2" displayColor="#c8c88c">
+										<Polygon3D offset="-3.555 3.46 -1.19" normal="0 1 0" localX="0 0 1">0 0, 1.125 0, 1.125 2, 0 2</Polygon3D>
+									</Surface>
+									<Surface id="339" displayName="Wall(9)_2" displayColor="#c8c88c">
+										<Polygon3D offset="-3.555 -0.240001 -0.0650001" normal="-1 0 0" localX="0 1 0">0 0, 3.7 0, 3.7 1.125, 0 1.125</Polygon3D>
+									</Surface>
+									<Surface id="341" displayName="Wall(12)_2" displayColor="#c8c88c">
+										<Polygon3D offset="-1.555 4.46 -1.19" normal="0 1 0" localX="0 0 1">0 0, 1.125 0, 1.125 2, 0 2</Polygon3D>
+									</Surface>
+									<Surface id="345" displayName="Wall(13)_2" displayColor="#c8c88c">
+										<Polygon3D offset="-1.555 3.46 -1.19" normal="-1 0 0" localX="0 0 1">0 0, 1.125 0, 1.125 1, 0 1</Polygon3D>
+									</Surface>
+								</Surfaces>
+							</Room>
+							<Room id="35" displayName="KG 04">
+								<IdZoneTemplate>1082503</IdZoneTemplate>
+								<IBK:Parameter name="Area" unit="m2">11.48</IBK:Parameter>
+								<IBK:Parameter name="Volume" unit="m3">25.82999001</IBK:Parameter>
+								<Surfaces>
+									<Surface id="116" displayName="Wall(51)_1" displayColor="#c8c88c">
+										<Polygon3D offset="3.555 -0.46 1.06" normal="1 7.15256e-07 0" localX="7.15256e-07 -1 0">0 0, 4 0, 4 1.125, 0 1.125</Polygon3D>
+									</Surface>
+									<Surface id="117" displayName="Wall(50)_1" displayColor="#c8c88c">
+										<Polygon3D offset="3.555 -4.46 -0.0650001" normal="0 -1 0" localX="0 0 1">0 0, 1.125 0, 1.125 2.87, 0 2.87</Polygon3D>
+									</Surface>
+									<Surface id="118" displayName="Floor(3)_1" displayColor="#566094">
+										<Polygon3D offset="0.684998 -0.46 -1.19" normal="0 0 -1" localX="1 0 0">0 0, 2.87 0, 2.87 4, 0 4</Polygon3D>
+									</Surface>
+									<Surface id="119" displayName="Roof(10)_13" displayColor="#963214">
+										<Polygon3D offset="1.065 -3.72 1.06" normal="0 0 1" localX="0 -1 0">0 0, 0.74 0, 0.74 0.05, -0.11 0.05, -0.11 -0.38, 0 -0.38</Polygon3D>
+									</Surface>
+									<Surface id="120" displayName="Roof(10)_14" displayColor="#963214">
+										<Polygon3D offset="2.475 -3.57 1.06" normal="-0 -0 1" localX="1 0 0">0 0, 1.08 0, 1.08 0.11, -0.11 0.11, -0.11 -0.89, 0 -0.89</Polygon3D>
+									</Surface>
+									<Surface id="121" displayName="Roof(10)_15" displayColor="#963214">
+										<Polygon3D offset="2.365 -3.46 1.06" normal="-0 -0 1" localX="1 0 0">0 0, 1.19 0, 1.19 3, -1.68 3, -1.68 -0.15, -1.25 -0.15, -1.25 -1, 0 -1</Polygon3D>
+									</Surface>
+									<Surface id="122" displayName="Roof(10)_16" displayColor="#963214">
+										<Polygon3D offset="2.475 -3.57 1.06" normal="-0 0 1" localX="0 -1 0">0 0, 0.89 0, 0.89 1.08, 0 1.08</Polygon3D>
+									</Surface>
+									<Surface id="123" displayName="Roof(10)_17" displayColor="#963214">
+										<Polygon3D offset="1.065 -3.72 1.06" normal="0 0 1" localX="-1 0 0">0 0, 0.38 0, 0.38 0.74, 0 0.74</Polygon3D>
+									</Surface>
+									<Surface id="124" displayName="Wall(49)_1" displayColor="#c8c88c">
+										<Polygon3D offset="0.684998 -4.46 1.06" normal="-1 0 0" localX="0 1 0">0 0, 4 0, 4 2.25, 0 2.25</Polygon3D>
+									</Surface>
+									<Surface id="125" displayName="Wall(48)_1" displayColor="#c8c88c">
+										<Polygon3D offset="0.684998 -0.46 -1.19" normal="0 1 0" localX="0 0 1">0 0, 2.25 0, 2.25 2.87, 0 2.87</Polygon3D>
+									</Surface>
+									<Surface id="347" displayName="Wall(51)_1" displayColor="#c8c88c">
+										<Polygon3D offset="3.55499 -0.46 -0.0650001" normal="1 7.15256e-07 0" localX="7.15256e-07 -1 0">0 0, 4 0, 4 1.125, 0 1.125</Polygon3D>
+									</Surface>
+									<Surface id="349" displayName="Wall(50)_1" displayColor="#c8c88c">
+										<Polygon3D offset="3.55499 -4.46 -1.19" normal="0 -1 0" localX="0 0 1">0 0, 1.125 0, 1.125 2.87, 0 2.87</Polygon3D>
+									</Surface>
+								</Surfaces>
+							</Room>
+							<Room id="36" displayName="KG 03">
+								<IdZoneTemplate>1082503</IdZoneTemplate>
+								<IBK:Parameter name="Area" unit="m2">13.49</IBK:Parameter>
+								<IBK:Parameter name="Volume" unit="m3">30.35024158</IBK:Parameter>
+								<Surfaces>
+									<Surface id="126" displayName="Floor(3)_4" displayColor="#566094">
+										<Polygon3D offset="0.684998 4.46 -1.19" normal="0 0 -1" localX="1 0 0">0 0, 2.87 0, 2.87 4.7, 0 4.7</Polygon3D>
+									</Surface>
+									<Surface id="127" displayName="Wall(15)_2" displayColor="#c8c88c">
+										<Polygon3D offset="3.555 4.46 -0.0650001" normal="1 0 -0" localX="0 0 1">0 0, 1.125 0, 1.125 4.7, 0 4.7</Polygon3D>
+									</Surface>
+									<Surface id="128" displayName="Wall(16)_2" displayColor="#c8c88c">
+										<SubSurfaces>
+											<SubSurface id="319" displayName="Fenster_15">
+												<Polygon2D>0.404 1.83999, 0.404 1.13998, 0.987784 1.13998, 0.987784 1.83999</Polygon2D>
+											</SubSurface>
+										</SubSurfaces>
+										<Polygon3D offset="0.684998 4.46 -0.0650001" normal="0 1 0" localX="0 0 1">0 0, 1.125 0, 1.125 2.87, 0 2.87</Polygon3D>
+									</Surface>
+									<Surface id="129" displayName="Roof(3)_4" displayColor="#963214">
+										<Polygon3D offset="3.555 4.46 1.06" normal="0 0 1" localX="-1 0 0">0 0, 2.87 0, 2.87 4.7, 0 4.7</Polygon3D>
+									</Surface>
+									<Surface id="130" displayName="Wall(17)_4" displayColor="#c8c88c">
+										<Polygon3D offset="0.684998 -0.240001 -1.19" normal="-1 0 0" localX="0 0 1">0 0, 2.25 0, 2.25 4.7, 0 4.7</Polygon3D>
+									</Surface>
+									<Surface id="131" displayName="Wall(14)_4" displayColor="#c8c88c">
+										<Polygon3D offset="3.555 -0.240001 -1.19" normal="0 -1 0" localX="0 0 1">0 0, 2.25 0, 2.25 2.87, 0 2.87</Polygon3D>
+									</Surface>
+									<Surface id="351" displayName="Wall(15)_2" displayColor="#c8c88c">
+										<Polygon3D offset="3.55499 4.46 -1.19" normal="1 0 -0" localX="0 0 1">0 0, 1.125 0, 1.125 4.7, 0 4.7</Polygon3D>
+									</Surface>
+									<Surface id="353" displayName="Wall(16)_2" displayColor="#c8c88c">
+										<Polygon3D offset="0.684995 4.46 -1.19" normal="0 1 0" localX="0 0 1">0 0, 1.125 0, 1.125 2.87, 0 2.87</Polygon3D>
+									</Surface>
+								</Surfaces>
+							</Room>
+						</Rooms>
+					</BuildingLevel>
+				</BuildingLevels>
+			</Building>
+		</Buildings>
+		<ComponentInstances>
+			<ComponentInstance id="1" idComponent="1000002" idSideASurface="42" />
+			<ComponentInstance id="2" idComponent="1000014" idSideASurface="43" />
+			<ComponentInstance id="3" idComponent="1000023" idSideASurface="44" idSideBSurface="129" />
+			<ComponentInstance id="4" idComponent="1000005" idSideASurface="45" idSideBSurface="82" />
+			<ComponentInstance id="5" idComponent="1000005" idSideASurface="46" idSideBSurface="51" />
+			<ComponentInstance id="6" idComponent="1000006" idSideASurface="47" />
+			<ComponentInstance id="7" idComponent="1000007" idSideASurface="136" idSideBSurface="48" />
+			<ComponentInstance id="8" idComponent="1000014" idSideASurface="49" />
+			<ComponentInstance id="9" idComponent="1000002" idSideASurface="50" />
+			<ComponentInstance id="10" idComponent="1000023" idSideASurface="52" idSideBSurface="121" />
+			<ComponentInstance id="11" idComponent="1000022" idSideASurface="53" />
+			<ComponentInstance id="12" idComponent="1000021" idSideASurface="54" idSideBSurface="67" />
+			<ComponentInstance id="13" idComponent="1000022" idSideASurface="55" />
+			<ComponentInstance id="14" idComponent="1000021" idSideASurface="56" idSideBSurface="68" />
+			<ComponentInstance id="15" idComponent="1000022" idSideASurface="57" />
+			<ComponentInstance id="16" idComponent="1000021" idSideASurface="58" idSideBSurface="72" />
+			<ComponentInstance id="17" idComponent="1000014" idSideASurface="59" />
+			<ComponentInstance id="18" idComponent="1000005" idSideASurface="60" idSideBSurface="94" />
+			<ComponentInstance id="19" idComponent="1000005" idSideASurface="61" idSideBSurface="83" />
+			<ComponentInstance id="20" idComponent="1000022" idSideASurface="62" />
+			<ComponentInstance id="21" idComponent="1000021" idSideASurface="63" idSideBSurface="73" />
+			<ComponentInstance id="22" idComponent="1000007" idSideASurface="146" idSideBSurface="64" />
+			<ComponentInstance id="23" idComponent="1000014" idSideASurface="65" />
+			<ComponentInstance id="24" idComponent="1000002" idSideASurface="66" />
+			<ComponentInstance id="25" idComponent="1000023" idSideASurface="69" idSideBSurface="122" />
+			<ComponentInstance id="26" idComponent="1000007" idSideASurface="147" idSideBSurface="70" />
+			<ComponentInstance id="27" idComponent="1000002" idSideASurface="71" />
+			<ComponentInstance id="28" idComponent="1000023" idSideASurface="74" idSideBSurface="123" />
+			<ComponentInstance id="29" idComponent="1000005" idSideASurface="75" idSideBSurface="96" />
+			<ComponentInstance id="30" idComponent="1000007" idSideASurface="148" idSideBSurface="76" />
+			<ComponentInstance id="31" idComponent="1000002" idSideASurface="77" />
+			<ComponentInstance id="32" idComponent="1000002" idSideASurface="78" />
+			<ComponentInstance id="33" idComponent="1000002" idSideASurface="79" />
+			<ComponentInstance id="34" idComponent="1000002" idSideASurface="80" />
+			<ComponentInstance id="35" idComponent="1000014" idSideASurface="81" />
+			<ComponentInstance id="36" idComponent="1000008" idSideASurface="84" />
+			<ComponentInstance id="37" idComponent="1000023" idSideASurface="85" idSideBSurface="113" />
+			<ComponentInstance id="38" idComponent="1000023" idSideASurface="86" idSideBSurface="103" />
+			<ComponentInstance id="39" idComponent="1000021" idSideASurface="87" idSideBSurface="97" />
+			<ComponentInstance id="40" idComponent="1000012" idSideBSurface="88" />
+			<ComponentInstance id="41" idComponent="1000007" idSideASurface="161" idSideBSurface="89" />
+			<ComponentInstance id="42" idComponent="1000006" idSideASurface="90" />
+			<ComponentInstance id="43" idComponent="1000007" idSideASurface="137" idSideBSurface="91" />
+			<ComponentInstance id="44" idComponent="1000002" idSideASurface="92" />
+			<ComponentInstance id="45" idComponent="1000002" idSideASurface="93" />
+			<ComponentInstance id="46" idComponent="1000014" idSideASurface="95" />
+			<ComponentInstance id="47" idComponent="1000023" idSideASurface="98" idSideBSurface="105" />
+			<ComponentInstance id="48" idComponent="1000007" idSideASurface="156" idSideBSurface="99" />
+			<ComponentInstance id="49" idComponent="1000010" idSideASurface="100" />
+			<ComponentInstance id="50" idComponent="1000002" idSideASurface="101" />
+			<ComponentInstance id="51" idComponent="1000002" idSideASurface="102" />
+			<ComponentInstance id="52" idComponent="1000008" idSideASurface="104" />
+			<ComponentInstance id="53" idComponent="1000005" idSideASurface="106" idSideBSurface="124" />
+			<ComponentInstance id="54" idComponent="1000005" idSideASurface="107" idSideBSurface="114" />
+			<ComponentInstance id="55" idComponent="1000010" idSideASurface="108" />
+			<ComponentInstance id="56" idComponent="1000002" idSideASurface="109" />
+			<ComponentInstance id="57" idComponent="1000002" idSideASurface="110" />
+			<ComponentInstance id="58" idComponent="1000002" idSideASurface="111" />
+			<ComponentInstance id="59" idComponent="1000002" idSideASurface="112" />
+			<ComponentInstance id="60" idComponent="1000005" idSideASurface="115" idSideBSurface="130" />
+			<ComponentInstance id="61" idComponent="1000014" idSideASurface="116" />
+			<ComponentInstance id="62" idComponent="1000002" idSideASurface="117" />
+			<ComponentInstance id="63" idComponent="1000010" idSideASurface="118" />
+			<ComponentInstance id="64" idComponent="1000008" idSideASurface="119" />
+			<ComponentInstance id="65" idComponent="1000008" idSideASurface="120" />
+			<ComponentInstance id="66" idComponent="1000005" idSideASurface="125" idSideBSurface="131" />
+			<ComponentInstance id="67" idComponent="1000010" idSideASurface="126" />
+			<ComponentInstance id="68" idComponent="1000014" idSideASurface="127" />
+			<ComponentInstance id="69" idComponent="1000002" idSideASurface="128" />
+			<ComponentInstance id="70" idComponent="1000014" idSideASurface="132" />
+			<ComponentInstance id="71" idComponent="1000002" idSideASurface="133" />
+			<ComponentInstance id="72" idComponent="1000002" idSideASurface="134" />
+			<ComponentInstance id="73" idComponent="1000013" idSideASurface="135" />
+			<ComponentInstance id="74" idComponent="1000007" idSideASurface="174" idSideBSurface="138" />
+			<ComponentInstance id="75" idComponent="1000014" idSideASurface="139" />
+			<ComponentInstance id="76" idComponent="1000005" idSideASurface="140" idSideBSurface="162" />
+			<ComponentInstance id="77" idComponent="1000005" idSideASurface="141" idSideBSurface="149" />
+			<ComponentInstance id="78" idComponent="1000002" idSideASurface="142" />
+			<ComponentInstance id="79" idComponent="1000014" idSideASurface="143" />
+			<ComponentInstance id="80" idComponent="1000013" idSideASurface="144" />
+			<ComponentInstance id="81" idComponent="1000013" idSideASurface="145" />
+			<ComponentInstance id="82" idComponent="1000007" idSideASurface="173" idSideBSurface="150" />
+			<ComponentInstance id="83" idComponent="1000014" idSideASurface="151" />
+			<ComponentInstance id="84" idComponent="1000005" idSideASurface="152" idSideBSurface="163" />
+			<ComponentInstance id="85" idComponent="1000005" idSideASurface="153" idSideBSurface="157" />
+			<ComponentInstance id="86" idComponent="1000002" idSideASurface="154" />
+			<ComponentInstance id="87" idComponent="1000002" idSideASurface="155" />
+			<ComponentInstance id="88" idComponent="1000007" idSideASurface="172" idSideBSurface="158" />
+			<ComponentInstance id="89" idComponent="1000021" idSideASurface="159" idSideBSurface="164" />
+			<ComponentInstance id="90" idComponent="1000002" idSideASurface="160" />
+			<ComponentInstance id="91" idComponent="1000007" idSideASurface="171" idSideBSurface="165" />
+			<ComponentInstance id="92" idComponent="1000014" idSideASurface="166" />
+			<ComponentInstance id="93" idComponent="1000006" idSideASurface="167" />
+			<ComponentInstance id="94" idComponent="1000006" idSideASurface="168" />
+			<ComponentInstance id="95" idComponent="1000006" idSideASurface="169" />
+			<ComponentInstance id="96" idComponent="1000013" idSideASurface="170" />
+			<ComponentInstance id="334" idComponent="1000010" idSideASurface="332" />
+			<ComponentInstance id="335" idComponent="1000010" idSideASurface="333" />
+			<ComponentInstance id="339" idComponent="1000010" idSideASurface="337" />
+			<ComponentInstance id="341" idComponent="1000010" idSideASurface="339" />
+			<ComponentInstance id="343" idComponent="1000010" idSideASurface="341" />
+			<ComponentInstance id="347" idComponent="1000010" idSideASurface="345" />
+			<ComponentInstance id="349" idComponent="1000014" idSideASurface="347" />
+			<ComponentInstance id="351" idComponent="1000010" idSideASurface="349" />
+			<ComponentInstance id="353" idComponent="1000014" idSideASurface="351" />
+			<ComponentInstance id="355" idComponent="1000010" idSideASurface="353" />
+		</ComponentInstances>
+		<SubSurfaceComponentInstances>
+			<SubSurfaceComponentInstance id="1" idSubSurfaceComponent="1040001" idSideASurface="308" />
+			<SubSurfaceComponentInstance id="2" idSubSurfaceComponent="1040001" idSideASurface="309" />
+			<SubSurfaceComponentInstance id="3" idSubSurfaceComponent="1040001" idSideASurface="310" />
+			<SubSurfaceComponentInstance id="4" idSubSurfaceComponent="1040002" idSideASurface="311" />
+			<SubSurfaceComponentInstance id="5" idSubSurfaceComponent="1040001" idSideASurface="312" />
+			<SubSurfaceComponentInstance id="6" idSubSurfaceComponent="1040001" idSideASurface="313" />
+			<SubSurfaceComponentInstance id="7" idSubSurfaceComponent="1040001" idSideASurface="314" />
+			<SubSurfaceComponentInstance id="8" idSubSurfaceComponent="1040001" idSideASurface="315" />
+			<SubSurfaceComponentInstance id="9" idSubSurfaceComponent="1040001" idSideASurface="316" />
+			<SubSurfaceComponentInstance id="10" idSubSurfaceComponent="1040001" idSideASurface="317" />
+			<SubSurfaceComponentInstance id="11" idSubSurfaceComponent="1040001" idSideASurface="318" />
+			<SubSurfaceComponentInstance id="12" idSubSurfaceComponent="1040001" idSideASurface="319" />
+			<SubSurfaceComponentInstance id="13" idSubSurfaceComponent="1040001" idSideASurface="320" />
+			<SubSurfaceComponentInstance id="14" idSubSurfaceComponent="1040001" idSideASurface="321" />
+			<SubSurfaceComponentInstance id="15" idSubSurfaceComponent="1040001" idSideASurface="322" />
+			<SubSurfaceComponentInstance id="16" idSubSurfaceComponent="1040001" idSideASurface="323" />
+			<SubSurfaceComponentInstance id="17" idSubSurfaceComponent="1040001" idSideASurface="324" />
+			<SubSurfaceComponentInstance id="18" idSubSurfaceComponent="1040001" idSideASurface="325" />
+			<SubSurfaceComponentInstance id="19" idSubSurfaceComponent="1040001" idSideASurface="326" />
+			<SubSurfaceComponentInstance id="20" idSubSurfaceComponent="1040001" idSideASurface="327" />
+			<SubSurfaceComponentInstance id="21" idSubSurfaceComponent="1040001" idSideASurface="328" />
+		</SubSurfaceComponentInstances>
+		<PlainGeometry />
+		<EmbeddedDatabase>
+			<Materials>
+				<Material id="10001" displayName="de:[SimQuality] Putz|en:[SimQuality] Plaster" color="#bbbbcf">
+					<Notes>en:Plaster to be used in SimQuality test cases.|de:Putz zur Verwendung in SimQuality.</Notes>
+					<Manufacturer>generic</Manufacturer>
+					<DataSource>SimQuality</DataSource>
+					<Category>Plaster</Category>
+					<IBK:Parameter name="Density" unit="kg/m3">800</IBK:Parameter>
+					<IBK:Parameter name="HeatCapacity" unit="J/kgK">1500</IBK:Parameter>
+					<IBK:Parameter name="Conductivity" unit="W/mK">0.14</IBK:Parameter>
+				</Material>
+				<Material id="10010" displayName="de:[SimQuality] Fließestrich|en:[SimQuality] flowing screed" color="#a29f2f">
+					<Notes>en:Screed to be used in SimQuality test cases (TF12).|de:Estrich zur Verwendung in SimQuality (TF12).</Notes>
+					<Manufacturer>generic</Manufacturer>
+					<DataSource>SimQuality</DataSource>
+					<Category>Cementitious</Category>
+					<IBK:Parameter name="Density" unit="kg/m3">2060</IBK:Parameter>
+					<IBK:Parameter name="HeatCapacity" unit="J/kgK">850</IBK:Parameter>
+					<IBK:Parameter name="Conductivity" unit="W/mK">1.4</IBK:Parameter>
+				</Material>
+				<Material id="1010001" displayName="DE: Beton" color="#00d530">
+					<Category>Cementitious</Category>
+					<IBK:Parameter name="Density" unit="kg/m3">2100</IBK:Parameter>
+					<IBK:Parameter name="HeatCapacity" unit="J/kgK">840</IBK:Parameter>
+					<IBK:Parameter name="Conductivity" unit="W/mK">2.3</IBK:Parameter>
+				</Material>
+				<Material id="1010002" displayName="Porenbeton_II_500mm" color="#00b5e0">
+					<Category>Cementitious</Category>
+					<IBK:Parameter name="Density" unit="kg/m3">500</IBK:Parameter>
+					<IBK:Parameter name="HeatCapacity" unit="J/kgK">850</IBK:Parameter>
+					<IBK:Parameter name="Conductivity" unit="W/mK">0.1199999973</IBK:Parameter>
+				</Material>
+				<Material id="1010003" displayName="Zementestrich_300mm" color="#0031c0">
+					<Category>Cementitious</Category>
+					<IBK:Parameter name="Density" unit="kg/m3">2000</IBK:Parameter>
+					<IBK:Parameter name="HeatCapacity" unit="J/kgK">850</IBK:Parameter>
+					<IBK:Parameter name="Conductivity" unit="W/mK">1.399999976</IBK:Parameter>
+				</Material>
+				<Material id="1010004" displayName="Beton_(wz_0_4)_300mm" color="#d000af">
+					<Category>Cementitious</Category>
+					<IBK:Parameter name="Density" unit="kg/m3">2330</IBK:Parameter>
+					<IBK:Parameter name="HeatCapacity" unit="J/kgK">1000</IBK:Parameter>
+					<IBK:Parameter name="Conductivity" unit="W/mK">2.099999905</IBK:Parameter>
+				</Material>
+				<Material id="1010005" displayName="Rigips_Gipskarton_150mm" color="#cd0007">
+					<Category>Miscellaneous</Category>
+					<IBK:Parameter name="Density" unit="kg/m3">732.0219727</IBK:Parameter>
+					<IBK:Parameter name="HeatCapacity" unit="J/kgK">1383.880005</IBK:Parameter>
+					<IBK:Parameter name="Conductivity" unit="W/mK">0.2113330066</IBK:Parameter>
+				</Material>
+				<Material id="1010006" displayName="DE: Ziegel |EN: &lt;new material&gt;" color="#14ff2a">
+					<Category>Bricks</Category>
+					<IBK:Parameter name="Density" unit="kg/m3">1600</IBK:Parameter>
+					<IBK:Parameter name="HeatCapacity" unit="J/kgK">840</IBK:Parameter>
+					<IBK:Parameter name="Conductivity" unit="W/mK">1.2</IBK:Parameter>
+				</Material>
+				<Material id="1010007" displayName="DE: Holz |EN: &lt;new material&gt;" color="#c5ff44">
+					<Category>Woodbased</Category>
+					<IBK:Parameter name="Density" unit="kg/m3">500</IBK:Parameter>
+					<IBK:Parameter name="HeatCapacity" unit="J/kgK">1500</IBK:Parameter>
+					<IBK:Parameter name="Conductivity" unit="W/mK">0.21</IBK:Parameter>
+				</Material>
+				<Material id="1010008" displayName="DE: Sandschüttung in Decken  |EN: &lt;new material&gt;" color="#db7c00">
+					<Category>NaturalMaterials</Category>
+					<IBK:Parameter name="Density" unit="kg/m3">1400</IBK:Parameter>
+					<IBK:Parameter name="HeatCapacity" unit="J/kgK">840</IBK:Parameter>
+					<IBK:Parameter name="Conductivity" unit="W/mK">0.7</IBK:Parameter>
+				</Material>
+				<Material id="1010009" displayName="DE: Luft 50cm |EN: &lt;new material&gt;" color="#36ff64">
+					<Category>Miscellaneous</Category>
+					<IBK:Parameter name="Density" unit="kg/m3">1.2</IBK:Parameter>
+					<IBK:Parameter name="HeatCapacity" unit="J/kgK">840</IBK:Parameter>
+					<IBK:Parameter name="Conductivity" unit="W/mK">0.56</IBK:Parameter>
+				</Material>
+				<Material id="1010010" displayName="DE: Kalkzementputz |EN: &lt;new material&gt;" color="#00c30d">
+					<Category>Plaster</Category>
+					<IBK:Parameter name="Density" unit="kg/m3">1300</IBK:Parameter>
+					<IBK:Parameter name="HeatCapacity" unit="J/kgK">840</IBK:Parameter>
+					<IBK:Parameter name="Conductivity" unit="W/mK">0.7</IBK:Parameter>
+				</Material>
+			</Materials>
+			<Constructions>
+				<Construction id="1020001" displayName="DE: AW">
+					<UsageType>OutsideWall</UsageType>
+					<MaterialKind>BrickMasonry</MaterialKind>
+					<DataSource>IDF Import</DataSource>
+					<MaterialLayers>
+						<MaterialLayer idMaterial="1010010">
+							<IBK:Parameter name="Thickness" unit="m">0.01</IBK:Parameter>
+						</MaterialLayer>
+						<MaterialLayer idMaterial="1010006">
+							<IBK:Parameter name="Thickness" unit="m">0.3000000119</IBK:Parameter>
+						</MaterialLayer>
+						<MaterialLayer idMaterial="1010010">
+							<IBK:Parameter name="Thickness" unit="m">0.02</IBK:Parameter>
+						</MaterialLayer>
+					</MaterialLayers>
+				</Construction>
+				<Construction id="1020002" displayName="DE: Bodenplatte">
+					<DataSource>IDF Import</DataSource>
+					<MaterialLayers>
+						<MaterialLayer idMaterial="1010001">
+							<IBK:Parameter name="Thickness" unit="m">0.2</IBK:Parameter>
+						</MaterialLayer>
+					</MaterialLayers>
+				</Construction>
+				<Construction id="1020003" displayName="DE: Dachschalung">
+					<DataSource>IDF Import</DataSource>
+					<MaterialLayers>
+						<MaterialLayer idMaterial="1010007">
+							<IBK:Parameter name="Thickness" unit="m">0.02</IBK:Parameter>
+						</MaterialLayer>
+					</MaterialLayers>
+				</Construction>
+				<Construction id="1020004" displayName="DE: [Heiko] Geschossdecke Holzbalken">
+					<DataSource>IDF Import</DataSource>
+					<MaterialLayers>
+						<MaterialLayer idMaterial="1010007">
+							<IBK:Parameter name="Thickness" unit="m">0.01</IBK:Parameter>
+						</MaterialLayer>
+						<MaterialLayer idMaterial="1010008">
+							<IBK:Parameter name="Thickness" unit="m">0.08</IBK:Parameter>
+						</MaterialLayer>
+						<MaterialLayer idMaterial="1010007">
+							<IBK:Parameter name="Thickness" unit="m">0.01</IBK:Parameter>
+						</MaterialLayer>
+						<MaterialLayer idMaterial="1010009">
+							<IBK:Parameter name="Thickness" unit="m">0.1</IBK:Parameter>
+						</MaterialLayer>
+						<MaterialLayer idMaterial="1010005">
+							<IBK:Parameter name="Thickness" unit="m">0.015</IBK:Parameter>
+						</MaterialLayer>
+					</MaterialLayers>
+				</Construction>
+				<Construction id="1020005" displayName="Aussentuer">
+					<DataSource>IDF Import</DataSource>
+					<MaterialLayers>
+						<MaterialLayer idMaterial="1010005">
+							<IBK:Parameter name="Thickness" unit="m">0.150000006</IBK:Parameter>
+						</MaterialLayer>
+					</MaterialLayers>
+				</Construction>
+				<Construction id="1020006" displayName="DE: [Heiko] Geschossdecke üb KG">
+					<DataSource>IDF Import</DataSource>
+					<MaterialLayers>
+						<MaterialLayer idMaterial="1010007">
+							<IBK:Parameter name="Thickness" unit="m">0.02</IBK:Parameter>
+						</MaterialLayer>
+						<MaterialLayer idMaterial="10010">
+							<IBK:Parameter name="Thickness" unit="m">0.06</IBK:Parameter>
+						</MaterialLayer>
+						<MaterialLayer idMaterial="1010001">
+							<IBK:Parameter name="Thickness" unit="m">0.08</IBK:Parameter>
+						</MaterialLayer>
+					</MaterialLayers>
+				</Construction>
+				<Construction id="1020008" displayName="DE: IW 30">
+					<UsageType>OutsideWall</UsageType>
+					<MaterialKind>BrickMasonry</MaterialKind>
+					<DataSource>IDF Import</DataSource>
+					<MaterialLayers>
+						<MaterialLayer idMaterial="10001">
+							<IBK:Parameter name="Thickness" unit="m">0.01</IBK:Parameter>
+						</MaterialLayer>
+						<MaterialLayer idMaterial="1010006">
+							<IBK:Parameter name="Thickness" unit="m">0.2</IBK:Parameter>
+						</MaterialLayer>
+						<MaterialLayer idMaterial="10001">
+							<IBK:Parameter name="Thickness" unit="m">0.01</IBK:Parameter>
+						</MaterialLayer>
+					</MaterialLayers>
+				</Construction>
+				<Construction id="1020009" displayName="DE: IW 12">
+					<UsageType>OutsideWall</UsageType>
+					<MaterialKind>BrickMasonry</MaterialKind>
+					<DataSource>IDF Import</DataSource>
+					<MaterialLayers>
+						<MaterialLayer idMaterial="10001">
+							<IBK:Parameter name="Thickness" unit="m">0.01</IBK:Parameter>
+						</MaterialLayer>
+						<MaterialLayer idMaterial="1010006">
+							<IBK:Parameter name="Thickness" unit="m">0.1</IBK:Parameter>
+						</MaterialLayer>
+						<MaterialLayer idMaterial="10001">
+							<IBK:Parameter name="Thickness" unit="m">0.01</IBK:Parameter>
+						</MaterialLayer>
+					</MaterialLayers>
+				</Construction>
+			</Constructions>
+			<Windows>
+				<Window id="1035001" displayName="DE: Fenstera" color="#25ff5f" idGlazingSystem="1031001" methodFrame="None" methodDivider="None">
+					<DataSource>IDF Import</DataSource>
+				</Window>
+			</Windows>
+			<WindowGlazingSystems>
+				<WindowGlazingSystem id="1031001" displayName="DE: Fenster alt" color="#ff9b11" modelType="Simple">
+					<IBK:Parameter name="ThermalTransmittance" unit="W/m2K">2.4</IBK:Parameter>
+					<LinearSplineParameter name="SHGC">
+						<X unit="Deg">0 10 20 30 40 50 60 70 80 90 </X>
+						<Y unit="---">0.8 0.8 0.8 0.8 0.784 0.752 0.688 0.551999 0.295999 0 </Y>
+					</LinearSplineParameter>
+				</WindowGlazingSystem>
+				<WindowGlazingSystem id="1031002" displayName="DE: Tür alt" color="#cdff3f" modelType="Simple">
+					<IBK:Parameter name="ThermalTransmittance" unit="W/m2K">2.4</IBK:Parameter>
+					<LinearSplineParameter name="SHGC">
+						<X unit="Deg">0 10 20 30 40 50 60 70 80 90 </X>
+						<Y unit="---">0.2 0.2 0.2 0.2 0.196 0.188 0.172 0.138 0.0739997 0 </Y>
+					</LinearSplineParameter>
+				</WindowGlazingSystem>
+			</WindowGlazingSystems>
+			<BoundaryConditions>
+				<BoundaryCondition id="1030001" displayName="DE: Innen |EN: &lt;new boundary condition&gt;" color="#ff0000">
+					<InterfaceHeatConduction modelType="Constant">
+						<OtherZoneType>Standard</OtherZoneType>
+						<IBK:Parameter name="HeatTransferCoefficient" unit="W/m2K">8</IBK:Parameter>
+					</InterfaceHeatConduction>
+				</BoundaryCondition>
+				<BoundaryCondition id="1030002" displayName="DE: Außen |EN: &lt;new boundary condition&gt;" color="#ffff00">
+					<InterfaceHeatConduction modelType="Constant">
+						<OtherZoneType>Standard</OtherZoneType>
+						<IBK:Parameter name="HeatTransferCoefficient" unit="W/m2K">17</IBK:Parameter>
+					</InterfaceHeatConduction>
+					<InterfaceSolarAbsorption modelType="Constant">
+						<IBK:Parameter name="AbsorptionCoefficient" unit="---">0.6</IBK:Parameter>
+					</InterfaceSolarAbsorption>
+					<InterfaceLongWaveEmission modelType="Constant">
+						<IBK:Parameter name="Emissivity" unit="---">0.9</IBK:Parameter>
+					</InterfaceLongWaveEmission>
+				</BoundaryCondition>
+				<BoundaryCondition id="1030003" displayName="DE: Erdreich |EN: &lt;new boundary condition&gt;" color="#aa5500">
+					<InterfaceHeatConduction modelType="Constant">
+						<OtherZoneType>Constant</OtherZoneType>
+						<IBK:Parameter name="HeatTransferCoefficient" unit="W/m2K">1000</IBK:Parameter>
+						<IBK:Parameter name="ConstTemperature" unit="C">12</IBK:Parameter>
+					</InterfaceHeatConduction>
+				</BoundaryCondition>
+			</BoundaryConditions>
+			<Components>
+				<Component id="1000002" displayName="DE: [Heiko] AW" color="#ffff00">
+					<Type>OutsideWall</Type>
+					<IdConstruction>1020001</IdConstruction>
+					<IdSideABoundaryCondition>1030001</IdSideABoundaryCondition>
+					<IdSideBBoundaryCondition>1030002</IdSideBBoundaryCondition>
+				</Component>
+				<Component id="1000005" displayName="DE: [Heiko] IW 30" color="#c534ff">
+					<Type>InsideWall</Type>
+					<IdConstruction>1020008</IdConstruction>
+					<IdSideABoundaryCondition>1030001</IdSideABoundaryCondition>
+					<IdSideBBoundaryCondition>1030001</IdSideBBoundaryCondition>
+				</Component>
+				<Component id="1000006" displayName="DE: [Heiko] Dach" color="#d31d00">
+					<Type>SlopedRoof</Type>
+					<IdConstruction>1020003</IdConstruction>
+					<IdSideABoundaryCondition>1030001</IdSideABoundaryCondition>
+					<IdSideBBoundaryCondition>1030002</IdSideBBoundaryCondition>
+				</Component>
+				<Component id="1000007" displayName="DE: [Heiko] Geschossdecke Holz" color="#48ff00">
+					<Type>Ceiling</Type>
+					<IdConstruction>1020004</IdConstruction>
+					<IdSideABoundaryCondition>1030001</IdSideABoundaryCondition>
+					<IdSideBBoundaryCondition>1030001</IdSideBBoundaryCondition>
+				</Component>
+				<Component id="1000008" displayName="DE: [Heiko] Geschossdecke Beton adibat auf SeiteB" color="#be7f00">
+					<Type>Miscellaneous</Type>
+					<IdConstruction>1020006</IdConstruction>
+					<IdSideABoundaryCondition>1030001</IdSideABoundaryCondition>
+				</Component>
+				<Component id="1000010" displayName="DE: Bauteil an Erdreich" color="#ff07a2">
+					<Type>Miscellaneous</Type>
+					<IdConstruction>1020002</IdConstruction>
+					<IdSideABoundaryCondition>1030001</IdSideABoundaryCondition>
+					<IdSideBBoundaryCondition>1030003</IdSideBBoundaryCondition>
+				</Component>
+				<Component id="1000012" displayName="DE: [Heiko] Geschossdecke Holz adiabat auf SeiteA" color="#33b400">
+					<Type>Ceiling</Type>
+					<IdConstruction>1020004</IdConstruction>
+					<IdSideBBoundaryCondition>1030001</IdSideBBoundaryCondition>
+				</Component>
+				<Component id="1000013" displayName="DE: [Heiko] Geschossdecke Holz adiabat auf SeiteB" color="#1f6d00">
+					<Type>Ceiling</Type>
+					<IdConstruction>1020004</IdConstruction>
+					<IdSideABoundaryCondition>1030001</IdSideABoundaryCondition>
+				</Component>
+				<Component id="1000014" displayName="DE: [Heiko] IW 30 adiabat auf SeiteB" color="#320e43">
+					<Type>InsideWall</Type>
+					<IdConstruction>1020008</IdConstruction>
+					<IdSideABoundaryCondition>1030001</IdSideABoundaryCondition>
+				</Component>
+				<Component id="1000021" displayName="DE: [Heiko] IW 12" color="#00f9d4">
+					<Type>InsideWall</Type>
+					<IdConstruction>1020009</IdConstruction>
+					<IdSideABoundaryCondition>1030001</IdSideABoundaryCondition>
+					<IdSideBBoundaryCondition>1030001</IdSideBBoundaryCondition>
+				</Component>
+				<Component id="1000022" displayName="DE: [Heiko] IW 12 adiabat SeiteB" color="#00826f">
+					<Type>InsideWall</Type>
+					<IdConstruction>1020009</IdConstruction>
+					<IdSideABoundaryCondition>1030001</IdSideABoundaryCondition>
+				</Component>
+				<Component id="1000023" displayName="DE: [Heiko] Geschossdecke Beton" color="#ffaa00">
+					<Type>Ceiling</Type>
+					<IdConstruction>1020006</IdConstruction>
+					<IdSideABoundaryCondition>1030001</IdSideABoundaryCondition>
+					<IdSideBBoundaryCondition>1030001</IdSideBBoundaryCondition>
+				</Component>
+			</Components>
+			<SubSurfaceComponents>
+				<SubSurfaceComponent id="1040001" displayName="DE: Fenster alt" color="#49ff16">
+					<Type>Window</Type>
+					<IdWindow>1035001</IdWindow>
+					<IdSideABoundaryCondition>1030001</IdSideABoundaryCondition>
+					<IdSideBBoundaryCondition>1030002</IdSideBBoundaryCondition>
+				</SubSurfaceComponent>
+				<SubSurfaceComponent id="1040002" displayName="DE: Tür alt" color="#05ffdb">
+					<Type>Window</Type>
+					<IdWindow>1035001</IdWindow>
+					<IdConstruction>1020005</IdConstruction>
+					<IdSideABoundaryCondition>1030001</IdSideABoundaryCondition>
+					<IdSideBBoundaryCondition>1030002</IdSideBBoundaryCondition>
+				</SubSurfaceComponent>
+			</SubSurfaceComponents>
+			<Schedules>
+				<Schedule id="1060001" displayName="DE: On |EN: &lt;new schedule&gt;">
+					<UseLinearInterpolation>false</UseLinearInterpolation>
+					<HaveAnnualSchedule>false</HaveAnnualSchedule>
+					<Periods>
+						<ScheduleInterval intervalStartDay="0">
+							<DailyCycles>
+								<DailyCycle>
+									<DayTypes>3,4,5,6,7,8,9</DayTypes>
+									<TimePoints>0</TimePoints>
+									<Values>1</Values>
+								</DailyCycle>
+							</DailyCycles>
+						</ScheduleInterval>
+					</Periods>
+				</Schedule>
+				<Schedule id="1060002" displayName="DE: Badsolltemperatur |EN: &lt;new schedule&gt;">
+					<UseLinearInterpolation>false</UseLinearInterpolation>
+					<HaveAnnualSchedule>false</HaveAnnualSchedule>
+					<Periods>
+						<ScheduleInterval intervalStartDay="0">
+							<DailyCycles>
+								<DailyCycle>
+									<DayTypes>3,4,5,6,7,8,9</DayTypes>
+									<TimePoints>0,6,23</TimePoints>
+									<Values>20,24,20</Values>
+								</DailyCycle>
+							</DailyCycles>
+						</ScheduleInterval>
+					</Periods>
+				</Schedule>
+				<Schedule id="1060003" displayName="DE: Heizsolltemperatur 20C |EN: &lt;new schedule&gt;">
+					<UseLinearInterpolation>false</UseLinearInterpolation>
+					<HaveAnnualSchedule>false</HaveAnnualSchedule>
+					<Periods>
+						<ScheduleInterval intervalStartDay="0">
+							<DailyCycles>
+								<DailyCycle>
+									<DayTypes>3,4,5,6,7,8,9</DayTypes>
+									<TimePoints>0</TimePoints>
+									<Values>20</Values>
+								</DailyCycle>
+							</DailyCycles>
+						</ScheduleInterval>
+					</Periods>
+				</Schedule>
+			</Schedules>
+			<InternalLoads>
+				<InternalLoad id="1065001" displayName="DE: Elektr.Geräte |EN: &lt;new internal load model&gt;" color="#ea0081">
+					<Category>ElectricEquiment</Category>
+					<PowerMethod>PowerPerArea</PowerMethod>
+					<IdPowerManagementSchedule>1060001</IdPowerManagementSchedule>
+					<ActivateCO2Production>false</ActivateCO2Production>
+					<IBK:Parameter name="Power" unit="W">0</IBK:Parameter>
+					<IBK:Parameter name="PowerPerArea" unit="W/m2">1.875</IBK:Parameter>
+					<IBK:Parameter name="ConvectiveHeatFactor" unit="---">0.8</IBK:Parameter>
+					<IBK:Parameter name="LatentHeatFactor" unit="---">0</IBK:Parameter>
+					<IBK:Parameter name="LossHeatFactor" unit="---">0</IBK:Parameter>
+				</InternalLoad>
+			</InternalLoads>
+			<ZoneControlThermostats>
+				<ZoneControlThermostat id="1067501" displayName="DE: Bad |EN: &lt;new zone control thermostat model&gt;" color="#47ffde">
+					<ControlValue>AirTemperature</ControlValue>
+					<ControllerType>Analog</ControllerType>
+					<IdHeatingSetpointSchedule>1060002</IdHeatingSetpointSchedule>
+					<IBK:Parameter name="Tolerance" unit="K">0.1</IBK:Parameter>
+				</ZoneControlThermostat>
+				<ZoneControlThermostat id="1067502" displayName="DE: Wohnen |EN: &lt;new zone control thermostat model&gt;" color="#2a00eb">
+					<ControlValue>AirTemperature</ControlValue>
+					<ControllerType>Analog</ControllerType>
+					<IdHeatingSetpointSchedule>1060003</IdHeatingSetpointSchedule>
+					<IBK:Parameter name="Tolerance" unit="K">0.1</IBK:Parameter>
+				</ZoneControlThermostat>
+			</ZoneControlThermostats>
+			<ZoneIdealHeatingCooling>
+				<ZoneIdealHeatingCooling id="1075001" displayName="DE: Ideale Heizung |EN: &lt;new zone ideal heating cooling model&gt;" color="#ff02d3">
+					<IBK:Parameter name="HeatingLimit" unit="W/m2">300</IBK:Parameter>
+					<IBK:Parameter name="CoolingLimit" unit="W/m2">40</IBK:Parameter>
+				</ZoneIdealHeatingCooling>
+			</ZoneIdealHeatingCooling>
+			<VentilationNatural>
+				<VentilationNatural id="1077501" displayName="DE: beheizt |EN: &lt;new natural ventilation model&gt;" color="#ffc145">
+					<IdSchedule>1060001</IdSchedule>
+					<IBK:Parameter name="AirChangeRate" unit="1/h">0.5</IBK:Parameter>
+				</VentilationNatural>
+				<VentilationNatural id="1077502" displayName="DE: unbeheizt |EN: &lt;new natural ventilation model&gt;" color="#e52000">
+					<IdSchedule>1060001</IdSchedule>
+					<IBK:Parameter name="AirChangeRate" unit="1/h">1.7</IBK:Parameter>
+				</VentilationNatural>
+			</VentilationNatural>
+			<Infiltration>
+				<Infiltration id="1080001" displayName="DE: Infiltration |EN: &lt;new zone control infiltration model&gt;" color="#22e400">
+					<AirChangeType>normal</AirChangeType>
+					<IBK:Parameter name="AirChangeRate" unit="1/h">0.3</IBK:Parameter>
+					<IBK:Parameter name="ShieldingCoefficient" unit="-">0.07</IBK:Parameter>
+				</Infiltration>
+			</Infiltration>
+			<ZoneTemplates>
+				<ZoneTemplate id="1082501" displayName="DE: Wohnen |EN: &lt;new zone template&gt;" color="#9ded00">
+					<IntLoadEquipment>1065001</IntLoadEquipment>
+					<ControlThermostat>1067502</ControlThermostat>
+					<Infiltration>1080001</Infiltration>
+					<NaturalVentilation>1077501</NaturalVentilation>
+					<IdealHeatingCooling>1075001</IdealHeatingCooling>
+				</ZoneTemplate>
+				<ZoneTemplate id="1082502" displayName="DE: Bad |EN: &lt;new zone template&gt;" color="#ff0000">
+					<ControlThermostat>1067501</ControlThermostat>
+					<Infiltration>1080001</Infiltration>
+					<NaturalVentilation>1077501</NaturalVentilation>
+					<IdealHeatingCooling>1075001</IdealHeatingCooling>
+				</ZoneTemplate>
+				<ZoneTemplate id="1082503" displayName="DE: unbeheizt |EN: &lt;new zone template&gt;" color="#280cff">
+					<Infiltration>1080001</Infiltration>
+					<NaturalVentilation>1077502</NaturalVentilation>
+				</ZoneTemplate>
+			</ZoneTemplates>
+		</EmbeddedDatabase>
+		<FMIDescription />
+	</Project>
+</VicusProject>
