@@ -65,3 +65,7 @@ lib_x64
 /externals/GEGExportPlugin/data/liNear-Importdatei-Beispiel.ods
 /data/AZA 20.vicus~
 /externals/GEGExportPlugin/data/.~lock.Beispiel-BtImport.csv\#
+/externals/GEGExportPlugin/data/.~lock.Beispiel-BtImport.ods\#
+/bin/release_x64/libImportIFCPlugin.zip
+/data/Raumbuch Spaces.vicus
+*.csv
