@@ -5,16 +5,18 @@
 #include <VICUS_utilities.h>
 #include <VICUS_Window.h>
 
+#include "GEG_Utilities.h"
+
 bool GEGConstruction::set(const VICUS::Construction &constr, const VICUS::Project& project) {
 	m_isWindow = false;
-	m_name = QString::fromStdString(constr.m_displayName.string());
+	m_name = fromMultiLanguageString(constr.m_displayName,"de");
 	m_constructionId = constr.m_id;
 	for(const auto& layer : constr.m_materialLayers) {
 		double thickness = layer.m_para[VICUS::MaterialLayer::P_Thickness].value;
 		const VICUS::Material* mat = VICUS::element(project.m_embeddedDB.m_materials, layer.m_idMaterial);
 		if(mat != nullptr || !mat->isValid()) {
 			GEGMaterial material;
-			material.m_name = QString::fromStdString(mat->m_displayName.string());
+			material.m_name = fromMultiLanguageString(mat->m_displayName,"de");
 			material.m_producer = QString::fromStdString(mat->m_manufacturer.string());
 			material.m_density = mat->m_para[VICUS::Material::P_Density].value;
 			material.m_lambda = mat->m_para[VICUS::Material::P_Conductivity].value;
@@ -32,7 +34,7 @@ bool GEGConstruction::set(const VICUS::Construction &constr, const VICUS::Projec
 
 bool GEGConstruction::set(const VICUS::Window &window, const VICUS::Project &project) {
 	m_isWindow = true;
-	m_name = QString::fromStdString(window.m_displayName.string());
+	m_name = fromMultiLanguageString(window.m_displayName,"de");
 	m_constructionId = window.m_id;
 	const VICUS::WindowGlazingSystem* glazing = VICUS::element(project.m_embeddedDB.m_windowGlazingSystems, window.m_idGlazingSystem);
 	if(glazing != nullptr) {
@@ -56,6 +58,7 @@ bool GEGConstruction::set(const VICUS::Window &window, const VICUS::Project &pro
 		m_layers.push_back({0.012,material2});
 
 		m_layers.push_back({0.004,material1});
+		return true;
 	}
 	else {
 		m_errors << QString("Non valid glazing in window %1").arg(window.m_id);

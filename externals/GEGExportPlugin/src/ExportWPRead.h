@@ -33,12 +33,17 @@ private slots:
 	void on_pushButtonExport_clicked();
 
 private:
-	Ui::ExportWPRead *ui;
-	VICUS::Project*			m_project;
-	std::vector<GEGZone>	m_zones;
-	QStringList				m_errors;
+	Ui::ExportWPRead *												ui;
+	VICUS::Project*													m_project;
+	std::vector<GEGZone>											m_zones;
+	std::map<int,GEGConstruction>									m_constructions;
+	std::map<GEGSurface::GEGSurfaceType, std::vector<GEGSurface>>	m_surfaces;
+	QStringList														m_errors;
+	QStringList														m_warnings;
 
 	bool update();
+
+	void exportCsv(QString filename);
 };
 
 #endif // ExportWPReadH

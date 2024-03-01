@@ -3,6 +3,8 @@
 
 #include <QString>
 
+#include <map>
+
 #include "GEGSurface.h"
 
 namespace VICUS {
@@ -17,7 +19,7 @@ public:
 		m_id(id)
 	{}
 
-	void set(VICUS::Room& room, const VICUS::Project& project, int& nonValidUsageId);
+	bool set(VICUS::Room& room, const VICUS::Project& project, int& nonValidUsageId);
 
 	int						m_id = -1;
 	QString					m_name;
@@ -29,8 +31,12 @@ public:
 	int						m_zoneId = -1;
 	QString					m_zoneTemplateName;
 	int						m_zoneTemplateId = -1;
+	bool					m_heated = true;
 
 	std::vector<GEGSurface>	m_surfaces;
+	QStringList				m_errors;
+	QStringList				m_warnings;
+
 };
 
 

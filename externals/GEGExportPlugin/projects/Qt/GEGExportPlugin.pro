@@ -71,7 +71,8 @@ SOURCES += \
 	../../src/GEGMaterial.cpp \
 	../../src/GEGRoom.cpp \
 	../../src/GEGSurface.cpp \
-	../../src/GEGZone.cpp
+	../../src/GEGZone.cpp \
+	../../src/GEG_Utilities.cpp
 
 HEADERS += \
 	../../src/ExportWPRead.h \
@@ -81,6 +82,7 @@ HEADERS += \
 	../../src/GEGRoom.h \
 	../../src/GEGSurface.h \
 	../../src/GEGZone.h \
+	../../src/GEG_Utilities.h \
 	../../src/SVCommonPluginInterface.h \
 	../../src/SVExportPluginInterface.h \
 	../../src/GEGExportPlugin.h \
