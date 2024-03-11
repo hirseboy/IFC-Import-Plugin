@@ -8,6 +8,8 @@ class GEGMaterial
 public:
 	GEGMaterial() = default;
 
+	QString layerString(double thickness) const;
+
 	QString	m_name;
 	QString	m_producer;
 	double	m_density		= 0;

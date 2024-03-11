@@ -88,3 +88,13 @@ double GEGConstruction::calculateUValue(double ri, double re) {
 		return 0;
 	}
 }
+
+QString GEGConstruction::string() const {
+	QString res;
+	res += "Bauteil;" + m_name + ";;\n";
+	for(const auto& layer : m_layers) {
+		const GEGMaterial& mat = layer.second;
+		res += mat.layerString(layer.first) + "\n";
+	}
+	return res;
+}

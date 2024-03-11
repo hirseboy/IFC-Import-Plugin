@@ -31,6 +31,8 @@ public:
 		return m_constructionId > 0;
 	}
 
+	QString string() const;
+
 	int											m_id;
 	int											m_typeId = 3;
 	int											m_constructionId = -1;
