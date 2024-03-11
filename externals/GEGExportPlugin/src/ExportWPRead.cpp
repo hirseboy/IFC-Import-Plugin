@@ -188,6 +188,17 @@ bool ExportWPRead::update() {
 		}
 	}
 
+	// remove none of them paired surface
+	for(auto& surfIt : m_surfaces) {
+		for( auto it = surfIt.second.begin(); it != surfIt.second.end(); ++it) {
+			const GEGSurface& surf = *it;
+			auto fit = std::find_if(surfacePairs.begin(), surfacePairs.end(), [surf](const std::pair<int,int>& sp) { return surf.m_id == sp.second;} );
+			if(fit != surfacePairs.end()) {
+				it = surfIt.second.erase(it);
+			}
+		}
+	}
+
 	ui->pushButtonExport->setEnabled(res);
 	if(!m_errors.isEmpty()) {
 		QStringList messages;
@@ -267,6 +278,35 @@ void ExportWPRead::exportCsv(QString filename) {
 		str << "1;" << QString("%1;").arg(groundSlabArea,0,'f', 0) << QString("%1").arg(std::sqrt(groundSlabArea),0,'f', 0) << ";;;;;;;;\n";
 	}
 	zoneFile.close();
+
+	QFile constructionFile(constructionFilename);
+	constructionFile.open(QFile::WriteOnly);
+	if(constructionFile.isOpen()) {
+		QTextStream str(&constructionFile);
+		str << QString::fromUtf8("*** Beispieldatei für DÄMMWERK Bauteilimport\n");
+		str << QString::fromUtf8("*** Kennwort \"Bauteil\" für neues Bauteil\n");
+		str << QString::fromUtf8("*** BtTyp: 1-Decke gegen außen, Dachdecke, 2-Decke zum Dachraum, hinterlüftet, 3-Außenwand / Außentür, 4-AW hinterlüftet, 5-AW gegen Erdreich, 6/12-Trennwand,\n");
+		str << QString::fromUtf8("***        8-Kellerdecke, 9-Fußboden zum Erdreich, 7/13/14/15-Whg-Trenndecken, 16-Decke nach unten hinterlüftet, 17-Decke aufgeständert, 20-Fenster \n");
+		str << QString::fromUtf8("*** oder k.A. -> später einstellen  \n");
+		str << QString::fromUtf8("*** folgende Zeilen = Baustoffparameter, Schichten von innen nach außen\n");
+		str << QString::fromUtf8("*** Typ (DW) = DÄMMWERK Baustoffgruppe oder k.A. \n");
+		str << QString::fromUtf8("**************************************** Beginn Struktur\n");
+		str << QString::fromUtf8("* Bauteil;Beschreibung 1;BtTyp;\n");
+		str << QString::fromUtf8("* Baustoffname 1;Rohdichte kg/m³;Schichtdicke m;Flächengewicht kg/m²;lambda-Wert W/(mK);R-Wert m²K/W;mü min;mü max;cspez J/(kgK);Typ (DW); \n");
+		str << QString::fromUtf8("* Baustoffname 2;Rohdichte kg/m³;Schichtdicke m;Flächengewicht kg/m²;lambda-Wert W/(mK);R-Wert m²K/W;mü min;mü max;cspez J/(kgK);Typ (DW); \n");
+		str << QString::fromUtf8("* Baustoffname 3;...\n");
+		str << QString::fromUtf8("* Bauteil;Beschreibung 2;Bttyp;\n");
+		str << QString::fromUtf8("* Baustoffname 1;Rohdichte kg/m³;Schichtdicke m;Flächengewicht kg/m²;lambda-Wert W/(mK);R-Wert m²K/W;mü min;mü max;cspez J/(kgK);Typ (DW); \n");
+		str << QString::fromUtf8("* Baustoffname 2;...\n");
+		str << QString::fromUtf8("* Baustoffname 3;...\n");
+		str << QString::fromUtf8("*************************************** Ende Struktur\n");
+		str << QString::fromUtf8("*************************************** Beginn Beispieldaten\n");
+		for(const auto& constr : m_constructions) {
+			str << constr.second.string() + "\n";
+		}
+		str << QString::fromUtf8("************************************** Ende Beispieldaten\n");
+		constructionFile.close();
+	}
 }
 
 bool ExportWPRead::isComplete() const {
