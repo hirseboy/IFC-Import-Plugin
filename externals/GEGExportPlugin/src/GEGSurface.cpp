@@ -33,6 +33,7 @@ GEGConstruction GEGSurface::set(const VICUS::Surface &surface, const VICUS::Proj
 		m_errors << QString("No valid component for surface %1 and component instance %2").arg(surface.m_id).arg(surface.m_componentInstance->m_id);
 		return GEGConstruction();
 	}
+	m_name =  fromMultiLanguageString(m_component->m_displayName, "de");
 
 	m_sideACondition = VICUS::element(project.m_embeddedDB.m_boundaryConditions, m_component->m_idSideABoundaryCondition);
 	m_sideBCondition = VICUS::element(project.m_embeddedDB.m_boundaryConditions, m_component->m_idSideBBoundaryCondition);
@@ -143,6 +144,7 @@ GEGConstruction GEGSurface::set(const VICUS::Surface& surface, const VICUS::SubS
 		m_errors << QString("No valid component for subsurface %1 and component instance %2").arg(subsurface.m_id).arg(subsurface.m_subSurfaceComponentInstance->m_id);
 		return GEGConstruction();
 	}
+	m_name =  fromMultiLanguageString(subsurfaceComponent->m_displayName, "de");
 
 	m_sideACondition = VICUS::element(project.m_embeddedDB.m_boundaryConditions, subsurfaceComponent->m_idSideABoundaryCondition);
 	m_sideBCondition = VICUS::element(project.m_embeddedDB.m_boundaryConditions, subsurfaceComponent->m_idSideBBoundaryCondition);
@@ -336,7 +338,7 @@ static QString orientationString(double orientation) {
 
 QString GEGSurface::string() const {
 	QString res = m_name;
-	res += ";" + QString("%1").arg(m_area);
+	res += ";" + QString("%1").arg(m_area,0,'f', 0);
 	res += ";" + orientationString(m_orientation);
 	res += ";" + QString("%1").arg(m_inclination,0,'f', 0);
 	res += ";" + QString("%1").arg(m_zoneId);
