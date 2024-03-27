@@ -34,6 +34,13 @@ public:
 		OMT_NoMatching
 	};
 
+	enum CompositionType {
+		CT_Complex,
+		CT_Element,
+		CT_Partial,
+		CT_Unknown
+	};
+
 	/*! Contains result of the opening matching functions.*/
 	struct OpeningMatching {
 		/*! Default constructor. Create a non-valid object.*/
@@ -173,6 +180,9 @@ public:
 		\li ENUM_NOTDEFINED - undefined space type
 	*/
 	IFC4X3::IfcSpaceTypeEnum::IfcSpaceTypeEnumEnum		m_spaceType;
+
+	CompositionType										m_compositionType = CT_Unknown;
+
 	/*! Some remarkes to the space. Can contain notes from space boundary evaluation.*/
 	std::string									m_notes;
 
@@ -267,6 +277,7 @@ private:
 	std::vector<Surface>									m_surfacesOrg;		///< Original surfaces from the IFC model converted into global coordinates
 	meshVector_t											m_meshSets;
 	std::vector<std::string>								m_spaceBoundaryGUIDs;
+	std::map<std::string,std::map<std::string,Property>>	m_properties;
 };
 
 } // namespace IFCC

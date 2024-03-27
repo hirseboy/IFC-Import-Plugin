@@ -1,5 +1,6 @@
 #include "IFCC_Property.h"
 
+
 #include <ifcpp/IFC4X3/include/IfcPropertySetDefinitionSelect.h>
 #include <ifcpp/IFC4X3/include/IfcPropertySetDefinition.h>
 #include <ifcpp/IFC4X3/include/IfcPropertySet.h>
@@ -11,6 +12,19 @@
 #include <ifcpp/IFC4X3/include/IfcPropertyTableValue.h>
 
 #include <ifcpp/IFC4X3/include/IfcMaterialProperties.h>
+#include <ifcpp/IFC4X3/include/IfcRelDefinesByProperties.h>
+#include <ifcpp/IFC4X3/include/IfcPropertySetDefinitionSet.h>
+#include <ifcpp/IFC4X3/include/IfcPreDefinedPropertySet.h>
+
+#include <ifcpp/IFC4X3/include/IfcQuantitySet.h>
+#include <ifcpp/IFC4X3/include/IfcElementQuantity.h>
+#include <ifcpp/IFC4X3/include/IfcQuantityArea.h>
+#include <ifcpp/IFC4X3/include/IfcQuantityCount.h>
+#include <ifcpp/IFC4X3/include/IfcQuantityLength.h>
+#include <ifcpp/IFC4X3/include/IfcQuantityVolume.h>
+#include <ifcpp/IFC4X3/include/IfcQuantityWeight.h>
+#include <ifcpp/IFC4X3/include/IfcQuantityTime.h>
+#include <ifcpp/IFC4X3/include/IfcQuantityNumber.h>
 
 #include <ifcpp/IFC4X3/include/IfcDerivedMeasureValue.h>
 #include <ifcpp/IFC4X3/include/IfcMeasureValue.h>
@@ -32,6 +46,19 @@
 #include <ifcpp/IFC4X3/include/IfcThermalResistanceMeasure.h>
 #include <ifcpp/IFC4X3/include/IfcThermalTransmittanceMeasure.h>
 #include <ifcpp/IFC4X3/include/IfcVaporPermeabilityMeasure.h>
+#include <ifcpp/IFC4X3/include/IfcIlluminanceMeasure.h>
+#include <ifcpp/IFC4X3/include/IfcPowerMeasure.h>
+#include <ifcpp/IFC4X3/include/IfcVolumetricFlowRateMeasure.h>
+
+#include <ifcpp/IFC4X3/include/IfcAreaMeasure.h>
+#include <ifcpp/IFC4X3/include/IfcCountMeasure.h>
+#include <ifcpp/IFC4X3/include/IfcLengthMeasure.h>
+#include <ifcpp/IFC4X3/include/IfcPositiveRatioMeasure.h>
+#include <ifcpp/IFC4X3/include/IfcRatioMeasure.h>
+#include <ifcpp/IFC4X3/include/IfcThermodynamicTemperatureMeasure.h>
+#include <ifcpp/IFC4X3/include/IfcTimeMeasure.h>
+#include <ifcpp/IFC4X3/include/IfcVolumeMeasure.h>
+#include <ifcpp/IFC4X3/include/IfcMassMeasure.h>
 
 #include <Carve/src/include/carve/carve.hpp>
 
@@ -158,21 +185,56 @@ bool Property::relevantProperty(const std::string& propSetName, const std::strin
 		if(propName == "ThermalConductivity")
 			return true;
 	}
+	else if(propSetName == "Pset_SpaceCommon") {
+		if(propName == "Reference")
+			return true;
+		if(propName == "IsExternal")
+			return true;
+		if(propName == "GrossPlannedArea")
+			return true;
+		if(propName == "NetPlannedArea")
+			return true;
+	}
+	else if(propSetName == "Pset_SpaceOccupancyRequirements") {
+		if(propName == "OccupancyType")
+			return true;
+		if(propName == "OccupancyNumber")
+			return true;
+		if(propName == "OccupancyNumberPeak")
+			return true;
+		if(propName == "OccupancyTimePerDay")
+			return true;
+		if(propName == "AreaPerOccupant")
+			return true;
+	}
+	else if(propSetName == "Pset_SpaceThermalRequirements") {
+		return true;
+	}
+	else if(propSetName == "Pset_AirSideSystemInformation") {
+		return true;
+	}
+	else if(propSetName == "Pset_SpaceThermalDesign") {
+		return true;
+	}
+	else if(propSetName == "Pset_SpaceThermalLoad") {
+		return true;
+	}
 
 	return false;
 }
 
 bool isSimpleProperty(shared_ptr<IFC4X3::IfcProperty> property) {
 	shared_ptr<IFC4X3::IfcSimpleProperty> simpleValue = dynamic_pointer_cast<IFC4X3::IfcSimpleProperty>(property);
-	if(!simpleValue)
+	if(simpleValue)
 		return true;
+	return false;
 }
 
 template<class T>
-bool setDoubleProp(shared_ptr<IFC4X3::IfcPropertySingleValue> singleValue, Property& prop) {
+bool setDoubleProp(shared_ptr<IFC4X3::IfcPropertySingleValue> singleValue, Property& prop, std::string description = std::string()) {
 	shared_ptr<T> value1 = dynamic_pointer_cast<T>(singleValue->m_NominalValue);
 	if(value1) {
-//		prop.m_description = value1->m_tag;
+		prop.m_description = description;
 		prop.m_valueType = Property::VT_Double;
 		prop.m_doubleValue = value1->m_value;
 		return true;
@@ -180,12 +242,52 @@ bool setDoubleProp(shared_ptr<IFC4X3::IfcPropertySingleValue> singleValue, Prope
 	return false;
 }
 
+template<class T>
+bool setQuantity(T singleValue, Property& prop, std::string description = std::string()) {
+	if(singleValue) {
+		prop.m_description = description;
+		prop.m_valueType = Property::VT_Double;
+		prop.m_doubleValue = singleValue->m_value;
+		return true;
+	}
+	return false;
+}
+
+template<class T>
+bool setBoundedProp(shared_ptr<IFC4X3::IfcPropertyBoundedValue> boundedValue, Property& prop, std::string description = std::string()) {
+	prop.m_description = description;
+	prop.m_valueType = Property::VT_Bounded;
+	bool hasOne = false;
+	shared_ptr<T> valueUp = dynamic_pointer_cast<T>(boundedValue->m_UpperBoundValue);
+	if(valueUp) {
+		prop.m_boundedValue.m_upperBound = valueUp->m_value;
+		hasOne = true;
+	}
+	shared_ptr<T> valueDown = dynamic_pointer_cast<T>(boundedValue->m_LowerBoundValue);
+	if(valueUp) {
+		prop.m_boundedValue.m_lowerBound = valueDown->m_value;
+		hasOne = true;
+	}
+	shared_ptr<T> valueSet = dynamic_pointer_cast<T>(boundedValue->m_SetPointValue);
+	if(valueUp) {
+		prop.m_boundedValue.m_setPoint = valueSet->m_value;
+		hasOne = true;
+	}
+	return hasOne;
+}
+
 bool getProperty(shared_ptr<IFC4X3::IfcProperty> property, const std::string& pset_name, Property& prop) {
 
 	if(!isSimpleProperty(property))
 		return false;
 
+	prop.m_setName = pset_name;
+
 	shared_ptr<IFC4X3::IfcPropertyBoundedValue> boundedValue = dynamic_pointer_cast<IFC4X3::IfcPropertyBoundedValue>(property);
+	if(boundedValue) {
+		if(setBoundedProp<IFC4X3::IfcPowerMeasure>(boundedValue, prop, "Power"))
+			return true;
+	}
 	shared_ptr<IFC4X3::IfcPropertyEnumeratedValue> enumeratedValue = dynamic_pointer_cast<IFC4X3::IfcPropertyEnumeratedValue>(property);
 	shared_ptr<IFC4X3::IfcPropertyListValue> listValue = dynamic_pointer_cast<IFC4X3::IfcPropertyListValue>(property);
 	shared_ptr<IFC4X3::IfcPropertyReferenceValue> referenceValue = dynamic_pointer_cast<IFC4X3::IfcPropertyReferenceValue>(property);
@@ -196,17 +298,23 @@ bool getProperty(shared_ptr<IFC4X3::IfcProperty> property, const std::string& ps
 
 		shared_ptr<IFC4X3::IfcDerivedMeasureValue> dmv = dynamic_pointer_cast<IFC4X3::IfcDerivedMeasureValue>(singleValue->m_NominalValue);
 		if(dmv) {
-			if(setDoubleProp<IFC4X3::IfcHeatFluxDensityMeasure>(singleValue, prop))
+			if(setDoubleProp<IFC4X3::IfcHeatFluxDensityMeasure>(singleValue, prop, "HeatFlux"))
 				return true;
-			if(setDoubleProp<IFC4X3::IfcIsothermalMoistureCapacityMeasure>(singleValue, prop))
+			if(setDoubleProp<IFC4X3::IfcIsothermalMoistureCapacityMeasure>(singleValue, prop, "IsothermalMoistureCapacity"))
 				return true;
-			if(setDoubleProp<IFC4X3::IfcThermalConductivityMeasure>(singleValue, prop))
+			if(setDoubleProp<IFC4X3::IfcThermalConductivityMeasure>(singleValue, prop, "ThermalConductivity"))
 				return true;
-			if(setDoubleProp<IFC4X3::IfcThermalResistanceMeasure>(singleValue, prop))
+			if(setDoubleProp<IFC4X3::IfcThermalResistanceMeasure>(singleValue, prop, "ThermalResistance"))
 				return true;
-			if(setDoubleProp<IFC4X3::IfcThermalTransmittanceMeasure>(singleValue, prop))
+			if(setDoubleProp<IFC4X3::IfcThermalTransmittanceMeasure>(singleValue, prop, "ThermalTransmittance"))
 				return true;
-			if(setDoubleProp<IFC4X3::IfcVaporPermeabilityMeasure>(singleValue, prop))
+			if(setDoubleProp<IFC4X3::IfcVaporPermeabilityMeasure>(singleValue, prop, "VaporPermeability"))
+				return true;
+			if(setDoubleProp<IFC4X3::IfcIlluminanceMeasure>(singleValue, prop, "Illuminance"))
+				return true;
+			if(setDoubleProp<IFC4X3::IfcPowerMeasure>(singleValue, prop, "Power"))
+				return true;
+			if(setDoubleProp<IFC4X3::IfcVolumetricFlowRateMeasure>(singleValue, prop, "VolumetricFlowRate"))
 				return true;
 
 
@@ -228,7 +336,7 @@ bool getProperty(shared_ptr<IFC4X3::IfcProperty> property, const std::string& ps
 //					IfcForceMeasure
 //					IfcFrequencyMeasur
 //					IfcHeatingValueMeasure
-//					IfcIlluminanceMeasure
+
 //					IfcInductanceMeasure
 //					IfcIntegerCountRateMeasure
 //					IfcIonConcentrationMeasure
@@ -254,7 +362,7 @@ bool getProperty(shared_ptr<IFC4X3::IfcProperty> property, const std::string& ps
 //					IfcMonetaryMeasure
 //					IfcPHMeasure
 //					IfcPlanarForceMeasure
-//					IfcPowerMeasure
+
 //					IfcPressureMeasure
 //					IfcRadioActivityMeasure
 //					IfcRotationalFrequencyMeasure
@@ -273,20 +381,34 @@ bool getProperty(shared_ptr<IFC4X3::IfcProperty> property, const std::string& ps
 //					IfcThermalAdmittanceMeasure
 //					IfcThermalExpansionCoefficientMeasure
 //					IfcTorqueMeasure
-//					IfcVolumetricFlowRateMeasure
+
 //					IfcWarpingConstantMeasure
 //					IfcWarpingMomentMeasure
 		}
 		shared_ptr<IFC4X3::IfcMeasureValue> mv = dynamic_pointer_cast<IFC4X3::IfcMeasureValue>(singleValue->m_NominalValue);
 		if(mv) {
+			if(setDoubleProp<IFC4X3::IfcAreaMeasure>(singleValue, prop, "Area"))
+				return true;
+			if(setDoubleProp<IFC4X3::IfcCountMeasure>(singleValue, prop, "Count"))
+				return true;
+			if(setDoubleProp<IFC4X3::IfcLengthMeasure>(singleValue, prop, "Length"))
+				return true;
+			if(setDoubleProp<IFC4X3::IfcPositiveRatioMeasure>(singleValue, prop, "PositiveRatio"))
+				return true;
+			if(setDoubleProp<IFC4X3::IfcRatioMeasure>(singleValue, prop, "Ratio"))
+				return true;
+			if(setDoubleProp<IFC4X3::IfcThermodynamicTemperatureMeasure>(singleValue, prop, "ThermodynamicTemperature"))
+				return true;
+			if(setDoubleProp<IFC4X3::IfcTimeMeasure>(singleValue, prop, "Time"))
+				return true;
 //			IfcAmountOfSubstanceMeasure
-//			IfcAreaMeasure
+//
 //			IfcComplexNumber
 //			IfcContextDependentMeasure
-//			IfcCountMeasure
+
 //			IfcDescriptiveMeasure
 //			IfcElectricCurrentMeasure
-//			IfcLengthMeasure
+
 //			IfcLuminousIntensityMeasure
 //			IfcMassMeasure
 //			IfcNonNegativeLengthMeasure
@@ -296,76 +418,112 @@ bool getProperty(shared_ptr<IFC4X3::IfcProperty> property, const std::string& ps
 //			IfcPlaneAngleMeasure
 //			IfcPositiveLengthMeasure
 //			IfcPositivePlaneAngleMeasure
-//			IfcPositiveRatioMeasure
-//			IfcRatioMeasure
+
+
 //			IfcSolidAngleMeasure
-//			IfcThermodynamicTemperatureMeasure
-//			IfcTimeMeasure
+
+
 //			IfcVolumeMeasure
 		}
 		shared_ptr<IFC4X3::IfcSimpleValue> sv = dynamic_pointer_cast<IFC4X3::IfcSimpleValue>(singleValue->m_NominalValue);
 		if(sv) {
-			if(sv) {
-				if(dynamic_pointer_cast<IFC4X3::IfcBinary>(sv)) {
-					prop.m_valueType = Property::VT_String;
-					prop.m_stringValue = dynamic_pointer_cast<IFC4X3::IfcBinary>(sv)->m_value;
-					return true;
-				}
-				else if(dynamic_pointer_cast<IFC4X3::IfcBoolean>(sv)) {
-					prop.m_valueType = Property::VT_Boolean;
-					prop.m_boolValue = dynamic_pointer_cast<IFC4X3::IfcBoolean>(sv)->m_value;
-					return true;
-				}
-				else if(dynamic_pointer_cast<IFC4X3::IfcDate>(sv)) {
-
-				}
-				else if(dynamic_pointer_cast<IFC4X3::IfcDateTime>(sv)) {
-
-				}
-				else if(dynamic_pointer_cast<IFC4X3::IfcDuration>(sv)) {
-
-				}
-				else if(dynamic_pointer_cast<IFC4X3::IfcIdentifier>(sv)) {
-					prop.m_valueType = Property::VT_String;
-					prop.m_stringValue = dynamic_pointer_cast<IFC4X3::IfcIdentifier>(sv)->m_value;
-					return true;
-				}
-				else if(dynamic_pointer_cast<IFC4X3::IfcInteger>(sv)) {
-					prop.m_valueType = Property::VT_INT;
-					prop.m_intValue = dynamic_pointer_cast<IFC4X3::IfcInteger>(sv)->m_value;
-					return true;
-				}
-				else if(dynamic_pointer_cast<IFC4X3::IfcLabel>(sv)) {
-					prop.m_valueType = Property::VT_String;
-					prop.m_stringValue = label2s(dynamic_pointer_cast<IFC4X3::IfcLabel>(sv));
-					return true;
-				}
-				else if(dynamic_pointer_cast<IFC4X3::IfcLogical>(sv)) {
-					prop.m_valueType = Property::VT_Boolean;
-					prop.m_boolValue = dynamic_pointer_cast<IFC4X3::IfcLogical>(sv)->m_value == LOGICAL_TRUE;
-					return true;
-				}
-				else if(dynamic_pointer_cast<IFC4X3::IfcPositiveInteger>(sv)) {
-					prop.m_valueType = Property::VT_INT;
-					prop.m_intValue = dynamic_pointer_cast<IFC4X3::IfcPositiveInteger>(sv)->m_value;
-					return true;
-				}
-				else if(dynamic_pointer_cast<IFC4X3::IfcReal>(sv)) {
-					prop.m_valueType = Property::VT_Double;
-					prop.m_doubleValue = dynamic_pointer_cast<IFC4X3::IfcReal>(sv)->m_value;
-					return true;
-				}
-				else if(dynamic_pointer_cast<IFC4X3::IfcText>(sv)) {
-					prop.m_valueType = Property::VT_String;
-					return true;
-					prop.m_stringValue = text2s(dynamic_pointer_cast<IFC4X3::IfcText>(sv));
-				}
-				else if(dynamic_pointer_cast<IFC4X3::IfcTime>(sv)) {
-
-				}
-				else if(dynamic_pointer_cast<IFC4X3::IfcTimeStamp>(sv)) {
-
-				}
+			if(dynamic_pointer_cast<IFC4X3::IfcBinary>(sv)) {
+				prop.m_description = "Binary";
+				prop.m_name = singleValue->m_Name->m_value;
+				prop.m_valueType = Property::VT_String;
+				prop.m_stringValue = dynamic_pointer_cast<IFC4X3::IfcBinary>(sv)->m_value;
+				return true;
+			}
+			else if(dynamic_pointer_cast<IFC4X3::IfcBoolean>(sv)) {
+				prop.m_description = "Boolean";
+				prop.m_name = singleValue->m_Name->m_value;
+				prop.m_valueType = Property::VT_Boolean;
+				prop.m_boolValue = dynamic_pointer_cast<IFC4X3::IfcBoolean>(sv)->m_value;
+				return true;
+			}
+			else if(dynamic_pointer_cast<IFC4X3::IfcDate>(sv)) {
+				prop.m_description = "Date";
+				prop.m_name = singleValue->m_Name->m_value;
+				prop.m_valueType = Property::VT_String;
+				prop.m_stringValue = dynamic_pointer_cast<IFC4X3::IfcIdentifier>(sv)->m_value;
+				return true;
+			}
+			else if(dynamic_pointer_cast<IFC4X3::IfcDateTime>(sv)) {
+				prop.m_description = "DateTime";
+				prop.m_name = singleValue->m_Name->m_value;
+				prop.m_valueType = Property::VT_String;
+				prop.m_stringValue = dynamic_pointer_cast<IFC4X3::IfcIdentifier>(sv)->m_value;
+				return true;
+			}
+			else if(dynamic_pointer_cast<IFC4X3::IfcDuration>(sv)) {
+				prop.m_description = "Duration";
+				prop.m_name = singleValue->m_Name->m_value;
+				prop.m_valueType = Property::VT_String;
+				prop.m_stringValue = dynamic_pointer_cast<IFC4X3::IfcIdentifier>(sv)->m_value;
+				return true;
+			}
+			else if(dynamic_pointer_cast<IFC4X3::IfcIdentifier>(sv)) {
+				prop.m_description = "Identifier";
+				prop.m_name = singleValue->m_Name->m_value;
+				prop.m_valueType = Property::VT_String;
+				prop.m_stringValue = dynamic_pointer_cast<IFC4X3::IfcIdentifier>(sv)->m_value;
+				return true;
+			}
+			else if(dynamic_pointer_cast<IFC4X3::IfcInteger>(sv)) {
+				prop.m_description = "Integer";
+				prop.m_name = singleValue->m_Name->m_value;
+				prop.m_valueType = Property::VT_INT;
+				prop.m_intValue = dynamic_pointer_cast<IFC4X3::IfcInteger>(sv)->m_value;
+				return true;
+			}
+			else if(dynamic_pointer_cast<IFC4X3::IfcLabel>(sv)) {
+				prop.m_description = "Label";
+				prop.m_name = singleValue->m_Name->m_value;
+				prop.m_valueType = Property::VT_String;
+				prop.m_stringValue = label2s(dynamic_pointer_cast<IFC4X3::IfcLabel>(sv));
+				return true;
+			}
+			else if(dynamic_pointer_cast<IFC4X3::IfcLogical>(sv)) {
+				prop.m_description = "Logical";
+				prop.m_name = singleValue->m_Name->m_value;
+				prop.m_valueType = Property::VT_Boolean;
+				prop.m_boolValue = dynamic_pointer_cast<IFC4X3::IfcLogical>(sv)->m_value == LOGICAL_TRUE;
+				return true;
+			}
+			else if(dynamic_pointer_cast<IFC4X3::IfcPositiveInteger>(sv)) {
+				prop.m_description = "PositiveInteger";
+				prop.m_name = singleValue->m_Name->m_value;
+				prop.m_valueType = Property::VT_INT;
+				prop.m_intValue = dynamic_pointer_cast<IFC4X3::IfcPositiveInteger>(sv)->m_value;
+				return true;
+			}
+			else if(dynamic_pointer_cast<IFC4X3::IfcReal>(sv)) {
+				prop.m_description = "Real";
+				prop.m_name = singleValue->m_Name->m_value;
+				prop.m_valueType = Property::VT_Double;
+				prop.m_doubleValue = dynamic_pointer_cast<IFC4X3::IfcReal>(sv)->m_value;
+				return true;
+			}
+			else if(dynamic_pointer_cast<IFC4X3::IfcText>(sv)) {
+				prop.m_description = "Text";
+				prop.m_name = singleValue->m_Name->m_value;
+				prop.m_valueType = Property::VT_String;
+				prop.m_stringValue = text2s(dynamic_pointer_cast<IFC4X3::IfcText>(sv));
+				return true;
+			}
+			else if(dynamic_pointer_cast<IFC4X3::IfcTime>(sv)) {
+				prop.m_description = "Time";
+				prop.m_name = singleValue->m_Name->m_value;
+				prop.m_valueType = Property::VT_String;
+				prop.m_stringValue = text2s(dynamic_pointer_cast<IFC4X3::IfcText>(sv));
+				return true;
+			}
+			else if(dynamic_pointer_cast<IFC4X3::IfcTimeStamp>(sv)) {
+				prop.m_description = "TimeStamp";
+				prop.m_name = singleValue->m_Name->m_value;
+				prop.m_valueType = Property::VT_INT;
+				prop.m_intValue = dynamic_pointer_cast<IFC4X3::IfcPositiveInteger>(sv)->m_value;
+				return true;
 			}
 		}
 	}
@@ -373,6 +531,41 @@ bool getProperty(shared_ptr<IFC4X3::IfcProperty> property, const std::string& ps
 	return false;
 }
 
+bool getQuantity(shared_ptr<IFC4X3::IfcPhysicalQuantity> quantity, const std::string& qset_name, Property& prop) {
+	prop.m_setName = qset_name;
+	prop.m_name = label2s(quantity->m_Name);
+	shared_ptr<IFC4X3::IfcQuantityArea> qa = dynamic_pointer_cast<IFC4X3::IfcQuantityArea>(quantity);
+	if(qa) {
+		if(setQuantity(qa->m_AreaValue, prop, "Quantity Area"))
+			return true;
+	}
+	shared_ptr<IFC4X3::IfcQuantityCount> qc = dynamic_pointer_cast<IFC4X3::IfcQuantityCount>(quantity);
+	if(qc) {
+		if(setQuantity(qc->m_CountValue, prop, "Quantity Count"))
+			return true;
+	}
+	shared_ptr<IFC4X3::IfcQuantityLength> ql = dynamic_pointer_cast<IFC4X3::IfcQuantityLength>(quantity);
+	if(ql) {
+		if(setQuantity(ql->m_LengthValue, prop, "Quantity Length"))
+			return true;
+	}
+	shared_ptr<IFC4X3::IfcQuantityTime> qt = dynamic_pointer_cast<IFC4X3::IfcQuantityTime>(quantity);
+	if(qt) {
+		if(setQuantity(qt->m_TimeValue, prop, "Quantity Time"))
+			return true;
+	}
+	shared_ptr<IFC4X3::IfcQuantityVolume> qv = dynamic_pointer_cast<IFC4X3::IfcQuantityVolume>(quantity);
+	if(qv) {
+		if(setQuantity(qv->m_VolumeValue, prop, "Quantity Volume"))
+			return true;
+	}
+	shared_ptr<IFC4X3::IfcQuantityWeight> qw = dynamic_pointer_cast<IFC4X3::IfcQuantityWeight>(quantity);
+	if(qw) {
+		if(setQuantity(qw->m_WeightValue, prop, "Quantity Weight"))
+			return true;
+	}
+	return false;
+}
 
 bool getDoubleProperty(const std::map<std::string,std::map<std::string,Property>>& pmap,
 								 const std::string& setName, const std::string& name, double& value ) {
@@ -412,6 +605,84 @@ void getMaterialProperties(const shared_ptr<IFC4X3::IfcMaterial>& mat, std::map<
 			}
 		}
 	}
+}
+
+void getSpaceProperties(const shared_ptr<IFC4X3::IfcSpace>& space, std::map<std::string,std::map<std::string,Property>>& propItem) {
+	for(const auto& relproperties : space->m_IsDefinedBy_inverse) {
+		shared_ptr<IFC4X3::IfcRelDefinesByProperties> space_properties(relproperties);
+		if(space_properties) {
+			std::string pset_name = label2s(space_properties->m_Name);
+			shared_ptr<IFC4X3::IfcPropertySetDefinition> propertySetDefinition = dynamic_pointer_cast<IFC4X3::IfcPropertySetDefinition>(space_properties->m_RelatingPropertyDefinition);
+			if(propertySetDefinition) {
+				pset_name = label2s(propertySetDefinition->m_Name);
+				shared_ptr<IFC4X3::IfcElementQuantity> quantitySet = dynamic_pointer_cast<IFC4X3::IfcElementQuantity>(propertySetDefinition);
+				if(quantitySet) {
+					for(const auto& quantity : quantitySet->m_Quantities) {
+						Property prop;
+						getQuantity(quantity, pset_name, prop);
+						std::map<std::string, Property> inner;
+						inner.insert(std::make_pair(prop.m_name, prop));
+						propItem.insert(std::make_pair(pset_name, inner));
+					}
+				}
+				shared_ptr<IFC4X3::IfcPropertySet> propertySet = dynamic_pointer_cast<IFC4X3::IfcPropertySet>(propertySetDefinition);
+				if(propertySet) {
+					for(const auto& property : propertySet->m_HasProperties) {
+						std::string name = name2s(property->m_Name);
+						bool usesThisProperty = Property::relevantProperty(pset_name, name);
+						if(usesThisProperty) {
+							Property prop;
+							prop.m_name = name;
+							getProperty(property,pset_name, prop);
+							std::map<std::string, Property> inner;
+							inner.insert(std::make_pair(name, prop));
+							propItem.insert(std::make_pair(pset_name, inner));
+						}
+					}
+				}
+				shared_ptr<IFC4X3::IfcPreDefinedPropertySet> preDefinedPropertySet = dynamic_pointer_cast<IFC4X3::IfcPreDefinedPropertySet>(propertySetDefinition);
+				if(preDefinedPropertySet) {
+
+				}
+			}
+			shared_ptr<IFC4X3::IfcPropertySetDefinitionSet> propertySetDefinitionSet = dynamic_pointer_cast<IFC4X3::IfcPropertySetDefinitionSet>(space_properties->m_RelatingPropertyDefinition);
+			if(propertySetDefinitionSet) {
+				for(const auto& propSet : propertySetDefinitionSet->m_vec) {
+					pset_name = label2s(propSet->m_Name);
+					shared_ptr<IFC4X3::IfcElementQuantity> quantitySet = dynamic_pointer_cast<IFC4X3::IfcElementQuantity>(propertySetDefinition);
+					if(quantitySet) {
+						for(const auto& quantity : quantitySet->m_Quantities) {
+							Property prop;
+							getQuantity(quantity, pset_name, prop);
+							std::map<std::string, Property> inner;
+							inner.insert(std::make_pair(prop.m_name, prop));
+							propItem.insert(std::make_pair(pset_name, inner));
+						}
+					}
+					shared_ptr<IFC4X3::IfcPropertySet> propertySet = dynamic_pointer_cast<IFC4X3::IfcPropertySet>(propertySetDefinition);
+					if(propertySet) {
+						for(const auto& property : propertySet->m_HasProperties) {
+							std::string name = name2s(property->m_Name);
+							bool usesThisProperty = Property::relevantProperty(pset_name, name);
+							if(usesThisProperty) {
+								Property prop;
+								prop.m_name = name;
+								getProperty(property,pset_name, prop);
+								std::map<std::string, Property> inner;
+								inner.insert(std::make_pair(name, prop));
+								propItem.insert(std::make_pair(pset_name, inner));
+							}
+						}
+					}
+					shared_ptr<IFC4X3::IfcPreDefinedPropertySet> preDefinedPropertySet = dynamic_pointer_cast<IFC4X3::IfcPreDefinedPropertySet>(propertySetDefinition);
+					if(preDefinedPropertySet) {
+
+					}
+				}
+			}
+		}
+	}
+
 }
 
 

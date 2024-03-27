@@ -2,6 +2,7 @@
 
 #include <ifcpp/IFC4X3/include/IfcRelSpaceBoundary.h>
 #include <ifcpp/IFC4X3/include/IfcLengthMeasure.h>
+#include <ifcpp/IFC4X3/include/IfcElementCompositionEnum.h>
 
 #include <numeric>
 #include <algorithm>
@@ -31,6 +32,14 @@ bool Space::set(std::shared_ptr<IFC4X3::IfcSpace> ifcSpace, std::vector<ConvertE
 	if(ifcSpace->m_PredefinedType != nullptr)
 		m_spaceType = ifcSpace->m_PredefinedType->m_enum;
 
+	if(ifcSpace->m_CompositionType != nullptr) {
+		switch(ifcSpace->m_CompositionType->m_enum) {
+			case IFC4X3::IfcElementCompositionEnum::ENUM_COMPLEX: m_compositionType = CT_Complex; break;
+			case IFC4X3::IfcElementCompositionEnum::ENUM_ELEMENT: m_compositionType = CT_Element; break;
+			case IFC4X3::IfcElementCompositionEnum::ENUM_PARTIAL: m_compositionType = CT_Partial; break;
+		}
+	}
+
 	// look for space boundaries from IFC
 	for( const auto& bound : ifcSpace->m_BoundedBy_inverse) {
 		auto boundP = bound.lock();
@@ -41,6 +50,13 @@ bool Space::set(std::shared_ptr<IFC4X3::IfcSpace> ifcSpace, std::vector<ConvertE
 			m_spaceBoundaryGUIDs.push_back(sb->m_guid);
 		}
 	}
+
+	for( const auto& cover : ifcSpace->m_HasCoverings_inverse) {
+		auto coverP = cover.lock();
+	}
+
+	getSpaceProperties(ifcSpace, m_properties);
+
 	return true;
 }
 
