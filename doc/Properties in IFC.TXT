@@ -181,27 +181,131 @@ Materialien
 Für Spaces
 
   Pset_SpaceCommon
-  
-  
+  	Reference		P_SINGLEVALUE 		IfcIdentifier		Bezeichnung zur Zusammenfassung gleichartiger Räume zu einem Raumtyp (auch Funktionstyp genannt). Alternativ zum Namen des "Typobjekts", insbesondere wenn die Software keine Raumtypen als Typobjekte unterstützt.
+  	IsExternal		IsExternal		IfcBoolean
+		GrossPlannedArea		P_SINGLEVALUE		IfcAreaMeasure
+		NetPlannedArea		P_SINGLEVALUE 		IfcAreaMeasure
+		PubliclyAccessible		P_SINGLEVALUE 		IfcBoolean
+		HandicapAccessible		P_SINGLEVALUE 		IfcBoolean
+		
   Pset_SpaceCoveringRequirements
-  
+		FloorCovering
+		FloorCoveringThickness
+		WallCovering
+		WallCoveringThickness
+		CeilingCovering
+		CeilingCoveringThickness
+		SkirtingBoard
+		SkirtingBoardHeight
+		Molding
+		MoldingHeight
+		ConcealedFlooring
+  	ConcealedCeiling
   
   Pset_SpaceFireSafetyRequirements
-  
+  	FireRiskFactor
+		FlammableStorage
+		FireExit
+		SprinklerProtection
+		SprinklerProtectionAutomatic
+		AirPressurization
   
   Pset_SpaceLightingRequirements
+		ArtificialLighting		P_SINGLEVALUE 		IfcBoolean
+		Illuminance		P_SINGLEVALUE		 IfcIlluminanceMeasure
   
   
   Pset_SpaceOccupancyRequirements
-  
+  	OccupancyType		P_SINGLEVALUE	IfcLabel
+		OccupancyNumber		P_SINGLEVALUE	IfcCountMeasure
+		OccupancyNumberPeak		P_SINGLEVALUE	IfcCountMeasure
+		OccupancyTimePerDay		P_SINGLEVALUE	IfcTimeMeasure
+		AreaPerOccupant		P_SINGLEVALUE		IfcAreaMeasure
+		MinimumHeadroom		P_SINGLEVALUE		IfcLengthMeasure
+		IsOutlookDesirable		P_SINGLEVALUE 		IfcBoolean
   
   Pset_SpaceThermalRequirements
-  
+  		SpaceTemperature		P_SINGLEVALUE		IfcThermodynamicTemperatureMeasure
+		SpaceTemperatureMax		P_SINGLEVALUE		IfcThermodynamicTemperatureMeasure
+		SpaceTemperatureMin		P_SINGLEVALUE		IfcThermodynamicTemperatureMeasure
+		SpaceTemperatureSummerMax		P_SINGLEVALUE		IfcThermodynamicTemperatureMeasure
+		SpaceTemperatureSummerMin		P_SINGLEVALUE		IfcThermodynamicTemperatureMeasure
+		SpaceTemperatureWinterMax		P_SINGLEVALUE		IfcThermodynamicTemperatureMeasure
+		SpaceTemperatureWinterMin		P_SINGLEVALUE		IfcThermodynamicTemperatureMeasure
+		SpaceHumidity		P_SINGLEVALUE		IfcRatioMeasure
+		SpaceHumidityMax		P_SINGLEVALUE		IfcRatioMeasure
+		SpaceHumidityMin		P_SINGLEVALUE		IfcRatioMeasure
+		SpaceHumiditySummer		P_SINGLEVALUE		IfcRatioMeasure
+		SpaceHumidityWinter		P_SINGLEVALUE		IfcRatioMeasure
+		DiscontinuedHeating		P_SINGLEVALUE 		IfcBoolean
+		NaturalVentilation		P_SINGLEVALUE 		IfcBoolean
+		NaturalVentilationRate		P_SINGLEVALUE	IfcCountMeasure
+		MechanicalVentilationRate		P_SINGLEVALUE	IfcCountMeasure
+		AirConditioning		P_SINGLEVALUE 		IfcBoolean
+		AirConditioningCentral		P_SINGLEVALUE 		IfcBoolean
   
   Pset_AirSideSystemInformation
-  
+  		Name		P_SINGLEVALUE	IfcLabel
+		Description		P_SINGLEVALUE	IfcLabel
+		AirSideSystemType	P_ENUMERATEDVALUE	IfcLabel	PEnum_AirSideSystemType
+		AirSideSystemDistributionType	P_ENUMERATEDVALUE	IfcLabel	PEnum_AirSideSystemDistributionType
+		TotalAirflow		P_SINGLEVALUE		IfcVolumetricFlowRateMeasure
+		EnergyGainTotal		P_SINGLEVALUE		IfcPowerMeasure
+		AirflowSensible		P_SINGLEVALUE		IfcVolumetricFlowRateMeasure
+		EnergyGainSensible		P_SINGLEVALUE		IfcPowerMeasure
+		EnergyLoss		P_SINGLEVALUE		IfcPowerMeasure
+		LightingDiversity		P_SINGLEVALUE		IfcPositiveRatioMeasure
+		InfiltrationDiversitySummer		P_SINGLEVALUE		IfcPositiveRatioMeasure
+		InfiltrationDiversityWinter		P_SINGLEVALUE		IfcPositiveRatioMeasure
+		ApplianceDiversity		P_SINGLEVALUE		IfcPositiveRatioMeasure
+		LoadSafetyFactor		P_SINGLEVALUE		IfcPositiveRatioMeasure
+		HeatingTemperatureDelta		P_SINGLEVALUE		IfcThermodynamicTemperatureMeasure
+		CoolingTemperatureDelta		P_SINGLEVALUE		IfcThermodynamicTemperatureMeasure
+		Ventilation		P_SINGLEVALUE		IfcVolumetricFlowRateMeasure
+		FanPower		P_SINGLEVALUE		IfcPowerMeasure
   
   Pset_SpaceThermalDesign
-  
+  	CoolingDesignAirflow
+		HeatingDesignAirflow
+		TotalSensibleHeatGain
+		TotalHeatGain
+		TotalHeatLoss
+		CoolingDryBulb
+		CoolingRelativeHumidity
+		HeatingDryBulb
+		HeatingRelativeHumidity
+		VentilationAirFlowrate
+		ExhaustAirFlowrate
+		CeilingRAPlenum
+		BoundaryAreaHeatLoss
   
   Pset_SpaceThermalLoad
+		People
+		Lighting
+		EquipmentSensible
+		VentilationIndoorAir
+		VentilationOutdoorAir
+		RecirculatedAir                 
+		ExhaustAir
+		AirExchangeRate
+		DryBulbTemperature
+		RelativeHumidity
+		InfiltrationSensible
+		TotalSensibleLoad
+		TotalLatentLoad
+		TotalRadiantLoad
+		
+ 	Qto_SpaceBaseQuantities
+		Height
+		FinishCeilingHeight
+		FinishFloorHeight
+		GrossPerimeter
+		NetPerimeter
+		GrossFloorArea
+		NetFloorArea
+		GrossWallArea
+		NetWallArea
+		GrossCeilingArea
+		NetCeilingArea
+		GrossVolume
+		NetVolume
