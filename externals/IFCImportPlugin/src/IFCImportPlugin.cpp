@@ -38,7 +38,7 @@ QString IFCImportPlugin::title() const {
 }
 
 QString IFCImportPlugin::importMenuCaption() const {
-	return tr("Import IFC file ...");
+	return tr("IFC file ...");
 }
 
 void IFCImportPlugin::setLanguage(QString langId, QString appname) {
