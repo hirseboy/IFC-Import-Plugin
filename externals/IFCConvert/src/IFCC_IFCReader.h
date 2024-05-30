@@ -192,6 +192,8 @@ private slots:
 	void setProgress(int val, QString text);
 
 private:
+	/*! Create a building model from the given STEP file.*/
+	bool loadModelFromSTEPFile( const IBK::Path& filePath, shared_ptr<BuildingModel>& targetModel );
 
 	/*! Helper function for updateing all building elements and collect them according type.
 	*/

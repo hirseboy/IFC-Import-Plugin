@@ -41,6 +41,7 @@
 #include <Carve/src/include/carve/carve.hpp>
 
 #include <IBK_Exception.h>
+#include <IBK_FileUtils.h>
 
 #include <tinyxml.h>
 
@@ -123,16 +124,50 @@ void IFCReader::setProgress(int val, QString text) {
 	}
 }
 
+bool IFCReader::loadModelFromSTEPFile( const IBK::Path& filePath, shared_ptr<BuildingModel>& targetModel ) {
+	m_hasError = false;
+	// if file content needs to be loaded into a plain model, call resetModel() before loadModelFromFile
+	std::string ext = filePath.extension();
+
+	if( ext != "ifc" ) {
+		m_errorText = "Wrong file format";
+		m_hasError = true;
+		return false;
+	}
+
+	// open file
+	setlocale(LC_ALL, "");
+
+	std::ifstream infile;
+	bool res = IBK::open_ifstream(infile, filePath, std::ios_base::in);
+
+	if( !res ) {
+		m_errorText = "Could not open file: " + filePath.str();
+		m_hasError = true;
+		return false;
+	}
+
+	// get length of file content
+	infile.imbue(std::locale(""));
+	infile.seekg( 0, std::ios::end );
+	std::streampos file_end_pos = infile.tellg();
+	infile.seekg( 0, std::ios::beg );
+
+	ReaderSTEP readerStep;
+	readerStep.setMessageCallBack(this, &IFCReader::messageTarget);
+	readerStep.loadModelFromStream(infile, file_end_pos, targetModel);
+	return true;
+}
+
+
 bool IFCReader::read(const IBK::Path& filename, bool ignoreReadError) {
 	clear();
 
 	m_filename = filename;
 	m_readCompletedSuccessfully = true;
 	try {
-		ReaderSTEP readerStep;
-		readerStep.setMessageCallBack(this, &IFCReader::messageTarget);
-		readerStep.loadModelFromFile(m_filename.str(), m_geometryConverter.getBuildingModel());
-		if(!ignoreReadError && m_hasError) {
+		bool res = loadModelFromSTEPFile(m_filename, m_geometryConverter.getBuildingModel());
+		if(!ignoreReadError && !res) {
 			m_readCompletedSuccessfully = false;
 		}
 
