@@ -69,3 +69,5 @@ lib_x64
 /bin/release_x64/libImportIFCPlugin.zip
 /data/Raumbuch Spaces.vicus
 *.csv
+/externals/GEGExportPlugin/projects/Qt/debug_x64/
+/externals/IFCImportPlugin/projects/Qt/debug_x64/
