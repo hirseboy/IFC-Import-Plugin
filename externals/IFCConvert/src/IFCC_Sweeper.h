@@ -22,7 +22,7 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OU
 #include <ifcpp/model/StatusCallback.h>
 #include <earcut/include/mapbox/earcut.hpp>
 #include <ifcpp/geometry/IncludeCarveHeaders.h>
-#include <ifcpp/geometry/GeomDebugDump.h>
+//#include <ifcpp/geometry/GeomDebugDump.h>
 
 #include "IFCC_CSG_Adapter.h"
 #include "IFCC_GeometryInputData.h"

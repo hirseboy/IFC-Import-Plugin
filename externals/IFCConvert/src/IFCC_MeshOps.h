@@ -18,7 +18,7 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OU
 #pragma once
 
 #include <ifcpp/geometry/GeometryException.h>
-#include <ifcpp/geometry/GeomDebugDump.h>
+//#include <ifcpp/geometry/GeomDebugDump.h>
 #include <ifcpp/geometry/GeometrySettings.h>
 #include <ifcpp/model/BasicTypes.h>
 #include <ifcpp/model/BuildingException.h>
@@ -72,7 +72,7 @@ struct CarveMeshNormalizer
 	CarveMeshNormalizer( bool normalizeCoordsInsteadOfEpsilon );
 
 	CarveMeshNormalizer(const shared_ptr<carve::mesh::MeshSet<3>>& mesh1, const shared_ptr<carve::mesh::MeshSet<3> >& mesh2, bool normalizeCoordsInsteadOfEpsilon);
-	
+
 	double getScale() const { return m_scale; }
 	void setToZero();
 

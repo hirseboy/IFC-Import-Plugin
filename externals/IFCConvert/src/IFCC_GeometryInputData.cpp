@@ -682,7 +682,7 @@ static bool checkFaceIndices(PolyInputCache3D& inputData )
 
 #ifdef _DEBUG
 		shared_ptr<carve::input::PolyhedronData> poly_data_copy(poly_data);
-		bool correct1 = checkPolyhedronData(poly_data_copy, params.minFaceArea);
+		bool correct1 = checkPolyhedronData(poly_data_copy, params.m_minFaceArea);
 		if( !correct1 )
 		{
 			//std::map<std::string, std::string> mesh_input_options;
