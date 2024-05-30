@@ -18,14 +18,14 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OU
 #pragma once
 
 #include <ifcpp/geometry/GeometryException.h>
-//#include <ifcpp/geometry/GeomDebugDump.h>
-#include <ifcpp/geometry/GeometrySettings.h>
+#include <ifcpp/geometry/GeomDebugDump.h>
 #include <ifcpp/model/BasicTypes.h>
 #include <ifcpp/model/BuildingException.h>
 #include <ifcpp/model/StatusCallback.h>
 
 #include <ifcpp/geometry/IncludeCarveHeaders.h>
 
+#include "IFCC_GeometrySettings.h"
 #include "IFCC_GeometryInputData.h"
 
 #ifdef _USE_MANIFOLD_CSG

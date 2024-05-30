@@ -112,9 +112,9 @@ protected:
 	bool m_handle_styled_items = true;
 	bool m_handle_layer_assignments = true;
 	bool m_render_bounding_box = false;
-	double m_min_triangle_area = 1e-9;
-	double m_epsCoplanarDistance = 1.5e-8;
-	double m_epsCoplanarAngle = 1e-10;
+	double m_min_triangle_area = 1e-3;
+	double m_epsCoplanarDistance = 1.0e-3;
+	double m_epsCoplanarAngle = 1e-3;
 	double m_minimumSurfaceArea = 0.001;
 
 	std::function<int(double)> m_num_vertices_per_circle_given_radius = [&](double radius)
