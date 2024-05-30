@@ -527,9 +527,18 @@ bool IFCReader::convert(bool useSpaceBoundaries) {
 		Logger::instance() << "collectData";
 
 		emit progress(97, "updateStoreys");
-		if(m_siteShape != nullptr) {
+
+		bool siteExist = m_siteShape != nullptr;
+		if(m_siteShape == nullptr) {
+		// create own site?
+		}
+		else {
 			std::shared_ptr<IfcSpatialStructureElement> se = std::dynamic_pointer_cast<IfcSpatialStructureElement>(m_siteShape->m_ifc_object_definition.lock());
 			m_site.set(se, m_siteShape, m_buildingsShape, m_convertErrors);
+		}
+
+		if(siteExist) {
+
 			for(auto& building : m_site.m_buildings) {
 				building->fetchStoreys(m_storeysShape, m_spaceEntitesShape, m_site.m_buildings.size() == 1);
 				bool res = building->updateStoreys(m_elementEntitesShape, m_spaceEntitesShape, m_geometryConverter.getBuildingModel()->getUnitConverter(),

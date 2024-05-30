@@ -114,6 +114,7 @@ struct ConvertOptions {
 	int								m_matchedConstructionNumbers = 2;
 	bool							m_matchOpeningsOnlyInWalls = false;
 	double							m_minimumSurfaceArea = 0.001;
+	bool							m_createMissingSite = true;
 };
 
 
