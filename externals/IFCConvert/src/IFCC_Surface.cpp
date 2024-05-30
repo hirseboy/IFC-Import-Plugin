@@ -610,23 +610,56 @@ void surfacesFromRepresentation(std::shared_ptr<ProductShapeData> productShape, 
 	int surfaceRepCount = 0;
 	std::shared_ptr<RepresentationData> profileRep;
 	int profileRepCount = 0;
+	int otherRepCount = 0;
 	for(int repi = 0; repi<repCount; ++repi) {
 		currentRep = productShape->m_vec_representations[repi];
 		if(currentRep->m_representation_identifier == "Body") {
+			// 3D Body representation, e.g. as wireframe, surface, or solid model, of an element
 			bodyRep = currentRep;
 			++bodyRepCount;
 		}
 		if(currentRep->m_representation_identifier == "Reference") {
+			// 	3D representation that is not part of the Body representation. This is used, e.g., for opening geometries, if there are to be excluded from an implicit Boolean operation.
 			referenceRep = currentRep;
 			++referenceRepCount;
 		}
 		if(currentRep->m_representation_identifier == "Surface") {
+			// 3D Surface representation, e.g. of an analytical surface, of an elementplane)
 			surfaceRep = currentRep;
 			++surfaceRepCount;
 		}
 		if(currentRep->m_representation_identifier == "Profile") {
+			// 	3D line representation of a profile being planar, e.g. used for door and window outlines
 			profileRep = currentRep;
 			++profileRepCount;
+		}
+		if(currentRep->m_representation_identifier == "CoG") {
+			// Point to identify the center of gravity of an element. This value can be used for validation purposes.
+			++otherRepCount;
+		}
+		if(currentRep->m_representation_identifier == "Box") {
+			// 	Bounding box as simplified 3D box geometry of an element
+			++otherRepCount;
+		}
+		if(currentRep->m_representation_identifier == "Annotation") {
+			// 2D annotations not representing elements
+			++otherRepCount;
+		}
+		if(currentRep->m_representation_identifier == "Axis") {
+			// 	2D or 3D Axis, or single line, representation of an element
+			++otherRepCount;
+		}
+		if(currentRep->m_representation_identifier == "FootPrint") {
+			// 2D Foot print, or double line, representation of an element, projected to ground view
+			++otherRepCount;
+		}
+		if(currentRep->m_representation_identifier == "Clearance") {
+			// 3D clearance volume of the element. Such clearance region indicates space that should not intersect with the 'Body' representation of other elements, though may intersect with the 'Clearance' representation of other elements
+			++otherRepCount;
+		}
+		if(currentRep->m_representation_identifier == "Lighting") {
+			// Representation of emitting light as a light source within a shape representation
+			++otherRepCount;
 		}
 	}
 
@@ -663,10 +696,7 @@ void surfacesFromRepresentation(std::shared_ptr<ProductShapeData> productShape, 
 		surfacesFromMeshSets(meshSetOpenFinal, surfaces);
 	}
 
-	if(referenceRep) {
-		///< \todo Implement
-//		if(!bodyRep)
-//			errors.push_back({objectType, objectId, "Geometric representation of type 'reference' cannot be evaluated."});
+	if(referenceRep && surfaces.empty()) {
 		if(referenceRepCount > 1) {
 			errors.push_back({objectType, objectId, "more than one geometric representaion of type 'reference' found"});
 		}
@@ -699,13 +729,13 @@ void surfacesFromRepresentation(std::shared_ptr<ProductShapeData> productShape, 
 		surfacesFromMeshSets(meshSetOpenFinal, surfaces);
 	}
 
-	if(surfaceRep) {
+	if(surfaceRep && surfaces.empty()) {
 		///< \todo Implement
 		if(!bodyRep)
 			errors.push_back({objectType, objectId, "Geometric representation of type 'surface' cannot be evaluated."});
 	}
 
-	if(profileRep) {
+	if(profileRep && surfaces.empty()) {
 		///< \todo Implement
 		if(!bodyRep)
 			errors.push_back({objectType, objectId, "Geometric representation of type 'profile' cannot be evaluated."});
@@ -727,6 +757,9 @@ void surfacesFromRepresentation(std::shared_ptr<ProductShapeData> productShape, 
 				errors.push_back({objectType, objectId, "Created surface is not valid: " + std::to_string(i)});
 			}
 		}
+		if(addedSurfaces.empty())
+			return;
+
 		surfaces.insert(surfaces.end(), addedSurfaces.begin(), addedSurfaces.end());
 	}
 }
