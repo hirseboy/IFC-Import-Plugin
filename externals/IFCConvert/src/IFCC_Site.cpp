@@ -58,6 +58,11 @@ bool Site::set(std::shared_ptr<IFC4X3::IfcSpatialStructureElement> ifcElement, s
 	return true;
 }
 
+bool Site::set(const std::map<std::string,shared_ptr<ProductShapeData>>& buildings, std::vector<ConvertError>& errors) {
+	fetchBuildings(buildings);
+	return true;
+}
+
 
 void Site::transform(std::shared_ptr<ProductShapeData> productShape) {
 	if(productShape == nullptr)

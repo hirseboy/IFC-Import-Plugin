@@ -38,6 +38,15 @@ public:
 	bool set(std::shared_ptr<IFC4X3::IfcSpatialStructureElement> ifcElement, std::shared_ptr<ProductShapeData> productShape,
 			 const std::map<std::string,shared_ptr<ProductShapeData>>& buildings, std::vector<ConvertError>& errors);
 
+	/*! Initialise site which doesn't exist as IFC site object.
+		It set a name and fills the original building vector.
+		Also the building vector is filled from the original building vector. All building objects are not fully initalized.
+		Call Building::update() on all objects.
+		It calls transform, fetchGeometry and fetchBuildings.
+		\param buildings Shape data of buildings
+	*/
+	bool set(const std::map<std::string,shared_ptr<ProductShapeData>>& buildings, std::vector<ConvertError>& errors);
+
 	/*! Return the internal surface vector for the site only.*/
 	const std::vector<Surface>& surfaces() const;
 
