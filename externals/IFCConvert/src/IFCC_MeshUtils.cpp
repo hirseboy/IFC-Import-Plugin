@@ -1663,24 +1663,20 @@ namespace MeshUtils
 
 	}
 
-	///\brief method createTriangulated3DFace: Creates a triangulated face
+	///\brief method create3DFace: Creates a face
 	///\param[in] inputBounds3D: Curves as face boundaries. The first input curve is the outer boundary, succeeding curves are inner boundaries
 	///\param[in] ifc_entity: Ifc entity that the geometry belongs to, just for error messages. Pass a nullptr if no entity at hand.
 	///\param[out] meshOut: Result mesh
-	void create3DFace(const std::vector<std::vector<vec3> >& inputBounds3D, PolyInputCache3D& meshOut, GeomProcessingParams& params )
-	{
+	void create3DFace(const std::vector<std::vector<vec3> >& inputBounds3D, PolyInputCache3D& meshOut, GeomProcessingParams& params ) {
 //		double CARVE_EPSILON = params.m_epsMergePoints;
 
 		// only one loop and 3 and 4 points per polygon
-		if( inputBounds3D.size() == 1 )
-		{
+		if( inputBounds3D.size() == 1 ) {
 			const std::vector<vec3>& outerLoop = inputBounds3D[0];
-			if( outerLoop.size() < 3 )
-			{
+			if( outerLoop.size() < 3 ) {
 				return;
 			}
-			if( outerLoop.size() == 3 )
-			{
+			if( outerLoop.size() == 3 ) {
 				const vec3& v0 = outerLoop[0];
 				const vec3& v1 = outerLoop[1];
 				const vec3& v2 = outerLoop[2];
@@ -1696,8 +1692,7 @@ namespace MeshUtils
 
 				return;
 			}
-			if( outerLoop.size() == 4 )
-			{
+			if( outerLoop.size() == 4 ) {
 				const vec3& v0 = outerLoop[0];
 				const vec3& v1 = outerLoop[1];
 				const vec3& v2 = outerLoop[2];
@@ -1715,6 +1710,47 @@ namespace MeshUtils
 
 				return;
 			}
+
+			if( outerLoop.size() == 5 ) {
+				const vec3& v0 = outerLoop[0];
+				const vec3& v1 = outerLoop[1];
+				const vec3& v2 = outerLoop[2];
+				const vec3& v3 = outerLoop[3];
+				const vec3& v4 = outerLoop[4];
+
+				int idxA = meshOut.addPoint(v0);
+				int idxB = meshOut.addPoint(v1);
+				int idxC = meshOut.addPoint(v2);
+				int idxD = meshOut.addPoint(v3);
+				int idxE = meshOut.addPoint(v4);
+
+				if( idxA != idxB && idxA != idxC && idxA != idxD && idxA != idxE &&idxB != idxC && idxB != idxD && idxB != idxE && idxC != idxD  && idxC != idxE  && idxD != idxE) {
+//					meshOut.m_poly_data->addFace(idxA, idxB, idxC, idxD, idxE);
+
+					meshOut.m_poly_data->faceIndices.push_back(5);
+					meshOut.m_poly_data->faceIndices.push_back(idxA);
+					meshOut.m_poly_data->faceIndices.push_back(idxB);
+					meshOut.m_poly_data->faceIndices.push_back(idxC);
+					meshOut.m_poly_data->faceIndices.push_back(idxD);
+					meshOut.m_poly_data->faceIndices.push_back(idxE);
+					++meshOut.m_poly_data->faceCount;
+				}
+
+//				addFaceCheckIndexes(v0, v1, v2, v3, meshOut, CARVE_EPSILON);
+
+				return;
+			}
+
+			if( outerLoop.size() > 5 ) {
+				std::vector<int> indices;
+				for(const auto& point : outerLoop) {
+					indices.push_back(meshOut.addPoint(point));
+				}
+				meshOut.m_poly_data->addFace(indices.begin(), indices.end());
+				return;
+			}
+
+
 		}
 
 		std::vector<std::vector<std::array<double, 2> > > polygons2d;
@@ -1732,51 +1768,42 @@ namespace MeshUtils
 		for( auto it_bounds = inputBounds3D.begin(); it_bounds != inputBounds3D.end(); ++it_bounds ) {
 			std::vector<vec3> loopPoints3Dinput = *it_bounds;
 
-			if( loopPoints3Dinput.size() < 3 )
-			{
-				if( it_bounds == inputBounds3D.begin() )
-				{
+			if( loopPoints3Dinput.size() < 3 ) {
+				if( it_bounds == inputBounds3D.begin() ) {
 					break;
 				}
-				else
-				{
+				else {
 					continue;
 				}
 			}
 
 			//bool mergeAlignedEdges = true;
-			GeomUtils::simplifyPolygon(loopPoints3Dinput, params.m_epsMergePoints, params.m_epsMergeAlignedEdgesAngle);
+//			GeomUtils::simplifyPolygon(loopPoints3Dinput, params.m_epsMergePoints, params.m_epsMergeAlignedEdgesAngle);
 			GeomUtils::unClosePolygon(loopPoints3Dinput);
 			normal = GeomUtils::computePolygonNormal(loopPoints3Dinput);
 
 			// first bound should be outer bound
 			// from this the face plane will be determined
-			if( it_bounds == inputBounds3D.begin() )
-			{
+			if( it_bounds == inputBounds3D.begin() ) {
 				normalOuterBound = normal;
 
 				// figure out on which plane to project the 3D points
 				double nx = std::abs(normal.x);
 				double ny = std::abs(normal.y);
 				double nz = std::abs(normal.z);
-				if( nz > nx && nz >= ny )
-				{
+				if( nz > nx && nz >= ny ) {
 					face_plane = GeomUtils::XY_PLANE;
 				}
-				else if( nx >= ny && nx >= nz )
-				{
+				else if( nx >= ny && nx >= nz ) {
 					face_plane = GeomUtils::YZ_PLANE;
 				}
-				else if( ny > nx && ny >= nz )
-				{
+				else if( ny > nx && ny >= nz ) {
 					face_plane = GeomUtils::XZ_PLANE;
 				}
-				else
-				{
+				else {
 					std::stringstream err;
 					err << "unable to project to plane: nx" << nx << " ny " << ny << " nz " << nz << std::endl;
-					if( params.m_callbackFunc )
-					{
+					if( params.m_callbackFunc ) {
 						params.m_callbackFunc->messageCallback(err.str().c_str(), StatusCallback::MESSAGE_TYPE_WARNING, __FUNC__, params.m_ifc_entity);
 					}
 					continue;
