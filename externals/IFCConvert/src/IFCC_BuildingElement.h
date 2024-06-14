@@ -9,6 +9,7 @@
 #include <ifcpp/IFC4X3/include/IfcWindowTypeEnum.h>
 #include <ifcpp/IFC4X3/include/IfcDoor.h>
 #include <ifcpp/IFC4X3/include/IfcDoorTypeEnum.h>
+#include <ifcpp/IFC4X3/include/IfcDoorStyleConstructionEnum.h>
 #include <ifcpp/IFC4X3/include/IfcDoorTypeOperationEnum.h>
 #include <ifcpp/IFC4X3/include/IfcWindowTypePartitioningEnum.h>
 #include <ifcpp/IFC4X3/include/IfcWallTypeEnum.h>
@@ -79,6 +80,7 @@ public:
 			\li ENUM_USERDEFINED,
 			\li ENUM_NOTDEFINED
 		*/
+
 		IFC4X3::IfcDoorTypeEnum::IfcDoorTypeEnumEnum	m_doorType;
 		/*! Door operation type enum. Following is possible:
 			\li ENUM_SINGLE_SWING_LEFT,
@@ -103,6 +105,20 @@ public:
 			\li ENUM_NOTDEFINED
 		*/
 		IFC4X3::IfcDoorTypeOperationEnum::IfcDoorTypeOperationEnumEnum	m_doorOperationType;
+
+		/*! Door operation type enum. Following is possible:
+			\li ENUM_ALUMINIUM,
+			\li ENUM_ALUMINIUM_PLASTIC,
+			\li ENUM_ALUMINIUM_WOOD,
+			\li ENUM_HIGH_GRADE_STEEL,
+			\li ENUM_PLASTIC,
+			\li ENUM_STEEL,
+			\li ENUM_WOOD,
+			\li ENUM_USERDEFINED,
+			\li ENUM_NOTDEFINED
+		*/
+		IFC4X3::IfcDoorStyleConstructionEnum::IfcDoorStyleConstructionEnumEnum	m_doorStyleConstructionType;
+
 		/*! Name of the user defined operation type.*/
 		std::string					m_doorUserDefinedOperationType;
 	};
@@ -111,6 +127,17 @@ public:
 		void update(std::shared_ptr<IFC4X3::IfcWall>& ifcWall);
 
 		IFC4X3::IfcWallTypeEnum::IfcWallTypeEnumEnum	m_wallType = IFC4X3::IfcWallTypeEnum::ENUM_USERDEFINED;
+	};
+
+	struct ParallelSurfaces {
+		int					m_indexOrg;	// Index of the original surface
+		std::vector<int>	m_indicesParallel;	// Indices of all parallel surfaces
+		std::vector<double>	m_distances;    // Distances of all parallel surfaces to the original one
+		double minDistance() const {
+			if(m_distances.empty())
+				return 1e30;
+			return *std::min_element(m_distances.begin(), m_distances.end());
+		}
 	};
 
 	/*! Standard constructor.
@@ -197,14 +224,16 @@ public:
 	/*! Vector of surface pairs (given by index) which are parallel.
 		This vector is used in order to evaluate element thickness.
 	*/
-	std::vector<std::pair<int,int>>										m_parallelSurfaces;
+	std::vector<ParallelSurfaces>										m_parallelSurfaces;
+	/*! Contains the indices of surfaces which are possible sides for this building element.*/
+	std::vector<int>													m_possibleSideSurfaces;
 
 	/*! Map store the surface indices which are connected to a space given by ID.
 		Map key is id of space.
 		First value is index if space surface.
 		Second value is index of opening surface.
 	*/
-	std::map<int,std::vector<std::pair<size_t,size_t>>>	m_spaceSurfaceConnection;
+	std::map<int,std::vector<std::pair<size_t,size_t>>>					m_spaceSurfaceConnection;
 
 private:
 	/*! Fille the surface pair vector.*/
@@ -229,16 +258,16 @@ private:
 
 	void setThermalTransmittance();
 
-	BuildingElementTypes													m_type;					///< Type of the building element
-	bool														m_surfaceComponent;		///< If true its a construction element usable as surface
-	bool														m_subSurfaceComponent;	///< If true its a opening element usable as subsurface.
-	std::vector<Surface>										m_surfaces;				///< Vector of all surfaces
+	BuildingElementTypes												m_type;					///< Type of the building element
+	bool																m_surfaceComponent;		///< If true its a construction element usable as surface
+	bool																m_subSurfaceComponent;	///< If true its a opening element usable as subsurface.
+	std::vector<Surface>												m_surfaces;				///< Vector of all surfaces
 	/*! Vector of IFC opening object which uses this element.*/
 	std::vector<std::shared_ptr<IFC4X3::IfcOpeningElement>>				m_isUsedFromOpeningsOriginal;
 	/*! Vector of IFC opening objects which are contained in this building element.*/
 	std::vector<std::shared_ptr<IFC4X3::IfcFeatureElementSubtraction>>	m_containedOpeningsOriginal;
-	double														m_thermalTransmittance;
-	std::map<std::string,std::map<std::string,Property>>		m_propertyMap;
+	double																m_thermalTransmittance;
+	std::map<std::string,std::map<std::string,Property>>				m_propertyMap;
 };
 
 } // namespace IFCC

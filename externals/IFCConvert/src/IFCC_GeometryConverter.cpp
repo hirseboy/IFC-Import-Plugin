@@ -543,6 +543,11 @@ GeometryConverter::~GeometryConverter() {}
 				}
 				std::string nameOfSpaceLong;
 				std::string nameOfSpaceShort;
+				nameOfSpaceShort = label2s(object_def->m_Name);
+				int ii=0;
+				if(nameOfSpaceShort == "Fenster-009") {
+					ii = 1;
+				}
 				if( dynamic_pointer_cast<IfcSpace>(object_def)) {
 					nameOfSpaceLong = label2s(dynamic_pointer_cast<IfcSpace>(object_def)->m_LongName);
 					nameOfSpaceShort = label2s(dynamic_pointer_cast<IfcSpace>(object_def)->m_Name);
@@ -555,6 +560,9 @@ GeometryConverter::~GeometryConverter() {}
 				if( dynamic_pointer_cast<IfcWall>(object_def)) {
 					nameOfSpaceShort = label2s(dynamic_pointer_cast<IfcWall>(object_def)->m_Name);
 					int i=0;
+					if(nameOfSpaceShort == "Wand-065") {
+						i = 1;
+					}
 				}
 				if( dynamic_pointer_cast<IfcDoor>(object_def)) {
 					nameOfSpaceShort = label2s(dynamic_pointer_cast<IfcDoor>(object_def)->m_Name);

@@ -59,7 +59,6 @@
 #include <Carve/src/include/carve/carve.hpp>
 
 
-
 #include "IFCC_MeshUtils.h"
 #include "IFCC_Helper.h"
 #include "IFCC_Logger.h"
@@ -198,11 +197,13 @@ bool BuildingElement::set(std::shared_ptr<IFC4X3::IfcElement> ifcElement, Buildi
 					m_openingProperties.m_doorHeight = door->m_OverallHeight->m_value;
 				if(door->m_OverallWidth != nullptr)
 					m_openingProperties.m_doorWidth = door->m_OverallWidth->m_value;
+				if(door->m_OperationType != nullptr)
+					m_openingProperties.m_doorOperationType = door->m_OperationType->m_enum;
 				for(const auto& reltypes : ifcElement->m_IsTypedBy_inverse) {
 					shared_ptr<IFC4X3::IfcRelDefinesByType> rel_types(reltypes);
 					shared_ptr<IFC4X3::IfcDoorStyle> doorStyle = dynamic_pointer_cast<IFC4X3::IfcDoorStyle>(rel_types->m_RelatingType);
 					if(doorStyle != nullptr) {
-
+						m_openingProperties.m_doorStyleConstructionType = doorStyle->m_ConstructionType->m_enum;
 					}
 				}
 			}
@@ -341,12 +342,39 @@ void BuildingElement::findSurfacePairs() {
 	if(m_surfaces.size() < 2)
 		return;
 
-	for(int i=0; i<m_surfaces.size()-1; ++i) {
-		for(int j=i+1; j<m_surfaces.size(); ++j) {
-			if(m_surfaces[i].isParallelTo(m_surfaces[j]))
-				m_parallelSurfaces.push_back(std::make_pair(i,j));
+
+	double thickness = 0;
+	if(!m_materialLayers.empty()) {
+		for(size_t i=0; i<m_materialLayers.size(); ++i) {
+			thickness += m_materialLayers[i].first;
 		}
 	}
+
+	for(int i=0; i<m_surfaces.size()-1; ++i) {
+		bool found = false;
+		bool foundSide = false;
+		for(int j=i+1; j<m_surfaces.size(); ++j) {
+			if(m_surfaces[i].isParallelTo(m_surfaces[j])) {
+				if(!found) {
+					ParallelSurfaces item;
+					item.m_indexOrg = i;
+					m_parallelSurfaces.push_back(item);
+					found = true;
+				}
+				m_parallelSurfaces.back().m_indicesParallel.push_back(j);
+				double dist = m_surfaces[i].distanceToParallelPlane(m_surfaces[j]);
+				m_parallelSurfaces.back().m_distances.push_back(dist);
+				if(thickness > 0 && IBK::nearly_equal<4>(dist,thickness)) {
+					if(!foundSide) {
+						m_possibleSideSurfaces.push_back(i);
+						foundSide = true;
+					}
+					m_possibleSideSurfaces.push_back(j);
+				}
+			}
+		}
+	}
+
 }
 
 void BuildingElement::fetchOpenings(std::vector<Opening>& openings) {
@@ -374,28 +402,17 @@ void BuildingElement::fetchOpenings(std::vector<Opening>& openings) {
 	}
 
 	// check openings
-//	for(const auto& op : m_containedOpenings) {
-//		auto fit = std::find_if(
-//					   openings.begin(),
-//					   openings.end(),
-//					   [op](const auto& opening) {return opening.second.m_id == op; });
-//		if(fit == openings.end())
-//			continue;
+	for(const auto& op : m_containedOpenings) {
+		auto fit = std::find_if(
+					   openings.begin(),
+					   openings.end(),
+					   [op](const auto& opening) {return opening.m_id == op; });
+		if(fit == openings.end())
+			continue;
 
-//		std::vector<Surface> diffSurfaces;
-//		for(const Surface& elemSurface : m_surfaces) {
-//			for(const Surface& opSurface : fit->surfaces()) {
-//				bool parallel = elemSurface.isParallelTo(opSurface);
-//				if(parallel) {
-//					std::vector<Surface> differences = elemSurface.difference(opSurface);
-//					if(differences.empty()) {
-//						diffSurfaces.push_back(elemSurface);
-//					}
-//				}
-//			}
-//		}
+		fit->checkSurfaceType(*this);
 
-//	}
+	}
 }
 
 const std::vector<Surface>& BuildingElement::surfaces() const {
@@ -408,10 +425,8 @@ double	BuildingElement::thickness() const {
 			return 0;
 
 		double minDist = 10001;
-		for(int epi=0; epi<m_parallelSurfaces.size(); ++epi) {
-			const Surface& surf1 = m_surfaces[m_parallelSurfaces[epi].first];
-			const Surface& surf2 = m_surfaces[m_parallelSurfaces[epi].second];
-			minDist = std::min(minDist, surf1.distanceToParallelPlane(surf2));
+		for(const auto& item : m_parallelSurfaces) {
+			minDist = std::min(minDist, item.minDistance());
 		}
 		if(minDist > 10000)
 			return 0;
