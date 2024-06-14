@@ -57,13 +57,6 @@ public:
 	/*! Set the connected space boundary.*/
 	void setSpaceBoundary(std::shared_ptr<SpaceBoundary> sb);
 
-	/*! Map store the surface indices which are connected to a space given by ID.
-		Map key is id of space.
-		First value is index if space surface.
-		Second value is index of opening surface.
-	*/
-	std::map<int,std::vector<std::pair<size_t,size_t>>>	m_spaceSurfaceConnection;
-
 	/*! Return true if the opening is already connected to a space boundary.*/
 	bool hasSpaceBoundary() const;
 
@@ -73,6 +66,15 @@ public:
 	bool isConnectedToOpeningElement() const {
 		return !m_openingElementIds.empty();
 	}
+
+	void checkSurfaceType(const BuildingElement& element);
+
+	/*! Map store the surface indices which are connected to a space given by ID.
+		Map key is id of space.
+		First value is index if space surface.
+		Second value is index of opening surface.
+	*/
+	std::map<int,std::vector<std::pair<size_t,size_t>>>	m_spaceSurfaceConnection;
 
 private:
 

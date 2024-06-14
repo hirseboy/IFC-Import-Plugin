@@ -8,9 +8,12 @@
 #include <carve/matrix.hpp>
 #include <Carve/src/include/carve/carve.hpp>
 
+#include <IBKMK_3DCalculations.h>
+
 #include "IFCC_GeometryInputData.h"
 #include "IFCC_MeshUtils.h"
 #include "IFCC_Helper.h"
+#include "IFCC_BuildingElement.h"
 
 namespace IFCC {
 
@@ -54,6 +57,42 @@ void Opening::fetchGeometry(std::shared_ptr<ProductShapeData> productShape, std:
 
 const std::vector<int>& Opening::openingElementIds() const {
 	return m_openingElementIds;
+}
+
+void Opening::checkSurfaceType(const BuildingElement &element) {
+	int intersections = 0;
+	for(const Surface& elemSurface : element.surfaces()) {
+		for(Surface& opSurface : m_surfaces) {
+			if(opSurface.sideType() != Surface::ST_Unknown)
+				continue;
+
+			bool parallel = elemSurface.isParallelTo(opSurface);
+			bool intersected = false;
+			if(elemSurface.isValid() && opSurface.isValid()) {
+				if(IBKMK::polyIntersect(elemSurface.polygon(), opSurface.polygon()))
+					intersected = true;
+			}
+			if(intersected && !parallel) {
+				opSurface.setSideType(Surface::ST_UnProbableSide);
+				++intersections;
+			}
+		}
+	}
+
+	if(!element.m_possibleSideSurfaces.empty()) {
+		for(const auto& sideIndex : element.m_possibleSideSurfaces) {
+			const Surface& surf = element.surfaces()[sideIndex];
+			for(Surface& opSurface : m_surfaces) {
+				if(opSurface.sideType() != Surface::ST_Unknown)
+					continue;
+				if(surf.isParallelTo(opSurface))
+					opSurface.setSideType(Surface::ST_ProbableSide);
+			}
+		}
+
+	}
+	if(intersections == 0)
+		return;
 }
 
 const std::vector<Surface>& Opening::surfaces() const {
