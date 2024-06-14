@@ -17,6 +17,8 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OU
 
 #include "IFCC_MeshUtils.h"
 
+#include <IBK_math.h>
+
 namespace IFCC {
 
 	MeshSetInfo::MeshSetInfo( MeshSetInfo& other )
@@ -1663,6 +1665,16 @@ namespace MeshUtils
 
 	}
 
+	static bool equalPoints(const vec3& v1, const vec3& v2, double eps) {
+		if(std::fabs(v1.x - v2.x) >= eps)
+			return false;
+		if(std::fabs(v1.y - v2.y) >= eps)
+			return false;
+		if(std::fabs(v1.z - v2.z) >= eps)
+			return false;
+		return true;
+	}
+
 	///\brief method create3DFace: Creates a face
 	///\param[in] inputBounds3D: Curves as face boundaries. The first input curve is the outer boundary, succeeding curves are inner boundaries
 	///\param[in] ifc_entity: Ifc entity that the geometry belongs to, just for error messages. Pass a nullptr if no entity at hand.
@@ -1670,13 +1682,30 @@ namespace MeshUtils
 	void create3DFace(const std::vector<std::vector<vec3> >& inputBounds3D, PolyInputCache3D& meshOut, GeomProcessingParams& params ) {
 //		double CARVE_EPSILON = params.m_epsMergePoints;
 
-		// only one loop and 3 and 4 points per polygon
+		// only one loop
 		if( inputBounds3D.size() == 1 ) {
-			const std::vector<vec3>& outerLoop = inputBounds3D[0];
-			if( outerLoop.size() < 3 ) {
+			std::vector<vec3> outerLoop;
+			for( const auto& v : inputBounds3D[0]) {
+				if(!outerLoop.empty()) {
+					if(!equalPoints(v, outerLoop.back(), meshOut.m_eps)) {
+						outerLoop.push_back(v);
+					}
+				}
+				else {
+					outerLoop.push_back(v);
+				}
+			}
+
+			// check if startpoint is equal endpoint
+			size_t loopSize = outerLoop.size();
+			if(equalPoints(outerLoop.front(), outerLoop.back(), meshOut.m_eps))
+				--loopSize;
+
+			if( loopSize < 3 ) {
 				return;
 			}
-			if( outerLoop.size() == 3 ) {
+
+			if( loopSize == 3 ) {
 				const vec3& v0 = outerLoop[0];
 				const vec3& v1 = outerLoop[1];
 				const vec3& v2 = outerLoop[2];
@@ -1687,12 +1716,8 @@ namespace MeshUtils
 
 				if( idxA != idxB && idxA != idxC && idxB != idxC )
 					meshOut.m_poly_data->addFace(idxA, idxB, idxC);
-
-//				addFaceCheckIndexes(v0, v1, v2, meshOut, CARVE_EPSILON);
-
-				return;
 			}
-			if( outerLoop.size() == 4 ) {
+			else if( loopSize == 4 ) {
 				const vec3& v0 = outerLoop[0];
 				const vec3& v1 = outerLoop[1];
 				const vec3& v2 = outerLoop[2];
@@ -1705,51 +1730,16 @@ namespace MeshUtils
 
 				if( idxA != idxB && idxA != idxC && idxA != idxD && idxB != idxC && idxB != idxD && idxC != idxD )
 					meshOut.m_poly_data->addFace(idxA, idxB, idxC, idxD);
-
-//				addFaceCheckIndexes(v0, v1, v2, v3, meshOut, CARVE_EPSILON);
-
-				return;
 			}
-
-			if( outerLoop.size() == 5 ) {
-				const vec3& v0 = outerLoop[0];
-				const vec3& v1 = outerLoop[1];
-				const vec3& v2 = outerLoop[2];
-				const vec3& v3 = outerLoop[3];
-				const vec3& v4 = outerLoop[4];
-
-				int idxA = meshOut.addPoint(v0);
-				int idxB = meshOut.addPoint(v1);
-				int idxC = meshOut.addPoint(v2);
-				int idxD = meshOut.addPoint(v3);
-				int idxE = meshOut.addPoint(v4);
-
-				if( idxA != idxB && idxA != idxC && idxA != idxD && idxA != idxE &&idxB != idxC && idxB != idxD && idxB != idxE && idxC != idxD  && idxC != idxE  && idxD != idxE) {
-//					meshOut.m_poly_data->addFace(idxA, idxB, idxC, idxD, idxE);
-
-					meshOut.m_poly_data->faceIndices.push_back(5);
-					meshOut.m_poly_data->faceIndices.push_back(idxA);
-					meshOut.m_poly_data->faceIndices.push_back(idxB);
-					meshOut.m_poly_data->faceIndices.push_back(idxC);
-					meshOut.m_poly_data->faceIndices.push_back(idxD);
-					meshOut.m_poly_data->faceIndices.push_back(idxE);
-					++meshOut.m_poly_data->faceCount;
-				}
-
-//				addFaceCheckIndexes(v0, v1, v2, v3, meshOut, CARVE_EPSILON);
-
-				return;
-			}
-
-			if( outerLoop.size() > 5 ) {
+			// Loop size > 4
+			else {
 				std::vector<int> indices;
-				for(const auto& point : outerLoop) {
-					indices.push_back(meshOut.addPoint(point));
+				for(size_t i=0; i<loopSize; ++i) {
+					indices.push_back(meshOut.addPoint(outerLoop[i]));
 				}
 				meshOut.m_poly_data->addFace(indices.begin(), indices.end());
-				return;
 			}
-
+			return;
 
 		}
 
