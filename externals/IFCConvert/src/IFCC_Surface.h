@@ -26,6 +26,13 @@ public:
 		PT_Unknown
 	};
 
+	/*! Can be this surface a side wall of a building element or an opening?*/
+	enum SideType {
+		ST_ProbableSide,	///< Its probable a side
+		ST_UnProbableSide,	///< Being a side is unprobable
+		ST_Unknown			///< We don't know anything
+	};
+
 	struct IntersectionResult;
 
 	/*! Default constructor. Create a non valid object*/
@@ -203,12 +210,18 @@ public:
 	*/
 	bool hasSimplePolygon() const;
 
+	/*! Return side type.*/
+	SideType sideType() const;
+
+	/*! Set side type.*/
+	void setSideType(SideType newSideType);
 
 private:
 	std::string								m_name;
 	int										m_id;
 	int										m_elementEntityId;
 	PositionType							m_positionType;
+	SideType								m_sideType;
 	bool									m_virtualSurface;
 	std::vector<IBKMK::Vector3D>			m_polyVect;
 	std::vector<SubSurface>					m_subSurfaces;

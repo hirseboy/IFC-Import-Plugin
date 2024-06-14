@@ -22,6 +22,7 @@ Surface::Surface() :
 	m_id(-1),
 	m_elementEntityId(-1),
 	m_positionType(PT_Unknown),
+	m_sideType(ST_Unknown),
 	m_virtualSurface(false)
 {
 }
@@ -30,6 +31,7 @@ Surface::Surface(carve::mesh::Face<3>* face) :
 	m_id(-1),
 	m_elementEntityId(-1),
 	m_positionType(PT_Unknown),
+	m_sideType(ST_Unknown),
 	m_virtualSurface(false)
 {
 	IBK_ASSERT(face != nullptr);
@@ -52,8 +54,9 @@ Surface::Surface(carve::mesh::Face<3>* face) :
 Surface::Surface(const polygon3D_t& polygon) :
 	m_id(-1),
 	m_elementEntityId(-1),
-	m_virtualSurface(false),
 	m_positionType(PT_Unknown),
+	m_sideType(ST_Unknown),
+	m_virtualSurface(false),
 	m_polyVect(polygon)
 {
 	if(m_polyVect.size() > 2) {
@@ -67,8 +70,9 @@ Surface::Surface(const polygon3D_t& polygon) :
 Surface::Surface(const polygon3D_t &polygon, const std::vector<polygon3D_t> &childs)  :
 	m_id(-1),
 	m_elementEntityId(-1),
-	m_virtualSurface(false),
 	m_positionType(PT_Unknown),
+	m_sideType(ST_Unknown),
+	m_virtualSurface(false),
 	m_polyVect(polygon)
 {
 	if(m_polyVect.size() > 2) {
@@ -140,25 +144,6 @@ static bool isCoLinear(const IBKMK::Vector3D& v1, const IBKMK::Vector3D& v2, boo
 }
 
 double Surface::distanceToParallelPlane(const Surface& other) const {
-//	double negFact = 1.0;
-//	if(!nearEqual(m_planeNormal.m_lz, other.m_planeNormal.m_lz)) {
-//		if(!nearEqual(m_planeNormal.m_lz*-1,other.m_planeNormal.m_lz))
-//			return std::numeric_limits<double>::max();
-//		else
-//			negFact = -1.0;
-//	}
-
-//	double dist = std::fabs(other.m_planeNormal.m_distance - (m_planeNormal.m_distance * negFact));
-
-//	IBKMK::Vector3D t = m_polyVect[0] - other.m_polyVect[0];
-
-//	if(dist2<dist) {
-//		int check = 0;
-//	}
-
-//	double dist2 = t.scalarProduct(PlaneHesseNormal(m_polyVect).m_n0);
-
-
 	PlaneHesseNormal phn1(m_polyVect);
 	PlaneHesseNormal phn2(other.m_polyVect);
 
@@ -167,8 +152,6 @@ double Surface::distanceToParallelPlane(const Surface& other) const {
 
 	if(!isCoL)
 		return 1e20;
-
-//	IBK_ASSERT(isCoL);
 
 	double k = antiParallel ? -1 : 1;
 
@@ -315,8 +298,12 @@ Surface Surface::intersect(const Surface& other) const {
 }
 
 Surface::IntersectionResult Surface::intersect2(const Surface& other) const {
+	// try to intersect both polygons
 	IFCC::IntersectionResult tmp = intersectPolygons2(m_polyVect, other.polygon(), m_planeNormal);
+
 	Surface::IntersectionResult result;
+
+	// add intersections and holes in intersections
 	result.m_holesIntersectionChildCount = tmp.m_holesIntersectionChildCount;
 	for(size_t i=0; i<tmp.m_intersections.size(); ++i) {
 		const polygon3D_t& poly = tmp.m_intersections[i];
@@ -334,6 +321,7 @@ Surface::IntersectionResult Surface::intersect2(const Surface& other) const {
 		}
 	}
 
+	// add the difference polygon for base minus other and their holes
 	result.m_holesBaseMinusClipChildCount = tmp.m_holesBaseMinusClipChildCount;
 	for(size_t i=0; i<tmp.m_diffBaseMinusClip.size(); ++i) {
 		const polygon3D_t& poly = tmp.m_diffBaseMinusClip[i];
@@ -350,6 +338,8 @@ Surface::IntersectionResult Surface::intersect2(const Surface& other) const {
 			}
 		}
 	}
+
+	// add the difference polygon for other minus base and their holes
 	result.m_holesClipMinusBaseChildCount = tmp.m_holesClipMinusBaseChildCount;
 	for(size_t i=0; i<tmp.m_diffClipMinusBase.size(); ++i) {
 		const polygon3D_t& poly = tmp.m_diffClipMinusBase[i];
@@ -366,6 +356,7 @@ Surface::IntersectionResult Surface::intersect2(const Surface& other) const {
 			}
 		}
 	}
+
 	return result;
 }
 
@@ -571,6 +562,14 @@ bool Surface::hasSimplePolygon() const {
 	}
 
 	return true;
+}
+
+Surface::SideType Surface::sideType() const {
+	return m_sideType;
+}
+
+void Surface::setSideType(SideType newSideType) {
+	m_sideType = newSideType;
 }
 
 void surfacesFromMeshSets(std::vector<shared_ptr<carve::mesh::MeshSet<3> > >& meshsets, std::vector<Surface>& surfaces) {
