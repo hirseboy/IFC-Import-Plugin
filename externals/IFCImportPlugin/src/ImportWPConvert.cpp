@@ -23,7 +23,7 @@ ImportWPConvert::ImportWPConvert(QWidget *parent, IFCC::IFCReader* reader) :
 
 	ui->pushButtonConvert->setEnabled(true);
 	ui->checkBoxUseSpaceBoundaries->setChecked(false);
-	ui->checkBoxMatchOpeningsInWalls->setChecked(false);
+	ui->checkBoxMatchOpeningsInWalls->setChecked(reader->convertOptions().m_matchOpeningsOnlyInWalls);
 
 	QListWidgetItem *item = new QListWidgetItem(tr("Wall"));
 	item->setFlags(item->flags() | Qt::ItemIsUserCheckable);
