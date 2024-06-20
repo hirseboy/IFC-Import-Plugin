@@ -16,6 +16,7 @@
 
 #include "IFCC_MeshUtils.h"
 #include "IFCC_Helper.h"
+#include "IFCC_RepresentationHelper.h"
 
 namespace IFCC {
 
@@ -576,15 +577,15 @@ std::vector<std::shared_ptr<SpaceBoundary>> Space::createSpaceBoundaries_2(const
 	return spaceBoundaries;
 }
 
-static Surface matchingOpeningSurface(const Surface& currentOpeningSurf, const std::shared_ptr<SpaceBoundary> spaceBoundary) {
+static Surface matchingOpeningSurface(const Surface& currentOpeningSurf, const std::shared_ptr<SpaceBoundary> spaceBoundary, const ConvertOptions& convertOptions) {
 	double dist = currentOpeningSurf.distanceToParallelPlane(spaceBoundary->surface());
-	if(dist <= 2) {
-		if(currentOpeningSurf.isIntersected(spaceBoundary->surface())) {
-			Surface intersectionResult = spaceBoundary->surface().intersect(currentOpeningSurf);
-			if(intersectionResult.isValid())
-				return intersectionResult;
-		}
-	}
+	if(dist > convertOptions.m_openingDistance)
+		return Surface();
+
+	Surface intersectionResult = spaceBoundary->surface().intersect(currentOpeningSurf);
+	if(intersectionResult.isValid())
+		return intersectionResult;
+
 	return Surface();
 }
 
@@ -596,7 +597,7 @@ static Surface mergeSurfaces(const std::vector<Surface>& surfaces) {
 	return res;
 }
 
-static bool matchOpening(const Surface& surface, Opening& currOp, const std::shared_ptr<SpaceBoundary> spaceBoundary, std::shared_ptr<BuildingElement> openingElem,
+static bool addOpeningSpaceBoundary(const Surface& surface, Opening& currOp, const std::shared_ptr<SpaceBoundary> spaceBoundary, std::shared_ptr<BuildingElement> openingElem,
 				  const std::string& spaceName, std::vector<std::shared_ptr<SpaceBoundary>>& openingSpaceBoundaries, const Space& space) {
 	if(!surface.isValid())
 		return false;
@@ -628,6 +629,37 @@ static bool matchOpening(const Surface& surface, Opening& currOp, const std::sha
 	return true;
 }
 
+void searchOpeningSpaceBoundaries(Opening& currOp, const std::shared_ptr<SpaceBoundary> spaceBoundary, const std::shared_ptr<BuildingElement>& openingElem,
+								  const ConvertOptions& convertOptions, std::vector<std::shared_ptr<SpaceBoundary>>& openingSpaceBoundaries,
+								  const Space& space) {
+	std::vector<Surface> openingSurfaces;
+	for(size_t cosi=0; cosi<currOp.surfaces().size(); ++cosi) {
+		const Surface& currentOpeningSurf = currOp.surfaces()[cosi];
+		if(currentOpeningSurf.sideType() != Surface::ST_ProbableSide)
+			continue;
+
+		Surface surf = matchingOpeningSurface(currentOpeningSurf, spaceBoundary, convertOptions);
+		if(surf.isValid())
+			openingSurfaces.push_back(surf);
+	}
+	if(openingSurfaces.empty()) {
+		for(size_t cosi=0; cosi<currOp.surfaces().size(); ++cosi) {
+			const Surface& currentOpeningSurf = currOp.surfaces()[cosi];
+			if(currentOpeningSurf.sideType() == Surface::ST_ProbableSide)
+				continue;
+
+			Surface surf = matchingOpeningSurface(currentOpeningSurf, spaceBoundary, convertOptions);
+			if(surf.isValid())
+				openingSurfaces.push_back(surf);
+		}
+	}
+	if(!openingSurfaces.empty()) {
+		Surface mergedSurface = mergeSurfaces(openingSurfaces);
+		addOpeningSpaceBoundary(mergedSurface, currOp, spaceBoundary, openingElem, space.m_longName, openingSpaceBoundaries, space);
+	}
+}
+
+
 void Space::createSpaceBoundariesForOpeningsFromSpaceBoundaries(std::vector<std::shared_ptr<SpaceBoundary>>& spaceBoundaries,
 																const BuildingElementsCollector& buildingElements,
 																std::vector<Opening>& openings, std::vector<ConvertError>& errors,
@@ -654,13 +686,8 @@ void Space::createSpaceBoundariesForOpeningsFromSpaceBoundaries(std::vector<std:
 		if(elem->m_containedOpenings.empty())
 			continue;
 
-		// look for openings only in walls
-		if(convertOptions.m_matchOpeningsOnlyInWalls && elem->type() != BET_Wall)
+		if(convertOptions.noSearchForOpenings(spaceBoundary->typeRelatedElement()))
 			continue;
-
-		double thickness = elem->thickness();
-		if(thickness == 0)
-			thickness = 0.5;
 
 		// collect all contained openings
 		std::vector<size_t> containedOpeningsIndices;
@@ -692,31 +719,7 @@ void Space::createSpaceBoundariesForOpeningsFromSpaceBoundaries(std::vector<std:
 				errors.push_back(ConvertError{OT_Space, m_id, "An opening is connected to more than one building element"});
 			}
 
-			std::vector<Surface> openingSurfaces;
-			for(size_t cosi=0; cosi<currOp.surfaces().size(); ++cosi) {
-				const Surface& currentOpeningSurf = currOp.surfaces()[cosi];
-				if(currentOpeningSurf.sideType() != Surface::ST_ProbableSide)
-					continue;
-
-				Surface surf = matchingOpeningSurface(currentOpeningSurf, spaceBoundary);
-				if(surf.isValid())
-					openingSurfaces.push_back(surf);
-			}
-			if(openingSurfaces.empty()) {
-				for(size_t cosi=0; cosi<currOp.surfaces().size(); ++cosi) {
-					const Surface& currentOpeningSurf = currOp.surfaces()[cosi];
-					if(currentOpeningSurf.sideType() == Surface::ST_ProbableSide)
-						continue;
-
-					Surface surf = matchingOpeningSurface(currentOpeningSurf, spaceBoundary);
-					if(surf.isValid())
-						openingSurfaces.push_back(surf);
-				}
-			}
-			if(!openingSurfaces.empty()) {
-				Surface mergedSurface = mergeSurfaces(openingSurfaces);
-				matchOpening(mergedSurface, currOp, spaceBoundary, openingElem, m_longName, openingSpaceBoundaries, *this);
-			}
+			searchOpeningSpaceBoundaries(currOp, spaceBoundary, openingElem, convertOptions, openingSpaceBoundaries, *this);
 		}
 	}
 
@@ -730,9 +733,7 @@ void Space::createSpaceBoundariesForOpeningsFromSpaceBoundaries(std::vector<std:
 			if(!spaceBoundary->isConstructionElement())
 				continue;
 
-
-			// look for openings only in walls
-			if(convertOptions.m_matchOpeningsOnlyInWalls && spaceBoundary->typeRelatedElement() != BET_Wall)
+			if(convertOptions.noSearchForOpenings(spaceBoundary->typeRelatedElement()))
 				continue;
 
 			std::shared_ptr<BuildingElement> openingElem;
@@ -742,39 +743,7 @@ void Space::createSpaceBoundariesForOpeningsFromSpaceBoundaries(std::vector<std:
 				openingElem = buildingElements.fromID(id);
 			}
 
-			for(size_t cosi=0; cosi<currOp.surfaces().size(); ++cosi) {
-				const Surface& currentOpeningSurf = currOp.surfaces()[cosi];
-				double dist = currentOpeningSurf.distanceToParallelPlane(spaceBoundary->surface());
-				if(dist > convertOptions.m_openingDistance)
-					continue;
-
-				Surface intersectionResult = spaceBoundary->surface().intersect(currentOpeningSurf);
-				if(intersectionResult.isValid()) {
-					std::shared_ptr<SpaceBoundary> sb = std::shared_ptr<SpaceBoundary>(new SpaceBoundary(GUID_maker::instance().guid()));
-					if(openingElem) {
-						std::string name = m_longName + ":" + spaceBoundary->m_name + ":" + openingElem->m_name + " : OS" +
-										   std::to_string(cosi);
-						sb->setFromBuildingElement(name, openingElem, *this);
-						sb->m_elementEntityId = openingElem->m_id;
-						sb->m_openingId = currOp.m_id;
-						sb->fetchGeometryFromBuildingElement(intersectionResult);
-						openingSpaceBoundaries.push_back(sb);
-						currOp.setSpaceBoundary(sb);
-					}
-					else {
-						std::string name = m_longName + spaceBoundary->m_name+ ": breakout - OS" +
-										   std::to_string(cosi);
-						sb->setForVirtualElement(name, *this, true);
-						sb->m_openingId = currOp.m_id;
-						sb->fetchGeometryFromBuildingElement(intersectionResult);
-						openingSpaceBoundaries.push_back(sb);
-						currOp.setSpaceBoundary(sb);
-					}
-					spaceBoundary->addContainedOpeningSpaceBoundaries(sb);
-					// we found a connection therfore we can end searching
-					break;
-				}
-			}
+			searchOpeningSpaceBoundaries(currOp, spaceBoundary, openingElem, convertOptions, openingSpaceBoundaries, *this);
 		}
 	}
 

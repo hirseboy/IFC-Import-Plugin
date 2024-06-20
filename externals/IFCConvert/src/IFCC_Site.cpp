@@ -13,6 +13,7 @@
 
 #include "IFCC_MeshUtils.h"
 #include "IFCC_Helper.h"
+#include "IFCC_RepresentationHelper.h"
 
 namespace IFCC {
 

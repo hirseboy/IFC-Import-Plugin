@@ -17,6 +17,7 @@
 #include "IFCC_SpaceBoundary.h"
 #include "IFCC_Opening.h"
 #include "IFCC_BuildingElementsCollector.h"
+#include "IFCC_ConvertOptions.h"
 
 namespace IFCC {
 
