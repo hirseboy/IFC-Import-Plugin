@@ -37,6 +37,7 @@
 #include <ifcpp/IFC4X3/include/IfcVirtualElement.h>
 #include <ifcpp/IFC4X3/include/IfcExternalSpatialElement.h>
 #include <ifcpp/IFC4X3/include/IfcSpatialZone.h>
+#include <ifcpp/IFC4X3/include/IfcBuildingElementPart.h>
 
 #include <Carve/src/include/carve/carve.hpp>
 
@@ -269,7 +270,12 @@ void IFCReader::splitShapeData() {
 				m_elementEntitesShape[BET_ElementAssembly].push_back(data);
 			}
 			else if(dynamic_pointer_cast<IfcElementComponent>(od) != nullptr) {
-				m_elementEntitesShape[BET_ElementComponent].push_back(data);
+				if(dynamic_pointer_cast<IfcBuildingElementPart>(od) != nullptr) {
+					m_elementEntitesShape[BET_BuildingElementPart].push_back(data);
+				}
+				else {
+					m_elementEntitesShape[BET_ElementComponent].push_back(data);
+				}
 			}
 			else if(dynamic_pointer_cast<IfcFurnishingElement>(od) != nullptr) {
 				m_elementEntitesShape[BET_FurnishingElement].push_back(data);
@@ -354,6 +360,7 @@ void IFCReader::updateBuildingElements() {
 
 				Logger::instance() << "update constr nr: " << currCount << " of " << elemCount;
 
+				currbElem.getShapeOfParts(m_elementEntitesShape[BET_BuildingElementPart], m_convertErrors);
 				currbElem.update(elem, m_openings, m_convertErrors);
 				if(currbElem.surfaces().empty())
 					m_buildingElements.m_elementsWithoutSurfaces.push_back(m_buildingElements.m_constructionElements.back());
@@ -396,7 +403,7 @@ const ConvertOptions &IFCReader::convertOptions() const {
 	return m_convertOptions;
 }
 
-const IBK::Path &IFCReader::filename() const {
+IBK::Path IFCReader::filename() const {
 	if(m_readCompletedSuccessfully)
 		return m_filename;
 
@@ -421,8 +428,8 @@ void IFCReader::setMatchingDistances(double constructionFactor, double openingDi
 	m_convertOptions.m_openingDistance = openingDistance;
 }
 
-void IFCReader::setOpeningMatchingInWalls(bool useOnlyWalls) {
-	m_convertOptions.m_matchOpeningsOnlyInWalls = useOnlyWalls;
+void IFCReader::addNoSearchForOpenings(const QSet<BuildingElementTypes>& types) {
+	m_convertOptions.addElementsForOpenings(types);
 }
 
 

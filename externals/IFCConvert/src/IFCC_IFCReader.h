@@ -141,7 +141,7 @@ public:
 	const std::vector<ConvertError>& convertErrors() const;
 
 	/*! Return the name of the current IFC file.*/
-	const IBK::Path &filename() const;
+	IBK::Path filename() const;
 
 	/*! Return true if the given element type will be used for creating space boundaries by matching with space surfaces.*/
 	bool hasElementsForSpaceBoundaries(BuildingElementTypes type) const;
@@ -171,7 +171,7 @@ public:
 	void setMatchingDistances(double constructionFactor, double openingDistance);
 
 	/*! Set the flag in order to limit the opening matching only to walls.*/
-	void setOpeningMatchingInWalls(bool useOnlyWalls);
+	void addNoSearchForOpenings(const QSet<BuildingElementTypes>& types);
 
 	/*! Return the current convert options.
 	*/
