@@ -42,16 +42,42 @@ private:
 
 // check functions
 
+/*! Return a set with all element types directly usable as construction.
+	This construction can have openings.
+*/
+inline QSet<BuildingElementTypes> constructionTypes() {
+	QSet<BuildingElementTypes> types{BET_Wall,BET_Roof,BET_Slab,BET_Covering};
+	return types;
+}
+
 inline bool isConstructionType(BuildingElementTypes type) {
-	return type == BET_Wall || type == BET_Roof || type == BET_Slab;
+	QSet<BuildingElementTypes> types = constructionTypes();
+	return types.contains(type);
+}
+
+/*! Return a set with all element types usable as construction or helper constructions.
+	This construction normally don't contain openings.
+*/
+inline QSet<BuildingElementTypes> constructionSimilarTypes() {
+	QSet<BuildingElementTypes> types;
+	types << BET_Beam << BET_Column << BET_CurtainWall << BET_Footing << BET_BuildingElementPart;
+	return types;
 }
 
 inline bool isConstructionSimilarType(BuildingElementTypes type) {
-	return type == BET_Beam || type == BET_Covering || type == BET_Column || type == BET_CurtainWall || type == BET_Footing;
+	QSet<BuildingElementTypes> types = constructionSimilarTypes();
+	return types.contains(type);
+}
+
+/*! Return building elements usable for openings.*/
+inline QSet<BuildingElementTypes> openingTypes() {
+	QSet<BuildingElementTypes> types{BET_Window,BET_Door};
+	return types;
 }
 
 inline bool isOpeningType(BuildingElementTypes type) {
-	return type == BET_Window || type == BET_Door;
+	QSet<BuildingElementTypes> types = openingTypes();
+	return types.contains(type);
 }
 
 // conversion functions
