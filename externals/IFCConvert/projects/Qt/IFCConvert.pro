@@ -44,6 +44,7 @@ SOURCES +=  \
 	../../src/IFCC_Component.cpp \
 	../../src/IFCC_ComponentInstance.cpp \
 	../../src/IFCC_Construction.cpp \
+	../../src/IFCC_ConvertOptions.cpp \
 	../../src/IFCC_CurveConverter.cpp \
 	../../src/IFCC_Database.cpp \
 	../../src/IFCC_EntityBase.cpp \
@@ -63,6 +64,7 @@ SOURCES +=  \
 	../../src/IFCC_ProfileCache.cpp \
 	../../src/IFCC_ProfileConverter.cpp \
 	../../src/IFCC_Property.cpp \
+	../../src/IFCC_RepresentationHelper.cpp \
 	../../src/IFCC_Site.cpp \
 	../../src/IFCC_Space.cpp \
 	../../src/IFCC_SpaceBoundary.cpp \
@@ -91,6 +93,7 @@ HEADERS +=  \
 	../../src/IFCC_Component.h \
 	../../src/IFCC_ComponentInstance.h \
 	../../src/IFCC_Construction.h \
+	../../src/IFCC_ConvertOptions.h \
 	../../src/IFCC_CurveConverter.h \
 	../../src/IFCC_Database.h \
 	../../src/IFCC_EntityBase.h \
@@ -111,6 +114,7 @@ HEADERS +=  \
 	../../src/IFCC_ProfileCache.h \
 	../../src/IFCC_ProfileConverter.h \
 	../../src/IFCC_Property.h \
+	../../src/IFCC_RepresentationHelper.h \
 	../../src/IFCC_Site.h \
 	../../src/IFCC_Space.h \
 	../../src/IFCC_SpaceBoundary.h \
