@@ -8,6 +8,8 @@
 
 #include <carve/mesh.hpp>
 
+#include <QSet>
+
 #include "IFCC_GeometryInputData.h"
 
 
@@ -47,6 +49,7 @@ enum BuildingElementTypes {
 	BET_GeographicalElement,
 	BET_TransportElement,
 	BET_VirtualElement,
+	BET_BuildingElementPart,
 	BET_All,
 	BET_None
 };
@@ -94,30 +97,6 @@ struct ConvertError {
 	int			m_objectID;
 	std::string	m_errorText;
 };
-
-struct ConvertOptions {
-	enum ConstructionMatching {
-		CM_MatchEachConstruction,
-		CM_MatchOnlyFirstConstruction,
-		CM_MatchFirstNConstructions,
-		CM_NoMatching
-	};
-
-	bool hasElementsForSpaceBoundaries(BuildingElementTypes type) const {
-		return m_elementsForSpaceBoundaries.find(type) != m_elementsForSpaceBoundaries.end();
-	}
-
-	std::set<BuildingElementTypes>	m_elementsForSpaceBoundaries;
-	double							m_distanceFactor = 3.0;
-	double							m_openingDistance = 0.5;
-	ConstructionMatching			m_matchingType = CM_MatchEachConstruction;
-	int								m_matchedConstructionNumbers = 2;
-	bool							m_matchOpeningsOnlyInWalls = false;
-	double							m_minimumSurfaceArea = 0.001;
-	double							m_distanceEps = 1e-4;
-	bool							m_createMissingSite = true;
-};
-
 
 // some type definitions
 
