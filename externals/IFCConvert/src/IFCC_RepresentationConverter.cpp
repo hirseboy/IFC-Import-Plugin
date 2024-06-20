@@ -1055,7 +1055,7 @@ RepresentationConverter::RepresentationConverter( shared_ptr<GeometrySettings> g
 
 					// do the subtraction
 					shared_ptr<carve::mesh::MeshSet<3> > result;
-					CSG_Adapter::computeCSG( product_meshset, vec_opening_meshes, carve::csg::CSG::A_MINUS_B, result, m_geom_settings, this, ifc_element );
+					CSG_Adapter::computeCSG( product_meshset, vec_opening_meshes, carve::csg::CSG::A_MINUS_B, result, m_geom_settings );
 					product_meshset = result;
 
 				}

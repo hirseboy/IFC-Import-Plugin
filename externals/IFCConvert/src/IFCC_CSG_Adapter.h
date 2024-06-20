@@ -45,10 +45,13 @@ namespace CSG_Adapter
 											 const carve::csg::CSG::OP operation);
 
 	bool computeCSG_Carve(const shared_ptr<carve::mesh::MeshSet<3> >& op1Orig, const shared_ptr<carve::mesh::MeshSet<3> >& op2Orig, const carve::csg::CSG::OP operation, shared_ptr<carve::mesh::MeshSet<3> >& result,
-		shared_ptr<GeometrySettings>& geom_settings, StatusCallback* report_callback, const shared_ptr<BuildingEntity>& entity, bool normalizeCoords);
+		shared_ptr<GeometrySettings>& geom_settings, bool normalizeCoords);
 
 	void computeCSG(shared_ptr<carve::mesh::MeshSet<3> >& op1, std::vector<shared_ptr<carve::mesh::MeshSet<3> > >& operands2, const carve::csg::CSG::OP operation, shared_ptr<carve::mesh::MeshSet<3> >& result,
-		shared_ptr<GeometrySettings>& geom_settings, StatusCallback* report_callback, const shared_ptr<BuildingEntity>& entity);
+		shared_ptr<GeometrySettings>& geom_settings);
+
+	void computeCSG(carve::mesh::MeshSet<3>& op1, std::vector<carve::mesh::MeshSet<3> >& operands2, const carve::csg::CSG::OP operation, carve::mesh::MeshSet<3>& result,
+		shared_ptr<GeometrySettings>& geom_settings);
 
 } // end namespace CSG_Adapter
 

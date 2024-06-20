@@ -837,7 +837,7 @@ namespace IFCC {
 			std::vector<shared_ptr<carve::mesh::MeshSet<3> > >& vec_second_operand_meshsets = second_operand_data->m_meshsets;
 
 			shared_ptr<carve::mesh::MeshSet<3> > result;
-			CSG_Adapter::computeCSG( first_operand_meshset, vec_second_operand_meshsets, csg_operation, result, m_geom_settings, this, bool_result );
+			CSG_Adapter::computeCSG( first_operand_meshset, vec_second_operand_meshsets, csg_operation, result, m_geom_settings );
 			first_operand_meshset = result;
 		}
 

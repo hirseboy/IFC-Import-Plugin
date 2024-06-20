@@ -115,7 +115,7 @@ namespace CSG_Adapter {
 	}
 
 	bool computeCSG_Carve(const shared_ptr<carve::mesh::MeshSet<3> >& op1Orig, const shared_ptr<carve::mesh::MeshSet<3> >& op2Orig, const carve::csg::CSG::OP operation, shared_ptr<carve::mesh::MeshSet<3> >& result,
-		shared_ptr<GeometrySettings>& geom_settings, StatusCallback* report_callback, const shared_ptr<BuildingEntity>& entity, bool normalizeCoords)
+		shared_ptr<GeometrySettings>& geom_settings, bool normalizeCoords)
 	{
 		if( !op1Orig || !op2Orig )
 		{
@@ -170,18 +170,16 @@ namespace CSG_Adapter {
 			normMesh.normalizeMesh(op1, "op1", CARVE_EPSILON);
 			normMesh.normalizeMesh(op2, "op2", CARVE_EPSILON);
 
-			int tag = entity->m_tag;
-
 			bool triangulateOperands = true;
 			bool shouldBeClosedManifold = true;
-			MeshOps::simplifyMeshSet(op1, geom_settings, report_callback, entity.get(), triangulateOperands, shouldBeClosedManifold, dumpMeshes, CARVE_EPSILON);
-			MeshOps::simplifyMeshSet(op2, geom_settings, report_callback, entity.get(), triangulateOperands, shouldBeClosedManifold, dumpMeshes, CARVE_EPSILON);
+			MeshOps::simplifyMeshSet(op1, geom_settings, triangulateOperands, shouldBeClosedManifold, dumpMeshes, CARVE_EPSILON);
+			MeshOps::simplifyMeshSet(op2, geom_settings, triangulateOperands, shouldBeClosedManifold, dumpMeshes, CARVE_EPSILON);
 
 			MeshOps::retriangulateMeshSetSimple(op1, false, epsCoplanarDistance, 0);
 			MeshOps::retriangulateMeshSetSimple(op2, false, epsCoplanarDistance, 0);
 
-			MeshSetInfo infoMesh1(report_callback, entity.get());
-			MeshSetInfo infoMesh2(report_callback, entity.get());
+			MeshSetInfo infoMesh1;
+			MeshSetInfo infoMesh2;
 			bool operand1valid = MeshUtils::checkMeshSetValidAndClosed(op1, infoMesh1, CARVE_EPSILON);
 			bool operand2valid = MeshUtils::checkMeshSetValidAndClosed(op2, infoMesh2, CARVE_EPSILON);
 
@@ -197,7 +195,7 @@ namespace CSG_Adapter {
 			carve::csg::CSG csg(CARVE_EPSILON);
 			result = shared_ptr<carve::mesh::MeshSet<3> >(csg.compute(op1.get(), op2.get(), operation, nullptr, carve::csg::CSG::CLASSIFY_EDGE));
 
-			MeshSetInfo infoResult( report_callback, entity.get() );
+			MeshSetInfo infoResult;
 			result_meshset_ok = MeshUtils::checkMeshSetValidAndClosed(result, infoResult, CARVE_EPSILON, true, dumpMeshes );
 
 			// TODO: check for fail with closed mesh, but not fully sliced through.
@@ -225,10 +223,10 @@ namespace CSG_Adapter {
 				dumpMeshes = true;
 
 
-#ifdef _USE_MANIFOLD_CSG
-				computeCSG_Manifold(op1, op2, operation, result, eps, report_callback, entity);
-				result_meshset_ok = MeshUtils::checkMeshSetValidAndClosed(result, infoResult, report_callback, entity.get());
-#endif
+//#ifdef _USE_MANIFOLD_CSG
+//				computeCSG_Manifold(op1, op2, operation, result, eps, report_callback, entity);
+//				result_meshset_ok = MeshUtils::checkMeshSetValidAndClosed(result, infoResult, report_callback, entity.get());
+//#endif
 			}
 
 
@@ -272,12 +270,10 @@ namespace CSG_Adapter {
 	}
 
 	void computeCSG(shared_ptr<carve::mesh::MeshSet<3> >& op1, std::vector<shared_ptr<carve::mesh::MeshSet<3> > >& operands2, const carve::csg::CSG::OP operation, shared_ptr<carve::mesh::MeshSet<3> >& result,
-		shared_ptr<GeometrySettings>& geom_settings, StatusCallback* report_callback, const shared_ptr<BuildingEntity>& entity)
+		shared_ptr<GeometrySettings>& geom_settings)
 	{
-		if( !op1 || operands2.size() == 0 )
-		{
-			if( operation == carve::csg::CSG::A_MINUS_B )
-			{
+		if( !op1 || operands2.size() == 0 ) {
+			if( operation == carve::csg::CSG::A_MINUS_B ) {
 				result = op1;
 				return;
 			}
@@ -290,42 +286,37 @@ namespace CSG_Adapter {
 		shared_ptr<carve::mesh::MeshSet<3> > resultCurrentMesh;
 		bool success = false;
 		std::multimap<double, shared_ptr<carve::mesh::MeshSet<3> > > mapVolumeMeshes;
-		for( shared_ptr<carve::mesh::MeshSet<3> >&meshset2 : operands2 )
-		{
+		for( shared_ptr<carve::mesh::MeshSet<3> >&meshset2 : operands2 ) {
 			double volume = MeshUtils::getMeshVolume(meshset2.get());
 			mapVolumeMeshes.insert({ volume, meshset2 });
 		}
 
-		for( auto it = mapVolumeMeshes.rbegin(); it != mapVolumeMeshes.rend(); ++it )
-		{
-			double volume = it->first;
+		for( auto it = mapVolumeMeshes.rbegin(); it != mapVolumeMeshes.rend(); ++it ) {
+//			double volume = it->first;
 			shared_ptr<carve::mesh::MeshSet<3> >& mesh2 = it->second;
 
 			bool normalizeCoords = true;
-			success = computeCSG_Carve(op1, mesh2, operation, resultCurrentMesh, geom_settings, report_callback, entity, normalizeCoords);
-			if( success )
-			{
+			success = computeCSG_Carve(op1, mesh2, operation, resultCurrentMesh, geom_settings, normalizeCoords);
+			if( success ) {
 				result = resultCurrentMesh;
 				
-				if( operation == carve::csg::CSG::A_MINUS_B )
-				{
+				if( operation == carve::csg::CSG::A_MINUS_B ) {
 					op1 = resultCurrentMesh;	
 				}
 				continue;
 			}
 			normalizeCoords = !normalizeCoords;
-			success = computeCSG_Carve(op1, mesh2, operation, resultCurrentMesh, geom_settings, report_callback, entity, normalizeCoords);
-			if( success )
-			{
+			success = computeCSG_Carve(op1, mesh2, operation, resultCurrentMesh, geom_settings, normalizeCoords);
+			if( success ) {
 				result = resultCurrentMesh;
-				if( operation == carve::csg::CSG::A_MINUS_B )
-				{
+				if( operation == carve::csg::CSG::A_MINUS_B ) {
 					op1 = resultCurrentMesh;
 				}
 				continue;
 			}
 		}
 	}
+
 } // end namespace CSG_Adapter
 
 } // end namspace IFCC
