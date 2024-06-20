@@ -157,7 +157,7 @@ void SpaceBoundary::setForMissingElement(const std::string& name, const Space& s
 	if(isOpening)
 		m_type = CT_OpeningElement;
 	else
-		m_type = CT_Others;
+		m_type = CT_ConstructionElement;
 	m_spaceBoundaryType = SBT_Unknown;
 	m_levelType = SBLT_NoLevel;
 	m_elementEntityId = -1;
