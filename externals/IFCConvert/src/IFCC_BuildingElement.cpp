@@ -31,6 +31,7 @@
 #include <ifcpp/IFC4X3/include/IfcRelDefinesByProperties.h>
 #include <ifcpp/IFC4X3/include/IfcRelAggregates.h>
 #include <ifcpp/IFC4X3/include/IfcObjectDefinition.h>
+#include <ifcpp/IFC4X3/include/IfcElement.h>
 
 #include <ifcpp/IFC4X3/include/IfcPropertySetDefinitionSelect.h>
 #include <ifcpp/IFC4X3/include/IfcPropertySetDefinition.h>
@@ -56,12 +57,16 @@
 #include <ifcpp/IFC4X3/include/IfcSpatialElement.h>
 #include <ifcpp/IFC4X3/include/IfcMaterialProperties.h>
 #include <ifcpp/IFC4X3/include/IfcRelContainedInSpatialStructure.h>
+#include <ifcpp/IFC4X3/include/IfcBuildingElementPart.h>
+
 #include <Carve/src/include/carve/carve.hpp>
 
 
 #include "IFCC_MeshUtils.h"
 #include "IFCC_Helper.h"
 #include "IFCC_Logger.h"
+#include "IFCC_RepresentationHelper.h"
+#include "IFCC_CSG_Adapter.h"
 
 namespace IFCC {
 
@@ -220,6 +225,11 @@ bool BuildingElement::set(std::shared_ptr<IFC4X3::IfcElement> ifcElement, Buildi
 				if(relAggregate) {
 					for(size_t io=0; io<relAggregate->m_RelatedObjects.size(); ++io) {
 						const shared_ptr<IFC4X3::IfcObjectDefinition>& object = relAggregate->m_RelatedObjects[io];
+						shared_ptr<IFC4X3::IfcElementComponent> comp = dynamic_pointer_cast<IFC4X3::IfcElementComponent>(object);
+						shared_ptr<IFC4X3::IfcBuildingElementPart> part = dynamic_pointer_cast<IFC4X3::IfcBuildingElementPart>(comp);
+						if(part) {
+							m_hasElementParts.push_back(part);
+						}
 
 					}
 				}
@@ -229,7 +239,15 @@ bool BuildingElement::set(std::shared_ptr<IFC4X3::IfcElement> ifcElement, Buildi
 			for(size_t i=0; i<wall->m_Decomposes_inverse.size(); ++i) {
 				shared_ptr<IFC4X3::IfcRelAggregates> relAggregate(wall->m_Decomposes_inverse[i]);
 				if(relAggregate) {
+					for(size_t io=0; io<relAggregate->m_RelatedObjects.size(); ++io) {
+						const shared_ptr<IFC4X3::IfcObjectDefinition>& object = relAggregate->m_RelatedObjects[io];
+						shared_ptr<IFC4X3::IfcElementComponent> comp = dynamic_pointer_cast<IFC4X3::IfcElementComponent>(object);
+						const shared_ptr<IFC4X3::IfcBuildingElementPart>& part = dynamic_pointer_cast<IFC4X3::IfcBuildingElementPart>(comp);
+						if(part) {
+							m_hasElementParts.push_back(part);
+						}
 
+					}
 				}
 			}
 		}
@@ -312,6 +330,77 @@ void BuildingElement::update(std::shared_ptr<ProductShapeData> productShape, std
 	transform(productShape);
 	fetchGeometry(productShape, errors);
 	fetchOpenings(openings);
+}
+
+void BuildingElement::getShapeOfParts(const std::vector<std::shared_ptr<ProductShapeData>>& partsShapeVect, std::vector<ConvertError>& errors) {
+	if(m_hasElementParts.empty())
+		return;
+
+	meshVector_t meshSets;
+	for(auto part : m_hasElementParts) {
+		// find shape for part
+		std::shared_ptr<ProductShapeData> shapeData;
+		for(auto shape : partsShapeVect) {
+			std::shared_ptr<IFC4X3::IfcElement> e = dynamic_pointer_cast<IFC4X3::IfcElement>(shape->m_ifc_object_definition.lock());
+			if(e == nullptr)
+				continue;
+
+			if(part->m_GlobalId == e->m_GlobalId) {
+				shapeData = shape;
+				break;
+			}
+		}
+
+		// get geomatry from shape
+		carve::math::Matrix transformMatrix = shapeData->getTransform();
+		if(transformMatrix != carve::math::Matrix::IDENT()) {
+			shapeData->applyTransformToProduct(transformMatrix, true, true);
+		}
+
+		std::vector<Surface> surfaces;
+		RepresentationStructure repStruct = getRepresentationStructure(shapeData);
+		meshVector_t meshSet;
+		if(repStruct.m_bodyRep) {
+			if(repStruct.m_bodyRepCount > 1) {
+				errors.push_back({OT_BuildingElement, m_id, "more than one geometric representaion of type 'body' found"});
+			}
+
+			meshVector_t meshSet = finalMeshSet(repStruct.m_bodyRep, errors, surfaces, OT_BuildingElement, m_id);
+			meshSets.insert(meshSets.end(), meshSet.begin(), meshSet.end());
+		}
+		else if(repStruct.m_referenceRep) {
+			if(repStruct.m_referenceRepCount > 1) {
+				errors.push_back({OT_BuildingElement, m_id, "more than one geometric representaion of type 'reference' found"});
+			}
+			meshVector_t meshSet = finalMeshSet(repStruct.m_referenceRep, errors, surfaces, OT_BuildingElement, m_id);
+			meshSets.insert(meshSets.end(), meshSet.begin(), meshSet.end());
+		}
+	}
+
+	if(meshSets.empty())
+		return;
+
+	shared_ptr<carve::mesh::MeshSet<3> > resultMesh;
+	shared_ptr<carve::mesh::MeshSet<3> > firstMesh = meshSets.front();
+	meshSets.erase(meshSets.begin());
+	if(!meshSets.empty()) {
+		shared_ptr<GeometrySettings> geom_settings = shared_ptr<GeometrySettings>( new GeometrySettings() );
+		CSG_Adapter::computeCSG(firstMesh, meshSets, carve::csg::CSG::UNION, resultMesh, geom_settings);
+	}
+	else {
+		resultMesh = firstMesh;
+	}
+
+	std::vector<Surface> surfaces;
+	meshVector_t resultVect;
+	if(resultMesh) {
+		resultVect.push_back(resultMesh);
+		surfacesFromMeshSets(resultVect, surfaces);
+
+		if(!surfaces.empty() && m_surfaces.empty()) {
+			m_surfaces = surfaces;
+		}
+	}
 }
 
 

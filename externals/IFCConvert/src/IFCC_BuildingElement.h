@@ -14,6 +14,7 @@
 #include <ifcpp/IFC4X3/include/IfcWindowTypePartitioningEnum.h>
 #include <ifcpp/IFC4X3/include/IfcWallTypeEnum.h>
 #include <ifcpp/IFC4X3/include/IfcWallType.h>
+#include <ifcpp/IFC4X3/include/IfcBuildingElementPart.h>
 
 #include "IFCC_GeometryInputData.h"
 #include "IFCC_Types.h"
@@ -157,6 +158,9 @@ public:
 	*/
 	void update(std::shared_ptr<ProductShapeData> productShape, std::vector<Opening>& openings, std::vector<ConvertError>& errors);
 
+	/*! Collect the shapes of existingbuilding element parts.*/
+	void getShapeOfParts(const std::vector<std::shared_ptr<ProductShapeData>>& partsShapevect, std::vector<ConvertError>& errors);
+
 	/*! Only for opening constructions.
 		Set also the ids for construction which contains opening elements
 		Must be called after update().
@@ -268,6 +272,9 @@ private:
 	std::vector<std::shared_ptr<IFC4X3::IfcFeatureElementSubtraction>>	m_containedOpeningsOriginal;
 	double																m_thermalTransmittance;
 	std::map<std::string,std::map<std::string,Property>>				m_propertyMap;
+
+	/*! Vector of IFC opening object which uses this element.*/
+	std::vector<std::shared_ptr<IFC4X3::IfcBuildingElementPart>>		m_hasElementParts;
 };
 
 } // namespace IFCC
