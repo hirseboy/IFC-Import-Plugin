@@ -284,11 +284,6 @@ struct Surface::IntersectionResult {
 	int									m_holesClipMinusBaseChildCount = 0;
 };
 
-void surfacesFromRepresentation(std::shared_ptr<ProductShapeData> productShape, std::vector<Surface>& surfaces,
-								std::vector<ConvertError>& errors, ObjectType objectType, int objectId);
-
-meshVector_t meshSetsFromBodyRepresentation(std::shared_ptr<ProductShapeData> productShape);
-
 } // namespace IFCC
 
 #endif // IFCC_SURFACE_H
