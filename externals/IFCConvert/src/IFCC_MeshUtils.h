@@ -31,12 +31,9 @@ namespace IFCC {
 
 struct MeshSetInfo
 {
-	MeshSetInfo()
-	{}
+	MeshSetInfo() = default;
 
 	MeshSetInfo( MeshSetInfo& other );
-
-	MeshSetInfo(StatusCallback* _report_callback, BuildingEntity* _entity );
 
 	void resetInfoResult();
 
@@ -48,8 +45,6 @@ struct MeshSetInfo
 	bool allPointersValid = true;
 	bool meshSetValid = false;
 	std::string details;
-	StatusCallback* report_callback = nullptr;
-	BuildingEntity* entity = nullptr;
 };
 
 namespace MeshUtils
@@ -64,8 +59,8 @@ namespace MeshUtils
 
 	void recalcMeshSet(shared_ptr<carve::mesh::MeshSet<3> >& meshset, double CARVE_EPSILON);
 
-	bool checkMeshSetVolume( const shared_ptr<carve::mesh::MeshSet<3> >& mesh_set, StatusCallback* report_callback,
-							 BuildingEntity* entity, double CARVE_EPSILON );
+	bool checkMeshSetVolume( const shared_ptr<carve::mesh::MeshSet<3> >& mesh_set,
+							 double CARVE_EPSILON );
 
 
 	bool checkEdgePointers(carve::mesh::Edge<3>* e, bool checkForDegenerateEdges, MeshSetInfo& info);

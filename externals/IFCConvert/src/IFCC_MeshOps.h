@@ -91,14 +91,13 @@ private:
 
 /// \brief simplifyMeshSet merge coplanar faces and re-triangulate each set of merged faces
 /// \param meshset				Carve meshset
-/// \param report_callback		callback function for errors, warnings, notifications, progress
 /// \param entity				IFC entity that is currently being processed
 /// \param ignoreOpenEdgesInResult	If true, the result is kept even with open edges (good for visualization). If false, the result will be the input mesh in case open edges occur after triangulation (good for further boolean operations)
-void simplifyMeshSet( shared_ptr<carve::mesh::MeshSet<3> >& meshset, shared_ptr<GeometrySettings>& geomSettings, StatusCallback* report_callback,
-					  BuildingEntity* entity, bool triangulateResult, bool shouldBeClosedManifold, bool dumpPolygon, double CARVE_EPSILON);
+void simplifyMeshSet( shared_ptr<carve::mesh::MeshSet<3> >& meshset, shared_ptr<GeometrySettings>& geomSettings,
+					  bool triangulateResult, bool shouldBeClosedManifold, bool dumpPolygon, double CARVE_EPSILON);
 
 void simplifyMeshSet(std::vector<shared_ptr<carve::mesh::MeshSet<3>> >& meshsets, shared_ptr<GeometrySettings>& geomSettings,
-					 StatusCallback* report_callback, BuildingEntity* entity, bool triangulateResult, bool shouldBeClosedManifold,
+					 bool triangulateResult, bool shouldBeClosedManifold,
 					 bool dumpPolygon, double CARVE_EPSILON);
 
 void retriangulateMeshSetSimple( shared_ptr<carve::mesh::MeshSet<3> >& meshset, bool ignoreResultOpenEdges, double CARVE_EPSILON,

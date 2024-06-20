@@ -1596,10 +1596,8 @@ static size_t mergeAlignedEdges(shared_ptr<carve::mesh::MeshSet<3> >& meshset, d
 
 /// \brief simplifyMeshSet merge coplanar faces and re-triangulate each set of merged faces
 /// \param meshset				Carve meshset
-/// \param report_callback		callback function for errors, warnings, notifications, progress
-/// \param entity				IFC entity that is currently being processed
 /// \param ignoreOpenEdgesInResult	If true, the result is kept even with open edges (good for visualization). If false, the result will be the input mesh in case open edges occur after triangulation (good for further boolean operations)
-void simplifyMeshSet( shared_ptr<carve::mesh::MeshSet<3> >& meshset, shared_ptr<GeometrySettings>& geomSettings, StatusCallback* report_callback, BuildingEntity* entity,
+void simplifyMeshSet( shared_ptr<carve::mesh::MeshSet<3> >& meshset, shared_ptr<GeometrySettings>& geomSettings,
 	bool triangulateResult, bool shouldBeClosedManifold, bool dumpPolygon, double CARVE_EPSILON)
 {
 	if( !meshset )
@@ -1609,7 +1607,7 @@ void simplifyMeshSet( shared_ptr<carve::mesh::MeshSet<3> >& meshset, shared_ptr<
 	double epsCoplanarDistance = geomSettings->getEpsilonCoplanarDistance();// m_epsCoplanarDistance;
 	double epsCoplanarAngle = geomSettings->getEpsilonCoplanarAngle();// m_epsCoplanarAngle;
 	double epsMinFaceArea = geomSettings->getEpsilonCoplanarDistance() * 0.01;// m_epsCoplanarDistance * 0.001;
-	MeshSetInfo infoInput(report_callback, entity);
+	MeshSetInfo infoInput;
 	bool validMeshsetInput = MeshUtils::checkMeshSetValidAndClosed(meshset, infoInput, CARVE_EPSILON);
 
 	if( meshset->vertex_storage.size() < 9 && infoInput.numOpenEdges == 0 )
@@ -1658,7 +1656,7 @@ void simplifyMeshSet( shared_ptr<carve::mesh::MeshSet<3> >& meshset, shared_ptr<
 
 		// TODO: find faces with biggest area, and trim all points to plane
 
-		MeshSetInfo infoMergedFaces(report_callback, entity);
+		MeshSetInfo infoMergedFaces;
 		bool validMeshsetMergedFaces = MeshUtils::checkMeshSetValidAndClosed(meshset, infoMergedFaces, CARVE_EPSILON);
 				
 
@@ -1686,7 +1684,7 @@ void simplifyMeshSet( shared_ptr<carve::mesh::MeshSet<3> >& meshset, shared_ptr<
 		size_t numEdgesRemoved = mergeAlignedEdges(meshset, epsCoplanarAngle, false, CARVE_EPSILON);
 		if( numEdgesRemoved > 0 )
 		{
-			MeshSetInfo infoMergedAlignedEdges( report_callback, entity );
+			MeshSetInfo infoMergedAlignedEdges;
 			bool validMergedAlignedEdges = MeshUtils::checkMeshSetValidAndClosed(meshset, infoMergedAlignedEdges, CARVE_EPSILON);
 
 			if( validMergedAlignedEdges )
@@ -1694,7 +1692,7 @@ void simplifyMeshSet( shared_ptr<carve::mesh::MeshSet<3> >& meshset, shared_ptr<
 				if( triangulateResult )
 				{
 					retriangulateMeshSetSimple(meshset, false, epsCoplanarDistance, 0);
-					MeshSetInfo infoTriangulated( report_callback, entity );
+					MeshSetInfo infoTriangulated;
 					bool validTriangulated = MeshUtils::checkMeshSetValidAndClosed(meshset, infoTriangulated, CARVE_EPSILON);
 					if( !validTriangulated )
 					{
@@ -1723,12 +1721,12 @@ void simplifyMeshSet( shared_ptr<carve::mesh::MeshSet<3> >& meshset, shared_ptr<
 	meshset = meshset_copy;
 }
 
-void simplifyMeshSet(std::vector<shared_ptr<carve::mesh::MeshSet<3>> >& meshsets, shared_ptr<GeometrySettings>& geomSettings, StatusCallback* report_callback,
-	BuildingEntity* entity, bool triangulateResult, bool shouldBeClosedManifold, bool dumpPolygon, double CARVE_EPSILON)
+void simplifyMeshSet(std::vector<shared_ptr<carve::mesh::MeshSet<3>> >& meshsets, shared_ptr<GeometrySettings>& geomSettings,
+	bool triangulateResult, bool shouldBeClosedManifold, bool dumpPolygon, double CARVE_EPSILON)
 {
 	for( shared_ptr<carve::mesh::MeshSet<3> >&meshset : meshsets )
 	{
-		simplifyMeshSet(meshset, geomSettings, report_callback, entity, triangulateResult, shouldBeClosedManifold, dumpPolygon, CARVE_EPSILON);
+		simplifyMeshSet(meshset, geomSettings, triangulateResult, shouldBeClosedManifold, dumpPolygon, CARVE_EPSILON);
 	}
 }
 

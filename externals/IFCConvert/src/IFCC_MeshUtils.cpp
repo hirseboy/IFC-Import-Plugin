@@ -32,12 +32,6 @@ namespace IFCC {
 		meshSetValid = other.meshSetValid;
 	}
 
-	MeshSetInfo::MeshSetInfo(StatusCallback* _report_callback, BuildingEntity* _entity )
-	{
-		report_callback = _report_callback;
-		entity = _entity;
-	}
-
 	void MeshSetInfo::resetInfoResult()
 	{
 		allPointersValid = true;
@@ -112,7 +106,7 @@ namespace MeshUtils
 		}
 	}
 
-	bool checkMeshSetVolume( const shared_ptr<carve::mesh::MeshSet<3> >& mesh_set, StatusCallback* report_callback, BuildingEntity* entity, double CARVE_EPSILON )
+	bool checkMeshSetVolume( const shared_ptr<carve::mesh::MeshSet<3> >& mesh_set, BuildingEntity* entity, double CARVE_EPSILON )
 	{
 		if( !mesh_set )
 		{
