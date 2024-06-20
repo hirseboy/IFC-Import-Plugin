@@ -92,47 +92,72 @@
       </size>
      </property>
      <layout class="QGridLayout" name="gridLayout">
-      <item row="0" column="0">
-       <widget class="QGroupBox" name="groupBoxGlobalMatching">
+      <item row="3" column="0">
+       <widget class="QGroupBox" name="groupBoxRepaiFlags">
+        <property name="sizePolicy">
+         <sizepolicy hsizetype="MinimumExpanding" vsizetype="Preferred">
+          <horstretch>0</horstretch>
+          <verstretch>0</verstretch>
+         </sizepolicy>
+        </property>
+        <property name="title">
+         <string>Repair flags</string>
+        </property>
+        <layout class="QGridLayout" name="gridLayout_2">
+         <item row="0" column="1">
+          <widget class="QCheckBox" name="checkBoxRemoveDoubleSBs">
+           <property name="text">
+            <string>Remove doubled space boundaries</string>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="0">
+          <widget class="QCheckBox" name="checkBoxIgnorErrors">
+           <property name="toolTip">
+            <string>If checked all errors will be ignored and the finish button will be enabled</string>
+           </property>
+           <property name="text">
+            <string>Ignore convert errors</string>
+           </property>
+           <property name="checked">
+            <bool>true</bool>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+      </item>
+      <item row="4" column="0">
+       <widget class="QGroupBox" name="groupBox_2">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Preferred" vsizetype="MinimumExpanding">
           <horstretch>0</horstretch>
           <verstretch>0</verstretch>
          </sizepolicy>
         </property>
-        <property name="minimumSize">
-         <size>
-          <width>0</width>
-          <height>100</height>
-         </size>
-        </property>
         <property name="title">
-         <string>Global matching settings</string>
+         <string>Details</string>
         </property>
-        <layout class="QGridLayout" name="gridLayout_5">
-         <item row="0" column="1">
-          <widget class="QDoubleSpinBox" name="doubleSpinBoxMatchOpeningDistance"/>
-         </item>
+        <layout class="QGridLayout" name="gridLayout_3">
          <item row="0" column="0">
-          <widget class="QLabel" name="label_5">
+          <widget class="QCheckBox" name="checkBoxSpaceIntersectionDetails">
            <property name="text">
-            <string>Opening search distance</string>
+            <string>More space intersection details</string>
            </property>
           </widget>
          </item>
-         <item row="0" column="2">
-          <widget class="QLabel" name="label_6">
-           <property name="text">
-            <string>m</string>
+         <item row="0" column="1">
+          <spacer name="horizontalSpacer_2">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
            </property>
-          </widget>
-         </item>
-         <item row="1" column="1">
-          <widget class="QCheckBox" name="checkBoxMatchOpeningsInWalls">
-           <property name="text">
-            <string>Look for openings only in walls</string>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>389</width>
+             <height>20</height>
+            </size>
            </property>
-          </widget>
+          </spacer>
          </item>
         </layout>
        </widget>
@@ -245,71 +270,49 @@
        </widget>
       </item>
       <item row="2" column="0">
-       <widget class="QGroupBox" name="groupBoxRepaiFlags">
-        <property name="sizePolicy">
-         <sizepolicy hsizetype="MinimumExpanding" vsizetype="Preferred">
-          <horstretch>0</horstretch>
-          <verstretch>0</verstretch>
-         </sizepolicy>
-        </property>
-        <property name="title">
-         <string>Repair flags</string>
-        </property>
-        <layout class="QGridLayout" name="gridLayout_2">
-         <item row="0" column="1">
-          <widget class="QCheckBox" name="checkBoxRemoveDoubleSBs">
-           <property name="text">
-            <string>Remove doubled space boundaries</string>
-           </property>
-          </widget>
-         </item>
-         <item row="0" column="0">
-          <widget class="QCheckBox" name="checkBoxIgnorErrors">
-           <property name="toolTip">
-            <string>If checked all errors will be ignored and the finish button will be enabled</string>
-           </property>
-           <property name="text">
-            <string>Ignore convert errors</string>
-           </property>
-           <property name="checked">
-            <bool>true</bool>
-           </property>
-          </widget>
-         </item>
-        </layout>
-       </widget>
-      </item>
-      <item row="3" column="0">
-       <widget class="QGroupBox" name="groupBox_2">
+       <widget class="QGroupBox" name="groupBoxGlobalMatching">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Preferred" vsizetype="MinimumExpanding">
           <horstretch>0</horstretch>
           <verstretch>0</verstretch>
          </sizepolicy>
         </property>
-        <property name="title">
-         <string>Details</string>
+        <property name="minimumSize">
+         <size>
+          <width>0</width>
+          <height>100</height>
+         </size>
         </property>
-        <layout class="QGridLayout" name="gridLayout_3">
+        <property name="title">
+         <string>Settings for matching openings</string>
+        </property>
+        <layout class="QGridLayout" name="gridLayout_5">
+         <item row="2" column="0" colspan="3">
+          <widget class="QListWidget" name="listWidgetOpeningSearchElements"/>
+         </item>
          <item row="0" column="0">
-          <widget class="QCheckBox" name="checkBoxSpaceIntersectionDetails">
+          <widget class="QLabel" name="label_5">
            <property name="text">
-            <string>More space intersection details</string>
+            <string>Opening search distance</string>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="2">
+          <widget class="QLabel" name="label_6">
+           <property name="text">
+            <string>m</string>
            </property>
           </widget>
          </item>
          <item row="0" column="1">
-          <spacer name="horizontalSpacer_2">
-           <property name="orientation">
-            <enum>Qt::Horizontal</enum>
+          <widget class="QDoubleSpinBox" name="doubleSpinBoxMatchOpeningDistance"/>
+         </item>
+         <item row="1" column="0">
+          <widget class="QLabel" name="label_8">
+           <property name="text">
+            <string>Construction types for opening search</string>
            </property>
-           <property name="sizeHint" stdset="0">
-            <size>
-             <width>389</width>
-             <height>20</height>
-            </size>
-           </property>
-          </spacer>
+          </widget>
          </item>
         </layout>
        </widget>

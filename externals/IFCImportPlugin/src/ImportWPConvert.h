@@ -3,6 +3,9 @@
 
 #include <QWizardPage>
 
+#include <IFCC_Types.h>
+
+
 namespace IFCC {
 	class IFCReader;
 }
@@ -66,6 +69,8 @@ private:
 	void initElements();
 
 	void setMatching(MatchingMainType type);
+
+	QString elementTypeText(IFCC::BuildingElementTypes type) const;
 
 	Ui::ImportWPConvert *ui;
 

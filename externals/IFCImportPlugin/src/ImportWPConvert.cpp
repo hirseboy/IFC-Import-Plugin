@@ -7,7 +7,6 @@
 #include <IFCC_IFCReader.h>
 #include <IFCC_Helper.h>
 #include <IFCC_Logger.h>
-#include <IFCC_Types.h>
 
 #include <IBK_Path.h>
 
@@ -23,37 +22,30 @@ ImportWPConvert::ImportWPConvert(QWidget *parent, IFCC::IFCReader* reader) :
 
 	ui->pushButtonConvert->setEnabled(true);
 	ui->checkBoxUseSpaceBoundaries->setChecked(false);
-	ui->checkBoxMatchOpeningsInWalls->setChecked(reader->convertOptions().m_matchOpeningsOnlyInWalls);
 
-	QListWidgetItem *item = new QListWidgetItem(tr("Wall"));
-	item->setFlags(item->flags() | Qt::ItemIsUserCheckable);
-	item->setCheckState(Qt::Checked);
-	item->setData(Qt::UserRole, (int)IFCC::BET_Wall);
-	ui->listWidgetConstructionTypes->addItem(item);
+	for(auto type : IFCC::constructionTypes()) {
+		QListWidgetItem *item = new QListWidgetItem(elementTypeText(type));
+		item->setFlags(item->flags() | Qt::ItemIsUserCheckable);
+		item->setCheckState(Qt::Checked);
+		item->setData(Qt::UserRole, (int)type);
+		ui->listWidgetConstructionTypes->addItem(item);
+	}
 
-	item = new QListWidgetItem(tr("Slab"));
-	item->setFlags(item->flags() | Qt::ItemIsUserCheckable);
-	item->setCheckState(Qt::Checked);
-	item->setData(Qt::UserRole, (int)IFCC::BET_Slab);
-	ui->listWidgetConstructionTypes->addItem(item);
+	for(auto type : IFCC::constructionSimilarTypes()) {
+		QListWidgetItem *item = new QListWidgetItem(elementTypeText(type));
+		item->setFlags(item->flags() | Qt::ItemIsUserCheckable);
+		item->setCheckState(Qt::Checked);
+		item->setData(Qt::UserRole, (int)type);
+		ui->listWidgetConstructionTypes->addItem(item);
+	}
 
-	item = new QListWidgetItem(tr("Beam"));
-	item->setFlags(item->flags() | Qt::ItemIsUserCheckable);
-	item->setCheckState(Qt::Checked);
-	item->setData(Qt::UserRole, (int)IFCC::BET_Beam);
-	ui->listWidgetConstructionTypes->addItem(item);
-
-	item = new QListWidgetItem(tr("Covering"));
-	item->setFlags(item->flags() | Qt::ItemIsUserCheckable);
-	item->setCheckState(Qt::Checked);
-	item->setData(Qt::UserRole, (int)IFCC::BET_Covering);
-	ui->listWidgetConstructionTypes->addItem(item);
-
-	item = new QListWidgetItem(tr("Footing"));
-	item->setFlags(item->flags() | Qt::ItemIsUserCheckable);
-	item->setCheckState(Qt::Checked);
-	item->setData(Qt::UserRole, (int)IFCC::BET_Footing);
-	ui->listWidgetConstructionTypes->addItem(item);
+	for(auto type : IFCC::constructionTypes()) {
+		QListWidgetItem *item = new QListWidgetItem(elementTypeText(type));
+		item->setFlags(item->flags() | Qt::ItemIsUserCheckable);
+		item->setCheckState(Qt::Checked);
+		item->setData(Qt::UserRole, (int)type);
+		ui->listWidgetOpeningSearchElements->addItem(item);
+	}
 
 	ui->comboBoxMatchingType->addItem(tr("Full matching"), MMT_FullMatching);
 	ui->comboBoxMatchingType->addItem(tr("Medium matching"), MMT_MediumMatching);
@@ -104,6 +96,42 @@ void ImportWPConvert::setMatching(MatchingMainType type) {
 	}
 }
 
+QString ImportWPConvert::elementTypeText(IFCC::BuildingElementTypes type) const {
+	switch(type) {
+		case IFCC::BET_Beam: return tr("Beam");
+		case IFCC::BET_Chimney: return tr("Chimney");
+		case IFCC::BET_Column: return tr("Column");
+		case IFCC::BET_Covering: return tr("Covering");
+		case IFCC::BET_CurtainWall: return tr("Curtain Wall");
+		case IFCC::BET_Door: return tr("Door");
+		case IFCC::BET_Footing: return tr("Footing");
+		case IFCC::BET_Member: return tr("Member");
+		case IFCC::BET_Pile: return tr("Pile");
+		case IFCC::BET_Plate: return tr("Plate");
+		case IFCC::BET_Railing: return tr("Railing");
+		case IFCC::BET_Ramp: return tr("Ramp");
+		case IFCC::BET_RampFlight: return tr("RampFlight");
+		case IFCC::BET_Roof: return tr("Roof");
+		case IFCC::BET_ShadingDevice: return tr("Shading Device");
+		case IFCC::BET_Slab: return tr("Slab");
+		case IFCC::BET_Stair: return tr("Stair");
+		case IFCC::BET_StairFlight: return tr("Stair Flight");
+		case IFCC::BET_Wall: return tr("Wall");
+		case IFCC::BET_Window: return tr("Window");
+		case IFCC::BET_CivilElement: return tr("Civil Element");
+		case IFCC::BET_DistributionElement: return tr("Distribution Element");
+		case IFCC::BET_ElementAssembly: return tr("Element Assembly");
+		case IFCC::BET_ElementComponent: return tr("Element Component");
+		case IFCC::BET_FeatureElement: return tr("Feature Element");
+		case IFCC::BET_FurnishingElement: return tr("Furnishing Element");
+		case IFCC::BET_GeographicalElement: return tr("Geographical Element");
+		case IFCC::BET_TransportElement: return tr("Transport Element");
+		case IFCC::BET_VirtualElement: return tr("VirtualElement");
+		case IFCC::BET_BuildingElementPart: return tr("Building Element Part");
+		default: return tr("");
+	}
+}
+
 void ImportWPConvert::initializePage() {
 	ui->textEdit->clear();
 	int sbCount = m_reader->numberOfIFCSpaceBoundaries();
@@ -121,7 +149,6 @@ void ImportWPConvert::initializePage() {
 
 	ui->doubleSpinBoxMatchConstructionFactor->setValue(m_reader->convertOptions().m_distanceFactor);
 	ui->doubleSpinBoxMatchOpeningDistance->setValue(m_reader->convertOptions().m_openingDistance);
-	ui->checkBoxMatchOpeningsInWalls->setChecked(m_reader->convertOptions().m_matchOpeningsOnlyInWalls);
 
 }
 
@@ -252,6 +279,14 @@ void ImportWPConvert::initElements() {
 			m_reader->setElementsForSpaceBoundaries(static_cast<IFCC::BuildingElementTypes>(item->data(Qt::UserRole).toInt()), true);
 	}
 
+	QSet<IFCC::BuildingElementTypes> noSearchForOpeningsInTypes;
+	for(int i=0; i<ui->listWidgetOpeningSearchElements->count(); ++i) {
+		QListWidgetItem* item = ui->listWidgetOpeningSearchElements->item(i);
+		if(item->checkState() != Qt::Checked)
+			noSearchForOpeningsInTypes << static_cast<IFCC::BuildingElementTypes>(item->data(Qt::UserRole).toInt());
+	}
+	m_reader->addNoSearchForOpenings(noSearchForOpeningsInTypes);
+
 	if(ui->radioButtonMatchingFull->isChecked())
 		m_reader->setConvertMatchingType(IFCC::ConvertOptions::CM_MatchEachConstruction);
 	else if(ui->radioButtonMatchingFirst->isChecked())
@@ -262,7 +297,6 @@ void ImportWPConvert::initElements() {
 		m_reader->setConvertMatchingType(IFCC::ConvertOptions::CM_NoMatching);
 
 	m_reader->setMatchingDistances(ui->doubleSpinBoxMatchConstructionFactor->value(), ui->doubleSpinBoxMatchOpeningDistance->value());
-	m_reader->setOpeningMatchingInWalls(ui->checkBoxMatchOpeningsInWalls->isChecked());
 }
 
 void ImportWPConvert::on_pushButtonConvert_clicked() {
