@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>856</width>
-    <height>972</height>
+    <height>1260</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -26,58 +26,21 @@
    <string>Convert IFC into VICUS</string>
   </property>
   <layout class="QGridLayout" name="gridLayout_6">
-   <item row="2" column="1">
-    <widget class="QComboBox" name="comboBoxMatchingType"/>
-   </item>
-   <item row="0" column="1">
-    <spacer name="horizontalSpacer">
-     <property name="orientation">
-      <enum>Qt::Horizontal</enum>
-     </property>
-     <property name="sizeHint" stdset="0">
-      <size>
-       <width>329</width>
-       <height>20</height>
-      </size>
-     </property>
-    </spacer>
-   </item>
-   <item row="1" column="1" colspan="3">
-    <widget class="QLabel" name="labelSBDescription">
+   <item row="4" column="0" colspan="2">
+    <widget class="QLabel" name="labelMatchingDescription">
      <property name="text">
-      <string>TextLabel</string>
+      <string>No matching</string>
      </property>
     </widget>
    </item>
-   <item row="0" column="3">
-    <widget class="QPushButton" name="pushButtonSaveLog">
-     <property name="text">
-      <string>Save log</string>
-     </property>
-    </widget>
-   </item>
-   <item row="1" column="0">
-    <widget class="QCheckBox" name="checkBoxUseSpaceBoundaries">
-     <property name="text">
-      <string>Use space boundaries</string>
-     </property>
-    </widget>
-   </item>
-   <item row="0" column="0">
-    <widget class="QPushButton" name="pushButtonConvert">
-     <property name="text">
-      <string>Convert</string>
-     </property>
-    </widget>
-   </item>
-   <item row="2" column="2">
+   <item row="3" column="2">
     <widget class="QCheckBox" name="checkBoxAdvancedSettings">
      <property name="text">
       <string>Advanced</string>
      </property>
     </widget>
    </item>
-   <item row="4" column="0" colspan="4">
+   <item row="5" column="0" colspan="4">
     <widget class="QWidget" name="widgetAdvancedSettings" native="true">
      <property name="sizePolicy">
       <sizepolicy hsizetype="Preferred" vsizetype="MinimumExpanding">
@@ -320,20 +283,77 @@
      </layout>
     </widget>
    </item>
-   <item row="2" column="0">
+   <item row="1" column="0">
+    <widget class="QCheckBox" name="checkBoxUseSpaceBoundaries">
+     <property name="text">
+      <string>Use space boundaries</string>
+     </property>
+    </widget>
+   </item>
+   <item row="3" column="0">
     <widget class="QLabel" name="label_7">
      <property name="text">
       <string>Space boundary matching</string>
      </property>
     </widget>
    </item>
-   <item row="5" column="0" colspan="4">
-    <widget class="QTextEdit" name="textEdit"/>
-   </item>
-   <item row="3" column="0" colspan="2">
-    <widget class="QLabel" name="labelMatchingDescription">
+   <item row="1" column="1" colspan="3">
+    <widget class="QLabel" name="labelSBDescription">
      <property name="text">
-      <string>No matching</string>
+      <string>TextLabel</string>
+     </property>
+    </widget>
+   </item>
+   <item row="6" column="0" colspan="4">
+    <widget class="QTextEdit" name="textEdit">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Expanding" vsizetype="MinimumExpanding">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+     <property name="minimumSize">
+      <size>
+       <width>0</width>
+       <height>200</height>
+      </size>
+     </property>
+    </widget>
+   </item>
+   <item row="0" column="1">
+    <spacer name="horizontalSpacer">
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
+     </property>
+     <property name="sizeHint" stdset="0">
+      <size>
+       <width>329</width>
+       <height>20</height>
+      </size>
+     </property>
+    </spacer>
+   </item>
+   <item row="0" column="3">
+    <widget class="QPushButton" name="pushButtonSaveLog">
+     <property name="text">
+      <string>Save log</string>
+     </property>
+    </widget>
+   </item>
+   <item row="3" column="1">
+    <widget class="QComboBox" name="comboBoxMatchingType"/>
+   </item>
+   <item row="0" column="0">
+    <widget class="QPushButton" name="pushButtonConvert">
+     <property name="text">
+      <string>Convert</string>
+     </property>
+    </widget>
+   </item>
+   <item row="2" column="0">
+    <widget class="QCheckBox" name="checkBoxWriteBuildingElements">
+     <property name="text">
+      <string>Write building elements</string>
      </property>
     </widget>
    </item>

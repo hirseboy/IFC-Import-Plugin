@@ -22,6 +22,7 @@ ImportWPConvert::ImportWPConvert(QWidget *parent, IFCC::IFCReader* reader) :
 
 	ui->pushButtonConvert->setEnabled(true);
 	ui->checkBoxUseSpaceBoundaries->setChecked(false);
+	ui->checkBoxWriteBuildingElements->setChecked(m_reader->convertOptions().m_writeBuildingElements);
 
 	for(auto type : IFCC::constructionTypes()) {
 		QListWidgetItem *item = new QListWidgetItem(elementTypeText(type));
@@ -149,6 +150,7 @@ void ImportWPConvert::initializePage() {
 
 	ui->doubleSpinBoxMatchConstructionFactor->setValue(m_reader->convertOptions().m_distanceFactor);
 	ui->doubleSpinBoxMatchOpeningDistance->setValue(m_reader->convertOptions().m_openingDistance);
+	ui->checkBoxWriteBuildingElements->setChecked(m_reader->convertOptions().m_writeBuildingElements);
 
 }
 
@@ -297,6 +299,7 @@ void ImportWPConvert::initElements() {
 		m_reader->setConvertMatchingType(IFCC::ConvertOptions::CM_NoMatching);
 
 	m_reader->setMatchingDistances(ui->doubleSpinBoxMatchConstructionFactor->value(), ui->doubleSpinBoxMatchOpeningDistance->value());
+	m_reader->setWritingBuildingElements(ui->checkBoxWriteBuildingElements->isChecked());
 }
 
 void ImportWPConvert::on_pushButtonConvert_clicked() {
