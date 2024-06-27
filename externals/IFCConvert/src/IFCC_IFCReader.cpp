@@ -432,6 +432,10 @@ void IFCReader::addNoSearchForOpenings(const QSet<BuildingElementTypes>& types) 
 	m_convertOptions.addElementsForOpenings(types);
 }
 
+void IFCReader::setWritingBuildingElements(bool write) {
+	m_convertOptions.m_writeBuildingElements = write;
+}
+
 
 bool IFCReader::convert(bool useSpaceBoundaries) {
 
@@ -773,6 +777,21 @@ void IFCReader::writeXML(const IBK::Path & filename) const {
 
 	m_database.writeXML(e);
 
+	if(m_convertOptions.m_writeBuildingElements) {
+		TiXmlElement * pg = new TiXmlElement("PlainGeometry");
+		e->LinkEndChild(pg);
+
+		TiXmlElement * child = new TiXmlElement("Surfaces");
+		for(const auto& elem : m_buildingElements.allConstructionElements()) {
+			if(elem->surfaces().empty())
+				continue;
+			for(auto surf : elem->surfaces()) {
+				surf.writeXML(child);
+			}
+
+		}
+	}
+
 	// other files
 
 	doc.SaveFile( filename.c_str() );
@@ -797,6 +816,22 @@ void IFCReader::setVicusProjectText(QString& projectText) {
 	m_instances.writeXML(e);
 
 	m_database.writeXML(e);
+
+	if(m_convertOptions.m_writeBuildingElements) {
+		TiXmlElement * pg = new TiXmlElement("PlainGeometry");
+		e->LinkEndChild(pg);
+
+		TiXmlElement * child = new TiXmlElement("Surfaces");
+		pg->LinkEndChild(child);
+		for(const auto& elem : m_buildingElements.allConstructionElements()) {
+			if(elem->surfaces().empty())
+				continue;
+			for(auto surf : elem->surfaces()) {
+				surf.writeXML(child);
+			}
+
+		}
+	}
 
 	// other files
 

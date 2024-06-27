@@ -337,6 +337,7 @@ void BuildingElement::getShapeOfParts(const std::vector<std::shared_ptr<ProductS
 		return;
 
 	meshVector_t meshSets;
+
 	for(auto part : m_hasElementParts) {
 		// find shape for part
 		std::shared_ptr<ProductShapeData> shapeData;
@@ -352,11 +353,14 @@ void BuildingElement::getShapeOfParts(const std::vector<std::shared_ptr<ProductS
 		}
 
 		// get geomatry from shape
+
+		// move shape to the right position
 		carve::math::Matrix transformMatrix = shapeData->getTransform();
 		if(transformMatrix != carve::math::Matrix::IDENT()) {
 			shapeData->applyTransformToProduct(transformMatrix, true, true);
 		}
 
+		// get representation and mesh sets
 		std::vector<Surface> surfaces;
 		RepresentationStructure repStruct = getRepresentationStructure(shapeData);
 		meshVector_t meshSet;
@@ -377,9 +381,11 @@ void BuildingElement::getShapeOfParts(const std::vector<std::shared_ptr<ProductS
 		}
 	}
 
+	// return in case we don't have any geometry from building element parts
 	if(meshSets.empty())
 		return;
 
+	// unify all mesh sets to one
 	shared_ptr<carve::mesh::MeshSet<3> > resultMesh;
 	shared_ptr<carve::mesh::MeshSet<3> > firstMesh = meshSets.front();
 	meshSets.erase(meshSets.begin());
@@ -391,6 +397,7 @@ void BuildingElement::getShapeOfParts(const std::vector<std::shared_ptr<ProductS
 		resultMesh = firstMesh;
 	}
 
+	// transform unified mesh set to surfaces
 	std::vector<Surface> surfaces;
 	meshVector_t resultVect;
 	if(resultMesh) {
@@ -400,6 +407,11 @@ void BuildingElement::getShapeOfParts(const std::vector<std::shared_ptr<ProductS
 		if(!surfaces.empty() && m_surfaces.empty()) {
 			m_surfaces = surfaces;
 		}
+	}
+
+	// initialise surfaces
+	for(auto& surf : m_surfaces) {
+		surf.set(GUID_maker::instance().guid(), m_id, m_name, false);
 	}
 }
 
@@ -418,11 +430,12 @@ void BuildingElement::fetchGeometry(std::shared_ptr<ProductShapeData> productSha
 	if(productShape == nullptr)
 		return;
 
-	if(m_subSurfaceComponent) {
-		int g = 0;
-	}
+	std::vector<Surface> partsSurfaces = m_surfaces;
 
 	surfacesFromRepresentation(productShape, m_surfaces, errors, OT_BuildingElement, m_id);
+
+	if(m_surfaces.empty() && !partsSurfaces.empty())
+		m_surfaces = partsSurfaces;
 
 	findSurfacePairs();
 }
@@ -541,6 +554,27 @@ double BuildingElement::openingArea() const {
 	}
 
 	return 0;
+}
+
+TiXmlElement *BuildingElement::writeXML(TiXmlElement *parent) const {
+	if (m_id == -1)
+		return nullptr;
+
+	TiXmlElement * e = new TiXmlElement("PlainGeometry");
+	parent->LinkEndChild(e);
+
+//	e->SetAttribute("id", IBK::val2string<unsigned int>(m_id));
+//	e->SetAttribute("displayName", m_name);
+//	e->SetAttribute("visible", IBK::val2string<bool>(true));
+
+	if(!m_surfaces.empty()) {
+		TiXmlElement * child = new TiXmlElement("Surfaces");
+		e->LinkEndChild(child);
+		for(auto surf : m_surfaces) {
+			surf.writeXML(child);
+		}
+	}
+
 }
 
 void BuildingElement::setContainingElements(const std::vector<Opening>& openings) {

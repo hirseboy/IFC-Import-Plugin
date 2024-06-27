@@ -209,6 +209,11 @@ public:
 		return m_type;
 	}
 
+	/*! Write the building element in vicus xml format including surfaces.
+		\param parent Parent xml node
+	*/
+	TiXmlElement * writeXML(TiXmlElement * parent) const;
+
 	/*! Vector of thickness and name for the layers of this element.*/
 	std::vector<std::pair<double,std::string>>							m_materialLayers;
 	/*! Vector of material property maps with the same order as the layers vector.*/

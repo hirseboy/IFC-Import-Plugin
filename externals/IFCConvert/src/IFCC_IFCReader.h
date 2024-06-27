@@ -173,6 +173,9 @@ public:
 	/*! Set the flag in order to limit the opening matching only to walls.*/
 	void addNoSearchForOpenings(const QSet<BuildingElementTypes>& types);
 
+	/*! Set if the building elements will be written as plain geometry into the vicus file.*/
+	void setWritingBuildingElements(bool write);
+
 	/*! Return the current convert options.
 	*/
 	const ConvertOptions &convertOptions() const;
