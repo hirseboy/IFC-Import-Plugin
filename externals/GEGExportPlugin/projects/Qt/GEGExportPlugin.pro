@@ -105,14 +105,14 @@ windows {
 }
 else {
 	LIBS += \
-	../../../lib$${DIR_PREFIX}/libQtExt.a \
-	../../../lib$${DIR_PREFIX}/libDataIO.a \
-	../../../lib$${DIR_PREFIX}/libCCM.a \
-	../../../lib$${DIR_PREFIX}/libVicus.a \
-	../../../lib$${DIR_PREFIX}/libNandrad.a \
-	../../../lib$${DIR_PREFIX}/libTiCPP.a \
-	../../../lib$${DIR_PREFIX}/libIBKMK.a \
-	../../../lib$${DIR_PREFIX}/libIBK.a
+	../../../../SIM-VICUS/externals/lib/debug/libQtExt.a \
+	../../../../SIM-VICUS/externals/lib/debug/libDataIO.a \
+	../../../../SIM-VICUS/externals/lib/debug/libCCM.a \
+	../../../../SIM-VICUS/externals/lib/debug/libVicus.a \
+	../../../../SIM-VICUS/externals/lib/debug/libNandrad.a \
+	../../../../SIM-VICUS/externals/lib/debug/libTiCPP.a \
+	../../../../SIM-VICUS/externals/lib/debug/libIBKMK.a \
+	../../../../SIM-VICUS/externals/lib/debug/libIBK.a
 }
 
 win32:LIBS += -liphlpapi

@@ -10,7 +10,7 @@ CONFIG += c++17
 
 # this pri must be sourced from all our libraries,
 # it contains all functions defined for casual libraries
-include( ../../../../externals/IBK/projects/Qt/IBK.pri )
+include( ../../../../externals/IBK/IBK.pri )
 
 #CONFIG += static
 QT       += core gui widgets

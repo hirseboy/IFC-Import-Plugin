@@ -8,7 +8,7 @@ TEMPLATE = app
 
 # this pri must be sourced from all our libraries,
 # it contains all functions defined for casual libraries
-#include( ../../../externals/IBK/projects/Qt/IBK.pri )
+#include( ../../../externals/IBK/IBK.pri )
 
 QT       += core gui
 
@@ -52,7 +52,7 @@ else {
 # In order to do so, uncomment the following line.
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
-LIBS += -L../../../externals/lib_x64
+LIBS += -L../../../SIM-VICUS/externals/lib/debug
 
 LIBS += \
 	-lTiCPP \

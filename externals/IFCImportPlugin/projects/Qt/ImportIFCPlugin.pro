@@ -103,14 +103,14 @@ windows {
 }
 else {
 LIBS += \
-	../../../lib$${DIR_PREFIX}/libIFCConvert.a \
-	../../../lib$${DIR_PREFIX}/libclipper.a \
-	../../../lib$${DIR_PREFIX}/libifcplusplus.a \
+	../../../IFCConvert/projects/lib/debug/libIFCConvert.a \
+	../../../../SIM-VICUS/externals/lib/debug/libclipper.a \
+	../../../ifcplusplus/projects/lib/debug/libifcplusplus.a \
 	../../../lib$${DIR_PREFIX}/libCarve.a \
-	../../../lib$${DIR_PREFIX}/libQtExt.a \
-	../../../lib$${DIR_PREFIX}/libTiCPP.a \
-	../../../lib$${DIR_PREFIX}/libIBKMK.a \
-	../../../lib$${DIR_PREFIX}/libIBK.a
+	../../../../SIM-VICUS/externals/lib/debug/libQtExt.a \
+	../../../../SIM-VICUS/externals/lib/debug/libTiCPP.a \
+	../../../../SIM-VICUS/externals/lib/debug/libIBKMK.a \
+	../../../../SIM-VICUS/externals/lib/debug/libIBK.a
 }
 
 win32:LIBS += -liphlpapi
