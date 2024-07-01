@@ -67,7 +67,7 @@ IFCReader::IFCReader() :
 	m_geometryConverter.getGeomSettings()->setNumVerticesPerCircle(16);
 	m_geometryConverter.getGeomSettings()->setMinNumVerticesPerArc(4);
 
-	Logger::instance().set("g:/temp/IFC_Log.txt");
+//	Logger::instance().set("g:/temp/IFC_Log.txt");
 
 	connect(this, &IFCReader::progress, this, &IFCReader::setProgress);
 }
@@ -432,8 +432,11 @@ void IFCReader::addNoSearchForOpenings(const QSet<BuildingElementTypes>& types) 
 	m_convertOptions.addElementsForOpenings(types);
 }
 
-void IFCReader::setWritingBuildingElements(bool write) {
-	m_convertOptions.m_writeBuildingElements = write;
+void IFCReader::setWritingBuildingElements(bool constructions, bool buildingElements, bool openings, bool other) {
+	m_convertOptions.m_writeConstructionElements = constructions;
+	m_convertOptions.m_writeBuildingElements = buildingElements;
+	m_convertOptions.m_writeOpeningElements = openings;
+	m_convertOptions.m_writeOtherElements = other;
 }
 
 
@@ -817,19 +820,53 @@ void IFCReader::setVicusProjectText(QString& projectText) {
 
 	m_database.writeXML(e);
 
-	if(m_convertOptions.m_writeBuildingElements) {
+	bool writePlainGeometry = m_convertOptions.m_writeConstructionElements;
+	writePlainGeometry = writePlainGeometry || m_convertOptions.m_writeBuildingElements;
+	writePlainGeometry = writePlainGeometry || m_convertOptions.m_writeOpeningElements;
+	writePlainGeometry = writePlainGeometry || m_convertOptions.m_writeOtherElements;
+	if(writePlainGeometry) {
 		TiXmlElement * pg = new TiXmlElement("PlainGeometry");
 		e->LinkEndChild(pg);
 
 		TiXmlElement * child = new TiXmlElement("Surfaces");
 		pg->LinkEndChild(child);
-		for(const auto& elem : m_buildingElements.allConstructionElements()) {
-			if(elem->surfaces().empty())
-				continue;
-			for(auto surf : elem->surfaces()) {
-				surf.writeXML(child);
+		if(m_convertOptions.m_writeConstructionElements) {
+			for(const auto& elem : m_buildingElements.m_constructionElements) {
+				if(elem->surfaces().empty())
+					continue;
+				for(auto surf : elem->surfaces()) {
+					surf.writeXML(child);
+				}
 			}
+		}
+		if(m_convertOptions.m_writeBuildingElements) {
+			for(const auto& elem : m_buildingElements.m_constructionSimilarElements) {
+				if(elem->surfaces().empty())
+					continue;
+				for(auto surf : elem->surfaces()) {
+					surf.writeXML(child);
+				}
+			}
+		}
 
+		if(m_convertOptions.m_writeOpeningElements) {
+			for(const auto& elem : m_buildingElements.m_openingElements) {
+				if(elem->surfaces().empty())
+					continue;
+				for(auto surf : elem->surfaces()) {
+					surf.writeXML(child);
+				}
+			}
+		}
+
+		if(m_convertOptions.m_writeOtherElements) {
+			for(const auto& elem : m_buildingElements.m_otherElements) {
+				if(elem->surfaces().empty())
+					continue;
+				for(auto surf : elem->surfaces()) {
+					surf.writeXML(child);
+				}
+			}
 		}
 	}
 

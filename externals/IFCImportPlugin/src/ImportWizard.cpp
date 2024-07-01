@@ -18,7 +18,8 @@ ImportWizard::ImportWizard(QWidget *parent, IFCC::IFCReader* reader) :
 	setWizardStyle(QWizard::ModernStyle);
 
 	setWindowTitle(tr("Import IFC Assistant"));
-	setMinimumWidth(800);
+	setMinimumWidth(1000);
+	setMinimumHeight(1000);
 
 	addPage(m_pageRead);
 	addPage(m_pageConvert);

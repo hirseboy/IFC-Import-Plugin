@@ -56,6 +56,9 @@ ImportWPConvert::ImportWPConvert(QWidget *parent, IFCC::IFCReader* reader) :
 
 	ui->checkBoxAdvancedSettings->setChecked(false);
 	ui->widgetAdvancedSettings->setVisible(false);
+
+	ui->scrollArea->setWidgetResizable(true);
+	ui->scrollArea->setSizeAdjustPolicy(QAbstractScrollArea::AdjustToContents);
 }
 
 ImportWPConvert::~ImportWPConvert() {
@@ -152,6 +155,7 @@ void ImportWPConvert::initializePage() {
 	ui->doubleSpinBoxMatchOpeningDistance->setValue(m_reader->convertOptions().m_openingDistance);
 	ui->checkBoxWriteBuildingElements->setChecked(m_reader->convertOptions().m_writeBuildingElements);
 
+	adjustSize();
 }
 
 
@@ -299,7 +303,10 @@ void ImportWPConvert::initElements() {
 		m_reader->setConvertMatchingType(IFCC::ConvertOptions::CM_NoMatching);
 
 	m_reader->setMatchingDistances(ui->doubleSpinBoxMatchConstructionFactor->value(), ui->doubleSpinBoxMatchOpeningDistance->value());
-	m_reader->setWritingBuildingElements(ui->checkBoxWriteBuildingElements->isChecked());
+	m_reader->setWritingBuildingElements(ui->checkBoxWriteConstructions->isChecked(),
+										 ui->checkBoxWriteBuildingElements->isChecked(),
+										 ui->checkBoxWriteOpenings->isChecked(),
+										 ui->checkBoxWriteAllOthers->isChecked());
 }
 
 void ImportWPConvert::on_pushButtonConvert_clicked() {

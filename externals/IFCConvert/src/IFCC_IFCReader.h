@@ -174,7 +174,7 @@ public:
 	void addNoSearchForOpenings(const QSet<BuildingElementTypes>& types);
 
 	/*! Set if the building elements will be written as plain geometry into the vicus file.*/
-	void setWritingBuildingElements(bool write);
+	void setWritingBuildingElements(bool constructions, bool buildingElements, bool openings, bool other);
 
 	/*! Return the current convert options.
 	*/

@@ -37,7 +37,10 @@ public:
 	double							m_minimumSurfaceArea = 0.001;
 	double							m_distanceEps = 1e-4;
 	bool							m_createMissingSite = true;
+	bool							m_writeConstructionElements = false;
 	bool							m_writeBuildingElements = false;
+	bool							m_writeOpeningElements = false;
+	bool							m_writeOtherElements = false;
 
 private:
 	QSet<BuildingElementTypes>		m_noSearchForOpeningsInTypes;
