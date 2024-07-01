@@ -411,7 +411,7 @@ void BuildingElement::getShapeOfParts(const std::vector<std::shared_ptr<ProductS
 
 	// initialise surfaces
 	for(auto& surf : m_surfaces) {
-		surf.set(GUID_maker::instance().guid(), m_id, m_name, false);
+		surf.set(GUID_maker::instance().guid(), m_id, m_name+"_"+std::to_string(m_id), false);
 	}
 }
 
@@ -436,6 +436,12 @@ void BuildingElement::fetchGeometry(std::shared_ptr<ProductShapeData> productSha
 
 	if(m_surfaces.empty() && !partsSurfaces.empty())
 		m_surfaces = partsSurfaces;
+
+
+	// initialise surfaces
+	for(auto& surf : m_surfaces) {
+		surf.set(GUID_maker::instance().guid(), m_id, m_name+"_"+std::to_string(m_id), false);
+	}
 
 	findSurfacePairs();
 }
