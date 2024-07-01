@@ -32,6 +32,9 @@ INCLUDEPATH = \
 	../../../TiCPP/src \
 	../../../Nandrad/src \
 	../../../Vicus/src \
+	../../../glm/src \
+	../../../glm/src\glm \
+	../../../glm/src\gtx \
 	../../../QtExt/src
 
 CONFIG(debug, debug|release) {

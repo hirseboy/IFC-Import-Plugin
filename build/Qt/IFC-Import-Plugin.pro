@@ -18,6 +18,7 @@ SUBDIRS += ImportIFCPlugin \
 	Nandrad \
 	Vicus \
 	CCM \
+	glm \
 	DataIO \
 	TiCPP
 
@@ -38,6 +39,7 @@ IBKMK.file = ../../externals/IBKMK/IBKMK.pro
 TiCPP.file = ../../externals/TiCPP/TiCPP.pro
 QtExt.file = ../../externals/QtExt/QtExt.pro
 ifcplusplus.file = ../../externals/ifcplusplus/projects/Qt/ifcplusplus.pro
+glm.file = ../../externals/glm/glm.pro
 
 # dependencies
 IFC2BESTest.depends = ImportIFCPlugin GEGExportPlugin IBK IBKMK TiCPP
@@ -46,7 +48,7 @@ CCM.depends = IBK TiCPP
 DataIO.depends = IBK
 QtExt.depends = IBK
 Nandrad.depends = IBK TiCPP IBKMK
-Vicus.depends = IBK TiCPP Nandrad IBKMK CCM
+Vicus.depends = IBK TiCPP Nandrad IBKMK CCM glm
 ImportIFCPlugin.depends = IBK IBKMK TiCPP QtExt Carve Clipper IFCConvert
 GEGExportPlugin.depends = IBK IBKMK TiCPP QtExt Nandrad Vicus CCM DataIO
 IFCConvert.depends = IBK IBKMK TiCPP Carve Clipper
