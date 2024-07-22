@@ -48,8 +48,8 @@ inline void premultMatrix( const carve::math::Matrix& matrix_to_append, carve::m
 class PolyInputCache3D;
 namespace MeshUtils
 {
-	inline void intersectOpenEdges(shared_ptr<carve::mesh::MeshSet<3> >& meshset, GeomProcessingParams& params); 
-	static void resolveOpenEdges(shared_ptr<carve::mesh::MeshSet<3>>& meshset, double eps, bool dumpPolygons);
+	inline void intersectOpenEdges(shared_ptr<carve::mesh::MeshSet<3> >& meshset, GeomProcessingParams& params);
+//	static void resolveOpenEdges(shared_ptr<carve::mesh::MeshSet<3>>& meshset, double eps, bool dumpPolygons);
 	inline void polyhedronFromMesh(const carve::mesh::Mesh<3>* mesh, PolyInputCache3D& polyInput);
 	inline bool addFacesReversed(const PolyInputCache3D& poly_cache_source, PolyInputCache3D& poly_cache_target);
 }
@@ -89,7 +89,7 @@ public:
 		}
 		return false;
 	}
-	
+
 	carve::math::Matrix			m_matrix;
 	weak_ptr<BuildingEntity>	m_placement_entity;
 	int							m_placement_tag = -1;
@@ -162,7 +162,7 @@ inline bool checkPolyhedronData( const shared_ptr<carve::input::PolyhedronData>&
 #ifdef _DEBUG
 							//std::cout << "checkPolyhedronData: duplicate point" << std::endl;
 #endif
- 							return false;
+							return false;
 						}
 					}
 
@@ -282,7 +282,7 @@ inline bool fixPolyhedronData(const shared_ptr<carve::input::PolyhedronData>& po
 			}
 		}
 
-		
+
 
 		iiFace += numPoints + 1;
 
@@ -380,7 +380,7 @@ public:
 		double vertex_z = pt.z;
 
 		auto low = map_z.lower_bound(vertex_z);
-		if (low == map_z.end()) 
+		if (low == map_z.end())
 		{
 			if( map_z.size() > 0 )
 			{
@@ -455,7 +455,7 @@ public:
 		double vertex_z = pt.z;
 
 		auto low = map_yz.lower_bound(vertex_y);
-		if (low == map_yz.end()) 
+		if (low == map_yz.end())
 		{
 			if( map_yz.size() > 0 )
 			{
@@ -523,7 +523,7 @@ public:
 			}
 		}
 	}
-	
+
 	size_t addPoint(const vec3& pt)
 	{
 		double vertex_x = pt.x;
@@ -871,7 +871,7 @@ public:
 		}
 		else
 		{
-			MeshUtils::resolveOpenEdges(meshset, eps, dumpMeshes);
+//			MeshUtils::resolveOpenEdges(meshset, eps, dumpMeshes);
 
 			if( meshset->isClosed() )
 			{
@@ -1048,7 +1048,7 @@ public:
 
 		return copy_item;
 	}
-	
+
 	/** copies the content of other instance and adds it to own content */
 	void addItemData( const shared_ptr<ItemShapeData>& other )
 	{
@@ -1239,7 +1239,7 @@ public:
 		m_representation_identifier = "";
 		m_representation_type = "";
 	}
-	
+
 	void applyTransformToRepresentation( const carve::math::Matrix& matrix, bool matrix_identity_checked = false )
 	{
 		if( !matrix_identity_checked )
@@ -1265,7 +1265,7 @@ public:
 	}
 };
 
-class ProductShapeData 
+class ProductShapeData
 {
 public:
 	std::string m_entity_guid;
@@ -1342,7 +1342,7 @@ public:
 		//m_ifc_object_definition.reset();
 		m_object_placement.reset();
 		//m_vec_children.clear();
-		
+
 		for( size_t item_i = 0; item_i < m_vec_representations.size(); ++item_i )
 		{
 			shared_ptr<RepresentationData>& representation_data = m_vec_representations[item_i];
@@ -1357,8 +1357,8 @@ public:
 			//}
 
 		}
-		
-		//m_vec_representations.clear(); 
+
+		//m_vec_representations.clear();
 
 
 		m_added_to_spatial_structure = false;
@@ -1373,7 +1373,7 @@ public:
 		m_vec_representations.clear();
 		m_added_to_spatial_structure = false;
 	}
-	
+
 	bool isContainedInParentsList( shared_ptr<ProductShapeData>& product_data_check )
 	{
 		if( !m_parent.expired() )
@@ -1450,7 +1450,7 @@ public:
 		{
 			return transform_matrix;
 		}
-		
+
 		if (m_vec_transforms.size() > 0)
 		{
 			std::vector<shared_ptr<TransformData> >	diff_transforms;
@@ -1463,7 +1463,7 @@ public:
 				{
 					break;
 				}
-				
+
 				shared_ptr<TransformData>& transform_self = *it_self;
 
 				if( sameSoFar )
@@ -1482,7 +1482,7 @@ public:
 						sameSoFar = false;
 					}
 				}
-				
+
 				if (transform_self)
 				{
 					transform_matrix = transform_self->m_matrix*transform_matrix;
@@ -1699,7 +1699,7 @@ static carve::geom::aabb<3> computeBoundingBox(shared_ptr<ProductShapeData>& pro
 	{
 		return bbox;
 	}
-	
+
 	carve::math::Matrix transform;
 	if( applyTransformToGlobalCoordinates )
 	{

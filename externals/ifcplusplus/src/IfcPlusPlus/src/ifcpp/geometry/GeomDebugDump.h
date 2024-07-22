@@ -66,10 +66,10 @@ using namespace IFC4X3;
 
 namespace MeshUtils
 {
-	static void checkFaceLoops(const carve::mesh::Face<3>* face);
-	static double computeFaceArea(const carve::mesh::Face<3>* face);
-	static void addFaceCheckIndexes(int idxA, int idxB, int idxC, PolyInputCache3D& meshOut);
-	static void addFaceCheckIndexes(int idxA, int idxB, int idxC, int idxD, PolyInputCache3D& meshOut);
+//	static void checkFaceLoops(const carve::mesh::Face<3>* face);
+// static double computeFaceArea(const carve::mesh::Face<3>* face);
+// static void addFaceCheckIndexes(int idxA, int idxB, int idxC, PolyInputCache3D& meshOut);
+// static void addFaceCheckIndexes(int idxA, int idxB, int idxC, int idxD, PolyInputCache3D& meshOut);
 }
 
 namespace GeomDebugDump
@@ -155,7 +155,7 @@ namespace GeomDebugDump
 			strs_buffer.clear();
 		}
 	}
-	
+
 	static void clearMeshsetDump()
 	{
 		std::ofstream dump_ofstream("dump_mesh_debug.txt", std::ofstream::trunc);
@@ -385,7 +385,7 @@ namespace GeomDebugDump
 		// vertices of the meshset:
 		size_t vertex_count = 0;
 		size_t face_count = 0;
-		
+
 		const carve::mesh::MeshSet<3>* meshset = meshsetInput;
 		const std::vector<carve::mesh::Vertex<3> >& vec_vertices = meshset->vertex_storage;
 
@@ -429,7 +429,7 @@ namespace GeomDebugDump
 				}
 			}
 		}
-		
+
 
 		for( size_t iiv = 0; iiv < vec_vertices.size(); ++iiv )
 		{
@@ -481,7 +481,7 @@ namespace GeomDebugDump
 						int v0index = findVertexIndexInVector(vec_vertices, v0);
 						int v1index = findVertexIndexInVector(vec_vertices, v1);
 						int v2index = findVertexIndexInVector(vec_vertices, v2);
-						
+
 						if( v0index < 0 || v1index < 0 || v2index < 0 )
 						{
 							std::cout << "vertex not found " << std::endl;
@@ -648,7 +648,7 @@ namespace GeomDebugDump
 				}
 			}
 		}
-		
+
 		shared_ptr<carve::mesh::MeshSet<3> > meshset( poly_data.m_poly_data->createMesh( carve::input::opts(), CARVE_EPSILON ) );
 		MeshSet2Stream(meshset.get(), offset, color, strs_out, trianglesAndQuadsOnly);
 	}
@@ -719,7 +719,7 @@ namespace GeomDebugDump
 			dump_y_pos_geom += meshset->getAABB().extent.y*2.2;
 		}
 	}
-	
+
 	static void dumpMeshsets(const std::vector<shared_ptr<carve::mesh::MeshSet<3> > >& vecMeshsets, const glm::vec4& color, bool move_offset = true)
 	{
 		vec3 offset = carve::geom::VECTOR( 0, dump_y_pos_geom, 0 );
@@ -727,7 +727,7 @@ namespace GeomDebugDump
 		for( auto meshset : vecMeshsets )
 		{
 			dumpMeshset(meshset.get(), offset, color);
-			
+
 			if( move_offset )
 			{
 				if( bbox.isEmpty() )
@@ -799,7 +799,7 @@ namespace GeomDebugDump
 				std::cout << "face->n_edges > 100000" << std::endl;
 			}
 
-			MeshUtils::checkFaceLoops(face);
+//			MeshUtils::checkFaceLoops(face);
 
 			const carve::mesh::Edge<3>* edge = face->edge;
 			size_t countEdges = 0;
@@ -817,15 +817,15 @@ namespace GeomDebugDump
 			{
 				std::cout << "countEdges > face->n_edges" << std::endl;
 			}
-			
+
 			if( countEdges > 100000 )
 			{
 				std::cout << "face->n_edges > 100000" << std::endl;
 			}
-			
+
 			std::vector<carve::mesh::Face<3>::vertex_t* > faceVertices;
 			face->getVertices(faceVertices);
-			
+
 			std::vector<int> faceIndexes;
 			for( const carve::mesh::Face<3>::vertex_t * vertex : faceVertices )
 			{
@@ -838,7 +838,7 @@ namespace GeomDebugDump
 			poly_cache.m_poly_data->addFace(faceIndexes.begin(), faceIndexes.end());
 			++ii;
 		}
-		
+
 		shared_ptr<carve::mesh::MeshSet<3> > meshset(poly_cache.m_poly_data->createMesh(carve::input::opts(), eps_debug_dump));
 		dumpMeshset(meshset, color, move_offset);
 	}
@@ -862,14 +862,14 @@ namespace GeomDebugDump
 			vertice_points.push_back(vert->v);
 		}
 		GeomUtils::closePolygon(vertice_points);
-		
+
 		dumpPolyline(vertice_points, color1, moveOffset);
 	}
 
 	static void dumpFacePolygons(const std::vector<const carve::mesh::Face<3>* >& vecFaces, glm::vec4& color1, bool moveDumpOffset)
 	{
 		carve::geom::aabb<3> bbox;
-		
+
 		for( auto face : vecFaces )
 		{
 			dumpFacePolygon(face, color1, false);
@@ -947,7 +947,7 @@ namespace GeomDebugDump
 		glm::vec4 color = colorInput;
 		float red = color.x;
 		size_t numOpenEdges = 0;
-		
+
 		for( auto mesh : meshset->meshes )
 		{
 			bool pointersOk = true;
@@ -969,9 +969,9 @@ namespace GeomDebugDump
 			{
 				continue;
 			}
-			
+
 			mesh->cacheEdges();
-			
+
 			std::vector<carve::mesh::Edge<3>* > openEdges = mesh->open_edges;
 			numOpenEdges += openEdges.size();
 			for( size_t ii = 0; ii < openEdges.size(); ++ii )
@@ -1008,11 +1008,11 @@ namespace GeomDebugDump
 				{
 					if( checkZeroAreaFaces )
 					{
-						double faceArea = MeshUtils::computeFaceArea(e->face);
-						if( std::abs(faceArea) < EPS_M6 )
-						{
-							std::cout << "faceArea) < EPS_M6 )" << std::endl;
-						}
+						// double faceArea = MeshUtils::computeFaceArea(e->face);
+						// if( std::abs(faceArea) < EPS_M6 )
+						// {
+						// 	std::cout << "faceArea) < EPS_M6 )" << std::endl;
+						// }
 					}
 					std::vector<const carve::mesh::Face<3>* > vecFaces = { e->face };
 					dumpFaces(vecFaces, color, false);
@@ -1118,7 +1118,7 @@ namespace GeomDebugDump
 		for( size_t i = 0; i < vec_edges.size(); ++i )
 		{
 			carve::mesh::Edge<3>* edge = vec_edges[i];
-			
+
 			const carve::mesh::Vertex<3>* vertex1 = edge->v1();
 			const carve::mesh::Vertex<3>* vertex2 = edge->v2();
 
@@ -1192,7 +1192,7 @@ namespace GeomDebugDump
 				vec_new_entities.push_back(entity_product);
 				entity_product->m_Name = shared_ptr<IfcLabel>(new IfcLabel());
 				entity_product->m_Name->m_value = "proxy";
-				
+
 				// geometry
 				shared_ptr<IfcShapeRepresentation> shape_representation(new IfcShapeRepresentation());
 				vec_new_entities.push_back(shape_representation);
@@ -1219,7 +1219,7 @@ namespace GeomDebugDump
 		{
 			ifc_project = shared_ptr<IfcProject>(new IfcProject());
 			vec_new_entities.push_back(ifc_project);
-			ifc_model->setIfcProject(ifc_project); 
+			ifc_model->setIfcProject(ifc_project);
 		}
 
 		shared_ptr<IfcSite> ifc_site(new IfcSite());
