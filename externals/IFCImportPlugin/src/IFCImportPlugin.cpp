@@ -9,7 +9,8 @@
 
 #include <QDir>
 
-#include "ImportWizard.h"
+//#include "ImportWizard.h"
+#include "ImportIFCDialog.h"
 
 IFCImportPlugin::IFCImportPlugin(QObject *parent)
 {
@@ -18,10 +19,14 @@ IFCImportPlugin::IFCImportPlugin(QObject *parent)
 bool IFCImportPlugin::import(QWidget * parent, QString& projectText) {
 	IFCC::IFCReader			reader;
 
-	ImportWizard wz(parent, &reader);
+//	ImportWizard wz(parent, &reader);
 
-	if (wz.exec() == QDialog::Rejected)
-		return false;
+//	if (wz.exec() == QDialog::Rejected)
+//		return false;
+
+	ImportIFCDialog importDlg(parent, &reader);
+	if (importDlg.exec() == QDialog::Rejected)
+			return false;
 
 	if(reader.m_convertCompletedSuccessfully) {
 		reader.setVicusProjectText(projectText);

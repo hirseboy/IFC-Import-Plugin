@@ -43,24 +43,24 @@ INCLUDEPATH = \
 	../IFCConvert/src
 
 CONFIG(debug, debug|release) {
-	OBJECTS_DIR = debug$${DIR_PREFIX}
+	OBJECTS_DIR = debug
 	windows {
-				DESTDIR = ../lib$${DIR_PREFIX}
-				DLLDESTDIR = ../../bin/debug$${DIR_PREFIX}
+	    DESTDIR = ../lib$${DIR_PREFIX}
+	    DLLDESTDIR = ../../bin/debug$${DIR_PREFIX}
 	}
-		else {
-			DESTDIR = ../../bin/debug$${DIR_PREFIX}
-		}
+	else {
+	    DESTDIR = ../../bin/debug$${DIR_PREFIX}
+	}
 }
 else {
 	OBJECTS_DIR = release
 	windows {
-				DESTDIR = ../lib$${DIR_PREFIX}
-				DLLDESTDIR = ../../bin/release$${DIR_PREFIX}
+	    DESTDIR = ../lib$${DIR_PREFIX}
+	    DLLDESTDIR = ../../bin/release$${DIR_PREFIX}
 	}
-		else {
-			DESTDIR = ../../bin/release$${DIR_PREFIX}
-		}
+	else {
+	    DESTDIR = ../../bin/release$${DIR_PREFIX}
+	}
 }
 
 !windows {
@@ -72,29 +72,25 @@ UI_DIR = ui
 
 SOURCES += \
 	src/IFCImportPlugin.cpp \
-	src/ImportIFCMessageHandler.cpp \
-	src/ImportWPConvert.cpp \
-	src/ImportWPRead.cpp \
-	src/ImportWizard.cpp
+	src/ImportIFCDialog.cpp \
+	src/ImportIFCMessageHandler.cpp
 
 HEADERS += \
+	src/ImportIFCDialog.h \
 	src/ImportIFCMessageHandler.h \
 	src/SVCommonPluginInterface.h \
 	src/SVImportPluginInterface.h \
-	src/IFCImportPlugin.h \
-	src/ImportWPConvert.h \
-	src/ImportWPRead.h \
-	src/ImportWizard.h
+	src/IFCImportPlugin.h
 
 
 
 CONFIG(debug, debug|release) {
-	QMAKE_LIBDIR += ../lib$${DIR_PREFIX} -L../lib/debug
-	LIBS += -L../lib$${DIR_PREFIX} -L../lib/debug
+    QMAKE_LIBDIR += ../lib$${DIR_PREFIX} -L../lib/debug
+    LIBS += -L../lib$${DIR_PREFIX} -L../lib/debug
 }
 else {
-QMAKE_LIBDIR += ../lib$${DIR_PREFIX} -L../lib/release
-	LIBS += -L../lib$${DIR_PREFIX} -L../lib/release
+    QMAKE_LIBDIR += ../lib$${DIR_PREFIX} -L../lib/release
+    LIBS += -L../lib$${DIR_PREFIX} -L../lib/release
 }
 
 windows {
@@ -110,14 +106,14 @@ windows {
 }
 else {
 LIBS += \
-	../IFCConvert/projects/lib/debug/libIFCConvert.a \
-	../../SIM-VICUS/externals/lib/debug/libclipper.a \
-	../ifcplusplus/projects/lib/debug/libifcplusplus.a \
+	../lib/debug/libIFCConvert.a \
+	../lib/debug/libclipper.a \
+	../lib/debug/libifcplusplus.a \
 	../lib$${DIR_PREFIX}/libCarve.a \
-	../../SIM-VICUS/externals/lib/debug/libQtExt.a \
-	../../SIM-VICUS/externals/lib/debug/libTiCPP.a \
-	../../SIM-VICUS/externals/lib/debug/libIBKMK.a \
-	../../SIM-VICUS/externals/lib/debug/libIBK.a
+	../lib/debug/libQtExt.a \
+	../lib/debug/libTiCPP.a \
+	../lib/debug/libIBKMK.a \
+	../lib/debug/libIBK.a
 }
 
 win32:LIBS += -liphlpapi
@@ -134,9 +130,7 @@ win32-msvc* {
 # !isEmpty(target.path): INSTALLS += target
 
 FORMS += \
-	src/ImportWPConvert.ui \
-	src/ImportWPRead.ui \
-	src/ImportWizard.ui
+	src/ImportIFCDialog.ui
 
 TRANSLATIONS += resources/translations/ImportIFCPlugin_de.ts
 CODECFORSRC = UTF-8
