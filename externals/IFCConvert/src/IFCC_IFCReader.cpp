@@ -119,8 +119,10 @@ void IFCReader::clearConvertData() {
 void IFCReader::setProgress(int val, QString text) {
 	if(m_progressDialog) {
 		m_progressDialog->setLabelText(text);
-		m_progressDialog->setValue(val);
+//		m_progressDialog->setValue(val);
 		m_progressDialog->update();
+		if(val == 100)
+			m_progressDialog->reset();
 		QApplication::processEvents();
 	}
 }
@@ -342,7 +344,7 @@ void IFCReader::updateBuildingElements() {
 	for(auto& elems : m_elementEntitesShape) {
 		for(auto& elem : elems.second) {
 			++currCount;
-			emit progress(currCount / elemCount * 100, "building elements");
+//			emit progress(currCount / elemCount * 50, "building elements");
 			if(elem.get() == nullptr)
 				continue;
 
@@ -447,8 +449,24 @@ void IFCReader::setMinimumCheckValues(double minimumDistance, double minimumArea
 
 bool IFCReader::convert(bool useSpaceBoundaries) {
 
+	struct ProgressCloser {
+		ProgressCloser(IFCReader* reader) :
+			m_reader(reader)
+		{}
+		~ProgressCloser() {
+			emit m_reader->progress(100, "end convert");
+		}
+
+		IFCReader* m_reader;
+	};
+
+	ProgressCloser progressCloser(this);
+
 	m_progressDialog.reset(new QProgressDialog("IFC Reader...", "Abort read", 0, 100));
 	m_progressDialog->setWindowModality(Qt::WindowModal);
+	m_progressDialog->setMinimum(0);
+	m_progressDialog->setMaximum(0);
+	m_progressDialog->setValue(0);
 //	m_progressDialog->setMinimumDuration(0);
 	m_progressDialog->show();
 
@@ -1040,8 +1058,7 @@ void IFCReader::messageTarget( void* ptr, shared_ptr<StatusCallback::Message> m 
 
 	std::string reporting_function_str( m->m_reporting_function );
 	std::string position;
-	if( m->m_entity )
-	{
+	if( m->m_entity ) {
 		position = "IFC entity: #" + std::to_string(m->m_entity->m_tag) + "=" + std::to_string(m->m_entity->classID());
 	}
 	if(m->m_message_type == StatusCallback::MESSAGE_TYPE_ERROR) {
