@@ -439,6 +439,11 @@ void IFCReader::setWritingBuildingElements(bool constructions, bool buildingElem
 	m_convertOptions.m_writeOtherElements = other;
 }
 
+void IFCReader::setMinimumCheckValues(double minimumDistance, double minimumArea) {
+	m_convertOptions.m_distanceEps = minimumDistance;
+	m_convertOptions.m_minimumSurfaceArea = minimumArea;
+}
+
 
 bool IFCReader::convert(bool useSpaceBoundaries) {
 

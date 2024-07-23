@@ -176,6 +176,12 @@ public:
 	/*! Set if the building elements will be written as plain geometry into the vicus file.*/
 	void setWritingBuildingElements(bool constructions, bool buildingElements, bool openings, bool other);
 
+	/*! Set the minimum values for basic checks.
+	 *  \param minimumDistance Used as eps for search for equal or coplanar points
+	 *  \param minimumArea Areas smaller than this will not taken into account
+	*/
+	void setMinimumCheckValues(double minimumDistance, double minimumArea);
+
 	/*! Return the current convert options.
 	*/
 	const ConvertOptions &convertOptions() const;
