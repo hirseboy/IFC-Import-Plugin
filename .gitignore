@@ -71,3 +71,5 @@ lib_x64
 *.csv
 /externals/GEGExportPlugin/projects/Qt/debug_x64/
 /externals/IFCImportPlugin/projects/Qt/debug_x64/
+/externals/IFCConvert/projects/lib/
+/externals/ifcplusplus/projects/lib/
