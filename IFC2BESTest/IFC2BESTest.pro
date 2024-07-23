@@ -30,7 +30,14 @@ greaterThan(QT_MAJOR_VERSION, 4) {
 # In order to do so, uncomment the following line.
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
-LIBS += -L../SIM-VICUS/externals/lib/debug
+CONFIG(debug, debug|release) {
+    DESTDIR = ../bin/debug$${DIR_PREFIX}
+}
+else {
+    DESTDIR = ../bin/release$${DIR_PREFIX}
+}
+
+LIBS += -L../lib/debug
 
 LIBS += \
 	-lTiCPP \
