@@ -105,7 +105,8 @@ windows {
 		-lIBK
 }
 else {
-LIBS += \
+    CONFIG(debug, debug|release) {
+	LIBS += \
 	../lib/debug/libIFCConvert.a \
 	../lib/debug/libclipper.a \
 	../lib/debug/libifcplusplus.a \
@@ -114,6 +115,18 @@ LIBS += \
 	../lib/debug/libTiCPP.a \
 	../lib/debug/libIBKMK.a \
 	../lib/debug/libIBK.a
+    }
+    else {
+	LIBS += \
+	../lib/release/libIFCConvert.a \
+	../lib/release/libclipper.a \
+	../lib/release/libifcplusplus.a \
+	../lib$${DIR_PREFIX}/libCarve.a \
+	../lib/release/libQtExt.a \
+	../lib/release/libTiCPP.a \
+	../lib/release/libIBKMK.a \
+	../lib/release/libIBK.a
+    }
 }
 
 win32:LIBS += -liphlpapi

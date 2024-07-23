@@ -113,15 +113,28 @@ windows {
 		-lIBK
 }
 else {
+    CONFIG(debug, debug|release) {
 	LIBS += \
-	../lib/debug/libQtExt.a \
-	../lib/debug/libDataIO.a \
-	../lib/debug/libCCM.a \
-	../lib/debug/libVicus.a \
-	../lib/debug/libNandrad.a \
-	../lib/debug/libTiCPP.a \
-	../lib/debug/libIBKMK.a \
-	../lib/debug/libIBK.a
+	    ../lib/debug/libQtExt.a \
+	    ../lib/debug/libDataIO.a \
+	    ../lib/debug/libCCM.a \
+	    ../lib/debug/libVicus.a \
+	    ../lib/debug/libNandrad.a \
+	    ../lib/debug/libTiCPP.a \
+	    ../lib/debug/libIBKMK.a \
+	    ../lib/debug/libIBK.a
+    }
+    else {
+	LIBS += \
+	    ../lib/release/libQtExt.a \
+	    ../lib/release/libDataIO.a \
+	    ../lib/release/libCCM.a \
+	    ../lib/release/libVicus.a \
+	    ../lib/release/libNandrad.a \
+	    ../lib/release/libTiCPP.a \
+	    ../lib/release/libIBKMK.a \
+	    ../lib/release/libIBK.a
+    }
 }
 
 win32:LIBS += -liphlpapi
