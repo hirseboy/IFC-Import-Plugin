@@ -56,6 +56,7 @@ ImportIFCDialog::ImportIFCDialog(QWidget *parent, IFCC::IFCReader* reader) :
 	ui->checkBoxAdvanced->setChecked(false);
 	ui->tabWidgetAdvanced->setVisible(false);
 
+	ui->buttonBox->button(QDialogButtonBox::Ok)->setEnabled(false);
 }
 
 ImportIFCDialog::~ImportIFCDialog()
@@ -85,6 +86,7 @@ void ImportIFCDialog::on_lineEditIFCFile_textChanged(const QString &arg1) {
 		ui->widgetConvert->setVisible(res);
 		if(res) {
 			initConvertOptions();
+			ui->textEdit->setText(tr("Reading successful"));
 		}
 	}
 	else {
@@ -101,6 +103,7 @@ void ImportIFCDialog::on_pushButtonConvert_clicked() {
 
 	if(ui->checkBoxIgnorErrors->isChecked())
 		m_convertSuccessfully = true;
+	ui->buttonBox->button(QDialogButtonBox::Ok)->setEnabled(m_convertSuccessfully);
 }
 
 
@@ -152,8 +155,10 @@ void ImportIFCDialog::on_comboBoxMatchingType_currentIndexChanged(int index) {
 }
 
 bool ImportIFCDialog::read() {
-	if(ui->lineEditIFCFile->text().isEmpty())
+	if(ui->lineEditIFCFile->text().isEmpty()) {
+		ui->textEdit->setText(tr("No IFC file."));
 		return false;
+	}
 
 
 	ui->textEdit->setText(tr("Reading ..."));
@@ -351,7 +356,7 @@ void ImportIFCDialog::initElements() {
 
 	// with conversions into basic SI units m and m2
 	m_reader->setMinimumCheckValues(ui->doubleSpinBoxMinimumDistance->value() / 1000.0, ui->doubleSpinBoxMinimumArea->value() / 10000.0);
-
+	m_reader->setUseCSGForOpenings(ui->checkBoxOpeningCSGSearch->isChecked());
 }
 
 void ImportIFCDialog::setMatching(MatchingMainType type) {

@@ -38,6 +38,9 @@ public:
 	/*! Return all surfaces of this opening.*/
 	const std::vector<Surface>& surfaces() const;
 
+	/*! Return all surfaces created by CSG intersection with construction of this opening.*/
+	const std::vector<Surface>& surfacesCSG() const;
+
 	/*! Return GUID of original IFC object.*/
 	std::string guid() const;
 
@@ -67,7 +70,15 @@ public:
 		return !m_openingElementIds.empty();
 	}
 
+	/*! Try to find surfaces are parallel or intersecting building element surfaces.
+	 *  Set a surface type based on the results.
+	*/
 	void checkSurfaceType(const BuildingElement& element);
+
+	/*! Create a 3D intersection with opening and given building element.
+	 *  Store the resulting surfaces in m_surfacesCSG.
+	*/
+	void createCSGSurfaces(const BuildingElement& element);
 
 	/*! Map store the surface indices which are connected to a space given by ID.
 		Map key is id of space.
@@ -86,14 +97,23 @@ private:
 	/*! Take geometry from shape data and convert it into a list of surfaces.*/
 	void fetchGeometry(std::shared_ptr<ProductShapeData> productShape, std::vector<ConvertError>& errors);
 
-	std::string				m_guid;						///< GUID of original IFC object.
-	std::vector<Surface>	m_surfaces;
+	std::string						m_guid;						///< GUID of original IFC object.
+
+	std::vector<Surface>			m_surfaces;
+
+	std::vector<Surface>			m_surfacesCSG;
+
 	/*! Vector of ids of opening elements (window or door) which are used from this opening (should only be one).*/
-	std::vector<int>		m_openingElementIds;
+	std::vector<int>				m_openingElementIds;
+
 	/*! Vector of ids of construction elements (wall, roof or slab) which contains this opening (should only be one).*/
-	std::vector<int>		m_containedInElementIds;
+	std::vector<int>				m_containedInElementIds;
+
 	/*! Connected space boundary.*/
 	std::shared_ptr<SpaceBoundary>	m_spaceBoundary;
+
+	/*! Original 3D mesh from conversion IFC to carve.*/
+	meshVector_t					m_originalMesh;
 };
 
 } // namespace IFCC

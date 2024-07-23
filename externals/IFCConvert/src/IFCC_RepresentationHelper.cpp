@@ -119,10 +119,11 @@ meshVector_t finalMeshSet(std::shared_ptr<RepresentationData> representation, st
 	return meshSetOpenFinal;
 }
 
-void surfacesFromRepresentation(std::shared_ptr<ProductShapeData> productShape, std::vector<Surface>& surfaces,
+meshVector_t surfacesFromRepresentation(std::shared_ptr<ProductShapeData> productShape, std::vector<Surface>& surfaces,
 								std::vector<ConvertError>& errors, ObjectType objectType, int objectId) {
 
 	surfaces.clear();
+	meshVector_t meshSet;
 
 	RepresentationStructure repStruct = getRepresentationStructure(productShape);
 
@@ -131,14 +132,14 @@ void surfacesFromRepresentation(std::shared_ptr<ProductShapeData> productShape, 
 			errors.push_back({objectType, objectId, "more than one geometric representaion of type 'body' found"});
 		}
 
-		meshVector_t meshSet = finalMeshSet(repStruct.m_bodyRep, errors, surfaces, objectType, objectId);
+		meshSet = finalMeshSet(repStruct.m_bodyRep, errors, surfaces, objectType, objectId);
 	}
 
 	if(repStruct.m_referenceRep && surfaces.empty()) {
 		if(repStruct.m_referenceRepCount > 1) {
 			errors.push_back({objectType, objectId, "more than one geometric representaion of type 'reference' found"});
 		}
-		meshVector_t meshSet = finalMeshSet(repStruct.m_referenceRep, errors, surfaces, objectType, objectId);
+		meshSet = finalMeshSet(repStruct.m_referenceRep, errors, surfaces, objectType, objectId);
 	}
 
 	if(repStruct.m_surfaceRep && surfaces.empty()) {
@@ -169,11 +170,11 @@ void surfacesFromRepresentation(std::shared_ptr<ProductShapeData> productShape, 
 				errors.push_back({objectType, objectId, "Created surface is not valid: " + std::to_string(i)});
 			}
 		}
-		if(addedSurfaces.empty())
-			return;
-
-		surfaces.insert(surfaces.end(), addedSurfaces.begin(), addedSurfaces.end());
+		if(!addedSurfaces.empty())
+			surfaces.insert(surfaces.end(), addedSurfaces.begin(), addedSurfaces.end());
 	}
+
+	return meshSet;
 }
 
 static std::shared_ptr<RepresentationData> firstBodyRep(std::shared_ptr<ProductShapeData> productShape) {

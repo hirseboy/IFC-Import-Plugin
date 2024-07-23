@@ -41,6 +41,7 @@ public:
 	bool							m_writeBuildingElements = false;
 	bool							m_writeOpeningElements = false;
 	bool							m_writeOtherElements = false;
+	bool							m_useCSGForOpenings;
 
 private:
 	QSet<BuildingElementTypes>		m_noSearchForOpeningsInTypes;

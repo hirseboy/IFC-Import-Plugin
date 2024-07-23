@@ -244,6 +244,9 @@ public:
 	*/
 	std::map<int,std::vector<std::pair<size_t,size_t>>>					m_spaceSurfaceConnection;
 
+	/*! Original 3D mesh from conversion IFC to carve.*/
+	meshVector_t														m_originalMesh;
+
 private:
 	/*! Fille the surface pair vector.*/
 	void findSurfacePairs();

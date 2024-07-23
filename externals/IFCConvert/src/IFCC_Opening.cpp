@@ -15,6 +15,7 @@
 #include "IFCC_Helper.h"
 #include "IFCC_BuildingElement.h"
 #include "IFCC_RepresentationHelper.h"
+#include "IFCC_CSG_Adapter.h"
 
 namespace IFCC {
 
@@ -53,7 +54,7 @@ void Opening::fetchGeometry(std::shared_ptr<ProductShapeData> productShape, std:
 	if(productShape == nullptr)
 		return;
 
-	surfacesFromRepresentation(productShape, m_surfaces, errors, OT_Opening, m_id);
+	m_originalMesh = surfacesFromRepresentation(productShape, m_surfaces, errors, OT_Opening, m_id);
 }
 
 const std::vector<int>& Opening::openingElementIds() const {
@@ -92,12 +93,39 @@ void Opening::checkSurfaceType(const BuildingElement &element) {
 		}
 
 	}
-	if(intersections == 0)
-		return;
+
+
+//	if(intersections == 0)
+	//		return;
+}
+
+void Opening::createCSGSurfaces(const BuildingElement &element) {
+
+	// create 3D intersection of opening and building element
+	if(!element.m_originalMesh.empty() && !m_originalMesh.empty()) {
+		shared_ptr<carve::mesh::MeshSet<3> > resultMesh;
+		shared_ptr<carve::mesh::MeshSet<3> > firstMesh = element.m_originalMesh.front();
+		//	meshSets.erase(meshSets.begin());
+		shared_ptr<GeometrySettings> geom_settings = shared_ptr<GeometrySettings>( new GeometrySettings() );
+		try {
+			CSG_Adapter::computeCSG(firstMesh, m_originalMesh, carve::csg::CSG::INTERSECTION, resultMesh, geom_settings);
+			if(resultMesh) {
+				meshVector_t resultVect;
+				resultVect.push_back(resultMesh);
+				surfacesFromMeshSets(resultVect, m_surfacesCSG);
+			}
+		}
+		catch (...) {
+		}
+	}
 }
 
 const std::vector<Surface>& Opening::surfaces() const {
 	return m_surfaces;
+}
+
+const std::vector<Surface> &Opening::surfacesCSG() const {
+	return m_surfacesCSG;
 }
 
 std::string Opening::guid() const {

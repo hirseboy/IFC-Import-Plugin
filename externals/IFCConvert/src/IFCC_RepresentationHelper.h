@@ -29,7 +29,7 @@ RepresentationStructure getRepresentationStructure(std::shared_ptr<ProductShapeD
 meshVector_t finalMeshSet(std::shared_ptr<RepresentationData> representation, std::vector<ConvertError>& errors, std::vector<Surface>& surfaces,
 						  ObjectType objectType, int objectId);
 
-void surfacesFromRepresentation(std::shared_ptr<ProductShapeData> productShape, std::vector<Surface>& surfaces,
+meshVector_t surfacesFromRepresentation(std::shared_ptr<ProductShapeData> productShape, std::vector<Surface>& surfaces,
 								std::vector<ConvertError>& errors, ObjectType objectType, int objectId);
 
 meshVector_t meshSetsFromBodyRepresentation(std::shared_ptr<ProductShapeData> productShape);

@@ -446,6 +446,10 @@ void IFCReader::setMinimumCheckValues(double minimumDistance, double minimumArea
 	m_convertOptions.m_minimumSurfaceArea = minimumArea;
 }
 
+void IFCReader::setUseCSGForOpenings(bool useCSG) {
+	m_convertOptions.m_useCSGForOpenings = useCSG;
+}
+
 
 bool IFCReader::convert(bool useSpaceBoundaries) {
 
@@ -494,14 +498,10 @@ bool IFCReader::convert(bool useSpaceBoundaries) {
 		m_geometryConverter.setCsgEps(1.5e-08 * length_in_meter);
 		m_geometryConverter.convertGeometry(subtractOpenings, m_convertErrors);
 
-		Logger::instance() << "convertGeometry";
-
-		Logger::instance() << "splitShapeData";
 		splitShapeData();
 
 		emit progress(50, "splitShapeData");
 
-		Logger::instance() << "update openings";
 		m_openings.clear();
 		for(auto& openShape : m_openingsShape) {
 			std::shared_ptr<IfcOpeningElement> o = dynamic_pointer_cast<IfcOpeningElement>(openShape.second->m_ifc_object_definition.lock());
@@ -1092,6 +1092,7 @@ void IFCReader::checkAndMatchOpeningsToConstructions() {
 
 		double currDist = 1e20;
 		int constructionId = -1;
+		// loop over all opening element constructions
 		for(const auto& elem : m_buildingElements.m_openingElements) {
 			for(size_t cosi=0; cosi<opening.surfaces().size(); ++cosi) {
 				const Surface& currentOpeningSurf = opening.surfaces()[cosi];

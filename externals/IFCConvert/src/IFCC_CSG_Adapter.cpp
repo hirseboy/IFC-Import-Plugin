@@ -254,13 +254,13 @@ namespace CSG_Adapter {
 			strs_err << "csg operation failed" << std::endl;
 		}
 
-		if( strs_err.tellp() > 0 )
-		{
+		if( strs_err.tellp() > 0 ) {
 
-			if( !result_meshset_ok )
-			{
+			if( !result_meshset_ok ) {
 				assignResultOnFail(op1, op2, operation, result);
-				normMesh.deNormalizeMesh(result, "", CARVE_EPSILON);
+				if(result) {
+					normMesh.deNormalizeMesh(result, "", CARVE_EPSILON);
+				}
 				return false;
 			}
 		}

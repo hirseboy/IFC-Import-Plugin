@@ -633,8 +633,10 @@ void searchOpeningSpaceBoundaries(Opening& currOp, const std::shared_ptr<SpaceBo
 								  const ConvertOptions& convertOptions, std::vector<std::shared_ptr<SpaceBoundary>>& openingSpaceBoundaries,
 								  const Space& space) {
 	std::vector<Surface> openingSurfaces;
-	for(size_t cosi=0; cosi<currOp.surfaces().size(); ++cosi) {
-		const Surface& currentOpeningSurf = currOp.surfaces()[cosi];
+	const std::vector<Surface>& openingSurfces = convertOptions.m_useCSGForOpenings && !currOp.surfacesCSG().empty() ? currOp.surfacesCSG() :
+																													   currOp.surfaces();
+	for(size_t cosi=0; cosi<openingSurfces.size(); ++cosi) {
+		const Surface& currentOpeningSurf = openingSurfces[cosi];
 		if(currentOpeningSurf.sideType() != Surface::ST_ProbableSide)
 			continue;
 

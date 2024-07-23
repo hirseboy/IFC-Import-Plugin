@@ -432,7 +432,7 @@ void BuildingElement::fetchGeometry(std::shared_ptr<ProductShapeData> productSha
 
 	std::vector<Surface> partsSurfaces = m_surfaces;
 
-	surfacesFromRepresentation(productShape, m_surfaces, errors, OT_BuildingElement, m_id);
+	m_originalMesh = surfacesFromRepresentation(productShape, m_surfaces, errors, OT_BuildingElement, m_id);
 
 	if(m_surfaces.empty() && !partsSurfaces.empty())
 		m_surfaces = partsSurfaces;
@@ -519,7 +519,7 @@ void BuildingElement::fetchOpenings(std::vector<Opening>& openings) {
 			continue;
 
 		fit->checkSurfaceType(*this);
-
+		fit->createCSGSurfaces(*this);
 	}
 }
 

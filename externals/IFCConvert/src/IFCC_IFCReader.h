@@ -182,6 +182,8 @@ public:
 	*/
 	void setMinimumCheckValues(double minimumDistance, double minimumArea);
 
+	void setUseCSGForOpenings(bool useCSG);
+
 	/*! Return the current convert options.
 	*/
 	const ConvertOptions &convertOptions() const;
