@@ -269,12 +269,12 @@ namespace CSG_Adapter {
 		return result_meshset_ok;
 	}
 
-	void computeCSG(shared_ptr<carve::mesh::MeshSet<3> >& op1, std::vector<shared_ptr<carve::mesh::MeshSet<3> > >& operands2, const carve::csg::CSG::OP operation, shared_ptr<carve::mesh::MeshSet<3> >& result,
+	void computeCSG(shared_ptr<carve::mesh::MeshSet<3> >& operand1, std::vector<shared_ptr<carve::mesh::MeshSet<3> > >& operands2, const carve::csg::CSG::OP operation, shared_ptr<carve::mesh::MeshSet<3> >& result,
 		shared_ptr<GeometrySettings>& geom_settings)
 	{
-		if( !op1 || operands2.size() == 0 ) {
+		if( !operand1 || operands2.size() == 0 ) {
 			if( operation == carve::csg::CSG::A_MINUS_B ) {
-				result = op1;
+				result = operand1;
 				return;
 			}
 
@@ -296,21 +296,21 @@ namespace CSG_Adapter {
 			shared_ptr<carve::mesh::MeshSet<3> >& mesh2 = it->second;
 
 			bool normalizeCoords = true;
-			success = computeCSG_Carve(op1, mesh2, operation, resultCurrentMesh, geom_settings, normalizeCoords);
+			success = computeCSG_Carve(operand1, mesh2, operation, resultCurrentMesh, geom_settings, normalizeCoords);
 			if( success ) {
 				result = resultCurrentMesh;
 				
 				if( operation == carve::csg::CSG::A_MINUS_B ) {
-					op1 = resultCurrentMesh;	
+					operand1 = resultCurrentMesh;
 				}
 				continue;
 			}
 			normalizeCoords = !normalizeCoords;
-			success = computeCSG_Carve(op1, mesh2, operation, resultCurrentMesh, geom_settings, normalizeCoords);
+			success = computeCSG_Carve(operand1, mesh2, operation, resultCurrentMesh, geom_settings, normalizeCoords);
 			if( success ) {
 				result = resultCurrentMesh;
 				if( operation == carve::csg::CSG::A_MINUS_B ) {
-					op1 = resultCurrentMesh;
+					operand1 = resultCurrentMesh;
 				}
 				continue;
 			}
