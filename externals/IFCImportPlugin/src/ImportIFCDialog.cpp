@@ -52,6 +52,7 @@ ImportIFCDialog::ImportIFCDialog(QWidget *parent, IFCC::IFCReader* reader) :
 
 	ui->doubleSpinBoxMinimumArea->setValue(m_reader->convertOptions().m_minimumSurfaceArea*10000);
 	ui->doubleSpinBoxMinimumDistance->setValue(m_reader->convertOptions().m_distanceEps*1000);
+	ui->doubleSpinBoxMatchOpeningDistance->setValue(m_reader->convertOptions().m_openingDistance);
 
 	ui->checkBoxAdvanced->setChecked(false);
 	ui->tabWidgetAdvanced->setVisible(false);
@@ -62,6 +63,10 @@ ImportIFCDialog::ImportIFCDialog(QWidget *parent, IFCC::IFCReader* reader) :
 ImportIFCDialog::~ImportIFCDialog()
 {
 	delete ui;
+}
+
+void ImportIFCDialog::setFilename(QString filename) {
+	ui->lineEditIFCFile->setText(filename);
 }
 
 void ImportIFCDialog::on_toolButtonOpenIFCFile_clicked() {
@@ -445,9 +450,12 @@ void ImportIFCDialog::initConvertOptions() {
 		ui->labelSBDescription->setText(tr("There are %1 space boundaries in the IFC file").arg(sbCount));
 	}
 
-//	ui->doubleSpinBoxMatchConstructionFactor->setValue(m_reader->convertOptions().m_distanceFactor);
-//	ui->doubleSpinBoxMatchOpeningDistance->setValue(m_reader->convertOptions().m_openingDistance);
-//	ui->checkBoxWriteBuildingElements->setChecked(m_reader->convertOptions().m_writeBuildingElements);
+	ui->doubleSpinBoxMatchConstructionFactor->setValue(m_reader->convertOptions().m_distanceFactor);
+	ui->doubleSpinBoxMatchOpeningDistance->setValue(m_reader->convertOptions().m_openingDistance);
+	ui->checkBoxWriteBuildingElements->setChecked(m_reader->convertOptions().m_writeBuildingElements);
+	ui->checkBoxWriteConstructions->setChecked(m_reader->convertOptions().m_writeConstructionElements);
+	ui->checkBoxWriteOpenings->setChecked(m_reader->convertOptions().m_writeOpeningElements);
+	ui->checkBoxWriteAllOthers->setChecked(m_reader->convertOptions().m_writeOtherElements);
 }
 
 

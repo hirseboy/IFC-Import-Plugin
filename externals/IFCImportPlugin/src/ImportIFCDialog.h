@@ -26,7 +26,10 @@ public:
 	};
 
 	explicit ImportIFCDialog(QWidget *parent, IFCC::IFCReader* reader);
+
 	~ImportIFCDialog();
+
+	void setFilename(QString filename);
 
 private slots:
 

@@ -8,6 +8,7 @@
 #include <QtExt_LanguageHandler.h>
 
 #include <QDir>
+#include <QFileDialog>
 
 //#include "ImportWizard.h"
 #include "ImportIFCDialog.h"
@@ -19,12 +20,10 @@ IFCImportPlugin::IFCImportPlugin(QObject *parent)
 bool IFCImportPlugin::import(QWidget * parent, QString& projectText) {
 	IFCC::IFCReader			reader;
 
-//	ImportWizard wz(parent, &reader);
-
-//	if (wz.exec() == QDialog::Rejected)
-//		return false;
+	QString filename = QFileDialog::getOpenFileName(parent, tr("Open ifc file"), QString(), tr("ifc STEP file (*.ifc)"));
 
 	ImportIFCDialog importDlg(parent, &reader);
+	importDlg.setFilename(filename);
 	if (importDlg.exec() == QDialog::Rejected)
 			return false;
 

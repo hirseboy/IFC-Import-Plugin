@@ -51,6 +51,20 @@
 
 namespace IFCC {
 
+struct ProgressCloser {
+	ProgressCloser(IFCReader* reader, QString endText) :
+		m_reader(reader),
+		m_endText(endText)
+	{}
+	~ProgressCloser() {
+		emit m_reader->progress(100, m_endText);
+	}
+
+	IFCReader*	m_reader;
+	QString		m_endText;
+};
+
+
 const std::string VERSION = "1.0";
 
 IFCReader::IFCReader() :
@@ -68,13 +82,17 @@ IFCReader::IFCReader() :
 	m_geometryConverter.getGeomSettings()->setMinNumVerticesPerArc(4);
 
 //	Logger::instance().set("g:/temp/IFC_Log.txt");
+	m_progressDialog.reset(new QProgressDialog("IFC Reader...", "Abort read", 0, 100));
+	m_progressDialog->setWindowModality(Qt::WindowModal);
+	m_progressDialog->setMinimum(0);
+	m_progressDialog->setMaximum(0);
+	m_progressDialog->setValue(0);
+//	m_progressDialog->setMinimumDuration(0);
 
 	connect(this, &IFCReader::progress, this, &IFCReader::setProgress);
 }
 
 IFCReader::~IFCReader() {
-//	m_progressDialog->close();
-//	m_progressDialog->reset();
 }
 
 
@@ -166,6 +184,10 @@ bool IFCReader::loadModelFromSTEPFile( const IBK::Path& filePath, shared_ptr<Bui
 bool IFCReader::read(const IBK::Path& filename, bool ignoreReadError) {
 	clear();
 
+	ProgressCloser progressCloser(this, tr("End of read"));
+	m_progressDialog->show();
+
+	emit progress(1,tr("Read IFC file"));
 	m_filename = filename;
 	m_readCompletedSuccessfully = true;
 	try {
@@ -338,13 +360,12 @@ void IFCReader::updateBuildingElements() {
 	}
 	size_t currCount = 0;
 
-	emit progress(0, "start");
+	emit progress(0, tr("Update building elements"));
 
 	m_buildingElements.clear();
 	for(auto& elems : m_elementEntitesShape) {
 		for(auto& elem : elems.second) {
 			++currCount;
-//			emit progress(currCount / elemCount * 50, "building elements");
 			if(elem.get() == nullptr)
 				continue;
 
@@ -453,25 +474,8 @@ void IFCReader::setUseCSGForOpenings(bool useCSG) {
 
 bool IFCReader::convert(bool useSpaceBoundaries) {
 
-	struct ProgressCloser {
-		ProgressCloser(IFCReader* reader) :
-			m_reader(reader)
-		{}
-		~ProgressCloser() {
-			emit m_reader->progress(100, "end convert");
-		}
+	ProgressCloser progressCloser(this, tr("End converting"));
 
-		IFCReader* m_reader;
-	};
-
-	ProgressCloser progressCloser(this);
-
-	m_progressDialog.reset(new QProgressDialog("IFC Reader...", "Abort read", 0, 100));
-	m_progressDialog->setWindowModality(Qt::WindowModal);
-	m_progressDialog->setMinimum(0);
-	m_progressDialog->setMaximum(0);
-	m_progressDialog->setValue(0);
-//	m_progressDialog->setMinimumDuration(0);
 	m_progressDialog->show();
 
 	if(!m_readCompletedSuccessfully) {
@@ -479,7 +483,7 @@ bool IFCReader::convert(bool useSpaceBoundaries) {
 		return false;
 	}
 
-	emit progress(0, "start convert");
+	emit progress(0, tr("Start converting"));
 
 	Logger::instance() << "start convert";
 
@@ -491,7 +495,7 @@ bool IFCReader::convert(bool useSpaceBoundaries) {
 
 	try {
 
-		emit progress(20, "convertGeometry");
+		emit progress(20, tr("Convert geometry"));
 		// convert IFC geometric representations into Carve geometry
 		const double length_in_meter = m_geometryConverter.getBuildingModel()->getUnitConverter()->getLengthInMeterFactor();
 		m_geometryConverter.getGeomSettings()->setMinimumSurfaceArea(m_convertOptions.m_minimumSurfaceArea);
@@ -500,7 +504,7 @@ bool IFCReader::convert(bool useSpaceBoundaries) {
 
 		splitShapeData();
 
-		emit progress(50, "splitShapeData");
+		emit progress(50, tr("Split shape data"));
 
 		m_openings.clear();
 		for(auto& openShape : m_openingsShape) {
@@ -515,13 +519,13 @@ bool IFCReader::convert(bool useSpaceBoundaries) {
 			}
 		}
 
-		emit progress(80, "update openings");
+		emit progress(80, tr("Update openings"));
 
 		try {
-			emit progress(85, "updateBuildingElements");
+			emit progress(85, tr("Update building elements"));
 			updateBuildingElements();
 
-			Logger::instance() << "updateBuildingElements";
+//			Logger::instance() << "updateBuildingElements";
 		}
 		catch (std::exception& e) {
 			ConvertError err;
@@ -542,14 +546,14 @@ bool IFCReader::convert(bool useSpaceBoundaries) {
 			return false;
 		}
 
-		emit progress(90, "setContainingElements");
+		emit progress(90, tr("Set containing elements"));
 		for(std::shared_ptr<BuildingElement>& openingElement : m_buildingElements.m_openingElements) {
 			openingElement->setContainingElements(m_openings);
 			openingElement->setContainedConstructionThickesses(m_buildingElements.m_constructionElements);
 			openingElement->setContainedConstructionThickesses(m_buildingElements.m_constructionSimilarElements);
 		}
 
-		Logger::instance() << "setContainingElements";
+//		Logger::instance() << "setContainingElements";
 
 		for(const auto& elem : m_buildingElements.m_elementsWithoutSurfaces) {
 			m_convertErrors.push_back({OT_BuildingElement, elem->m_id, "Building element has no surface"});
@@ -558,12 +562,12 @@ bool IFCReader::convert(bool useSpaceBoundaries) {
 		checkAndMatchOpeningsToConstructions();
 
 
-		emit progress(95, "collectData");
+		emit progress(95, tr("Collect data"));
 		m_database.collectData(m_buildingElements);
 
 		Logger::instance() << "collectData";
 
-		emit progress(97, "updateStoreys");
+		emit progress(97, tr("Update storeys"));
 
 		bool siteExist = m_siteShape != nullptr;
 		if(m_siteShape == nullptr) {
@@ -597,7 +601,7 @@ bool IFCReader::convert(bool useSpaceBoundaries) {
 			return false;
 		}
 
-		Logger::instance() << "updateStoreys";
+//		Logger::instance() << "updateStoreys";
 
 		if(m_repairFlags.m_removeDoubledSBs) {
 			std::vector<std::shared_ptr<Space>> spaces = m_site.allSpaces();
@@ -607,10 +611,10 @@ bool IFCReader::convert(bool useSpaceBoundaries) {
 			}
 		}
 
-		emit progress(98, "collectComponentInstances");
+		emit progress(98, tr("Collect component instances"));
 		m_instances.collectComponentInstances(m_buildingElements, m_database, m_site, m_convertErrors);
 
-		Logger::instance() << "collectComponentInstances";
+//		Logger::instance() << "collectComponentInstances";
 
 		if(!m_convertErrors.empty()) {
 			m_hasError = true;
@@ -619,8 +623,8 @@ bool IFCReader::convert(bool useSpaceBoundaries) {
 
 		m_convertCompletedSuccessfully = true;
 
-		emit progress(100, "convertCompletedSuccessfully");
-		Logger::instance() << "m_convertCompletedSuccessfully";
+		emit progress(100, tr("Convert completed successfully"));
+//		Logger::instance() << "m_convertCompletedSuccessfully";
 
 		return true;
 
