@@ -100,6 +100,11 @@ void Opening::checkSurfaceType(const BuildingElement &element) {
 }
 
 void Opening::createCSGSurfaces(const BuildingElement &element) {
+//	double totalVolume = 0;
+//	for(auto meshset : m_originalMesh) {
+//		double vol = MeshUtils::getMeshVolume(meshset.get());
+//		totalVolume += vol;
+//	}
 
 	// create 3D intersection of opening and building element
 	if(!element.m_originalMesh.empty() && !m_originalMesh.empty()) {
@@ -107,12 +112,22 @@ void Opening::createCSGSurfaces(const BuildingElement &element) {
 		shared_ptr<carve::mesh::MeshSet<3> > firstMesh = element.m_originalMesh.front();
 		//	meshSets.erase(meshSets.begin());
 		shared_ptr<GeometrySettings> geom_settings = shared_ptr<GeometrySettings>( new GeometrySettings() );
+		meshVector_t resultVect;
 		try {
 			CSG_Adapter::computeCSG(firstMesh, m_originalMesh, carve::csg::CSG::INTERSECTION, resultMesh, geom_settings);
 			if(resultMesh) {
-				meshVector_t resultVect;
 				resultVect.push_back(resultMesh);
 				surfacesFromMeshSets(resultVect, m_surfacesCSG);
+
+//				double totalVolumeRes = 0;
+//				for(auto meshset : resultVect) {
+//					double vol = MeshUtils::getMeshVolume(meshset.get());
+//					totalVolumeRes += vol;
+//				}
+//				bool smallerVolume = false;
+//				if(totalVolumeRes >= totalVolume) {
+//					smallerVolume = true;
+//				}
 			}
 		}
 		catch (...) {
