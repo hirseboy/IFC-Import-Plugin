@@ -53,6 +53,7 @@ ImportIFCDialog::ImportIFCDialog(QWidget *parent, IFCC::IFCReader* reader) :
 	ui->doubleSpinBoxMinimumArea->setValue(m_reader->convertOptions().m_minimumSurfaceArea*10000);
 	ui->doubleSpinBoxMinimumDistance->setValue(m_reader->convertOptions().m_distanceEps*1000);
 	ui->doubleSpinBoxMatchOpeningDistance->setValue(m_reader->convertOptions().m_openingDistance);
+	ui->doubleSpinBoxStandardWallThickness->setValue(m_reader->convertOptions().m_standardWallThickness);
 
 	ui->checkBoxAdvanced->setChecked(false);
 	ui->tabWidgetAdvanced->setVisible(false);
@@ -353,7 +354,9 @@ void ImportIFCDialog::initElements() {
 	else
 		m_reader->setConvertMatchingType(IFCC::ConvertOptions::CM_NoMatching);
 
-	m_reader->setMatchingDistances(ui->doubleSpinBoxMatchConstructionFactor->value(), ui->doubleSpinBoxMatchOpeningDistance->value());
+	m_reader->setMatchingDistances(ui->doubleSpinBoxMatchConstructionFactor->value(),
+								   ui->doubleSpinBoxStandardWallThickness->value(),
+								   ui->doubleSpinBoxMatchOpeningDistance->value());
 	m_reader->setWritingBuildingElements(ui->checkBoxWriteConstructions->isChecked(),
 										 ui->checkBoxWriteBuildingElements->isChecked(),
 										 ui->checkBoxWriteOpenings->isChecked(),
