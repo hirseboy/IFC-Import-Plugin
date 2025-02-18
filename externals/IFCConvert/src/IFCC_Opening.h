@@ -73,7 +73,7 @@ public:
 	/*! Try to find surfaces are parallel or intersecting building element surfaces.
 	 *  Set a surface type based on the results.
 	*/
-	void checkSurfaceType(const BuildingElement& element);
+	void checkSurfaceType(const BuildingElement& element, double eps);
 
 	/*! Create a 3D intersection with opening and given building element.
 	 *  Store the resulting surfaces in m_surfacesCSG.

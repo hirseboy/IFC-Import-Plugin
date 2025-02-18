@@ -94,12 +94,12 @@ void Surface::set(int id, int elementId, const std::string& name, bool isVirtual
 	m_virtualSurface = isVirtual;
 }
 
-static bool isCoLinear(const IBKMK::Vector3D& v1, const IBKMK::Vector3D& v2, bool &antiParallel) {
+static bool isCoLinear(const IBKMK::Vector3D& v1, const IBKMK::Vector3D& v2, bool &antiParallel, double eps) {
 	double k = 0;
 	antiParallel = false;
-	bool xZero = IBK::near_zero(v1.m_x) && IBK::near_zero(v2.m_x);
-	bool yZero = IBK::near_zero(v1.m_y) && IBK::near_zero(v2.m_y);
-	bool zZero = IBK::near_zero(v1.m_z) && IBK::near_zero(v2.m_z);
+	bool xZero = nearZero(v1.m_x, eps) && nearZero(v2.m_x, eps);
+	bool yZero = nearZero(v1.m_y, eps) && nearZero(v2.m_y, eps);
+	bool zZero = nearZero(v1.m_z, eps) && nearZero(v2.m_z, eps);
 	if( xZero) {
 		// vector on z-axis
 		if(yZero) {
@@ -129,25 +129,25 @@ static bool isCoLinear(const IBKMK::Vector3D& v1, const IBKMK::Vector3D& v2, boo
 		}
 		// vector on x-z plane
 		if(yZero) {
-			return IBK::near_equal(k, v1.m_z / v2.m_z);
+			return nearEqual(k, v1.m_z / v2.m_z, eps);
 		}
 
 		// vector on x-y plane
 		if(zZero) {
-			return IBK::near_equal(k, v1.m_y / v2.m_y);
+			return nearEqual(k, v1.m_y / v2.m_y, eps);
 		}
 
 		// normal vector
-		return IBK::near_equal(k, v1.m_y / v2.m_y) && IBK::near_equal(k, v1.m_z / v2.m_z);
+		return nearEqual(k, v1.m_y / v2.m_y, eps) && nearEqual(k, v1.m_z / v2.m_z, eps);
 	}
 }
 
-double Surface::distanceToParallelPlane(const Surface& other) const {
+double Surface::distanceToParallelPlane(const Surface& other, double eps) const {
 	PlaneHesseNormal phn1(m_polyVect);
 	PlaneHesseNormal phn2(other.m_polyVect);
 
 	bool antiParallel;
-	bool isCoL = isCoLinear(phn1.m_n0, phn2.m_n0, antiParallel);
+	bool isCoL = isCoLinear(phn1.m_n0, phn2.m_n0, antiParallel, eps);
 
 	if(!isCoL)
 		return 1e20;
@@ -159,7 +159,7 @@ double Surface::distanceToParallelPlane(const Surface& other) const {
 	return dist;
 }
 
-bool Surface::isParallelTo(const Surface& other) const {
+bool Surface::isParallelTo(const Surface& other, double eps) const {
 	double a;
 	double b;
 	double c;
@@ -167,66 +167,66 @@ bool Surface::isParallelTo(const Surface& other) const {
 	carve::geom::vector<3> v1 = m_planeCarve.N;
 	carve::geom::vector<3> v2 = other.m_planeCarve.N;
 
-	if(IBK::near_zero(v2.x)) {
-		if(!IBK::near_zero(v1.x))
+	if(nearZero(v2.x, eps)) {
+		if(!nearZero(v1.x, eps))
 			return false;
 		a = 1;
 	}
 	else {
 		a = v1.x / v2.x;
 	}
-	if(IBK::near_zero(v2.y)) {
-		if(!IBK::near_zero(v1.y))
+	if(nearZero(v2.y, eps)) {
+		if(!nearZero(v1.y, eps))
 			return false;
 		b = 1;
 	}
 	else {
 		b = v1.y / v2.y;
 	}
-	if(IBK::near_zero(v2.z)) {
-		if(!IBK::near_zero(v1.z))
+	if(nearZero(v2.z, eps)) {
+		if(!nearZero(v1.z, eps))
 			return false;
 		c = 1;
 	}
 	else {
 		c = v1.z / v2.z;
 	}
-	if(IBK::near_equal(a,b) && IBK::near_equal(a,c)) {
+	if(nearEqual(a,b, eps) && nearEqual(a,c, eps)) {
 		return true;
 	}
 
 	carve::geom::vector<3> negV1 = v1.negated();
-	if(IBK::near_zero(v2.x)) {
-		if(!IBK::near_zero(negV1.x))
+	if(nearZero(v2.x, eps)) {
+		if(!nearZero(negV1.x, eps))
 			return false;
 		a = 1;
 	}
 	else {
 		a = negV1.x / v2.x;
 	}
-	if(IBK::near_zero(v2.y)) {
-		if(!IBK::near_zero(negV1.y))
+	if(nearZero(v2.y, eps)) {
+		if(!nearZero(negV1.y, eps))
 			return false;
 		b = 1;
 	}
 	else {
 		b = negV1.y / v2.y;
 	}
-	if(IBK::near_zero(v2.z)) {
-		if(!IBK::near_zero(negV1.z))
+	if(nearZero(v2.z, eps)) {
+		if(!nearZero(negV1.z, eps))
 			return false;
 		c = 1;
 	}
 	else {
 		c = negV1.z / v2.z;
 	}
-	if(IBK::near_equal(a,b) && IBK::near_equal(a,c)) {
+	if(nearEqual(a,b, eps) && nearEqual(a,c, eps)) {
 		return true;
 	}
 	return false;
 }
 
-bool Surface::isEqualTo(const Surface& other) const {
+bool Surface::isEqualTo(const Surface& other, double eps) const {
 	const std::vector<IBKMK::Vector3D>& otherPoly = other.polygon();
 	if(m_polyVect.size() != otherPoly.size())
 		return false;
@@ -235,7 +235,7 @@ bool Surface::isEqualTo(const Surface& other) const {
 	// store the position in start2nd
 	int start2nd = -1;
 	for(size_t i=0; i<otherPoly.size(); ++i) {
-		if(nearEqual(otherPoly[i],m_polyVect.front()))
+		if(nearEqual(otherPoly[i],m_polyVect.front(), eps))
 			start2nd = i;
 	}
 	// no equal point found - polygones are not equal
@@ -245,7 +245,7 @@ bool Surface::isEqualTo(const Surface& other) const {
 	// first point of both polygons is the same - perform normal search for all other points
 	if(start2nd == 0) {
 		for(size_t i=1; i<m_polyVect.size(); ++i) {
-			if(!nearEqual(m_polyVect[i], otherPoly[i]))
+			if(!nearEqual(m_polyVect[i], otherPoly[i], eps))
 				return false;
 		}
 	}
@@ -256,7 +256,7 @@ bool Surface::isEqualTo(const Surface& other) const {
 		std::rotate(otherCopy.begin(), otherCopy.begin() + start2nd, otherCopy.end());
 		// check if all other points are equal
 		for(size_t i=1; i<m_polyVect.size(); ++i) {
-			if(!nearEqual(m_polyVect[i], otherCopy[i]))
+			if(!nearEqual(m_polyVect[i], otherCopy[i], eps))
 				return false;
 		}
 	}
@@ -268,12 +268,12 @@ void Surface::setNewPolygon(const std::vector<IBKMK::Vector3D> & polygon) {
 }
 
 
-std::vector<std::pair<size_t,size_t>> Surface::samePoints(const Surface& other) const {
+std::vector<std::pair<size_t,size_t>> Surface::samePoints(const Surface& other, double eps) const {
 	std::vector<std::pair<size_t,size_t>> equalPoints;
 	const std::vector<IBKMK::Vector3D>& otherPoly = other.polygon();
 	for(size_t i=0; i<m_polyVect.size(); ++i) {
 		for(size_t j=0; j<otherPoly.size(); ++j) {
-			if(nearEqual(m_polyVect[i], otherPoly[j]))
+			if(nearEqual(m_polyVect[i], otherPoly[j], eps))
 				equalPoints.push_back(std::make_pair(i,j));
 		}
 	}
@@ -392,8 +392,8 @@ bool Surface::merge(const Surface& subsurface) {
 	return true;
 }
 
-bool Surface::mergeOnlyThanPlanar(const Surface& surface) {
-	if(!IBK::near_zero(distanceToParallelPlane(surface)))
+bool Surface::mergeOnlyThanPlanar(const Surface& surface, double eps) {
+	if(!IBK::near_zero(distanceToParallelPlane(surface, eps)))
 		return false;
 
 	polygon3D_t result = mergePolygons(m_polyVect, surface.polygon(), m_planeNormal);
@@ -455,6 +455,11 @@ std::vector<Surface> Surface::getSimplified() const {
 	return res;
 }
 
+bool checkSimVicusValid(const std::vector<IBKMK::Vector3D>& polygon) {
+	IBKMK::Polygon3D ibkPoly;
+	return ibkPoly.setVertexes(polygon, true);
+}
+
 TiXmlElement * Surface::writeXML(TiXmlElement * parent) const {
 	if (m_id == -1)
 		return nullptr;
@@ -467,7 +472,7 @@ TiXmlElement * Surface::writeXML(TiXmlElement * parent) const {
 		e->SetAttribute("displayName", m_name);
 //	e->SetAttribute("visible", IBK::val2string<bool>(true));
 
-	if(!m_polyVect.empty()) {
+	if(!m_polyVect.empty() && checkSimVicusValid(m_polyVect)) {
 		TiXmlElement * child = new TiXmlElement("Polygon3D");
 		e->LinkEndChild(child);
 
@@ -501,7 +506,7 @@ void Surface::setSurfaceType(IFC4X3::IfcInternalOrExternalEnum::IfcInternalOrExt
 	}
 }
 
-bool Surface::isValid() const {
+bool Surface::isValid(double eps) const {
 	std::vector<IBKMK::Vector3D> tempVect;
 	for(auto v : m_polyVect) {
 		if(tempVect.empty())
@@ -509,7 +514,7 @@ bool Surface::isValid() const {
 		else {
 			bool isThere = false;
 			for(auto v2 : tempVect) {
-				if(nearEqual(v, v2)) {
+				if(nearEqual(v, v2, eps)) {
 					isThere = true;
 					break;
 				}

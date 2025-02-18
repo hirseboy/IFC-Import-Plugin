@@ -326,10 +326,10 @@ bool BuildingElement::set(std::shared_ptr<IFC4X3::IfcElement> ifcElement, Buildi
 	return true;
 }
 
-void BuildingElement::update(std::shared_ptr<ProductShapeData> productShape, std::vector<Opening>& openings, std::vector<ConvertError>& errors) {
+void BuildingElement::update(std::shared_ptr<ProductShapeData> productShape, std::vector<Opening>& openings, std::vector<ConvertError>& errors, const ConvertOptions& convertOptions) {
 	transform(productShape);
-	fetchGeometry(productShape, errors);
-	fetchOpenings(openings);
+	fetchGeometry(productShape, errors, convertOptions.m_distanceEps);
+	fetchOpenings(openings, convertOptions.m_distanceEps);
 }
 
 void BuildingElement::getShapeOfParts(const std::vector<std::shared_ptr<ProductShapeData>>& partsShapeVect, std::vector<ConvertError>& errors) {
@@ -426,7 +426,7 @@ void BuildingElement::transform(std::shared_ptr<ProductShapeData> productShape) 
 	}
 }
 
-void BuildingElement::fetchGeometry(std::shared_ptr<ProductShapeData> productShape, std::vector<ConvertError>& errors) {
+void BuildingElement::fetchGeometry(std::shared_ptr<ProductShapeData> productShape, std::vector<ConvertError>& errors, double eps) {
 	if(productShape == nullptr)
 		return;
 
@@ -443,10 +443,10 @@ void BuildingElement::fetchGeometry(std::shared_ptr<ProductShapeData> productSha
 		surf.set(GUID_maker::instance().guid(), m_id, m_name+"_"+std::to_string(m_id), false);
 	}
 
-	findSurfacePairs();
+	findSurfacePairs(eps);
 }
 
-void BuildingElement::findSurfacePairs() {
+void BuildingElement::findSurfacePairs(double eps) {
 	if(m_surfaces.size() < 2)
 		return;
 
@@ -462,7 +462,7 @@ void BuildingElement::findSurfacePairs() {
 		bool found = false;
 		bool foundSide = false;
 		for(int j=i+1; j<m_surfaces.size(); ++j) {
-			if(m_surfaces[i].isParallelTo(m_surfaces[j])) {
+			if(m_surfaces[i].isParallelTo(m_surfaces[j], eps)) {
 				if(!found) {
 					ParallelSurfaces item;
 					item.m_indexOrg = i;
@@ -470,7 +470,7 @@ void BuildingElement::findSurfacePairs() {
 					found = true;
 				}
 				m_parallelSurfaces.back().m_indicesParallel.push_back(j);
-				double dist = m_surfaces[i].distanceToParallelPlane(m_surfaces[j]);
+				double dist = m_surfaces[i].distanceToParallelPlane(m_surfaces[j], eps);
 				m_parallelSurfaces.back().m_distances.push_back(dist);
 				if(thickness > 0 && IBK::nearly_equal<4>(dist,thickness)) {
 					if(!foundSide) {
@@ -485,7 +485,7 @@ void BuildingElement::findSurfacePairs() {
 
 }
 
-void BuildingElement::fetchOpenings(std::vector<Opening>& openings) {
+void BuildingElement::fetchOpenings(std::vector<Opening>& openings, double eps) {
 
 	for(const auto& opOrg : m_isUsedFromOpeningsOriginal) {
 		for(auto& op : openings) {
@@ -518,7 +518,7 @@ void BuildingElement::fetchOpenings(std::vector<Opening>& openings) {
 		if(fit == openings.end())
 			continue;
 
-		fit->checkSurfaceType(*this);
+		fit->checkSurfaceType(*this, eps);
 		fit->createCSGSurfaces(*this);
 	}
 }
@@ -538,6 +538,7 @@ double	BuildingElement::thickness() const {
 		}
 		if(minDist > 10000)
 			return 0;
+
 		return minDist;
 	}
 

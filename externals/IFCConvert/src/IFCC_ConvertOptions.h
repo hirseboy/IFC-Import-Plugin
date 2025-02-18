@@ -31,11 +31,12 @@ public:
 
 	std::set<BuildingElementTypes>	m_elementsForSpaceBoundaries;
 	double							m_distanceFactor = 3.0;
+	double							m_standardWallThickness = 0.5;	///< Wall thickness which will be used in case no thickness is given
 	double							m_openingDistance = 0.5;
 	ConstructionMatching			m_matchingType = CM_MatchEachConstruction;
 	int								m_matchedConstructionNumbers = 2;
-	double							m_minimumSurfaceArea = 0.001;
-	double							m_distanceEps = 1e-4;
+	double							m_minimumSurfaceArea = 0.01;
+	double							m_distanceEps = 1e-3;
 	bool							m_createMissingSite = true;
 	bool							m_writeConstructionElements = false;
 	bool							m_writeBuildingElements = false;

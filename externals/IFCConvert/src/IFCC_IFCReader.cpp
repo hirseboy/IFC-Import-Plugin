@@ -384,7 +384,7 @@ void IFCReader::updateBuildingElements() {
 				Logger::instance() << "update constr nr: " << currCount << " of " << elemCount;
 
 				currbElem.getShapeOfParts(m_elementEntitesShape[BET_BuildingElementPart], m_convertErrors);
-				currbElem.update(elem, m_openings, m_convertErrors);
+				currbElem.update(elem, m_openings, m_convertErrors, m_convertOptions);
 				if(currbElem.surfaces().empty())
 					m_buildingElements.m_elementsWithoutSurfaces.push_back(m_buildingElements.m_constructionElements.back());
 			}
@@ -394,7 +394,7 @@ void IFCReader::updateBuildingElements() {
 
 				Logger::instance() << "update similar " << currCount << " of " << elemCount;
 
-				currbElem.update(elem, m_openings, m_convertErrors);
+				currbElem.update(elem, m_openings, m_convertErrors, m_convertOptions);
 				if(currbElem.surfaces().empty())
 					m_buildingElements.m_elementsWithoutSurfaces.push_back(m_buildingElements.m_constructionSimilarElements.back());
 			}
@@ -404,7 +404,7 @@ void IFCReader::updateBuildingElements() {
 
 				Logger::instance() << "update opening " << currCount << " of " << elemCount;
 
-				currbElem.update(elem, m_openings, m_convertErrors);
+				currbElem.update(elem, m_openings, m_convertErrors, m_convertOptions);
 				if(currbElem.surfaces().empty())
 					m_buildingElements.m_elementsWithoutSurfaces.push_back(m_buildingElements.m_openingElements.back());
 			}
@@ -414,7 +414,7 @@ void IFCReader::updateBuildingElements() {
 
 				Logger::instance() << "update other " << currCount << " of " << elemCount;
 
-				currbElem.update(elem, m_openings, m_convertErrors);
+				currbElem.update(elem, m_openings, m_convertErrors, m_convertOptions);
 				//						if(m_buildingElements.m_otherElements.back()->surfaces().empty())
 				//							m_buildingElements.m_elementsWithoutSurfaces.push_back(m_buildingElements.m_otherElements.back());
 			}
@@ -446,9 +446,10 @@ void IFCReader::setElementsForSpaceBoundaries(BuildingElementTypes type, bool se
 	}
 }
 
-void IFCReader::setMatchingDistances(double constructionFactor, double openingDistance) {
+void IFCReader::setMatchingDistances(double constructionFactor, double standardWallThickness, double openingDistance) {
 	m_convertOptions.m_distanceFactor = constructionFactor;
 	m_convertOptions.m_openingDistance = openingDistance;
+	m_convertOptions.m_standardWallThickness = standardWallThickness;
 }
 
 void IFCReader::addNoSearchForOpenings(const QSet<BuildingElementTypes>& types) {
@@ -607,12 +608,12 @@ bool IFCReader::convert(bool useSpaceBoundaries) {
 			std::vector<std::shared_ptr<Space>> spaces = m_site.allSpaces();
 
 			for(auto space : spaces) {
-				space->removeDublicatedSpaceBoundaries();
+				space->removeDublicatedSpaceBoundaries(m_convertOptions);
 			}
 		}
 
 		emit progress(98, tr("Collect component instances"));
-		m_instances.collectComponentInstances(m_buildingElements, m_database, m_site, m_convertErrors);
+		m_instances.collectComponentInstances(m_buildingElements, m_database, m_site, m_convertErrors, m_convertOptions);
 
 //		Logger::instance() << "collectComponentInstances";
 
@@ -700,7 +701,7 @@ int IFCReader::checkForEqualSpaceBoundaries(std::vector<std::pair<int,int>>& equ
 	std::vector<std::shared_ptr<Space>> spaces = m_site.allSpaces();
 
 	for(const auto& space : spaces) {
-		space->checkForEqualSpaceBoundaries(equalSBs);
+		space->checkForEqualSpaceBoundaries(equalSBs, m_convertOptions);
 	}
 	return equalSBs.size();
 }
@@ -725,7 +726,7 @@ std::set<std::pair<int,int>> IFCReader::checkForIntersectedSpace() const {
 
 	for(size_t i=0; i<spaces.size()-1; ++i) {
 		for(size_t j=i+1; j<spaces.size(); ++j) {
-			if(spaces[i]->isIntersected(*spaces[j]))
+			if(spaces[i]->isIntersected(*spaces[j], m_convertOptions))
 				res.insert({spaces[i]->m_ifcId,spaces[j]->m_ifcId});
 		}
 	}
@@ -1102,7 +1103,7 @@ void IFCReader::checkAndMatchOpeningsToConstructions() {
 				const Surface& currentOpeningSurf = opening.surfaces()[cosi];
 
 				for(const Surface& constructionSurf : elem->surfaces()) {
-					double dist = currentOpeningSurf.distanceToParallelPlane(constructionSurf);
+					double dist = currentOpeningSurf.distanceToParallelPlane(constructionSurf, m_convertOptions.m_distanceEps);
 					if(dist > m_convertOptions.m_openingDistance)
 						continue;
 

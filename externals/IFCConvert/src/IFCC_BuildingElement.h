@@ -22,6 +22,7 @@
 #include "IFCC_Opening.h"
 #include "IFCC_EntityBase.h"
 #include "IFCC_Property.h"
+#include "IFCC_ConvertOptions.h"
 
 namespace IFCC {
 
@@ -156,7 +157,7 @@ public:
 	/*! get and transform geometry and set first opening properties.
 		\param Shape data of a building element.
 	*/
-	void update(std::shared_ptr<ProductShapeData> productShape, std::vector<Opening>& openings, std::vector<ConvertError>& errors);
+	void update(std::shared_ptr<ProductShapeData> productShape, std::vector<Opening>& openings, std::vector<ConvertError>& errors, const ConvertOptions& convertOptions);
 
 	/*! Collect the shapes of existingbuilding element parts.*/
 	void getShapeOfParts(const std::vector<std::shared_ptr<ProductShapeData>>& partsShapevect, std::vector<ConvertError>& errors);
@@ -249,7 +250,7 @@ public:
 
 private:
 	/*! Fille the surface pair vector.*/
-	void findSurfacePairs();
+	void findSurfacePairs(double eps);
 
 	/*! Transforms the element geometry by using transformation matrix from productShape.
 		It transforms all coordinates from local system into global system.
@@ -259,14 +260,14 @@ private:
 	/*! Get the geometry from the product shape.
 		It fills the surface vector m_surfaces.
 	*/
-	void fetchGeometry(std::shared_ptr<ProductShapeData> productShape, std::vector<ConvertError>& errors);
+	void fetchGeometry(std::shared_ptr<ProductShapeData> productShape, std::vector<ConvertError>& errors, double eps);
 
 	/*! Find connections from this building element to openings.
 		It uses the IFC connection vectors m_isUsedFromOpeningsOriginal and m_containedOpeningsOriginal.
 		It fills the vectors m_usedFromOpenings and m_containedOpenings.
 		Furthermore the connection ids in the opening objects will be set.
 	*/
-	void fetchOpenings(std::vector<Opening>& openings);
+	void fetchOpenings(std::vector<Opening>& openings, double eps);
 
 	void setThermalTransmittance();
 

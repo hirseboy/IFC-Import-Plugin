@@ -160,8 +160,8 @@ static MatchResult findFirstSurfaceMatchIndex(const std::vector<Surface>& wallSu
 		const Surface& wallSurf = wallSurfaces[wi];
 		for(size_t si=0; si<spaceSurfaces.size(); ++si) {
 			const Surface& spaceSurf = spaceSurfaces[si];
-			if(spaceSurf.isParallelTo(wallSurf)) {
-				double dist = spaceSurf.distanceToParallelPlane(wallSurf);
+			if(spaceSurf.isParallelTo(wallSurf, convertOptions.m_distanceEps)) {
+				double dist = spaceSurf.distanceToParallelPlane(wallSurf, convertOptions.m_distanceEps);
 				if(dist < minDist * (1+EPS)) {
 					if(wallSurf.isIntersected(spaceSurf))
 						return MatchResult(wi,si);
@@ -191,7 +191,7 @@ std::vector<std::shared_ptr<SpaceBoundary>> Space::createSpaceBoundaries(const B
 			if(maxConstructionDist > convertOptions.m_distanceEps)
 				dist = maxConstructionDist;
 			else
-				dist = convertOptions.m_distanceEps;
+				dist = convertOptions.m_standardWallThickness;
 		}
 
 		// try to find a construction surface an a space surface which matches together
@@ -227,7 +227,7 @@ std::vector<std::shared_ptr<SpaceBoundary>> Space::createSpaceBoundaries(const B
 							" : " + std::to_string(indices.m_wallSurfaceIndex);
 					sb->setFromBuildingElement(name, construction, *this);
 					sb->m_elementEntityId = construction->m_id;
-					sb->fetchGeometryFromBuildingElement(firstISurf);
+					sb->fetchGeometryFromBuildingElement(firstISurf, convertOptions);
 					spaceBoundaries.push_back(sb);
 					surfaces.erase(surfaces.begin() + indices.m_spaceSurfaceIndex);
 				}
@@ -239,7 +239,7 @@ std::vector<std::shared_ptr<SpaceBoundary>> Space::createSpaceBoundaries(const B
 								std::to_string(indices.m_spaceSurfaceIndex) + " : " + std::to_string(indices.m_wallSurfaceIndex);
 						sb->setFromBuildingElement(name, construction, *this);
 						sb->m_elementEntityId = construction->m_id;
-						sb->fetchGeometryFromBuildingElement(surf);
+						sb->fetchGeometryFromBuildingElement(surf, convertOptions);
 						spaceBoundaries.push_back(sb);
 					}
 					std::vector<Surface> subsurfaces;
@@ -267,7 +267,7 @@ std::vector<std::shared_ptr<SpaceBoundary>> Space::createSpaceBoundaries(const B
 		std::shared_ptr<SpaceBoundary> sb = std::shared_ptr<SpaceBoundary>(new SpaceBoundary(GUID_maker::instance().guid()));
 		std::string name = "Missing";
 		sb->setForMissingElement(name, *this, false);
-		sb->fetchGeometryFromBuildingElement(surf);
+		sb->fetchGeometryFromBuildingElement(surf, convertOptions);
 		spaceBoundaries.push_back(sb);
 	}
 
@@ -297,12 +297,12 @@ static ConstructionSurfaceInfo findFirstSurfaceMatchIndex_2(const std::vector<Su
 	std::vector<ConstructionSurfaceInfo> matches;
 	for(size_t wi=0; wi<constructionSurfaces.size(); ++wi) {
 		const Surface& constructionSurface = constructionSurfaces[wi];
-		if(spaceSurface.isParallelTo(constructionSurface)) {
-			double dist = spaceSurface.distanceToParallelPlane(constructionSurface);
+		if(spaceSurface.isParallelTo(constructionSurface, convertOptions.m_distanceEps)) {
+			double dist = spaceSurface.distanceToParallelPlane(constructionSurface, convertOptions.m_distanceEps);
 			if(dist < minDist * (1+EPS)) {
 				Surface intersection = spaceSurface.intersect(constructionSurface);
 				double area = intersection.area();
-				if(intersection.isValid() && area > convertOptions.m_minimumSurfaceArea) {
+				if(intersection.isValid(convertOptions.m_distanceEps) && area > convertOptions.m_minimumSurfaceArea) {
 					ConstructionSurfaceInfo	conInfo;
 					conInfo.m_id = 0;				// set to 0 indicates we have found something. Real id will be set later
 					conInfo.m_distance = dist;
@@ -328,7 +328,8 @@ static ConstructionSurfaceInfo findFirstSurfaceMatchIndex_2(const std::vector<Su
 	return matches[returnIndex];
 }
 
-static std::shared_ptr<SpaceBoundary> createSpaceBoundary(const std::shared_ptr<BuildingElement>& constr, const SpaceSurfaceMatches& match, int constrSurfIndex, const Space& space, const Surface& intersection ) {
+static std::shared_ptr<SpaceBoundary> createSpaceBoundary(const std::shared_ptr<BuildingElement>& constr, const SpaceSurfaceMatches& match,
+														  int constrSurfIndex, const Space& space, const Surface& intersection, const ConvertOptions& convertOptions ) {
 	int id = GUID_maker::instance().guid();
 	std::shared_ptr<SpaceBoundary> sb = std::shared_ptr<SpaceBoundary>(new SpaceBoundary(id));
 	std::string name = space.m_name + ":" + constr->m_name + " - " +
@@ -336,7 +337,7 @@ static std::shared_ptr<SpaceBoundary> createSpaceBoundary(const std::shared_ptr<
 			" : " + std::to_string(constrSurfIndex);
 	sb->setFromBuildingElement(name, constr, space);
 	sb->m_elementEntityId = constr->m_id;
-	sb->fetchGeometryFromBuildingElement(intersection);
+	sb->fetchGeometryFromBuildingElement(intersection, convertOptions);
 	return sb;
 }
 
@@ -362,14 +363,18 @@ std::vector<std::shared_ptr<SpaceBoundary>> Space::createSpaceBoundaries_2(const
 			matches.clear();
 			foundOne = false;
 			bool noConstructions = true;
-			for(size_t i=0; i<surfaces.size(); ++i) {
-				Surface& currentSurf = surfaces[i];
+			for(size_t ssi=0; ssi<surfaces.size(); ++ssi) {
+				Surface& currentSurf = surfaces[ssi];
 				matches.emplace_back(SpaceSurfaceMatches());
-				matches.back().m_spaceSurfaceIndex = i;
+				matches.back().m_spaceSurfaceIndex = ssi;
 
 				for(const auto& construction : constructionElements) {
 
 					BuildingElementTypes type = construction->type();
+
+					if(construction->m_ifcId == 139) {
+						int i=0;
+					}
 
 					if(!convertOptions.hasElementsForSpaceBoundaries(type))
 						continue;
@@ -382,7 +387,7 @@ std::vector<std::shared_ptr<SpaceBoundary>> Space::createSpaceBoundaries_2(const
 						maxConstructionDist = *std::max_element(construction->m_openingProperties.m_constructionThicknesses.begin(),
 																construction->m_openingProperties.m_constructionThicknesses.end());
 					}
-					const double MIN_THICKNESS = 0.1;
+					const double MIN_THICKNESS = convertOptions.m_standardWallThickness;
 					if(dist < MIN_THICKNESS) {
 						if(maxConstructionDist > MIN_THICKNESS)
 							dist = maxConstructionDist;
@@ -497,7 +502,7 @@ std::vector<std::shared_ptr<SpaceBoundary>> Space::createSpaceBoundaries_2(const
 				}
 
 				if(convertOptions.m_matchingType == ConvertOptions::CM_MatchOnlyFirstConstruction) {
-					spaceBoundaries.push_back(createSpaceBoundary(constr, match, bestConstrSurfaceIndex, *this, currSpaceSurface));
+					spaceBoundaries.push_back(createSpaceBoundary(constr, match, bestConstrSurfaceIndex, *this, currSpaceSurface, convertOptions));
 					indicesToErase.insert(match.m_spaceSurfaceIndex);
 					continue;
 				}
@@ -507,7 +512,7 @@ std::vector<std::shared_ptr<SpaceBoundary>> Space::createSpaceBoundaries_2(const
 
 					if(loopCount < MAX_LOOP_COUNT - 1) {
 						for(const auto& surf : intersectionResult.m_intersections)
-							spaceBoundaries.push_back(createSpaceBoundary(constr, match, bestConstrSurfaceIndex, *this, surf));
+							spaceBoundaries.push_back(createSpaceBoundary(constr, match, bestConstrSurfaceIndex, *this, surf, convertOptions));
 
 						std::vector<Surface> subsurfaces;
 						bool toErase = divideSurface(intersectionResult, surfaces, match.m_spaceSurfaceIndex, subsurfaces);
@@ -519,7 +524,7 @@ std::vector<std::shared_ptr<SpaceBoundary>> Space::createSpaceBoundaries_2(const
 						}
 					}
 					else {
-						spaceBoundaries.push_back(createSpaceBoundary(constr, match, bestConstrSurfaceIndex, *this, currSpaceSurface));
+						spaceBoundaries.push_back(createSpaceBoundary(constr, match, bestConstrSurfaceIndex, *this, currSpaceSurface, convertOptions));
 						indicesToErase.insert(match.m_spaceSurfaceIndex);
 					}
 					continue;
@@ -530,12 +535,12 @@ std::vector<std::shared_ptr<SpaceBoundary>> Space::createSpaceBoundaries_2(const
 					double constructionArea = firstISurf.area();
 
 					if((intersectionResult.m_intersections.size() == 1 && IBK::nearly_equal<2>(constructionArea,spaceArea))) {
-						spaceBoundaries.push_back(createSpaceBoundary(constr, match, bestConstrSurfaceIndex, *this, firstISurf));
+						spaceBoundaries.push_back(createSpaceBoundary(constr, match, bestConstrSurfaceIndex, *this, firstISurf, convertOptions));
 						indicesToErase.insert(match.m_spaceSurfaceIndex);
 					}
 					else {
 						for(const Surface& surf : intersectionResult.m_intersections) {
-							spaceBoundaries.push_back(createSpaceBoundary(constr, match, bestConstrSurfaceIndex, *this, surf));
+							spaceBoundaries.push_back(createSpaceBoundary(constr, match, bestConstrSurfaceIndex, *this, surf, convertOptions));
 						}
 						std::vector<Surface> subsurfaces;
 						// add difference surface - intersections to the surface list and remove the original one
@@ -570,7 +575,7 @@ std::vector<std::shared_ptr<SpaceBoundary>> Space::createSpaceBoundaries_2(const
 		std::shared_ptr<SpaceBoundary> sb = std::shared_ptr<SpaceBoundary>(new SpaceBoundary(GUID_maker::instance().guid()));
 		std::string name = "Missing";
 		sb->setForMissingElement(name, *this, false);
-		sb->fetchGeometryFromBuildingElement(surf);
+		sb->fetchGeometryFromBuildingElement(surf, convertOptions);
 		spaceBoundaries.push_back(sb);
 	}
 
@@ -578,28 +583,28 @@ std::vector<std::shared_ptr<SpaceBoundary>> Space::createSpaceBoundaries_2(const
 }
 
 static Surface matchingOpeningSurface(const Surface& currentOpeningSurf, const std::shared_ptr<SpaceBoundary> spaceBoundary, const ConvertOptions& convertOptions) {
-	double dist = currentOpeningSurf.distanceToParallelPlane(spaceBoundary->surface());
+	double dist = currentOpeningSurf.distanceToParallelPlane(spaceBoundary->surface(), convertOptions.m_distanceEps);
 	if(dist > convertOptions.m_openingDistance)
 		return Surface();
 
 	Surface intersectionResult = spaceBoundary->surface().intersect(currentOpeningSurf);
-	if(intersectionResult.isValid())
+	if(intersectionResult.isValid(convertOptions.m_distanceEps))
 		return intersectionResult;
 
 	return Surface();
 }
 
-static Surface mergeSurfaces(const std::vector<Surface>& surfaces) {
+static Surface mergeSurfaces(const std::vector<Surface>& surfaces, double eps) {
 	Surface res = surfaces.front();
 	for(size_t i=1; i<surfaces.size(); ++i) {
-		res.mergeOnlyThanPlanar(surfaces[i]);
+		res.mergeOnlyThanPlanar(surfaces[i], eps);
 	}
 	return res;
 }
 
 static bool addOpeningSpaceBoundary(const Surface& surface, Opening& currOp, const std::shared_ptr<SpaceBoundary> spaceBoundary, std::shared_ptr<BuildingElement> openingElem,
-				  const std::string& spaceName, std::vector<std::shared_ptr<SpaceBoundary>>& openingSpaceBoundaries, const Space& space) {
-	if(!surface.isValid())
+				  const std::string& spaceName, std::vector<std::shared_ptr<SpaceBoundary>>& openingSpaceBoundaries, const Space& space, const ConvertOptions& convertOptions) {
+	if(!surface.isValid(convertOptions.m_distanceEps))
 		return false;
 
 	std::shared_ptr<SpaceBoundary> sb = std::shared_ptr<SpaceBoundary>(new SpaceBoundary(GUID_maker::instance().guid()));
@@ -610,7 +615,7 @@ static bool addOpeningSpaceBoundary(const Surface& surface, Opening& currOp, con
 		sb->setFromBuildingElement(name, openingElem, space);
 		sb->m_elementEntityId = openingElem->m_id;
 		sb->m_openingId = currOp.m_id;
-		sb->fetchGeometryFromBuildingElement(surface);
+		sb->fetchGeometryFromBuildingElement(surface, convertOptions);
 		openingSpaceBoundaries.push_back(sb);
 		currOp.setSpaceBoundary(sb);
 	}
@@ -620,7 +625,7 @@ static bool addOpeningSpaceBoundary(const Surface& surface, Opening& currOp, con
 				std::to_string(surface.id());
 		sb->setForVirtualElement(name, space, true);
 		sb->m_openingId = currOp.m_id;
-		sb->fetchGeometryFromBuildingElement(surface);
+		sb->fetchGeometryFromBuildingElement(surface, convertOptions);
 		openingSpaceBoundaries.push_back(sb);
 		currOp.setSpaceBoundary(sb);
 	}
@@ -629,7 +634,7 @@ static bool addOpeningSpaceBoundary(const Surface& surface, Opening& currOp, con
 	return true;
 }
 
-void searchOpeningSpaceBoundaries(Opening& currOp, const std::shared_ptr<SpaceBoundary> spaceBoundary, const std::shared_ptr<BuildingElement>& openingElem,
+static void searchOpeningSpaceBoundaries(Opening& currOp, const std::shared_ptr<SpaceBoundary> spaceBoundary, const std::shared_ptr<BuildingElement>& openingElem,
 								  const ConvertOptions& convertOptions, std::vector<std::shared_ptr<SpaceBoundary>>& openingSpaceBoundaries,
 								  const Space& space) {
 	std::vector<Surface> openingSurfaces;
@@ -641,7 +646,7 @@ void searchOpeningSpaceBoundaries(Opening& currOp, const std::shared_ptr<SpaceBo
 			continue;
 
 		Surface surf = matchingOpeningSurface(currentOpeningSurf, spaceBoundary, convertOptions);
-		if(surf.isValid())
+		if(surf.isValid(convertOptions.m_distanceEps))
 			openingSurfaces.push_back(surf);
 	}
 	if(openingSurfaces.empty()) {
@@ -651,13 +656,13 @@ void searchOpeningSpaceBoundaries(Opening& currOp, const std::shared_ptr<SpaceBo
 				continue;
 
 			Surface surf = matchingOpeningSurface(currentOpeningSurf, spaceBoundary, convertOptions);
-			if(surf.isValid())
+			if(surf.isValid(convertOptions.m_distanceEps))
 				openingSurfaces.push_back(surf);
 		}
 	}
 	if(!openingSurfaces.empty()) {
-		Surface mergedSurface = mergeSurfaces(openingSurfaces);
-		addOpeningSpaceBoundary(mergedSurface, currOp, spaceBoundary, openingElem, space.m_longName, openingSpaceBoundaries, space);
+		Surface mergedSurface = mergeSurfaces(openingSurfaces, convertOptions.m_distanceEps);
+		addOpeningSpaceBoundary(mergedSurface, currOp, spaceBoundary, openingElem, space.m_longName, openingSpaceBoundaries, space, convertOptions);
 	}
 }
 
@@ -811,7 +816,7 @@ void Space::evaluateSpaceBoundaryTypes(const objectShapeTypeVector_t& shapes,
 }
 
 bool Space::evaluateSpaceBoundaryGeometry(shared_ptr<UnitConverter>& unit_converter,
-									   std::vector<ConvertError>& errors) {
+									   std::vector<ConvertError>& errors, const ConvertOptions& convertOptions) {
 	if(m_spaceBoundaries.empty())
 		return false;
 
@@ -821,7 +826,7 @@ bool Space::evaluateSpaceBoundaryGeometry(shared_ptr<UnitConverter>& unit_conver
 	for(size_t sbI=0; sbI<m_spaceBoundaries.size(); ++sbI) {
 		auto& sb = m_spaceBoundaries[sbI];
 
-		bool res = sb->fetchGeometryFromIFC(unit_converter, m_transformMatrix, errors);
+		bool res = sb->fetchGeometryFromIFC(unit_converter, m_transformMatrix, errors, convertOptions);
 		if(res) {
 			foundOne = true;
 		}
@@ -858,7 +863,7 @@ bool Space::evaluateSpaceBoundaryFromIFC(const objectShapeTypeVector_t& shapes,
 	evaluateSpaceBoundaryTypes(shapes, buildingElements);
 
 	// convert geometry and create surfaces
-	bool res = evaluateSpaceBoundaryGeometry(unit_converter, errors);
+	bool res = evaluateSpaceBoundaryGeometry(unit_converter, errors, convertOptions);
 	if(!res)
 		return false;
 
@@ -930,7 +935,7 @@ bool Space::evaluateSpaceBoundaryFromIFC(const objectShapeTypeVector_t& shapes,
 
 			// find subsurfaces in surfaces which have already cutted openings
 			// in this case surface and subsurface must have same points
-			std::vector<std::pair<size_t,size_t>> samepoints = constrSurf.samePoints(opSurf);
+			std::vector<std::pair<size_t,size_t>> samepoints = constrSurf.samePoints(opSurf, convertOptions.m_distanceEps);
 			if(samepoints.size() > 2) {
 				// heal the construction surface by merging with subsurface
 				constrSB->mergeSurface(opSurf);
@@ -940,8 +945,8 @@ bool Space::evaluateSpaceBoundaryFromIFC(const objectShapeTypeVector_t& shapes,
 			}
 			// check for parallel and intersected surfaces
 			else {
-				if(constrSurf.isParallelTo(opSurf)) {
-					double dist = constrSurf.distanceToParallelPlane(opSurf);
+				if(constrSurf.isParallelTo(opSurf, convertOptions.m_distanceEps)) {
+					double dist = constrSurf.distanceToParallelPlane(opSurf, convertOptions.m_distanceEps);
 					bool isIntersected = constrSurf.isIntersected(opSurf);
 					if(dist <= searchDist*1.1 && isIntersected) {
 						constrSB->addContainedOpeningSpaceBoundaries(openingSB);
@@ -1049,7 +1054,7 @@ const std::vector<std::shared_ptr<SpaceBoundary>>& Space::spaceBoundaries() cons
 	return m_spaceBoundaries;
 }
 
-void Space::removeDublicatedSpaceBoundaries() {
+void Space::removeDublicatedSpaceBoundaries(const ConvertOptions& convertOptions) {
 	if(m_spaceBoundaries.size() < 2)
 		return;
 
@@ -1058,7 +1063,7 @@ void Space::removeDublicatedSpaceBoundaries() {
 		auto sb1 = m_spaceBoundaries[i];
 		for(size_t j=i+1; j<m_spaceBoundaries.size(); ++j) {
 			auto sb2 = m_spaceBoundaries[j];
-			if(sb1->surface().isEqualTo(sb2->surface()))
+			if(sb1->surface().isEqualTo(sb2->surface(), convertOptions.m_distanceEps))
 				indicesToRemove.insert(j);
 		}
 	}
@@ -1088,7 +1093,7 @@ std::vector<int> Space::checkUniqueSubSurfaces() const {
 	return res;
 }
 
-void Space::checkForEqualSpaceBoundaries(std::vector<std::pair<int,int>>& equalSBs) const {
+void Space::checkForEqualSpaceBoundaries(std::vector<std::pair<int,int>>& equalSBs, const ConvertOptions& convertOptions) const {
 	if(m_spaceBoundaries.size() < 2)
 		return;
 
@@ -1096,13 +1101,13 @@ void Space::checkForEqualSpaceBoundaries(std::vector<std::pair<int,int>>& equalS
 		auto sb1 = m_spaceBoundaries[i];
 		for(size_t j=i+1; j<m_spaceBoundaries.size(); ++j) {
 			auto sb2 = m_spaceBoundaries[j];
-			if(sb1->surface().isEqualTo(sb2->surface()))
+			if(sb1->surface().isEqualTo(sb2->surface(), convertOptions.m_distanceEps))
 				equalSBs.push_back({sb1->m_id, sb2->m_id});
 		}
 	}
 }
 
-bool Space::isIntersected(const Space& other) const {
+bool Space::isIntersected(const Space& other, const ConvertOptions& convertOptions) const {
 	for(const auto& p1 : m_meshSets) {
 		for(const auto& p2 : other.m_meshSets) {
 			if(IFCC::isIntersected(p1.get(), p2.get()))
@@ -1113,7 +1118,7 @@ bool Space::isIntersected(const Space& other) const {
 		for(const auto& p2 : other.m_spaceBoundaries) {
 			const Surface & surf1 = p1->surface();
 			const Surface & surf2 = p2->surface().polygon();
-			if(surf1.isValid() && surf2.isValid()) {
+			if(surf1.isValid(convertOptions.m_distanceEps) && surf2.isValid(convertOptions.m_distanceEps)) {
 				if(IBKMK::polyIntersect(surf1.polygon(), surf2.polygon()))
 					return true;
 			}

@@ -131,10 +131,18 @@ void faceDump(carve::mesh::Face<3>* face, const std::string& name, const IBK::Pa
 */
 void simplifyMesh(meshVector_t& meshVector, bool removeLowVolume);
 
-/*! Check if both vectors are nearly equal.
-	It will be done by checking near equality of each coordinate (eps = 1e-4).
+/*! Check if both values are nearly equal.
+	It will be done by checking near equality of each coordinate.
 */
-bool nearEqual(const IBKMK::Vector3D& v1, const IBKMK::Vector3D& v2);
+bool nearEqual(double v1, double v2, double eps);
+
+/*! Check if the given value is near zero.*/
+bool nearZero(double val, double eps);
+
+/*! Check if both vectors are nearly equal.
+	It will be done by checking near equality of each coordinate.
+*/
+bool nearEqual(const IBKMK::Vector3D& v1, const IBKMK::Vector3D& v2, double eps);
 
 /*! Return the area of the given polygon.*/
 double areaPolygon(const std::vector<IBKMK::Vector3D>& poly);

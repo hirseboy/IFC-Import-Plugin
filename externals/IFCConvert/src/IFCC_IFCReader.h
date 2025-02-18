@@ -168,7 +168,7 @@ public:
 		\param constructionFactor Factor which will be multiplied with the construction thickness for maximum matching distance
 		\param openingDistance Maximum distance for matching openings to space boundaries
 	*/
-	void setMatchingDistances(double constructionFactor, double openingDistance);
+	void setMatchingDistances(double constructionFactor, double standardWallThickness, double openingDistance);
 
 	/*! Set the flag in order to limit the opening matching only to walls.*/
 	void addNoSearchForOpenings(const QSet<BuildingElementTypes>& types);

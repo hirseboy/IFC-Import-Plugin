@@ -65,13 +65,13 @@ public:
 		It return the maximum double number if the two surfaces are not parallel.
 		\param other Other surface for checking.
 	*/
-	double distanceToParallelPlane(const Surface& other) const;
+	double distanceToParallelPlane(const Surface& other, double eps) const;
 
 	/*! Return true if both surfaces are parallel.*/
-	bool isParallelTo(const Surface& other) const;
+	bool isParallelTo(const Surface& other, double eps) const;
 
 	/*! Return true if both surfaces are equal.*/
-	bool isEqualTo(const Surface& other) const;
+	bool isEqualTo(const Surface& other, double eps) const;
 
 	/*! Return the internal polygon.*/
 	const std::vector<IBKMK::Vector3D>& polygon() const {
@@ -124,7 +124,7 @@ public:
 		The merging is performed in 2D level using clipper library (\sa mergePolygons).
 		\return True if the subsurface has an intersection.
 	*/
-	bool mergeOnlyThanPlanar(const Surface& subsurface);
+	bool mergeOnlyThanPlanar(const Surface& subsurface, double eps);
 
 	/*! Add the given surface as subsurface to the internal subsurface list.
 		While this process the subsurface will be converted into SubSurface type which contains only a 2D polygon in the plane of the current surface.
@@ -138,7 +138,7 @@ public:
 		\param other Other surface for checking.
 		\return vector of indices of similar points. First is the current polygon and second the other one.
 	*/
-	std::vector<std::pair<size_t,size_t>> samePoints(const Surface& other) const;
+	std::vector<std::pair<size_t,size_t>> samePoints(const Surface& other, double eps) const;
 
 	/*! Return the area of the surface.*/
 	double area() const;
@@ -190,7 +190,7 @@ public:
 	}
 
 	/*! Return if the object is valid.*/
-	bool isValid() const;
+	bool isValid(double eps) const;
 
 	/*! Return name of the object.*/
 	std::string name() const {

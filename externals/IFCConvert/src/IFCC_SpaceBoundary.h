@@ -10,6 +10,7 @@
 #include <ifcpp/model/UnitConverter.h>
 
 #include "IFCC_BuildingElement.h"
+#include "IFCC_ConvertOptions.h"
 
 namespace IFCC {
 
@@ -95,12 +96,12 @@ public:
 		\param spaceTransformation Coordinate transformation matrix
 	*/
 	bool fetchGeometryFromIFC(shared_ptr<UnitConverter>& unit_converter, const carve::math::Matrix& spaceTransformation,
-							  std::vector<ConvertError>& errors);
+							  std::vector<ConvertError>& errors, const ConvertOptions& convertOptions);
 
 	/*! Get geomtry from given surface.
 		\param surface Surface for space boundary
 	*/
-	bool fetchGeometryFromBuildingElement(const Surface& surface);
+	bool fetchGeometryFromBuildingElement(const Surface& surface, const ConvertOptions& convertOptions);
 
 	/*! In case of more than one surface after calling fetchGeometryFromIFC create additional space boundaries so each of them has only one surface.
 		It uses the first surface in the vector for itself and clears the surface vector at the end.
@@ -210,7 +211,7 @@ public:
 
 private:
 	/*! Create the surface vector from given polylines and set surface types.*/
-	void createSurfaceVect(const polyVector_t& polylines, int ifcid);
+	void createSurfaceVect(const polyVector_t& polylines, int ifcid, const ConvertOptions& convertOptions);
 
 	std::string													m_guidRelatedElement;	///< GUID of the related building element
 	std::string													m_guidRelatedSpace;	///< GUID of the related space

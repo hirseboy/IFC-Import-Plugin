@@ -144,7 +144,7 @@ public:
 
 	/*! If space boundaries with the same surface exist one of whem will be removed.
 	*/
-	void removeDublicatedSpaceBoundaries();
+	void removeDublicatedSpaceBoundaries(const ConvertOptions& convertOptions);
 
 	/*! Check if subsurfaces are used more than once.
 		\return vector of space boundary ids which are used more than once as subsurface
@@ -154,10 +154,10 @@ public:
 	/*! Check if some space boundaries have the same surface.
 		\param equalSBs vector of ids of the equal space boundaries
 	*/
-	void checkForEqualSpaceBoundaries(std::vector<std::pair<int,int>>& equalSBs) const;
+	void checkForEqualSpaceBoundaries(std::vector<std::pair<int,int>>& equalSBs, const ConvertOptions& convertOptions) const;
 
 	/*! Check if the current space is intersected to the other one.*/
-	bool isIntersected(const Space& other) const;
+	bool isIntersected(const Space& other, const ConvertOptions& convertOptions) const;
 
 	/*! Write the space in vicus xml format including space boundaries.
 		\param parent Parent xml node
@@ -213,7 +213,7 @@ private:
 		\param errors Vector of all conversion errors which occures here
 	*/
 	bool evaluateSpaceBoundaryGeometry(shared_ptr<UnitConverter>& unit_converter,
-									   std::vector<ConvertError>& errors);
+									   std::vector<ConvertError>& errors, const ConvertOptions& convertOptions);
 
 	/*! Is called from updateSpaceBoundaries in case space boundaries could be evaluated from IFC model.
 		It set the the space boundary type and the id of the connected building element (evaluateSpaceBoundaryTypes).

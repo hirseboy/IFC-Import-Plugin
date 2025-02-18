@@ -45,13 +45,13 @@ TiXmlElement * Instances::writeXML(TiXmlElement * parent) const {
 }
 
 void Instances::collectComponentInstances(BuildingElementsCollector& elements, Database& database, const Site& site,
-										 std::vector<ConvertError>& errors) {
-	collectNormalComponentInstances(elements, database, site, errors);
+										 std::vector<ConvertError>& errors, const ConvertOptions& convertOptions) {
+	collectNormalComponentInstances(elements, database, site, errors, convertOptions);
 	collectSubSurfaceComponentInstances(elements, database, site, errors);
 }
 
 void Instances::collectNormalComponentInstances(BuildingElementsCollector& elements, Database& database,
-										 const Site& site, std::vector<ConvertError>& errors) {
+										 const Site& site, std::vector<ConvertError>& errors, const ConvertOptions& convertOptions) {
 	std::vector<std::shared_ptr<BuildingElement>> constructionElements = elements.allConstructionElements();
 	for(const auto& building : site.m_buildings) {
 		for(const auto& storey : building->storeys()) {
@@ -62,7 +62,7 @@ void Instances::collectNormalComponentInstances(BuildingElementsCollector& eleme
 						continue;
 
 					// it makes no sense to add a space boundary with a non valid surface
-					if(!sb->surface().isValid())
+					if(!sb->surface().isValid(convertOptions.m_distanceEps))
 						continue;
 
 					// don't go further if the space boundary is already assigned

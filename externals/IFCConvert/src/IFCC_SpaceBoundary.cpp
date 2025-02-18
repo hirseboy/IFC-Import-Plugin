@@ -197,20 +197,20 @@ void SpaceBoundary::setRelatingElementType(BuildingElementTypes type) {
 }
 
 bool SpaceBoundary::fetchGeometryFromIFC(shared_ptr<UnitConverter>& unit_converter,
-										 const carve::math::Matrix& spaceTransformation, std::vector<ConvertError>& errors) {
+										 const carve::math::Matrix& spaceTransformation, std::vector<ConvertError>& errors, const ConvertOptions& convertOptions) {
 
 	polyVector_t polylines = polylinesFromConnectionGeometry(m_connectionGeometry, unit_converter, spaceTransformation,
 															 m_id, errors);
 	if(polylines.empty())
 		return false;
 
-	createSurfaceVect(polylines, m_ifcId);
+	createSurfaceVect(polylines, m_ifcId, convertOptions);
 	return true;
 }
 
-bool SpaceBoundary::fetchGeometryFromBuildingElement(const Surface& surface) {
+bool SpaceBoundary::fetchGeometryFromBuildingElement(const Surface& surface, const ConvertOptions& convertOptions) {
 	m_surfaces.clear();
-	if(surface.isValid()) {
+	if(surface.isValid(convertOptions.m_distanceEps)) {
 		std::string name = m_nameRelatedElement;
 		if(name.empty()) {
 			name = m_name;
@@ -263,7 +263,7 @@ bool SpaceBoundary::checkAndHealSurface(bool healing) {
 }
 
 
-void SpaceBoundary::createSurfaceVect(const polyVector_t& polylines, int ifcid) {
+void SpaceBoundary::createSurfaceVect(const polyVector_t& polylines, int ifcid, const ConvertOptions& convertOptions) {
 	m_surfaces.clear();
 	std::string name;
 	if(!m_nameRelatedElement.empty()) {
@@ -318,7 +318,7 @@ void SpaceBoundary::createSurfaceVect(const polyVector_t& polylines, int ifcid) 
 		std::vector<size_t> indicesToRemove;
 		Surface baseSurf = m_surfaces.front();
 		for(size_t i=1; i<m_surfaces.size(); ++i) {
-			if(baseSurf.mergeOnlyThanPlanar(m_surfaces[i])) {
+			if(baseSurf.mergeOnlyThanPlanar(m_surfaces[i], convertOptions.m_distanceEps)) {
 				indicesToRemove.push_back(i);
 			}
 		}

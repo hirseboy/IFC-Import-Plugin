@@ -4,6 +4,7 @@
 #include <carve/geom.hpp>
 
 #include <array>
+#include <memory>
 
 #include <IBKMK_Vector3D.h>
 #include <IBKMK_Vector2D.h>

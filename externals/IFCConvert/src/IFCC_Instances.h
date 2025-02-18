@@ -6,6 +6,7 @@
 #include "IFCC_BuildingElement.h"
 #include "IFCC_ComponentInstance.h"
 #include "IFCC_BuildingElementsCollector.h"
+#include "IFCC_ConvertOptions.h"
 
 //namespace VICUS {
 //	class Project;
@@ -36,7 +37,7 @@ public:
 		\param errors Global convert error list
 	*/
 	void collectComponentInstances(BuildingElementsCollector& elements, Database& database,
-								  const Site& site, std::vector<ConvertError>& errors);
+								  const Site& site, std::vector<ConvertError>& errors, const ConvertOptions& convertOptions);
 
 	std::vector<int> checkForWrongSurfaceIds(const Site& site);
 private:
@@ -48,7 +49,7 @@ private:
 		\param errors Global convert error list
 	*/
 	void collectNormalComponentInstances(BuildingElementsCollector& elements, Database& database,
-								  const Site& site, std::vector<ConvertError>& errors);
+								  const Site& site, std::vector<ConvertError>& errors, const ConvertOptions& convertOptions);
 
 
 	/*! Collect subsurface component instances from opening elements and component database.

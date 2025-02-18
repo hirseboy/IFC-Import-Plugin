@@ -61,16 +61,16 @@ const std::vector<int>& Opening::openingElementIds() const {
 	return m_openingElementIds;
 }
 
-void Opening::checkSurfaceType(const BuildingElement &element) {
+void Opening::checkSurfaceType(const BuildingElement &element, double eps) {
 	int intersections = 0;
 	for(const Surface& elemSurface : element.surfaces()) {
 		for(Surface& opSurface : m_surfaces) {
 			if(opSurface.sideType() != Surface::ST_Unknown)
 				continue;
 
-			bool parallel = elemSurface.isParallelTo(opSurface);
+			bool parallel = elemSurface.isParallelTo(opSurface, eps);
 			bool intersected = false;
-			if(elemSurface.isValid() && opSurface.isValid()) {
+			if(elemSurface.isValid(eps) && opSurface.isValid(eps)) {
 				if(IBKMK::polyIntersect(elemSurface.polygon(), opSurface.polygon()))
 					intersected = true;
 			}
@@ -87,7 +87,7 @@ void Opening::checkSurfaceType(const BuildingElement &element) {
 			for(Surface& opSurface : m_surfaces) {
 				if(opSurface.sideType() != Surface::ST_Unknown)
 					continue;
-				if(surf.isParallelTo(opSurface))
+				if(surf.isParallelTo(opSurface, eps))
 					opSurface.setSideType(Surface::ST_ProbableSide);
 			}
 		}

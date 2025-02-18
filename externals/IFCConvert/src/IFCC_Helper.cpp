@@ -231,12 +231,22 @@ void simplifyMesh(meshVector_t& meshVector, bool removeLowVolume) {
 
 }
 
-bool nearEqual(const IBKMK::Vector3D& v1, const IBKMK::Vector3D& v2) {
-	if(!IBK::nearly_equal<4>(v1.m_x,v2.m_x))
+bool nearEqual(double v1, double v2, double eps) {
+	IBK::NearEqual nearEqual(eps);
+	return nearEqual(v1,v2);
+}
+
+bool nearZero(double val, double eps) {
+	return (val + eps >= 0  &&  val <= eps);
+}
+
+bool nearEqual(const IBKMK::Vector3D& v1, const IBKMK::Vector3D& v2, double eps) {
+	IBK::NearEqual nearEqual(eps);
+	if(!nearEqual(v1.m_x,v2.m_x))
 		return false;
-	if(!IBK::nearly_equal<4>(v1.m_y,v2.m_y))
+	if(!nearEqual(v1.m_y,v2.m_y))
 		return false;
-	if(!IBK::nearly_equal<4>(v1.m_z,v2.m_z))
+	if(!nearEqual(v1.m_z,v2.m_z))
 		return false;
 
 	return true;
