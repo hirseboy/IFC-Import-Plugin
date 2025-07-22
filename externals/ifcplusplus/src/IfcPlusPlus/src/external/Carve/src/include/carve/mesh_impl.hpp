@@ -600,16 +600,18 @@ void Mesh<ndim>::cacheEdges() {
   open_edges.clear();
 
   for (size_t i = 0; i < faces.size(); ++i) {
-    face_t* face = faces[i];
-    edge_t* e = face->edge;
-    do {
-      if (e->rev == nullptr) {
-        open_edges.push_back(e);
-      } else if (e < e->rev) {
-        closed_edges.push_back(e);
-      }
-      e = e->next;
-    } while (e != face->edge);
+	  face_t* face = faces[i];
+	  edge_t* e = face->edge;
+	  if(e != nullptr) {
+		  do {
+			  if (e->rev == nullptr) {
+				  open_edges.push_back(e);
+			  } else if (e < e->rev) {
+				  closed_edges.push_back(e);
+			  }
+			  e = e->next;
+		  } while (e != face->edge);
+	  }
   }
 }
 

@@ -1097,12 +1097,16 @@ namespace carve {
 					do {
 						if( edge->next == edge->rev || edge->prev == edge->rev ) {
 							edge = edge->removeEdge();
+							if(edge == nullptr)
+								return n_removed;
 							++n_removed;
 							start = edge->prev;
 						}
 						else {
 							edge = edge->next;
 						}
+						if(edge == nullptr)
+							return n_removed;
 					} while( edge != start );
 				}
 				return n_removed;

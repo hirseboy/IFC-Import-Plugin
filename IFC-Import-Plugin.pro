@@ -6,7 +6,7 @@ TEMPLATE=subdirs
 
 # SUBDIRS lists all subprojects
 SUBDIRS += ImportIFCPlugin \
-	GEGExportPlugin \
+#	GEGExportPlugin \
 	IFCConvert \
 	IFC2BESTest \
 	Carve \
@@ -15,10 +15,10 @@ SUBDIRS += ImportIFCPlugin \
 	IBK \
 	IBKMK \
 	ifcplusplus \
-	Nandrad \
-	Vicus \
+#	Nandrad \
+#	Vicus \
 	CCM \
-	glm \
+#	glm \
 	DataIO \
 	TiCPP
 
@@ -26,12 +26,12 @@ SUBDIRS += ImportIFCPlugin \
 IFC2BESTest.file = IFC2BESTest/IFC2BESTest.pro
 
 ImportIFCPlugin.file = externals/IFCImportPlugin/ImportIFCPlugin.pro
-GEGExportPlugin.file = externals/GEGExportPlugin/GEGExportPlugin.pro
+#GEGExportPlugin.file = externals/GEGExportPlugin/GEGExportPlugin.pro
 IFCConvert.file = externals/IFCConvert/IFCConvert.pro
 CCM.file = externals/CCM/CCM.pro
 DataIO.file = externals/DataIO/DataIO.pro
-Nandrad.file = externals/Nandrad/Nandrad.pro
-Vicus.file = externals/Vicus/Vicus.pro
+#Nandrad.file = externals/Nandrad/Nandrad.pro
+#Vicus.file = externals/Vicus/Vicus.pro
 Carve.file = externals/ifcplusplus/src/IfcPlusPlus/src/external/Carve/projects/Qt/Carve.pro
 Clipper.file = externals/clipper/clipper.pro
 IBK.file = externals/IBK/IBK.pro
@@ -39,18 +39,18 @@ IBKMK.file = externals/IBKMK/IBKMK.pro
 TiCPP.file = externals/TiCPP/TiCPP.pro
 QtExt.file = externals/QtExt/QtExt.pro
 ifcplusplus.file = externals/ifcplusplus/ifcplusplus.pro
-glm.file = externals/glm/glm.pro
+#glm.file = externals/glm/glm.pro
 
 # dependencies
-IFC2BESTest.depends = ImportIFCPlugin GEGExportPlugin IBK IBKMK TiCPP
+IFC2BESTest.depends = ImportIFCPlugin  IBK IBKMK TiCPP #GEGExportPlugin
 
 CCM.depends = IBK TiCPP
 DataIO.depends = IBK
 QtExt.depends = IBK
-Nandrad.depends = IBK TiCPP IBKMK
-Vicus.depends = IBK TiCPP Nandrad IBKMK CCM glm
+#Nandrad.depends = IBK TiCPP IBKMK
+#Vicus.depends = IBK TiCPP Nandrad IBKMK CCM glm
 ImportIFCPlugin.depends = IBK IBKMK TiCPP QtExt Carve Clipper IFCConvert
-GEGExportPlugin.depends = IBK IBKMK TiCPP QtExt Nandrad Vicus CCM DataIO
+#GEGExportPlugin.depends = IBK IBKMK TiCPP QtExt Nandrad Vicus CCM DataIO
 IFCConvert.depends = IBK IBKMK TiCPP Carve Clipper
 IBKMK.depends = IBK
 

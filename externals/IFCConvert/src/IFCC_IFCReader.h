@@ -19,6 +19,7 @@
 #include "IFCC_BuildingElement.h"
 #include "IFCC_Building.h"
 #include "IFCC_BuildingStorey.h"
+#include "IFCC_Project.h"
 #include "IFCC_Site.h"
 #include "IFCC_Material.h"
 #include "IFCC_Construction.h"
@@ -242,6 +243,8 @@ private:
 		Openings should have connections to the corresponding opening structure and the construction element which contains the opening.
 	*/
 	std::vector<Opening>								m_openings;
+	/*! Ifc project. It can contain buildings in case no site is present.*/
+	Project												m_project;
 	/*! Building site. It can contain geometric objects for surrounding.*/
 	Site												m_site;
 	/*! Handler class for all databases (constructions, materials, windows, glazings, components).*/

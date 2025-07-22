@@ -14,6 +14,7 @@
 #include "IFCC_MeshUtils.h"
 #include "IFCC_Helper.h"
 #include "IFCC_RepresentationHelper.h"
+#include "IFCC_Project.h"
 
 namespace IFCC {
 
@@ -64,6 +65,14 @@ bool Site::set(const std::map<std::string,shared_ptr<ProductShapeData>>& buildin
 	return true;
 }
 
+bool Site::set(const Project &project) {
+	m_buildingsOriginal = project.buildingsOriginal();
+	// for(const auto& bo : project.buildingsOriginal()) {
+	// 	m_buildingsOriginal.push_back(bo);
+	// }
+	return !m_buildingsOriginal.empty();
+}
+
 
 void Site::transform(std::shared_ptr<ProductShapeData> productShape) {
 	if(productShape == nullptr)
@@ -83,15 +92,27 @@ void Site::fetchGeometry(std::shared_ptr<ProductShapeData> productShape, std::ve
 }
 
 void Site::fetchBuildings(const std::map<std::string,shared_ptr<ProductShapeData>>& buildings) {
-	for(const auto& shape : buildings) {
-		for(const auto& opOrg : m_buildingsOriginal) {
-			std::string guid = opOrg->m_GlobalId->m_value;
-			if(shape.first == guid) {
-				std::shared_ptr<Building> building = std::shared_ptr<Building>(new Building(GUID_maker::instance().guid()));
-				if(building->set(opOrg)) {
-					m_buildings.push_back(building);
+	if(m_buildingsOriginal.empty()) {
+		for(const auto& shape : buildings) {
+			std::shared_ptr<Building> building = std::shared_ptr<Building>(new Building(GUID_maker::instance().guid()));
+			std::shared_ptr<IFC4X3::IfcBuilding> buildingOrg = dynamic_pointer_cast<IFC4X3::IfcBuilding>(shape.second->m_ifc_object_definition.lock());
+			if(buildingOrg && building->set(buildingOrg)) {
+				m_buildings.push_back(building);
+			}
+			break;
+		}
+	}
+	else {
+		for(const auto& shape : buildings) {
+			for(const auto& opOrg : m_buildingsOriginal) {
+				std::string guid = opOrg->m_GlobalId->m_value;
+				if(shape.first == guid) {
+					std::shared_ptr<Building> building = std::shared_ptr<Building>(new Building(GUID_maker::instance().guid()));
+					if(building->set(opOrg)) {
+						m_buildings.push_back(building);
+					}
+					break;
 				}
-				break;
 			}
 		}
 	}

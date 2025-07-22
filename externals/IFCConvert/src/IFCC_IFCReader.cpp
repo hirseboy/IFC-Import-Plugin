@@ -74,6 +74,7 @@ IFCReader::IFCReader() :
 	m_convertCompletedSuccessfully(false),
 	m_model(new BuildingModel),
 	m_geometryConverter(m_model),
+	m_project(0),
 	m_site(0)
 {
 	m_geometryConverter.clearMessagesCallback();
@@ -81,7 +82,7 @@ IFCReader::IFCReader() :
 	m_geometryConverter.getGeomSettings()->setNumVerticesPerCircle(16);
 	m_geometryConverter.getGeomSettings()->setMinNumVerticesPerArc(4);
 
-//	Logger::instance().set("g:/temp/IFC_Log.txt");
+	Logger::instance().set("/home/fechner/Programming/IFC-Import-Plugin/IFC_Log.txt");
 	m_progressDialog.reset(new QProgressDialog("IFC Reader...", "Abort read", 0, 100));
 	m_progressDialog->setWindowModality(Qt::WindowModal);
 	m_progressDialog->setMinimum(0);
@@ -494,6 +495,23 @@ bool IFCReader::convert(bool useSpaceBoundaries) {
 
 	bool subtractOpenings = false;
 
+	// get project
+	const std::map<int, shared_ptr<BuildingEntity> >& map_entities = m_model->getMapIfcEntities();
+	for (auto it = map_entities.begin(); it != map_entities.end(); ++it) {
+		shared_ptr<BuildingEntity> obj = it->second;
+		if (obj) {
+			shared_ptr<IfcObjectDefinition> object_def = dynamic_pointer_cast<IfcObjectDefinition>(obj);
+			if (object_def) {
+				if( object_def->classID() == IFC4X3::IFCPROJECT ) {
+					shared_ptr<IfcProject> ifc_project = dynamic_pointer_cast<IfcProject>(object_def);
+					if( ifc_project ) {
+						m_project.set(ifc_project);
+					}
+				}
+			}
+		}
+	}
+
 	try {
 
 		emit progress(20, tr("Convert geometry"));
@@ -520,13 +538,13 @@ bool IFCReader::convert(bool useSpaceBoundaries) {
 			}
 		}
 
-		emit progress(80, tr("Update openings"));
+		emit progress(60, tr("Update openings"));
 
 		try {
-			emit progress(85, tr("Update building elements"));
+			emit progress(65, tr("Update building elements"));
 			updateBuildingElements();
 
-//			Logger::instance() << "updateBuildingElements";
+			Logger::instance() << "updateBuildingElements";
 		}
 		catch (std::exception& e) {
 			ConvertError err;
@@ -547,32 +565,46 @@ bool IFCReader::convert(bool useSpaceBoundaries) {
 			return false;
 		}
 
-		emit progress(90, tr("Set containing elements"));
+		emit progress(70, tr("Set containing elements"));
 		for(std::shared_ptr<BuildingElement>& openingElement : m_buildingElements.m_openingElements) {
 			openingElement->setContainingElements(m_openings);
 			openingElement->setContainedConstructionThickesses(m_buildingElements.m_constructionElements);
 			openingElement->setContainedConstructionThickesses(m_buildingElements.m_constructionSimilarElements);
 		}
 
-//		Logger::instance() << "setContainingElements";
+		Logger::instance() << "setContainingElements";
 
 		for(const auto& elem : m_buildingElements.m_elementsWithoutSurfaces) {
 			m_convertErrors.push_back({OT_BuildingElement, elem->m_id, "Building element has no surface"});
 		}
 
+		emit progress(80, tr("Match openings"));
 		checkAndMatchOpeningsToConstructions();
 
+		Logger::instance() << "collect data start";
 
-		emit progress(95, tr("Collect data"));
+		emit progress(90, tr("Collect data"));
 		m_database.collectData(m_buildingElements);
 
 		Logger::instance() << "collectData";
 
-		emit progress(97, tr("Update storeys"));
+		emit progress(95, tr("Update storeys"));
 
 		bool siteExist = m_siteShape != nullptr;
 		if(m_siteShape == nullptr) {
-		// create own site?
+		// create own site
+
+			// project has buildings --> create new site from this
+			if(!m_project.buildingsOriginal().empty()) {
+				bool res = m_site.set(m_project);
+				if(res)
+					res = m_site.set(m_buildingsShape, m_convertErrors);
+				siteExist = res;
+			}
+			else {
+				// create side without having a original buildings list directly from shape data
+				siteExist = m_site.set(m_buildingsShape, m_convertErrors);
+			}
 		}
 		else {
 			std::shared_ptr<IfcSpatialStructureElement> se = std::dynamic_pointer_cast<IfcSpatialStructureElement>(m_siteShape->m_ifc_object_definition.lock());
@@ -602,7 +634,7 @@ bool IFCReader::convert(bool useSpaceBoundaries) {
 			return false;
 		}
 
-//		Logger::instance() << "updateStoreys";
+		Logger::instance() << "updateStoreys";
 
 		if(m_repairFlags.m_removeDoubledSBs) {
 			std::vector<std::shared_ptr<Space>> spaces = m_site.allSpaces();
@@ -615,7 +647,7 @@ bool IFCReader::convert(bool useSpaceBoundaries) {
 		emit progress(98, tr("Collect component instances"));
 		m_instances.collectComponentInstances(m_buildingElements, m_database, m_site, m_convertErrors, m_convertOptions);
 
-//		Logger::instance() << "collectComponentInstances";
+		Logger::instance() << "collectComponentInstances";
 
 		if(!m_convertErrors.empty()) {
 			m_hasError = true;
@@ -625,7 +657,7 @@ bool IFCReader::convert(bool useSpaceBoundaries) {
 		m_convertCompletedSuccessfully = true;
 
 		emit progress(100, tr("Convert completed successfully"));
-//		Logger::instance() << "m_convertCompletedSuccessfully";
+		Logger::instance() << "m_convertCompletedSuccessfully";
 
 		return true;
 
@@ -667,6 +699,8 @@ int IFCReader::numberOfIFCSpaceBoundaries() const {
 bool IFCReader::checkEssentialIFCs(QString& errmsg, int& buildings, int& spaces) {
 	buildings = 0;
 	spaces = 0;
+	int unknown = 0;
+	int storeys = 0;
 	bool siteExist = false;
 	for(const auto& item : m_model->getMapIfcEntities()) {
 		if(dynamic_pointer_cast<IfcSpatialStructureElement>(item.second) != nullptr) {
@@ -679,12 +713,18 @@ bool IFCReader::checkEssentialIFCs(QString& errmsg, int& buildings, int& spaces)
 			else if(dynamic_pointer_cast<IfcSpace>(item.second) != nullptr) {
 				++spaces;
 			}
+			else if(dynamic_pointer_cast<IfcBuildingStorey>(item.second) != nullptr) {
+				++storeys;
+			}
+			else {
+				++unknown;
+			}
 		}
 	}
-	if(!siteExist) {
-		errmsg = tr("No building site.");
-		return false;
-	}
+	// if(!siteExist) {
+	// 	errmsg = tr("No building site.");
+	// 	return false;
+	// }
 	if(buildings == 0) {
 		errmsg = tr("No buildings.");
 		return false;
@@ -1091,6 +1131,8 @@ bool IFCReader::typeByGuid(const std::string& guid, std::pair<BuildingElementTyp
 }
 
 void IFCReader::checkAndMatchOpeningsToConstructions() {
+	Logger::instance() << "checkAndMatchOpeningsToConstructions";
+
 	for(Opening& opening : m_openings) {
 		if(opening.isConnectedToOpeningElement())
 			continue;

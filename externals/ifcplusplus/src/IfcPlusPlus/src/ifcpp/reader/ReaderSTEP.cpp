@@ -851,6 +851,7 @@ void ReaderSTEP::readData(	std::istream& read_in, std::streampos file_size, shar
 				mapFindReplaceTypes["IFCBEAMSTANDARDCASE"] = "IFCBEAM";
 				mapFindReplaceTypes["IFC2DCOMPOSITECURVE"] = "IFCCOMPOSITECURVE";
 				mapFindReplaceTypes["IFCELECTRICDISTRIBUTIONPOINT"] = "IFCFLOWCONTROLLER";
+				mapFindReplaceTypes["IFCOPENINGSTANDARDCASE"] = "IFCOPENINGELEMENT";
 				// IfcElectricDistributionPoint	DELETED   ->  IfcFlowController
 
 				for( auto it : mapFindReplaceTypes )

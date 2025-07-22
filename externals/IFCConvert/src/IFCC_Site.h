@@ -15,6 +15,8 @@
 
 namespace IFCC {
 
+class Project;
+
 /*! Class represents a building site. It can contain geometric objects of the surrounding.
 	It contains also all buildings with their content (storeys, spaces etc.).
 */
@@ -46,6 +48,8 @@ public:
 		\param buildings Shape data of buildings
 	*/
 	bool set(const std::map<std::string,shared_ptr<ProductShapeData>>& buildings, std::vector<ConvertError>& errors);
+
+	bool set(const Project& project);
 
 	/*! Return the internal surface vector for the site only.*/
 	const std::vector<Surface>& surfaces() const;

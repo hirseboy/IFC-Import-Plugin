@@ -63,6 +63,7 @@ SOURCES +=  \
 	src/IFCC_PointConverter.cpp \
 	src/IFCC_ProfileCache.cpp \
 	src/IFCC_ProfileConverter.cpp \
+	src/IFCC_Project.cpp \
 	src/IFCC_Property.cpp \
 	src/IFCC_RepresentationHelper.cpp \
 	src/IFCC_Site.cpp \
@@ -113,6 +114,7 @@ HEADERS +=  \
 	src/IFCC_PointConverter.h \
 	src/IFCC_ProfileCache.h \
 	src/IFCC_ProfileConverter.h \
+	src/IFCC_Project.h \
 	src/IFCC_Property.h \
 	src/IFCC_RepresentationHelper.h \
 	src/IFCC_Site.h \

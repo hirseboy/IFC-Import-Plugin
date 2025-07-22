@@ -110,6 +110,8 @@ void convert(const carve::mesh::MeshSet<3>& meshSet, std::vector<std::vector<std
 		int faCount = mesh->faces.size();
 		for(int fi = 0; fi<faCount; ++fi) {
 			carve::mesh::Face<3>* face = mesh->faces[fi];
+			if( face->edge == nullptr)
+				continue;
 			std::vector<carve::mesh::Vertex<3>* > vertices;
 			face->getVertices(vertices);
 			int numVert = vertices.size();

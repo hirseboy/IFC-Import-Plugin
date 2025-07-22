@@ -18,7 +18,7 @@ void surfacesFromMeshSets(std::vector<shared_ptr<carve::mesh::MeshSet<3> > >& me
 		// get surfaces
 		for(size_t mi=0; mi<currMeshSet.meshes.size(); ++mi) {
 			for(size_t fi =0; fi<currMeshSet.meshes[mi]->faces.size(); ++fi) {
-				if(currMeshSet.meshes[mi]->faces[fi] != nullptr)
+				if(currMeshSet.meshes[mi]->faces[fi] != nullptr && currMeshSet.meshes[mi]->faces[fi]->edge != nullptr)
 					surfaces.emplace_back(Surface(currMeshSet.meshes[mi]->faces[fi]));
 			}
 		}

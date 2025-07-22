@@ -95,7 +95,8 @@ bool BuildingElement::set(std::shared_ptr<IFC4X3::IfcElement> ifcElement, Buildi
 	m_type = type;
 	m_name = label2s(ifcElement->m_Name);
 	for(const auto& relop : ifcElement->m_HasOpenings_inverse) {
-		m_containedOpeningsOriginal.push_back(relop.lock()->m_RelatedOpeningElement);
+		if(relop.lock()->m_RelatedOpeningElement)
+			m_containedOpeningsOriginal.push_back(relop.lock()->m_RelatedOpeningElement);
 	}
 	if(isConstructionType(m_type) || isConstructionSimilarType(m_type))
 		m_surfaceComponent = true;
@@ -131,7 +132,9 @@ bool BuildingElement::set(std::shared_ptr<IFC4X3::IfcElement> ifcElement, Buildi
 
 	if(isOpeningType(m_type)) {
 		for(const auto& relop : ifcElement->m_FillsVoids_inverse) {
-			m_isUsedFromOpeningsOriginal.push_back(relop.lock()->m_RelatingOpeningElement);
+			shared_ptr<IFC4X3::IfcOpeningElement>& oelem = relop.lock()->m_RelatingOpeningElement;
+			if(oelem)
+				m_isUsedFromOpeningsOriginal.push_back(oelem);
 		}
 		if(m_type == BET_Window) {
 			shared_ptr<IFC4X3::IfcWindow> window = dynamic_pointer_cast<IFC4X3::IfcWindow>(ifcElement);
@@ -488,6 +491,9 @@ void BuildingElement::findSurfacePairs(double eps) {
 void BuildingElement::fetchOpenings(std::vector<Opening>& openings, double eps) {
 
 	for(const auto& opOrg : m_isUsedFromOpeningsOriginal) {
+		if(!opOrg)
+			continue;
+
 		for(auto& op : openings) {
 			std::string guid = guidFromObject(opOrg.get());
 			if(op.guid() == guid) {
@@ -499,6 +505,8 @@ void BuildingElement::fetchOpenings(std::vector<Opening>& openings, double eps) 
 	}
 
 	for(const auto& opOrg : m_containedOpeningsOriginal) {
+		if(!opOrg)
+			continue;
 		for(auto& op : openings) {
 			std::string guid = guidFromObject(opOrg.get());
 			if(op.guid() == guid) {
