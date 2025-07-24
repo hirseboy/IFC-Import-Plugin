@@ -97,7 +97,7 @@
       <item row="5" column="0" colspan="4">
        <widget class="QTabWidget" name="tabWidgetAdvanced">
         <property name="currentIndex">
-         <number>1</number>
+         <number>3</number>
         </property>
         <widget class="QWidget" name="tabGeneralOptions">
          <attribute name="title">
@@ -466,31 +466,30 @@
           <string>Construction output</string>
          </attribute>
          <layout class="QGridLayout" name="gridLayout_6">
-          <item row="0" column="0">
-           <widget class="QCheckBox" name="checkBoxWriteAllOthers">
+          <item row="0" column="4">
+           <widget class="QCheckBox" name="checkBoxWriteOpenings">
             <property name="text">
-             <string>All others</string>
+             <string>Openings</string>
             </property>
            </widget>
           </item>
-          <item row="0" column="2">
-           <widget class="QCheckBox" name="checkBoxWriteConstructions">
-            <property name="text">
-             <string>Constructions</string>
+          <item row="2" column="1">
+           <spacer name="verticalSpacer">
+            <property name="orientation">
+             <enum>Qt::Vertical</enum>
             </property>
-           </widget>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>20</width>
+              <height>303</height>
+             </size>
+            </property>
+           </spacer>
           </item>
           <item row="0" column="3">
            <widget class="QCheckBox" name="checkBoxWriteBuildingElements">
             <property name="text">
              <string>Building elements</string>
-            </property>
-           </widget>
-          </item>
-          <item row="0" column="4">
-           <widget class="QCheckBox" name="checkBoxWriteOpenings">
-            <property name="text">
-             <string>Openings</string>
             </property>
            </widget>
           </item>
@@ -507,18 +506,26 @@
             </property>
            </spacer>
           </item>
-          <item row="1" column="1">
-           <spacer name="verticalSpacer">
-            <property name="orientation">
-             <enum>Qt::Vertical</enum>
+          <item row="0" column="0">
+           <widget class="QCheckBox" name="checkBoxWriteAllOthers">
+            <property name="text">
+             <string>All others</string>
             </property>
-            <property name="sizeHint" stdset="0">
-             <size>
-              <width>20</width>
-              <height>303</height>
-             </size>
+           </widget>
+          </item>
+          <item row="0" column="2">
+           <widget class="QCheckBox" name="checkBoxWriteConstructions">
+            <property name="text">
+             <string>Constructions</string>
             </property>
-           </spacer>
+           </widget>
+          </item>
+          <item row="1" column="0" colspan="3">
+           <widget class="QCheckBox" name="checkBoxSurfaceWritingMethod">
+            <property name="text">
+             <string>Write surface polygons in old style</string>
+            </property>
+           </widget>
           </item>
          </layout>
         </widget>

@@ -365,6 +365,7 @@ void ImportIFCDialog::initElements() {
 	// with conversions into basic SI units m and m2
 	m_reader->setMinimumCheckValues(ui->doubleSpinBoxMinimumDistance->value() / 1000.0, ui->doubleSpinBoxMinimumArea->value() / 10000.0);
 	m_reader->setUseCSGForOpenings(ui->checkBoxOpeningCSGSearch->isChecked());
+	m_reader->setSurfaceWritingMode(ui->checkBoxSurfaceWritingMethod->isChecked());
 }
 
 void ImportIFCDialog::setMatching(MatchingMainType type) {
@@ -459,6 +460,7 @@ void ImportIFCDialog::initConvertOptions() {
 	ui->checkBoxWriteConstructions->setChecked(m_reader->convertOptions().m_writeConstructionElements);
 	ui->checkBoxWriteOpenings->setChecked(m_reader->convertOptions().m_writeOpeningElements);
 	ui->checkBoxWriteAllOthers->setChecked(m_reader->convertOptions().m_writeOtherElements);
+	ui->checkBoxSurfaceWritingMethod->setChecked(m_reader->convertOptions().m_useOldPolygonWriting);
 }
 
 
