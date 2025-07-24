@@ -59,7 +59,7 @@ private:
 		\param errors Global convert error list
 	*/
 	void collectSubSurfaceComponentInstances(BuildingElementsCollector& elements, Database& database,
-											 const Site& site, std::vector<ConvertError>& errors);
+											 const Site& site, std::vector<ConvertError>& errors, const ConvertOptions& convertOptions);
 	std::map<int, ComponentInstance>		m_componentInstances;			///< Map of id and component instance
 	std::map<int, ComponentInstance>		m_subSurfaceComponentInstances;	///< map of id and subsurface component instance
 };
