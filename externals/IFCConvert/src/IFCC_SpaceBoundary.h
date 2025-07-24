@@ -117,7 +117,11 @@ public:
 	/*! Merge the internal surface with the given one.*/
 	void mergeSurface(const Surface& surf);
 
+	/*! Check if the polygon is valid and try to heal it if not and heal is true.*/
 	bool checkAndHealSurface(bool healing = true);
+
+	/*! Check if the surface polygon is valid.*/
+	bool checkSurface() const;
 
 
 	/*! Return the surface of this space boundary.*/
@@ -195,7 +199,7 @@ public:
 	/*! Write the surface of the space boundary in vicus xml format.
 		\param parent Parent xml node
 	*/
-	TiXmlElement * writeXML(TiXmlElement * parent) const;
+	TiXmlElement * writeXML(TiXmlElement * parent, const ConvertOptions& convertOptions) const;
 
 	/*! Unique ID of the related building element.*/
 	int															m_elementEntityId;

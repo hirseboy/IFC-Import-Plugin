@@ -111,7 +111,7 @@ bool Building::updateStoreys(const objectShapeTypeVector_t& elementShapes,
 }
 
 
-TiXmlElement * Building::writeXML(TiXmlElement * parent) const {
+TiXmlElement * Building::writeXML(TiXmlElement * parent, const ConvertOptions& convertOptions) const {
 	if (m_id == -1)
 		return nullptr;
 
@@ -128,7 +128,7 @@ TiXmlElement * Building::writeXML(TiXmlElement * parent) const {
 		e->LinkEndChild(child);
 
 		for( const auto& storey : m_storeys) {
-			storey->writeXML(child);
+			storey->writeXML(child, convertOptions);
 		}
 	}
 	return e;

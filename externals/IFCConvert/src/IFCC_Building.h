@@ -50,7 +50,7 @@ public:
 					   const ConvertOptions& convertOptions);
 
 	/*! Write the building in vicus xml format including storeys.*/
-	TiXmlElement * writeXML(TiXmlElement * parent) const;
+	TiXmlElement * writeXML(TiXmlElement * parent, const ConvertOptions& convertOptions) const;
 
 	/*! Return vector of building storeys.*/
 	const std::vector<std::shared_ptr<BuildingStorey>>& storeys() const {

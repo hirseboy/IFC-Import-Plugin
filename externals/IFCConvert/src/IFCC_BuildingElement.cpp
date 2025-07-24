@@ -571,22 +571,26 @@ double BuildingElement::openingArea() const {
 	return 0;
 }
 
-TiXmlElement *BuildingElement::writeXML(TiXmlElement *parent) const {
+TiXmlElement *BuildingElement::writeXML(TiXmlElement *parent, const ConvertOptions& convertOptions) const {
 	if (m_id == -1)
+		return nullptr;
+
+	bool hasSurface = false;
+	for(auto surf : m_surfaces) {
+		if(surf.check())
+			hasSurface = true;
+	}
+	if(!hasSurface)
 		return nullptr;
 
 	TiXmlElement * e = new TiXmlElement("PlainGeometry");
 	parent->LinkEndChild(e);
 
-//	e->SetAttribute("id", IBK::val2string<unsigned int>(m_id));
-//	e->SetAttribute("displayName", m_name);
-//	e->SetAttribute("visible", IBK::val2string<bool>(true));
-
 	if(!m_surfaces.empty()) {
 		TiXmlElement * child = new TiXmlElement("Surfaces");
 		e->LinkEndChild(child);
 		for(auto surf : m_surfaces) {
-			surf.writeXML(child);
+			surf.writeXML(child, convertOptions.m_useOldPolygonWriting);
 		}
 	}
 

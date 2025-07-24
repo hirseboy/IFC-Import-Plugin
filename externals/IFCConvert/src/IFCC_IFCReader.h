@@ -183,7 +183,16 @@ public:
 	*/
 	void setMinimumCheckValues(double minimumDistance, double minimumArea);
 
+	/*! Set opening simplifying by use of CSG.
+	 *  If true a new opening will be calculated by using the substraction of original opening from building element.
+	*/
 	void setUseCSGForOpenings(bool useCSG);
+
+	/*! Set with which method the surfaces should be written.
+	 *  If true a 3D polygon like the old SIM-VICUS is used.
+	 *  Otherwise the current method with 2D polygon and plane parameter is used.
+	*/
+	void setSurfaceWritingMode(bool oldStyle);
 
 	/*! Return the current convert options.
 	*/

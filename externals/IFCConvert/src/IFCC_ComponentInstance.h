@@ -21,26 +21,11 @@ public:
 	/*! Standard constructor.*/
 	ComponentInstance();
 
-	int									m_id;				///< Id of the object
-	int									m_componentId;		///< Id of the connected component
-	int									m_sideASurfaceId;	///< Id of a surface connected to side A
-	int									m_sideBSurfaceId;	///< Id of a surface connected to side B
-	bool								m_subSurface;		///< If true its a subsurface component instance, otherwise its a normal component instance
+	/*! Standard constructor.*/
+	ComponentInstance(int id, int componentId, int sideASurfaceId = -1, int sideBSurfaceId = -1);
 
 	/*! Write the component in vicus xml format.*/
 	TiXmlElement * writeXML(TiXmlElement * parent) const;
-
-//	/*! Create a VICUS component instance object and return this.
-//		The returned object contains all transferable data.
-//		\param idMap Used for mapping current ids to VICUS ids.
-//	*/
-//	VICUS::ComponentInstance getVicusComponentInstance(std::map<int,int>& idMap) const;
-
-//	/*! Create a VICUS component instance object and return this.
-//		The returned object contains all transferable data.
-//		\param idMap Used for mapping current ids to VICUS ids.
-//	*/
-//	VICUS::SubSurfaceComponentInstance getVicusSubSurfaceComponentInstance(std::map<int,int>& idMap) const;
 
 	/*! Comparison operator.*/
 	friend bool operator==(const ComponentInstance& left, const ComponentInstance& right) {
@@ -53,7 +38,20 @@ public:
 		return true;
 	}
 
+	int id() const;
+
+	bool isSubSurface() const;
+	void setSubSurface(bool newSubSurface);
+
+	int sideASurfaceId() const;
+
 private:
+
+	int									m_id;				///< Id of the object
+	int									m_componentId;		///< Id of the connected component
+	int									m_sideASurfaceId;	///< Id of a surface connected to side A
+	int									m_sideBSurfaceId;	///< Id of a surface connected to side B
+	bool								m_subSurface;		///< If true its a subsurface component instance, otherwise its a normal component instance
 
 };
 

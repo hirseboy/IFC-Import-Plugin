@@ -12,9 +12,14 @@ ComponentInstance::ComponentInstance() :
 	m_sideASurfaceId(-1),
 	m_sideBSurfaceId(-1),
 	m_subSurface(false)
-{
+{}
 
-}
+ComponentInstance::ComponentInstance(int id, int componentId, int sideASurfaceId, int sideBSurfaceId) :
+	m_id(id),
+	m_componentId(componentId),
+	m_sideASurfaceId(sideASurfaceId),
+	m_sideBSurfaceId(sideBSurfaceId)
+{}
 
 TiXmlElement * ComponentInstance::writeXML(TiXmlElement * parent) const {
 	std::string name = m_subSurface ? "SubSurfaceComponentInstance" : "ComponentInstance";
@@ -34,33 +39,20 @@ TiXmlElement * ComponentInstance::writeXML(TiXmlElement * parent) const {
 	return e;
 }
 
-//VICUS::ComponentInstance ComponentInstance::getVicusComponentInstance(std::map<int,int>& idMap) const {
-//	VICUS::ComponentInstance res;
-//	res.m_id = m_id;
-//	idMap[m_id] = m_id;
+int ComponentInstance::id() const {
+	return m_id;
+}
 
-//	if(m_componentId > -1)
-//		res.m_idComponent = idMap[m_componentId];
-//	if(m_sideASurfaceId > -1)
-//		res.m_idSideASurface = idMap[m_sideASurfaceId];
-//	if(m_sideBSurfaceId > -1)
-//		res.m_idSideBSurface = idMap[m_sideBSurfaceId];
-//	return res;
-//}
+bool ComponentInstance::isSubSurface() const {
+	return m_subSurface;
+}
 
-//VICUS::SubSurfaceComponentInstance ComponentInstance::getVicusSubSurfaceComponentInstance(std::map<int,int>& idMap) const {
-//	VICUS::SubSurfaceComponentInstance res;
-//	res.m_id = m_id;
-//	idMap[m_id] = m_id;
+void ComponentInstance::setSubSurface(bool subSurface) {
+	m_subSurface = subSurface;
+}
 
-//	if(m_componentId > -1)
-//		res.m_idSubSurfaceComponent = idMap[m_componentId];
-//	if(m_sideASurfaceId > -1)
-//		res.m_idSideASurface = idMap[m_sideASurfaceId];
-//	if(m_sideBSurfaceId > -1)
-//		res.m_idSideBSurface = idMap[m_sideBSurfaceId];
-//	return res;
-//}
-
+int ComponentInstance::sideASurfaceId() const {
+	return m_sideASurfaceId;
+}
 
 } // namespace IFCC

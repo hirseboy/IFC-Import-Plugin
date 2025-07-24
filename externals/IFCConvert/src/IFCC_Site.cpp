@@ -206,7 +206,7 @@ const SpaceBoundary* Site::spaceBoundaryWithId(int id) const {
 //}
 
 
-TiXmlElement * Site::writeXML(TiXmlElement * parent) const {
+TiXmlElement * Site::writeXML(TiXmlElement * parent, const ConvertOptions& convertOptions) const {
 	if(m_buildings.empty())
 		return nullptr;
 
@@ -214,7 +214,7 @@ TiXmlElement * Site::writeXML(TiXmlElement * parent) const {
 	parent->LinkEndChild(e);
 
 	for( const std::shared_ptr<Building>& building : m_buildings) {
-		building->writeXML(e);
+		building->writeXML(e, convertOptions);
 	}
 	return e;
 }

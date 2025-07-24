@@ -76,11 +76,6 @@ public:
 		return true;
 	}
 
-//	/*! Create a VICUS subsurface component object and return this.
-//		The returned object contains all transferable data.
-//	*/
-//	VICUS::SubSurfaceComponent getVicusObject(std::map<int,int>& idMap, int idOffset) const;
-
 private:
 	/*! Create name of subsurface component type for writing.*/
 	std::string type2String(SubSurfaceComponentType type) const;

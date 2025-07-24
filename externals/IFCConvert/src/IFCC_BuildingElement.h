@@ -213,7 +213,7 @@ public:
 	/*! Write the building element in vicus xml format including surfaces.
 		\param parent Parent xml node
 	*/
-	TiXmlElement * writeXML(TiXmlElement * parent) const;
+	TiXmlElement * writeXML(TiXmlElement * parent, const ConvertOptions& convertOptions) const;
 
 	/*! Vector of thickness and name for the layers of this element.*/
 	std::vector<std::pair<double,std::string>>							m_materialLayers;

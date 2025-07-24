@@ -37,12 +37,14 @@ public:
 	int								m_matchedConstructionNumbers = 2;
 	double							m_minimumSurfaceArea = 0.01;
 	double							m_distanceEps = 1e-3;
+	double							m_polygonEps = 1e-4;
 	bool							m_createMissingSite = true;
 	bool							m_writeConstructionElements = false;
 	bool							m_writeBuildingElements = false;
 	bool							m_writeOpeningElements = false;
 	bool							m_writeOtherElements = false;
-	bool							m_useCSGForOpenings;
+	bool							m_useCSGForOpenings = false;
+	bool							m_useOldPolygonWriting = false;
 
 private:
 	QSet<BuildingElementTypes>		m_noSearchForOpeningsInTypes;

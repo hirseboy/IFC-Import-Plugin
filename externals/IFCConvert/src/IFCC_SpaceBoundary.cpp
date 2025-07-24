@@ -259,7 +259,15 @@ bool SpaceBoundary::checkAndHealSurface(bool healing) {
 
 		res = m_surface.hasSimplePolygon();
 	}
+	// if checking before was true make an additional check if the surface is ready for export
+	if(res)
+		return m_surface.check();
+
 	return res;
+}
+
+bool SpaceBoundary::checkSurface() const {
+	return m_surface.check();
 }
 
 
@@ -342,11 +350,13 @@ void SpaceBoundary::addContainedOpeningSpaceBoundaries(const std::shared_ptr<Spa
 	m_containedOpeningSpaceBoundaries.push_back(containedOpeningSpaceBoundaries);
 }
 
-TiXmlElement *SpaceBoundary::writeXML(TiXmlElement *parent) const {
+TiXmlElement *SpaceBoundary::writeXML(TiXmlElement *parent, const ConvertOptions& convertOptions) const {
 	if(!isOpeningElement()) {
 		Surface s = surfaceWithSubsurfaces();
+		if(!s.check())
+			return nullptr;
 
-		s.writeXML(parent);
+		s.writeXML(parent, convertOptions.m_useOldPolygonWriting);
 	}
 	return parent;
 }

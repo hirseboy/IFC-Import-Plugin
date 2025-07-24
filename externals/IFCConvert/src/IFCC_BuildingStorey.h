@@ -68,7 +68,7 @@ public:
 //	void updateSpaceConnections(BuildingElementsCollector& buildingElements, std::vector<Opening>& openings);
 
 	/*! Write the storey in vicus xml format including spaces.*/
-	TiXmlElement * writeXML(TiXmlElement * parent) const;
+	TiXmlElement * writeXML(TiXmlElement * parent, const ConvertOptions& convertOptions) const;
 
 //	/*! Create a VICUS building level object and return this.
 //		The returned object contains all transferable data.

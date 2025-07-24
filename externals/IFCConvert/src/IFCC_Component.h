@@ -76,11 +76,6 @@ public:
 		return true;
 	}
 
-//	/*! Create a VICUS component object and return this.
-//		The returned object contains all transferable data.
-//	*/
-//	VICUS::Component getVicusObject(std::map<int,int>& idMap, int idOffset) const;
-
 private:
 	/*! Create name of component type for writing.*/
 	std::string type2String(ComponentType type) const;

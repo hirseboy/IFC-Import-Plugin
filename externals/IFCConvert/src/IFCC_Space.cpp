@@ -880,8 +880,9 @@ bool Space::evaluateSpaceBoundaryFromIFC(const objectShapeTypeVector_t& shapes,
 
 	int wrongSurfaces = 0;
 	for(auto sb : m_spaceBoundaries) {
-		if(!sb->checkAndHealSurface(true))
+		if(!sb->checkAndHealSurface(true)) {
 			++wrongSurfaces;
+		}
 	}
 	if(wrongSurfaces > 0) {
 		errors.push_back(ConvertError{OT_Space, m_id, "Space contains " + std::to_string(wrongSurfaces) + " space boundaries with non valid surface."});
@@ -1127,7 +1128,7 @@ bool Space::isIntersected(const Space& other, const ConvertOptions& convertOptio
 	return false;
 }
 
-TiXmlElement * Space::writeXML(TiXmlElement * parent) const {
+TiXmlElement * Space::writeXML(TiXmlElement * parent, const ConvertOptions& convertOptions) const {
 	if (m_id == -1)
 		return nullptr;
 
@@ -1141,11 +1142,16 @@ TiXmlElement * Space::writeXML(TiXmlElement * parent) const {
 		e->SetAttribute("displayName", m_name);
 //	e->SetAttribute("visible", IBK::val2string<bool>(true));
 
-	if(!m_spaceBoundaries.empty()) {
+	bool sbsReady = false;
+	for(auto sb : m_spaceBoundaries) {
+		if(sb->checkSurface())
+			sbsReady = true;
+	}
+	if(sbsReady) {
 		TiXmlElement * child = new TiXmlElement("Surfaces");
 		e->LinkEndChild(child);
 		for(auto sb : m_spaceBoundaries) {
-			sb->writeXML(child);
+			sb->writeXML(child, convertOptions);
 		}
 	}
 	return e;

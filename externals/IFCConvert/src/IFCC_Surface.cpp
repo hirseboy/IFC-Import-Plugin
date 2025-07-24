@@ -10,7 +10,7 @@
 
 #include <Carve/src/include/carve/carve.hpp>
 
-#include "IFCC_MeshUtils.h"
+//#include "IFCC_MeshUtils.h"
 #include "IFCC_Clippertools.h"
 #include "IFCC_Helper.h"
 
@@ -460,9 +460,42 @@ bool checkSimVicusValid(const std::vector<IBKMK::Vector3D>& polygon) {
 	return ibkPoly.setVertexes(polygon, true);
 }
 
-TiXmlElement * Surface::writeXML(TiXmlElement * parent) const {
+bool Surface::check(double epsilon) const {
+	if(m_polyVect.empty())
+		return false;
+
+	try {
+		IBKMK::Polygon3D poly3D(m_polyVect, epsilon);
+
+		// don't write in case of non valid polygon
+		if(poly3D.vertexes().empty())
+			return false;
+
+		// don't write in case of non valid polygon
+		if(!poly3D.isValid())
+			return false;
+	}
+	catch(IBK::Exception& e) {
+		return false;
+	}
+	return true;
+}
+
+TiXmlElement * Surface::writeXML(TiXmlElement * parent, bool oldVersion) const {
 	if (m_id == -1)
 		return nullptr;
+
+	// don't write in case of no valid polygon
+	if(!check())
+		return nullptr;
+
+	if(oldVersion)
+		return writeXMLOld(parent);
+
+	return writeXMLNew(parent);
+}
+
+TiXmlElement * Surface::writeXMLOld(TiXmlElement * parent) const {
 
 	TiXmlElement * e = new TiXmlElement("Surface");
 	parent->LinkEndChild(e);
@@ -493,6 +526,59 @@ TiXmlElement * Surface::writeXML(TiXmlElement * parent) const {
 		}
 	}
 	return e;
+}
+
+TiXmlElement * Surface::writeXMLNew(TiXmlElement * parent) const {
+	try {
+
+		IBKMK::Polygon3D poly3D(m_polyVect, IBKMK::POLYGON_EPSILON);
+
+		// don't write in case of non valid polygon
+		if(poly3D.vertexes().empty())
+			return nullptr;
+
+		// don't write in case of non valid polygon
+		if(!poly3D.isValid())
+			return nullptr;
+
+		TiXmlElement * e = new TiXmlElement("Surface");
+		parent->LinkEndChild(e);
+
+		e->SetAttribute("id", IBK::val2string<unsigned int>(m_id));
+		if (!m_name.empty())
+			e->SetAttribute("displayName", m_name);
+
+
+		TiXmlElement * polyChild = new TiXmlElement("Polygon3D");
+		e->LinkEndChild(polyChild);
+
+		// encode vectors
+		polyChild->SetAttribute("offset", poly3D.offset().toString());
+		polyChild->SetAttribute("normal", poly3D.normal().toString());
+		polyChild->SetAttribute("localX", poly3D.localX().toString());
+
+		std::stringstream vals;
+		const std::vector<IBKMK::Vector2D> & polyVertexes = poly3D.polyline().vertexes();
+		for (unsigned int i=0; i<polyVertexes.size(); ++i) {
+			vals << polyVertexes[i].m_x << " " << polyVertexes[i].m_y;
+			if (i<polyVertexes.size()-1)  vals << ", ";
+		}
+		TiXmlText * text = new TiXmlText( vals.str() );
+		polyChild->LinkEndChild( text );
+
+		if(!m_subSurfaces.empty()) {
+			TiXmlElement * child = new TiXmlElement("SubSurfaces");
+			e->LinkEndChild(child);
+
+			for( const SubSurface& subsurface : m_subSurfaces) {
+				subsurface.writeXML(child);
+			}
+		}
+		return e;
+	}
+	catch(IBK::Exception& e) {
+		return nullptr;
+	}
 }
 
 void Surface::setSurfaceType(IFC4X3::IfcInternalOrExternalEnum::IfcInternalOrExternalEnumEnum type) {

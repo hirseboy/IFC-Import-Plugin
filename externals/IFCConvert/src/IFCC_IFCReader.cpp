@@ -473,6 +473,10 @@ void IFCReader::setUseCSGForOpenings(bool useCSG) {
 	m_convertOptions.m_useCSGForOpenings = useCSG;
 }
 
+void IFCReader::setSurfaceWritingMode(bool oldStyle) {
+	m_convertOptions.m_useOldPolygonWriting = oldStyle;
+}
+
 
 bool IFCReader::convert(bool useSpaceBoundaries) {
 
@@ -842,7 +846,7 @@ void IFCReader::writeXML(const IBK::Path & filename) const {
 	TiXmlElement * e = new TiXmlElement("Project");
 	root->LinkEndChild(e);
 
-	m_site.writeXML(e);
+	m_site.writeXML(e, m_convertOptions);
 
 	m_instances.writeXML(e);
 
@@ -854,10 +858,16 @@ void IFCReader::writeXML(const IBK::Path & filename) const {
 
 		TiXmlElement * child = new TiXmlElement("Surfaces");
 		for(const auto& elem : m_buildingElements.allConstructionElements()) {
-			if(elem->surfaces().empty())
-				continue;
+			bool hasSurface = false;
 			for(auto surf : elem->surfaces()) {
-				surf.writeXML(child);
+				if(surf.check())
+					hasSurface = true;
+			}
+			if(!hasSurface)
+				continue;
+
+			for(auto surf : elem->surfaces()) {
+				surf.writeXML(child, m_convertOptions.m_useOldPolygonWriting);
 			}
 
 		}
@@ -882,7 +892,7 @@ void IFCReader::setVicusProjectText(QString& projectText) {
 	TiXmlElement * e = new TiXmlElement("Project");
 	root->LinkEndChild(e);
 
-	m_site.writeXML(e);
+	m_site.writeXML(e, m_convertOptions);
 
 	m_instances.writeXML(e);
 
@@ -900,39 +910,59 @@ void IFCReader::setVicusProjectText(QString& projectText) {
 		pg->LinkEndChild(child);
 		if(m_convertOptions.m_writeConstructionElements) {
 			for(const auto& elem : m_buildingElements.m_constructionElements) {
-				if(elem->surfaces().empty())
+				bool hasSurface = false;
+				for(auto surf : elem->surfaces()) {
+					if(surf.check())
+						hasSurface = true;
+				}
+				if(!hasSurface)
 					continue;
 				for(auto surf : elem->surfaces()) {
-					surf.writeXML(child);
+					surf.writeXML(child, m_convertOptions.m_useOldPolygonWriting);
 				}
 			}
 		}
 		if(m_convertOptions.m_writeBuildingElements) {
 			for(const auto& elem : m_buildingElements.m_constructionSimilarElements) {
-				if(elem->surfaces().empty())
+				bool hasSurface = false;
+				for(auto surf : elem->surfaces()) {
+					if(surf.check())
+						hasSurface = true;
+				}
+				if(!hasSurface)
 					continue;
 				for(auto surf : elem->surfaces()) {
-					surf.writeXML(child);
+					surf.writeXML(child, m_convertOptions.m_useOldPolygonWriting);
 				}
 			}
 		}
 
 		if(m_convertOptions.m_writeOpeningElements) {
 			for(const auto& elem : m_buildingElements.m_openingElements) {
-				if(elem->surfaces().empty())
+				bool hasSurface = false;
+				for(auto surf : elem->surfaces()) {
+					if(surf.check())
+						hasSurface = true;
+				}
+				if(!hasSurface)
 					continue;
 				for(auto surf : elem->surfaces()) {
-					surf.writeXML(child);
+					surf.writeXML(child, m_convertOptions.m_useOldPolygonWriting);
 				}
 			}
 		}
 
 		if(m_convertOptions.m_writeOtherElements) {
 			for(const auto& elem : m_buildingElements.m_otherElements) {
-				if(elem->surfaces().empty())
+				bool hasSurface = false;
+				for(auto surf : elem->surfaces()) {
+					if(surf.check())
+						hasSurface = true;
+				}
+				if(!hasSurface)
 					continue;
 				for(auto surf : elem->surfaces()) {
-					surf.writeXML(child);
+					surf.writeXML(child, m_convertOptions.m_useOldPolygonWriting);
 				}
 			}
 		}

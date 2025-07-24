@@ -100,7 +100,7 @@ void BuildingStorey::updateSpaces(const objectShapeTypeVector_t& shapes,
 //}
 
 
-TiXmlElement * BuildingStorey::writeXML(TiXmlElement * parent) const {
+TiXmlElement * BuildingStorey::writeXML(TiXmlElement * parent, const ConvertOptions& convertOptions) const {
 	if (m_id == -1)
 		return nullptr;
 
@@ -119,7 +119,7 @@ TiXmlElement * BuildingStorey::writeXML(TiXmlElement * parent) const {
 		e->LinkEndChild(child);
 
 		for( const auto& space : m_spaces) {
-			space->writeXML(child);
+			space->writeXML(child, convertOptions);
 		}
 	}
 	return e;

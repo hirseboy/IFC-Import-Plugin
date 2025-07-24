@@ -5,6 +5,8 @@
 
 #include <tinyxml.h>
 
+#include <IBKMK_constants.h>
+
 #include <ifcpp/IFC4X3/include/IfcInternalOrExternalEnum.h>
 
 #include "IFCC_Types.h"
@@ -163,8 +165,8 @@ public:
 	*/
 	std::vector<Surface> getSimplified() const;
 
-	/*! Write the surface in vicus xml format including all subsurfaces.*/
-	TiXmlElement * writeXML(TiXmlElement * parent) const;
+	/*! Write the surface in old vicus xml format including all subsurfaces.*/
+	TiXmlElement * writeXML(TiXmlElement * parent, bool oldVersion) const;
 
 	/*! Set the position type of the surface.
 		\param type Position type from IFC space boundary object.
@@ -216,7 +218,16 @@ public:
 	/*! Set side type.*/
 	void setSideType(SideType newSideType);
 
+	/*! Check if the polygon is valid and ready to write or export.*/
+	bool check(double epsilon = IBKMK::POLYGON_EPSILON) const;
 private:
+
+	/*! Write the surface in old vicus xml format including all subsurfaces.*/
+	TiXmlElement * writeXMLOld(TiXmlElement * parent) const;
+
+	/*! Write the surface in new vicus xml format including all subsurfaces.*/
+	TiXmlElement * writeXMLNew(TiXmlElement * parent) const;
+
 	std::string								m_name;
 	int										m_id;
 	int										m_elementEntityId;
@@ -228,6 +239,7 @@ private:
 	std::vector<Surface>					m_childSurfaces;
 	carve::geom::plane<3>					m_planeCarve;
 	PlaneNormal								m_planeNormal;
+	bool									m_canWriteSurface = false;
 };
 
 

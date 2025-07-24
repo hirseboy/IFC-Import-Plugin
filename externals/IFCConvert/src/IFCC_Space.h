@@ -162,7 +162,7 @@ public:
 	/*! Write the space in vicus xml format including space boundaries.
 		\param parent Parent xml node
 	*/
-	TiXmlElement * writeXML(TiXmlElement * parent) const;
+	TiXmlElement * writeXML(TiXmlElement * parent, const ConvertOptions& convertOptions) const;
 
 	/*! Return true if the space contains a space boundary with the given GUID.*/
 	bool hasSpaceBoundary(const std::string& guid) const;
