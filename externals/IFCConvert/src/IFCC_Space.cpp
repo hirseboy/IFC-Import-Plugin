@@ -880,7 +880,7 @@ bool Space::evaluateSpaceBoundaryFromIFC(const objectShapeTypeVector_t& shapes,
 
 	int wrongSurfaces = 0;
 	for(auto sb : m_spaceBoundaries) {
-		if(!sb->checkAndHealSurface(true)) {
+		if(!sb->checkAndHealSurface(true, convertOptions.m_polygonEps)) {
 			++wrongSurfaces;
 		}
 	}
@@ -1119,7 +1119,7 @@ bool Space::isIntersected(const Space& other, const ConvertOptions& convertOptio
 		for(const auto& p2 : other.m_spaceBoundaries) {
 			const Surface & surf1 = p1->surface();
 			const Surface & surf2 = p2->surface().polygon();
-			if(surf1.isValid(convertOptions.m_distanceEps) && surf2.isValid(convertOptions.m_distanceEps)) {
+			if(surf1.isValid(convertOptions.m_polygonEps) && surf2.isValid(convertOptions.m_polygonEps)) {
 				if(IBKMK::polyIntersect(surf1.polygon(), surf2.polygon()))
 					return true;
 			}
@@ -1144,7 +1144,7 @@ TiXmlElement * Space::writeXML(TiXmlElement * parent, const ConvertOptions& conv
 
 	bool sbsReady = false;
 	for(auto sb : m_spaceBoundaries) {
-		if(sb->checkSurface())
+		if(sb->checkSurface(convertOptions.m_polygonEps))
 			sbsReady = true;
 	}
 	if(sbsReady) {

@@ -243,7 +243,7 @@ void SpaceBoundary::mergeSurface(const Surface& surf) {
 	m_surface.merge(surf);
 }
 
-bool SpaceBoundary::checkAndHealSurface(bool healing) {
+bool SpaceBoundary::checkAndHealSurface(bool healing, double epsilon) {
 	bool res = m_surface.hasSimplePolygon();
 	if(!res && healing) {
 		std::vector<Surface> resSurfaces = m_surface.innerIntersection();
@@ -261,15 +261,14 @@ bool SpaceBoundary::checkAndHealSurface(bool healing) {
 	}
 	// if checking before was true make an additional check if the surface is ready for export
 	if(res)
-		return m_surface.check();
+		return m_surface.check(epsilon);
 
 	return res;
 }
 
-bool SpaceBoundary::checkSurface() const {
-	return m_surface.check();
+bool SpaceBoundary::checkSurface(double epsilon) const {
+	return m_surface.check(epsilon);
 }
-
 
 void SpaceBoundary::createSurfaceVect(const polyVector_t& polylines, int ifcid, const ConvertOptions& convertOptions) {
 	m_surfaces.clear();
@@ -353,10 +352,10 @@ void SpaceBoundary::addContainedOpeningSpaceBoundaries(const std::shared_ptr<Spa
 TiXmlElement *SpaceBoundary::writeXML(TiXmlElement *parent, const ConvertOptions& convertOptions) const {
 	if(!isOpeningElement()) {
 		Surface s = surfaceWithSubsurfaces();
-		if(!s.check())
+		if(!s.check(convertOptions.m_polygonEps))
 			return nullptr;
 
-		s.writeXML(parent, convertOptions.m_useOldPolygonWriting);
+		s.writeXML(parent, convertOptions);
 	}
 	return parent;
 }

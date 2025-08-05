@@ -577,7 +577,7 @@ TiXmlElement *BuildingElement::writeXML(TiXmlElement *parent, const ConvertOptio
 
 	bool hasSurface = false;
 	for(auto surf : m_surfaces) {
-		if(surf.check())
+		if(surf.check(convertOptions.m_polygonEps))
 			hasSurface = true;
 	}
 	if(!hasSurface)
@@ -590,7 +590,7 @@ TiXmlElement *BuildingElement::writeXML(TiXmlElement *parent, const ConvertOptio
 		TiXmlElement * child = new TiXmlElement("Surfaces");
 		e->LinkEndChild(child);
 		for(auto surf : m_surfaces) {
-			surf.writeXML(child, convertOptions.m_useOldPolygonWriting);
+			surf.writeXML(child, convertOptions);
 		}
 	}
 

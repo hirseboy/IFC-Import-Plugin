@@ -10,6 +10,7 @@
 #include <ifcpp/IFC4X3/include/IfcInternalOrExternalEnum.h>
 
 #include "IFCC_Types.h"
+#include "IFCC_ConvertOptions.h"
 #include "IFCC_Helper.h"
 #include "IFCC_GeometricHelperClasses.h"
 #include "IFCC_SubSurface.h"
@@ -166,7 +167,7 @@ public:
 	std::vector<Surface> getSimplified() const;
 
 	/*! Write the surface in old vicus xml format including all subsurfaces.*/
-	TiXmlElement * writeXML(TiXmlElement * parent, bool oldVersion) const;
+	TiXmlElement * writeXML(TiXmlElement * parent, const ConvertOptions& options) const;
 
 	/*! Set the position type of the surface.
 		\param type Position type from IFC space boundary object.
@@ -219,14 +220,14 @@ public:
 	void setSideType(SideType newSideType);
 
 	/*! Check if the polygon is valid and ready to write or export.*/
-	bool check(double epsilon = IBKMK::POLYGON_EPSILON) const;
+	bool check(double epsilon) const;
 private:
 
 	/*! Write the surface in old vicus xml format including all subsurfaces.*/
-	TiXmlElement * writeXMLOld(TiXmlElement * parent) const;
+	TiXmlElement * writeXMLOld(TiXmlElement * parent, const ConvertOptions& options) const;
 
 	/*! Write the surface in new vicus xml format including all subsurfaces.*/
-	TiXmlElement * writeXMLNew(TiXmlElement * parent) const;
+	TiXmlElement * writeXMLNew(TiXmlElement * parent, const ConvertOptions& options) const;
 
 	std::string								m_name;
 	int										m_id;

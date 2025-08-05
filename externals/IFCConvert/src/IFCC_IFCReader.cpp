@@ -374,11 +374,11 @@ void IFCReader::updateBuildingElements() {
 			if(e == nullptr)
 				continue;
 
-			std::shared_ptr<BuildingElement> bElem(new BuildingElement(GUID_maker::instance().guid()));
-			if(!bElem->set(e, elems.first))
-				continue;
-
 			if(isConstructionType(elems.first)) {
+				std::shared_ptr<BuildingElement> bElem(new BuildingElement(GUID_maker::instance().guid()));
+				if(!bElem->set(e, elems.first))
+					continue;
+
 				m_buildingElements.m_constructionElements.push_back( bElem);
 				BuildingElement& currbElem = *m_buildingElements.m_constructionElements.back();
 
@@ -390,6 +390,10 @@ void IFCReader::updateBuildingElements() {
 					m_buildingElements.m_elementsWithoutSurfaces.push_back(m_buildingElements.m_constructionElements.back());
 			}
 			else if(isConstructionSimilarType(elems.first)) {
+				std::shared_ptr<BuildingElement> bElem(new BuildingElement(GUID_maker::instance().guid()));
+				if(!bElem->set(e, elems.first))
+					continue;
+
 				m_buildingElements.m_constructionSimilarElements.push_back(bElem);
 				BuildingElement& currbElem = *m_buildingElements.m_constructionSimilarElements.back();
 
@@ -400,6 +404,10 @@ void IFCReader::updateBuildingElements() {
 					m_buildingElements.m_elementsWithoutSurfaces.push_back(m_buildingElements.m_constructionSimilarElements.back());
 			}
 			else if(isOpeningType(elems.first)) {
+				std::shared_ptr<BuildingElement> bElem(new BuildingElement(GUID_maker::instance().guid()));
+				if(!bElem->set(e, elems.first))
+					continue;
+
 				m_buildingElements.m_openingElements.push_back(bElem);
 				BuildingElement& currbElem = *m_buildingElements.m_openingElements.back();
 
@@ -410,14 +418,16 @@ void IFCReader::updateBuildingElements() {
 					m_buildingElements.m_elementsWithoutSurfaces.push_back(m_buildingElements.m_openingElements.back());
 			}
 			else {
-				m_buildingElements.m_otherElements.push_back(bElem);
-				BuildingElement& currbElem = *m_buildingElements.m_otherElements.back();
+	// 			std::shared_ptr<BuildingElement> bElem(new BuildingElement(GUID_maker::instance().guid()));
+	// 			if(!bElem->set(e, elems.first))
+	// 				continue;
 
-				Logger::instance() << "update other " << currCount << " of " << elemCount;
+	// 			m_buildingElements.m_otherElements.push_back(bElem);
+	// 			BuildingElement& currbElem = *m_buildingElements.m_otherElements.back();
 
-				currbElem.update(elem, m_openings, m_convertErrors, m_convertOptions);
-				//						if(m_buildingElements.m_otherElements.back()->surfaces().empty())
-				//							m_buildingElements.m_elementsWithoutSurfaces.push_back(m_buildingElements.m_otherElements.back());
+	// 			Logger::instance() << "update other " << currCount << " of " << elemCount;
+
+	// 			currbElem.update(elem, m_openings, m_convertErrors, m_convertOptions);
 			}
 		}
 	}
@@ -464,9 +474,10 @@ void IFCReader::setWritingBuildingElements(bool constructions, bool buildingElem
 	m_convertOptions.m_writeOtherElements = other;
 }
 
-void IFCReader::setMinimumCheckValues(double minimumDistance, double minimumArea) {
+void IFCReader::setMinimumCheckValues(double minimumDistance, double minimumArea, double polygonEpsilon) {
 	m_convertOptions.m_distanceEps = minimumDistance;
 	m_convertOptions.m_minimumSurfaceArea = minimumArea;
+	m_convertOptions.m_polygonEps = polygonEpsilon;
 }
 
 void IFCReader::setUseCSGForOpenings(bool useCSG) {
@@ -860,14 +871,14 @@ void IFCReader::writeXML(const IBK::Path & filename) const {
 		for(const auto& elem : m_buildingElements.allConstructionElements()) {
 			bool hasSurface = false;
 			for(auto surf : elem->surfaces()) {
-				if(surf.check())
+				if(surf.check(m_convertOptions.m_polygonEps))
 					hasSurface = true;
 			}
 			if(!hasSurface)
 				continue;
 
 			for(auto surf : elem->surfaces()) {
-				surf.writeXML(child, m_convertOptions.m_useOldPolygonWriting);
+				surf.writeXML(child, m_convertOptions);
 			}
 
 		}
@@ -912,13 +923,13 @@ void IFCReader::setVicusProjectText(QString& projectText) {
 			for(const auto& elem : m_buildingElements.m_constructionElements) {
 				bool hasSurface = false;
 				for(auto surf : elem->surfaces()) {
-					if(surf.check())
+					if(surf.check(m_convertOptions.m_polygonEps))
 						hasSurface = true;
 				}
 				if(!hasSurface)
 					continue;
 				for(auto surf : elem->surfaces()) {
-					surf.writeXML(child, m_convertOptions.m_useOldPolygonWriting);
+					surf.writeXML(child, m_convertOptions);
 				}
 			}
 		}
@@ -926,13 +937,13 @@ void IFCReader::setVicusProjectText(QString& projectText) {
 			for(const auto& elem : m_buildingElements.m_constructionSimilarElements) {
 				bool hasSurface = false;
 				for(auto surf : elem->surfaces()) {
-					if(surf.check())
+					if(surf.check(m_convertOptions.m_polygonEps))
 						hasSurface = true;
 				}
 				if(!hasSurface)
 					continue;
 				for(auto surf : elem->surfaces()) {
-					surf.writeXML(child, m_convertOptions.m_useOldPolygonWriting);
+					surf.writeXML(child, m_convertOptions);
 				}
 			}
 		}
@@ -941,13 +952,13 @@ void IFCReader::setVicusProjectText(QString& projectText) {
 			for(const auto& elem : m_buildingElements.m_openingElements) {
 				bool hasSurface = false;
 				for(auto surf : elem->surfaces()) {
-					if(surf.check())
+					if(surf.check(m_convertOptions.m_polygonEps))
 						hasSurface = true;
 				}
 				if(!hasSurface)
 					continue;
 				for(auto surf : elem->surfaces()) {
-					surf.writeXML(child, m_convertOptions.m_useOldPolygonWriting);
+					surf.writeXML(child, m_convertOptions);
 				}
 			}
 		}
@@ -956,13 +967,13 @@ void IFCReader::setVicusProjectText(QString& projectText) {
 			for(const auto& elem : m_buildingElements.m_otherElements) {
 				bool hasSurface = false;
 				for(auto surf : elem->surfaces()) {
-					if(surf.check())
+					if(surf.check(m_convertOptions.m_polygonEps))
 						hasSurface = true;
 				}
 				if(!hasSurface)
 					continue;
 				for(auto surf : elem->surfaces()) {
-					surf.writeXML(child, m_convertOptions.m_useOldPolygonWriting);
+					surf.writeXML(child, m_convertOptions);
 				}
 			}
 		}

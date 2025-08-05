@@ -62,9 +62,7 @@ void Instances::collectNormalComponentInstances(BuildingElementsCollector& eleme
 						continue;
 
 					// it makes no sense to add a space boundary with a non valid surface
-					if(!sb->surface().isValid(convertOptions.m_distanceEps))
-						continue;
-					if(!sb->surface().check(convertOptions.m_distanceEps))
+					if(!sb->surface().check(convertOptions.m_polygonEps))
 						continue;
 
 					// don't go further if the space boundary is already assigned
@@ -144,7 +142,7 @@ void Instances::collectSubSurfaceComponentInstances(BuildingElementsCollector& e
 					if(!subsb->isConstructionElement())
 						continue;
 
-					if(!subsb->surface().check(convertOptions.m_distanceEps))
+					if(!subsb->surface().check(convertOptions.m_polygonEps))
 						continue;
 
 					// go through all subsurfaces of the current space boundary

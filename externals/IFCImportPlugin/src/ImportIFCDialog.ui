@@ -97,7 +97,7 @@
       <item row="5" column="0" colspan="4">
        <widget class="QTabWidget" name="tabWidgetAdvanced">
         <property name="currentIndex">
-         <number>3</number>
+         <number>0</number>
         </property>
         <widget class="QWidget" name="tabGeneralOptions">
          <attribute name="title">
@@ -118,7 +118,11 @@
               </widget>
              </item>
              <item>
-              <widget class="QDoubleSpinBox" name="doubleSpinBoxMinimumDistance"/>
+              <widget class="QDoubleSpinBox" name="doubleSpinBoxMinimumDistance">
+               <property name="value">
+                <double>1.000000000000000</double>
+               </property>
+              </widget>
              </item>
              <item>
               <widget class="QLabel" name="label_11">
@@ -151,12 +155,37 @@
               </widget>
              </item>
              <item>
-              <widget class="QDoubleSpinBox" name="doubleSpinBoxMinimumArea"/>
+              <widget class="QDoubleSpinBox" name="doubleSpinBoxMinimumArea">
+               <property name="value">
+                <double>1.000000000000000</double>
+               </property>
+              </widget>
              </item>
              <item>
               <widget class="QLabel" name="label_12">
                <property name="text">
                 <string>cm2</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QLabel" name="label_18">
+               <property name="text">
+                <string>Epsilon for polygon operations</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QDoubleSpinBox" name="doubleSpinBoxPolygonEpsilon">
+               <property name="value">
+                <double>1.000000000000000</double>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QLabel" name="label_19">
+               <property name="text">
+                <string>mm</string>
                </property>
               </widget>
              </item>

@@ -181,7 +181,7 @@ public:
 	 *  \param minimumDistance Used as eps for search for equal or coplanar points
 	 *  \param minimumArea Areas smaller than this will not taken into account
 	*/
-	void setMinimumCheckValues(double minimumDistance, double minimumArea);
+	void setMinimumCheckValues(double minimumDistance, double minimumArea, double polygonEpsilon);
 
 	/*! Set opening simplifying by use of CSG.
 	 *  If true a new opening will be calculated by using the substraction of original opening from building element.

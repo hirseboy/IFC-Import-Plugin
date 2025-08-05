@@ -13,7 +13,7 @@
 //#include "ImportWizard.h"
 #include "ImportIFCDialog.h"
 
-IFCImportPlugin::IFCImportPlugin(QObject *parent)
+IFCImportPlugin::IFCImportPlugin(QObject *)
 {
 }
 

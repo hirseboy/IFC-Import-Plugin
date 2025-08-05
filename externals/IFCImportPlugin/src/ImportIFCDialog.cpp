@@ -52,6 +52,7 @@ ImportIFCDialog::ImportIFCDialog(QWidget *parent, IFCC::IFCReader* reader) :
 
 	ui->doubleSpinBoxMinimumArea->setValue(m_reader->convertOptions().m_minimumSurfaceArea*10000);
 	ui->doubleSpinBoxMinimumDistance->setValue(m_reader->convertOptions().m_distanceEps*1000);
+	ui->doubleSpinBoxPolygonEpsilon->setValue(m_reader->convertOptions().m_polygonEps*1000);
 	ui->doubleSpinBoxMatchOpeningDistance->setValue(m_reader->convertOptions().m_openingDistance);
 	ui->doubleSpinBoxStandardWallThickness->setValue(m_reader->convertOptions().m_standardWallThickness);
 
@@ -363,7 +364,8 @@ void ImportIFCDialog::initElements() {
 										 ui->checkBoxWriteAllOthers->isChecked());
 
 	// with conversions into basic SI units m and m2
-	m_reader->setMinimumCheckValues(ui->doubleSpinBoxMinimumDistance->value() / 1000.0, ui->doubleSpinBoxMinimumArea->value() / 10000.0);
+	m_reader->setMinimumCheckValues(ui->doubleSpinBoxMinimumDistance->value() / 1000.0, ui->doubleSpinBoxMinimumArea->value() / 10000.0,
+									ui->doubleSpinBoxPolygonEpsilon->value() / 1000.0);
 	m_reader->setUseCSGForOpenings(ui->checkBoxOpeningCSGSearch->isChecked());
 	m_reader->setSurfaceWritingMode(ui->checkBoxSurfaceWritingMethod->isChecked());
 }

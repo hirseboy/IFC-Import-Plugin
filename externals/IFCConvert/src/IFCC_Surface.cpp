@@ -455,24 +455,25 @@ std::vector<Surface> Surface::getSimplified() const {
 	return res;
 }
 
-bool checkSimVicusValid(const std::vector<IBKMK::Vector3D>& polygon) {
-	IBKMK::Polygon3D ibkPoly;
+static bool checkSimVicusValid(const std::vector<IBKMK::Vector3D>& polygon, double epsilon) {
+	IBKMK::Polygon3D ibkPoly(epsilon);
 	return ibkPoly.setVertexes(polygon, true);
 }
 
 bool Surface::check(double epsilon) const {
-	if(m_polyVect.empty())
+	if (m_id == -1)
 		return false;
 
 	try {
 		IBKMK::Polygon3D poly3D(m_polyVect, epsilon);
 
-		// don't write in case of non valid polygon
 		if(poly3D.vertexes().empty())
 			return false;
 
-		// don't write in case of non valid polygon
 		if(!poly3D.isValid())
+			return false;
+
+		if(IBK::near_zero(poly3D.vertexes().front().m_x) || IBK::near_zero(poly3D.vertexes().front().m_y))
 			return false;
 	}
 	catch(IBK::Exception& e) {
@@ -481,21 +482,18 @@ bool Surface::check(double epsilon) const {
 	return true;
 }
 
-TiXmlElement * Surface::writeXML(TiXmlElement * parent, bool oldVersion) const {
-	if (m_id == -1)
-		return nullptr;
-
+TiXmlElement * Surface::writeXML(TiXmlElement * parent, const ConvertOptions& options) const {
 	// don't write in case of no valid polygon
-	if(!check())
+	if(!check(options.m_polygonEps))
 		return nullptr;
 
-	if(oldVersion)
-		return writeXMLOld(parent);
+	if(options.m_useOldPolygonWriting)
+		return writeXMLOld(parent, options);
 
-	return writeXMLNew(parent);
+	return writeXMLNew(parent, options);
 }
 
-TiXmlElement * Surface::writeXMLOld(TiXmlElement * parent) const {
+TiXmlElement * Surface::writeXMLOld(TiXmlElement * parent, const ConvertOptions& options) const {
 
 	TiXmlElement * e = new TiXmlElement("Surface");
 	parent->LinkEndChild(e);
@@ -505,7 +503,7 @@ TiXmlElement * Surface::writeXMLOld(TiXmlElement * parent) const {
 		e->SetAttribute("displayName", m_name);
 //	e->SetAttribute("visible", IBK::val2string<bool>(true));
 
-	if(!m_polyVect.empty() && checkSimVicusValid(m_polyVect)) {
+	if(!m_polyVect.empty() && checkSimVicusValid(m_polyVect, options.m_polygonEps)) {
 		TiXmlElement * child = new TiXmlElement("Polygon3D");
 		e->LinkEndChild(child);
 
@@ -528,18 +526,10 @@ TiXmlElement * Surface::writeXMLOld(TiXmlElement * parent) const {
 	return e;
 }
 
-TiXmlElement * Surface::writeXMLNew(TiXmlElement * parent) const {
+TiXmlElement * Surface::writeXMLNew(TiXmlElement * parent, const ConvertOptions& options) const {
 	try {
 
-		IBKMK::Polygon3D poly3D(m_polyVect, IBKMK::POLYGON_EPSILON);
-
-		// don't write in case of non valid polygon
-		if(poly3D.vertexes().empty())
-			return nullptr;
-
-		// don't write in case of non valid polygon
-		if(!poly3D.isValid())
-			return nullptr;
+		IBKMK::Polygon3D poly3D(m_polyVect, options.m_polygonEps);
 
 		TiXmlElement * e = new TiXmlElement("Surface");
 		parent->LinkEndChild(e);

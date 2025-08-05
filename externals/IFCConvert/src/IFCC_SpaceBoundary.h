@@ -118,10 +118,10 @@ public:
 	void mergeSurface(const Surface& surf);
 
 	/*! Check if the polygon is valid and try to heal it if not and heal is true.*/
-	bool checkAndHealSurface(bool healing = true);
+	bool checkAndHealSurface(bool healing, double epsilon);
 
 	/*! Check if the surface polygon is valid.*/
-	bool checkSurface() const;
+	bool checkSurface(double epsilon) const;
 
 
 	/*! Return the surface of this space boundary.*/
