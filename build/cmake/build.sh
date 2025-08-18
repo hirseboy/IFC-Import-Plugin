@@ -78,7 +78,7 @@ fi
 cd $BUILDDIR && cmake $CMAKE_OPTIONS $CMAKE_BUILD_TYPE $CMAKE_COMPILER_OPTIONS $CMAKELISTSDIR && make -j$MAKE_CPUCOUNT &&
 cd $CMAKELISTSDIR &&
 mkdir -p ../../bin/release &&
-echo "*** Copying NandradSolver and IFC2BESTest to bin/release ***" &&
+echo "*** Copying IFC2BESTest to bin/release ***" &&
 if [ -d $BUILDDIR/IFC2BESTest/IFC2BESTest.app ]
 then
 	# MacOS
@@ -89,6 +89,7 @@ else
 	if [ -e $BUILDDIR/IFC2BESTest/IFC2BESTest ]
 	then
 		cp $BUILDDIR/IFC2BESTest/IFC2BESTest ../../bin/release/IFC2BESTest
+		cp $BUILDDIR/ImportIFCPlugin/libImportIFCPlugin.so ../../bin/release/libImportIFCPlugin.so
 	fi
 fi
 
