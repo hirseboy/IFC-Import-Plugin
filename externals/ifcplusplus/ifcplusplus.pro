@@ -33,7 +33,7 @@ src/IfcPlusPlus/src/ifcpp/IFC4X3/include \
 src/IfcPlusPlus/src/external/Carve/src/include \
 src/external \
 				src/IfcPlusPlus/src/external \
-				src/IfcPlusPlus/src/external/Carve/src/commonS
+				src/IfcPlusPlus/src/external/Carve/src/commons
 
 win32-msvc* {
 SOURCES += src/IfcPlusPlus/src/external/XUnzip.cpp
