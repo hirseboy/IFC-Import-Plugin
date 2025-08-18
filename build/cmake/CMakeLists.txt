@@ -1,10 +1,10 @@
 # CMakeLists.txt file for IFC2BESTest and dependent libraries
 
+# Require a fairly recent cmake version
+cmake_minimum_required( VERSION 2.8...3.13 )
+
 # The project name
 project( IFC2BESTest )
-
-# Require a fairly recent cmake version
-cmake_minimum_required( VERSION 2.8...3.10 )
 
 # enable @rpath on MacOS
 cmake_policy(SET CMP0042 NEW)
@@ -82,6 +82,26 @@ endif (MSVC)
 # automatically add CMAKE_CURRENT_SOURCE_DIR and CMAKE_CURRENT_BINARY_DIR to the include directories in every processed CMakeLists.txt
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
+find_package(Qt5 COMPONENTS Core REQUIRED)
+find_package(Qt5Widgets REQUIRED)
+find_package(Qt5Xml REQUIRED)
+find_package(Qt5Svg REQUIRED)
+find_package(Qt5PrintSupport REQUIRED)
+find_package(Qt5Network REQUIRED)
+find_package(Qt5Concurrent REQUIRED)
+
+
+message("*** Building with Qt5, Version ${Qt5Widgets_VERSION} ***")
+
+# when building with gcc/icc add compile flag
+if (NOT MSVC)
+	if (APPLE)
+	  set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -stdlib=libc++" )
+	else (APPLE)
+	  set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -std=gnu++11" )
+	endif (APPLE)
+endif (NOT MSVC)
+
 if( APPLE )
 	find_library(IOKIT NAMES IOKit REQUIRED)
 	find_library(COREFOUNDATION NAMES CoreFoundation REQUIRED)
@@ -109,6 +129,17 @@ include( ../../externals/IBK/projects/cmake_local/cmake_pri/CMakeLists.txt  )
 add_subdirectory( ../../externals/IBK/projects/cmake_local IBK )
 add_subdirectory( ../../externals/IBKMK/projects/cmake_local IBKMK )
 add_subdirectory( ../../externals/ifcplusplus/projects/cmake_local ifcplusplus )
+add_subdirectory( ../../externals/IFCConvert/projects/cmake_local IFCConvert )
+add_subdirectory( ../../externals/ifcplusplus/src/IfcPlusPlus/src/external/Carve/projects/cmake_local Carve )
+add_subdirectory( ../../externals/clipper/projects/cmake_local Clipper )
+add_subdirectory( ../../externals/QtExt/projects/cmake_local QtExt )
+add_subdirectory( ../../externals/CCM/projects/cmake_local CCM )
+add_subdirectory( ../../externals/DataIO/projects/cmake_local DataIO )
+add_subdirectory( ../../externals/TiCPP/projects/cmake_local TiCPP )
+add_subdirectory( ../../externals/IFCImportPlugin/projects/cmake_local ImportIFCPlugin )
+
+
+# target_link_libraries(IFCConvert PRIVATE Qt5::Core)
 
 # -------------------------------------------------------------
 # applications
