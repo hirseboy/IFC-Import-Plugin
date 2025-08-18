@@ -18,7 +18,7 @@ TiXmlElement * Construction::writeXML(TiXmlElement * parent) const {
 
 	e->SetAttribute("id", IBK::val2string<unsigned int>(m_id));
 	if (!m_name.empty())
-		e->SetAttribute("displayName", m_name);
+		e->SetAttribute("displayName", m_name + "_" + std::to_string(m_id));
 
 	if(!m_layers.empty()) {
 		TiXmlElement * child = new TiXmlElement("MaterialLayers");

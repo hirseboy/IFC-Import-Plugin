@@ -545,17 +545,17 @@ GeometryConverter::~GeometryConverter() {}
 				std::string nameOfSpaceShort;
 				nameOfSpaceShort = label2s(object_def->m_Name);
 				int ii=0;
-				if(nameOfSpaceShort == "Fenster-009") {
+				if(nameOfSpaceShort == "Bildung SaalOG1") {
 					ii = 1;
 				}
 				if( dynamic_pointer_cast<IfcSpace>(object_def)) {
 					nameOfSpaceLong = label2s(dynamic_pointer_cast<IfcSpace>(object_def)->m_LongName);
 					nameOfSpaceShort = label2s(dynamic_pointer_cast<IfcSpace>(object_def)->m_Name);
-//					if(nameOfSpaceLong == "Halle - generelle Anforderungen" || nameOfSpaceShort == "Halle - generelle Anforderungen") {
-//						int ifc = object_def->m_tag;
+					if(nameOfSpaceLong == "Bildung SaalOG1") {
+						int ifc = object_def->m_tag;
 
-//					}
-//					int i=0;
+					}
+					int i=0;
 				}
 				if( dynamic_pointer_cast<IfcWall>(object_def)) {
 					nameOfSpaceShort = label2s(dynamic_pointer_cast<IfcWall>(object_def)->m_Name);

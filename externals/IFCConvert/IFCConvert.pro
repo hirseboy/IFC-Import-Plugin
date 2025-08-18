@@ -55,6 +55,7 @@ SOURCES +=  \
 	src/IFCC_GeometrySettings.cpp \
 	src/IFCC_Helper.cpp \
 	src/IFCC_IFCReader.cpp \
+	src/IFCC_IfcStringDecoder.cpp \
 	src/IFCC_Instances.cpp \
 	src/IFCC_Material.cpp \
 	src/IFCC_MeshOps.cpp \
@@ -105,6 +106,7 @@ HEADERS +=  \
 	src/IFCC_GeometrySettings.h \
 	src/IFCC_Helper.h \
 	src/IFCC_IFCReader.h \
+	src/IFCC_IfcStringDecoder.h \
 	src/IFCC_Instances.h \
 	src/IFCC_Logger.h \
 	src/IFCC_Material.h \

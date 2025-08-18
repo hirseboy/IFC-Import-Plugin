@@ -16,6 +16,7 @@
 #include "IFCC_BuildingElement.h"
 #include "IFCC_RepresentationHelper.h"
 #include "IFCC_CSG_Adapter.h"
+#include "IFCC_Space.h"
 
 namespace IFCC {
 
@@ -64,18 +65,34 @@ const std::vector<int>& Opening::openingElementIds() const {
 void Opening::checkSurfaceType(const BuildingElement &element, double eps) {
 	int intersections = 0;
 	for(const Surface& elemSurface : element.surfaces()) {
-		for(Surface& opSurface : m_surfaces) {
-			if(opSurface.sideType() != Surface::ST_Unknown)
+		for(Surface& opSurfaceNormal : m_surfaces) {
+			if(opSurfaceNormal.sideType() != Surface::ST_Unknown)
 				continue;
 
-			bool parallel = elemSurface.isParallelTo(opSurface, eps);
+			bool parallel = elemSurface.isParallelTo(opSurfaceNormal, eps);
 			bool intersected = false;
-			if(elemSurface.isValid(eps) && opSurface.isValid(eps)) {
-				if(IBKMK::polyIntersect(elemSurface.polygon(), opSurface.polygon()))
+			if(elemSurface.isValid(eps) && opSurfaceNormal.isValid(eps)) {
+				if(IBKMK::polyIntersect3D(elemSurface.polygon(), opSurfaceNormal.polygon()))
 					intersected = true;
 			}
 			if(intersected && !parallel) {
-				opSurface.setSideType(Surface::ST_UnProbableSide);
+				opSurfaceNormal.setSideType(Surface::ST_UnProbableSide);
+				++intersections;
+			}
+		}
+
+		for(Surface& opSurfaceCSG : m_surfacesCSGElement) {
+			if(opSurfaceCSG.sideType() != Surface::ST_Unknown)
+				continue;
+
+			bool parallel = elemSurface.isParallelTo(opSurfaceCSG, eps);
+			bool intersected = false;
+			if(elemSurface.isValid(eps) && opSurfaceCSG.isValid(eps)) {
+				if(IBKMK::polyIntersect3D(elemSurface.polygon(), opSurfaceCSG.polygon()))
+					intersected = true;
+			}
+			if(intersected && !parallel) {
+				opSurfaceCSG.setSideType(Surface::ST_UnProbableSide);
 				++intersections;
 			}
 		}
@@ -84,27 +101,24 @@ void Opening::checkSurfaceType(const BuildingElement &element, double eps) {
 	if(!element.m_possibleSideSurfaces.empty()) {
 		for(const auto& sideIndex : element.m_possibleSideSurfaces) {
 			const Surface& surf = element.surfaces()[sideIndex];
-			for(Surface& opSurface : m_surfaces) {
-				if(opSurface.sideType() != Surface::ST_Unknown)
+			for(Surface& opSurfaceNormal : m_surfaces) {
+				if(opSurfaceNormal.sideType() != Surface::ST_Unknown)
 					continue;
-				if(surf.isParallelTo(opSurface, eps))
-					opSurface.setSideType(Surface::ST_ProbableSide);
+				if(surf.isParallelTo(opSurfaceNormal, eps))
+					opSurfaceNormal.setSideType(Surface::ST_ProbableSide);
+			}
+			for(Surface& opSurfaceCSG : m_surfacesCSGElement) {
+				if(opSurfaceCSG.sideType() != Surface::ST_Unknown)
+					continue;
+				if(surf.isParallelTo(opSurfaceCSG, eps))
+					opSurfaceCSG.setSideType(Surface::ST_ProbableSide);
 			}
 		}
 
 	}
-
-
-//	if(intersections == 0)
-	//		return;
 }
 
-void Opening::createCSGSurfaces(const BuildingElement &element) {
-//	double totalVolume = 0;
-//	for(auto meshset : m_originalMesh) {
-//		double vol = MeshUtils::getMeshVolume(meshset.get());
-//		totalVolume += vol;
-//	}
+void Opening::createCSGSurfaces(const BuildingElement &element, double eps) {
 
 	// create 3D intersection of opening and building element
 	if(!element.m_originalMesh.empty() && !m_originalMesh.empty()) {
@@ -117,17 +131,60 @@ void Opening::createCSGSurfaces(const BuildingElement &element) {
 			CSG_Adapter::computeCSG(firstMesh, m_originalMesh, carve::csg::CSG::INTERSECTION, resultMesh, geom_settings);
 			if(resultMesh) {
 				resultVect.push_back(resultMesh);
-				surfacesFromMeshSets(resultVect, m_surfacesCSG);
+				std::vector<Surface> tempCSG;
+				surfacesFromMeshSets(resultVect, tempCSG);
+				std::vector<int> matchIds;
+				int index = 0;
+				if(!element.surfaces().empty()) {
+					for(const Surface& osurf : tempCSG) {
+						for(const Surface& esurf : element.surfaces()) {
+							if(osurf.distanceToParallelPlane(esurf, eps) < eps) {
+								matchIds.push_back(index);
+							}
+						}
+						++index;
+					}
+				}
+				for(int id : matchIds) {
+					m_surfacesCSGElement.push_back(tempCSG[id]);
+				}
+			}
+		}
+		catch (...) {
+		}
+	}
+}
 
-//				double totalVolumeRes = 0;
-//				for(auto meshset : resultVect) {
-//					double vol = MeshUtils::getMeshVolume(meshset.get());
-//					totalVolumeRes += vol;
-//				}
-//				bool smallerVolume = false;
-//				if(totalVolumeRes >= totalVolume) {
-//					smallerVolume = true;
-//				}
+void Opening::createCSGSurfaces(const Space &space, double eps) {
+
+	// create 3D intersection of opening and space
+	if(!space.meshSets().empty() && !m_originalMesh.empty()) {
+		shared_ptr<carve::mesh::MeshSet<3> > resultMesh;
+		shared_ptr<carve::mesh::MeshSet<3> > firstMesh = space.meshSets().front();
+		//	meshSets.erase(meshSets.begin());
+		shared_ptr<GeometrySettings> geom_settings = shared_ptr<GeometrySettings>( new GeometrySettings() );
+		meshVector_t resultVect;
+		try {
+			CSG_Adapter::computeCSG(firstMesh, m_originalMesh, carve::csg::CSG::INTERSECTION, resultMesh, geom_settings);
+			if(resultMesh) {
+				resultVect.push_back(resultMesh);
+				std::vector<Surface> tempCSG;
+				surfacesFromMeshSets(resultVect, tempCSG);
+				std::vector<int> matchIds;
+				int index = 0;
+				if(!space.surfacesOrg().empty()) {
+					for(const Surface& osurf : tempCSG) {
+						for(const Surface& esurf : space.surfacesOrg()) {
+							if(osurf.distanceToParallelPlane(esurf, eps) < eps) {
+								matchIds.push_back(index);
+							}
+						}
+						++index;
+					}
+				}
+				for(int id : matchIds) {
+					m_surfacesCSGElement.push_back(tempCSG[id]);
+				}
 			}
 		}
 		catch (...) {
@@ -139,8 +196,12 @@ const std::vector<Surface>& Opening::surfaces() const {
 	return m_surfaces;
 }
 
-const std::vector<Surface> &Opening::surfacesCSG() const {
-	return m_surfacesCSG;
+const std::vector<Surface> &Opening::surfacesCSGElement() const {
+	return m_surfacesCSGElement;
+}
+
+const std::vector<Surface> &Opening::surfacesCSGSpace() const {
+	return m_surfacesCSGSpace;
 }
 
 std::string Opening::guid() const {

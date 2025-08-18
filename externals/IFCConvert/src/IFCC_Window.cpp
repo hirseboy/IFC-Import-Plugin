@@ -17,7 +17,7 @@ TiXmlElement * Window::writeXML(TiXmlElement * parent) const {
 
 	e->SetAttribute("id", IBK::val2string<unsigned int>(m_id));
 	if (!m_name.empty())
-		e->SetAttribute("displayName", m_name);
+		e->SetAttribute("displayName", m_name + "_" + std::to_string(m_id));
 	if (m_glazingSystemId > -1)
 		e->SetAttribute("idGlazingSystem", IBK::val2string<unsigned int>(m_glazingSystemId));
 	if (m_methodFrame < 3)

@@ -109,7 +109,7 @@ TiXmlElement * BuildingStorey::writeXML(TiXmlElement * parent, const ConvertOpti
 
 	e->SetAttribute("id", IBK::val2string<unsigned int>(m_id));
 	if (!m_name.empty())
-		e->SetAttribute("displayName", m_name);
+		e->SetAttribute("displayName", m_name + "_" + std::to_string(m_ifcId));
 //	e->SetAttribute("visible", IBK::val2string<bool>(true));
 	TiXmlElement::appendSingleAttributeElement(e, "Elevation", nullptr, std::string(), IBK::val2string<double>(0));
 	TiXmlElement::appendSingleAttributeElement(e, "Height", nullptr, std::string(), IBK::val2string<double>(3));

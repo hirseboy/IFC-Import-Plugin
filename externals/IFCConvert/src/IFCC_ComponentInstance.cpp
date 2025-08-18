@@ -18,7 +18,8 @@ ComponentInstance::ComponentInstance(int id, int componentId, int sideASurfaceId
 	m_id(id),
 	m_componentId(componentId),
 	m_sideASurfaceId(sideASurfaceId),
-	m_sideBSurfaceId(sideBSurfaceId)
+	m_sideBSurfaceId(sideBSurfaceId),
+	m_subSurface(false)
 {}
 
 TiXmlElement * ComponentInstance::writeXML(TiXmlElement * parent) const {

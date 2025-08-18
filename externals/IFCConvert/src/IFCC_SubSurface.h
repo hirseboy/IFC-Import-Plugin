@@ -58,8 +58,11 @@ public:
 	*/
 	void flip(bool positive);
 
+	/*! Return true if the subsurface don't have a corresponding opening element.*/
+	bool isHole() const { return m_elementEntityId < 0; }
+
 	/*! Write the subsurface in vicus xml format.*/
-	TiXmlElement * writeXML(TiXmlElement * parent) const;
+	TiXmlElement * writeXML(TiXmlElement * parent, bool isHole) const;
 
 private:
 	int										m_id;				///< Unique id of the object

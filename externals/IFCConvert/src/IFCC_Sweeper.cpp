@@ -43,8 +43,9 @@ namespace IFCC {
 		//  |                            |
 		//  0-------face_loops[0]--------1
 
-		if( extrusionVector.length2() < EPS_M6* EPS_M6 )
-		{
+		if( extrusionVector.length2() < EPS_M6* EPS_M6 ) {
+			double length = extrusionVector.length2();
+			double eps = EPS_M6* EPS_M6;
 			// maybe still use it as flat surface instead of extruded volume
 			return;
 		}

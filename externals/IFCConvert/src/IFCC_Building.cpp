@@ -120,7 +120,7 @@ TiXmlElement * Building::writeXML(TiXmlElement * parent, const ConvertOptions& c
 
 	e->SetAttribute("id", IBK::val2string<unsigned int>(m_id));
 	if (!m_name.empty())
-		e->SetAttribute("displayName", m_name);
+		e->SetAttribute("displayName", m_name + "_" + std::to_string(m_ifcId));
 //	e->SetAttribute("visible", IBK::val2string<bool>(true));
 
 	if(!m_storeys.empty()) {

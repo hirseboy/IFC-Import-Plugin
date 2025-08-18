@@ -1296,6 +1296,8 @@ namespace IFCC {
 			vec3& aabb_extent = aabb.extent;
 			double max_extent = std::max( aabb_extent.x, std::max( aabb_extent.y, aabb_extent.z ) );
 			extrusion_depth = 2.0*max_extent;
+			if(extrusion_depth < 1e-4)
+				extrusion_depth = 10;
 			//other_operand_pos = aabb.pos;
 		}
 
@@ -1346,6 +1348,7 @@ namespace IFCC {
 			if( polygonal_halfspace_item_data->m_meshsets.size() != 1 )
 			{
 				messageCallback( "polygonal_halfspace_item_data->meshsets.size() != 1", StatusCallback::MESSAGE_TYPE_ERROR, __FUNC__, polygonal_half_space.get() );
+				errors.push_back(ConvertError(OT_GeometryConvert, half_space_solid->m_tag, "Cannot extrude polyline for a half space solid"));
 				return;
 			}
 

@@ -41,7 +41,7 @@ TiXmlElement * SubSurfaceComponent::writeXML(TiXmlElement * parent) const {
 
 	e->SetAttribute("id", IBK::val2string<unsigned int>(m_id));
 	if (!m_name.empty())
-		e->SetAttribute("displayName", m_name);
+		e->SetAttribute("displayName", m_name + "_" + std::to_string(m_id));
 
 	if (m_type != NUM_CT)
 		TiXmlElement::appendSingleAttributeElement(e, "Type", nullptr, std::string(), type2String(m_type));

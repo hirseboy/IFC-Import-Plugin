@@ -37,30 +37,20 @@ void SubSurface::flip(bool positive) {
 }
 
 
-TiXmlElement * SubSurface::writeXML(TiXmlElement * parent) const {
+TiXmlElement * SubSurface::writeXML(TiXmlElement * parent, bool isHole) const {
 	if (m_id == -1)
 		return nullptr;
 
-	TiXmlElement * e = new TiXmlElement("SubSurface");
+	std::string text = isHole ? "Hole" : "SubSurface";
+	TiXmlElement * e = new TiXmlElement(text);
 	parent->LinkEndChild(e);
 
 	e->SetAttribute("id", IBK::val2string<unsigned int>(m_id));
 	if (!m_name.empty())
-		e->SetAttribute("displayName", m_name);
+		e->SetAttribute("displayName", m_name + "_" + std::to_string(m_id));
 //	e->SetAttribute("visible", IBK::val2string<bool>(true));
 
-	if(!m_polyVect.empty()) {
-		TiXmlElement * child = new TiXmlElement("Polygon2D");
-		e->LinkEndChild(child);
-
-		std::stringstream vals;
-		for (unsigned int i=0; i<m_polyVect.size(); ++i) {
-			vals << m_polyVect[i].m_x << " " << m_polyVect[i].m_y;
-			if (i<m_polyVect.size()-1)  vals << ", ";
-		}
-		TiXmlText * text = new TiXmlText( vals.str() );
-		child->LinkEndChild( text );
-	}
+	writeXMLPolygon2D(m_polyVect, e);
 	return e;
 }
 

@@ -8,7 +8,7 @@
 
 #include <carve/mesh.hpp>
 
-#include <QSet>
+//#include <QSet>
 
 #include "IFCC_GeometryInputData.h"
 

@@ -58,6 +58,7 @@
 #include "IFCC_Surface.h"
 #include "IFCC_RepresentationConverter.h"
 #include "IFCC_Clippertools.h"
+#include "IFCC_IfcStringDecoder.h"
 
 namespace IFCC {
 
@@ -71,22 +72,21 @@ std::string ws2s(const std::wstring& wstr) {
 	return converterX.to_bytes(wstr);
 }
 
-
 std::string label2s(const std::shared_ptr<IfcLabel>& label) {
 	if(label != nullptr)
-		return label->m_value;
+		return decodeStepIfcString(label->m_value);
 	return std::string();
 }
 
 std::string text2s(const std::shared_ptr<IfcText>& label) {
 	if(label != nullptr)
-		return label->m_value;
+		return decodeStepIfcString(label->m_value);
 	return std::string();
 }
 
 std::string name2s(const std::shared_ptr<IfcIdentifier>& text) {
 	if(text != nullptr)
-		return text->m_value;
+		return decodeStepIfcString(text->m_value);
 	return std::string();
 }
 
@@ -572,6 +572,23 @@ bool windingOrderPositive(const std::vector<IBKMK::Vector2D>& polygon)
 	}
 	safeNormalize(polygon_normal);
 	return polygon_normal.z > 0;
+}
+
+TiXmlElement *writeXMLPolygon2D(const std::vector<IBKMK::Vector2D> &polygon, TiXmlElement *parent) {
+	if (polygon.empty())
+		return nullptr;
+
+	TiXmlElement * e = new TiXmlElement("Polygon2D");
+	parent->LinkEndChild(e);
+
+	std::stringstream vals;
+	for (unsigned int i=0; i<polygon.size(); ++i) {
+		vals << polygon[i].m_x << " " << polygon[i].m_y;
+		if (i<polygon.size()-1)  vals << ", ";
+	}
+	TiXmlText * text = new TiXmlText( vals.str() );
+	e->LinkEndChild( text );
+	return e;
 }
 
 

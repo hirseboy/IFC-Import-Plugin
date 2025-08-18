@@ -410,7 +410,10 @@ bool Surface::addSubSurface(const Surface& subsurface) {
 		return false;
 
 	sub.set(subsurface.id(), subsurface.m_name, subsurface.m_elementEntityId);
-	m_subSurfaces.push_back(sub);
+	if(sub.isHole())
+		m_holes.push_back(sub);
+	else
+		m_subSurfaces.push_back(sub);
 	return true;
 }
 
@@ -500,7 +503,7 @@ TiXmlElement * Surface::writeXMLOld(TiXmlElement * parent, const ConvertOptions&
 
 	e->SetAttribute("id", IBK::val2string<unsigned int>(m_id));
 	if (!m_name.empty())
-		e->SetAttribute("displayName", m_name);
+		e->SetAttribute("displayName", m_name + "_" + std::to_string(m_id));
 //	e->SetAttribute("visible", IBK::val2string<bool>(true));
 
 	if(!m_polyVect.empty() && checkSimVicusValid(m_polyVect, options.m_polygonEps)) {
@@ -520,7 +523,15 @@ TiXmlElement * Surface::writeXMLOld(TiXmlElement * parent, const ConvertOptions&
 		e->LinkEndChild(child);
 
 		for( const SubSurface& subsurface : m_subSurfaces) {
-			subsurface.writeXML(child);
+			subsurface.writeXML(child, false);
+		}
+	}
+	if(!m_holes.empty()) {
+		TiXmlElement * child = new TiXmlElement("Holes");
+		e->LinkEndChild(child);
+
+		for( const SubSurface& subsurface : m_holes) {
+			subsurface.writeXML(child, true);
 		}
 	}
 	return e;
@@ -536,7 +547,7 @@ TiXmlElement * Surface::writeXMLNew(TiXmlElement * parent, const ConvertOptions&
 
 		e->SetAttribute("id", IBK::val2string<unsigned int>(m_id));
 		if (!m_name.empty())
-			e->SetAttribute("displayName", m_name);
+			e->SetAttribute("displayName", m_name + "_" + std::to_string(m_id));
 
 
 		TiXmlElement * polyChild = new TiXmlElement("Polygon3D");
@@ -561,7 +572,15 @@ TiXmlElement * Surface::writeXMLNew(TiXmlElement * parent, const ConvertOptions&
 			e->LinkEndChild(child);
 
 			for( const SubSurface& subsurface : m_subSurfaces) {
-				subsurface.writeXML(child);
+				subsurface.writeXML(child, false);
+			}
+		}
+		if(!m_holes.empty()) {
+			TiXmlElement * child = new TiXmlElement("Holes");
+			e->LinkEndChild(child);
+
+			for( const SubSurface& subsurface : m_holes) {
+				subsurface.writeXML(child, true);
 			}
 		}
 		return e;

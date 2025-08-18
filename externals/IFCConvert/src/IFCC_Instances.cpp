@@ -152,7 +152,6 @@ void Instances::collectSubSurfaceComponentInstances(BuildingElementsCollector& e
 						if(subsb->m_componentInstanceId > -1)
 							continue;
 
-
 						if(subsb->isMissing()) {
 							ComponentInstance ci(GUID_maker::instance().guid(), Database::m_missingComponentId, subsb->surface().id());
 							ci.setSubSurface(true);
@@ -165,15 +164,15 @@ void Instances::collectSubSurfaceComponentInstances(BuildingElementsCollector& e
 							}
 						}
 						else if(subsb->isVirtual()) {
-							ComponentInstance ci(GUID_maker::instance().guid(), Database::m_virtualComponentId, subsb->surface().id());
-							ci.setSubSurface(true);
-							if(subsb->surface().id() >= 0) {
-								m_subSurfaceComponentInstances[ci.id()] = ci;
-								subsb->m_componentInstanceId = ci.id();
-							}
-							else {
-								errors.push_back(ConvertError{OT_Instance, subsb->m_id, "Creating subsurface component instance - space boundary with non valid surface Id found"});
-							}
+							// ComponentInstance ci(GUID_maker::instance().guid(), Database::m_virtualComponentId, subsb->surface().id());
+							// ci.setSubSurface(true);
+							// if(subsb->surface().id() >= 0) {
+							// 	m_subSurfaceComponentInstances[ci.id()] = ci;
+							// 	subsb->m_componentInstanceId = ci.id();
+							// }
+							// else {
+							// 	errors.push_back(ConvertError{OT_Instance, subsb->m_id, "Creating subsurface component instance - space boundary with non valid surface Id found"});
+							// }
 						}
 						else {
 							auto fitElem = std::find_if(

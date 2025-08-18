@@ -145,8 +145,14 @@ void SpaceBoundary::setFromSpaceBoundary(const SpaceBoundary& sb, size_t surface
 	IBK_ASSERT(surfaceIndex < sb.m_surfaces.size());
 	m_surface = sb.m_surfaces[surfaceIndex];
 	std::string name = m_nameRelatedElement;
-	if(name.empty()) {
+	if(IBK::trim_copy(name).empty()) {
 		name = m_name;
+	}
+	if(IBK::trim_copy(name).empty()) {
+		if(!m_description.empty())
+			name = m_description;
+		else
+			name = "surface";
 	}
 	m_surface.set(GUID_maker::instance().guid(), m_elementEntityId, name, isVirtual());
 }
@@ -212,9 +218,14 @@ bool SpaceBoundary::fetchGeometryFromBuildingElement(const Surface& surface, con
 	m_surfaces.clear();
 	if(surface.isValid(convertOptions.m_distanceEps)) {
 		std::string name = m_nameRelatedElement;
-		if(name.empty()) {
+		if(IBK::trim_copy(name).empty()) {
 			name = m_name;
-//			name = std::to_string(m_id);
+			if(IBK::trim_copy(name).empty()) {
+				if(!m_description.empty())
+					name = m_description;
+				else
+					name = "surface";
+			}
 		}
 		m_surface = surface;
 		m_surface.set(GUID_maker::instance().guid(), m_elementEntityId, name,
@@ -284,7 +295,7 @@ void SpaceBoundary::createSurfaceVect(const polyVector_t& polylines, int ifcid, 
 		else
 			name = "Non valid SB";
 	}
-
+	IBK::trim(name);
 	name += " : " + std::to_string(ifcid);
 
 	for(const auto& polyvect3 : polylines) {

@@ -15,6 +15,8 @@
 
 #include <ifcpp/model/UnitConverter.h>
 
+#include <QSet>
+
 #include "IFCC_Types.h"
 
 class TiXmlElement;
@@ -183,6 +185,8 @@ polyVector_t polylinesFromConnectionGeometry(std::shared_ptr<IFC4X3::IfcConnecti
 bool isIntersected(carve::mesh::MeshSet<3>* a, carve::mesh::MeshSet<3>* b);
 
 std::string dumpSurfaces(const std::vector<IFCC::Surface>& surfaces);
+
+TiXmlElement * writeXMLPolygon2D(const std::vector<IBKMK::Vector2D>& polygon, TiXmlElement * parent);
 
 } // end namespace
 

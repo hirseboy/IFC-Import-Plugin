@@ -131,6 +131,8 @@ public:
 
 	/*! Add the given surface as subsurface to the internal subsurface list.
 		While this process the subsurface will be converted into SubSurface type which contains only a 2D polygon in the plane of the current surface.
+		There are two kinds of subsurfaces, normal ones and holes. A normal subsurface has a corrsponding opening element.
+		This function add the subsurface to the correct list depending on elementId of the subsurface.
 		\param subsurface Surface which should be a subsurface of the current one
 		\return If false the resulting subsurface is not valid and nothing will be added
 	*/
@@ -176,6 +178,10 @@ public:
 
 	std::vector<SubSurface> subSurfaces() const {
 		return m_subSurfaces;
+	}
+
+	std::vector<SubSurface> holes() const {
+		return m_holes;
 	}
 
 	/*! Return the object id.*/
@@ -237,6 +243,7 @@ private:
 	bool									m_virtualSurface;
 	std::vector<IBKMK::Vector3D>			m_polyVect;
 	std::vector<SubSurface>					m_subSurfaces;
+	std::vector<SubSurface>					m_holes;
 	std::vector<Surface>					m_childSurfaces;
 	carve::geom::plane<3>					m_planeCarve;
 	PlaneNormal								m_planeNormal;

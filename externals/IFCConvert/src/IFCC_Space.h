@@ -10,7 +10,7 @@
 
 #include <carve/poly.hpp>
 
-#include "IFCC_BuildingElement.h"
+//#include "IFCC_BuildingElement.h"
 #include "IFCC_Helper.h"
 #include "IFCC_Surface.h"
 #include "IFCC_EntityBase.h"
@@ -185,7 +185,11 @@ public:
 	CompositionType										m_compositionType = CT_Unknown;
 
 	/*! Some remarkes to the space. Can contain notes from space boundary evaluation.*/
-	std::string									m_notes;
+	std::string											m_notes;
+
+	meshVector_t meshSets() const;
+
+	std::vector<Surface> surfacesOrg() const;
 
 private:
 

@@ -16,7 +16,7 @@ TiXmlElement * WindowGlazing::writeXML(TiXmlElement * parent) const {
 
 	e->SetAttribute("id", IBK::val2string<unsigned int>(m_id));
 	if (!m_name.empty())
-		e->SetAttribute("displayName", m_name);
+		e->SetAttribute("displayName", m_name + "_" + std::to_string(m_id));
 	e->SetAttribute("modelType", "Simple");
 	if (!m_notes.empty())
 		TiXmlElement::appendSingleAttributeElement(e, "Notes", nullptr, std::string(), m_notes);

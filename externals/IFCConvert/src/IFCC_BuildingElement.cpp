@@ -414,7 +414,7 @@ void BuildingElement::getShapeOfParts(const std::vector<std::shared_ptr<ProductS
 
 	// initialise surfaces
 	for(auto& surf : m_surfaces) {
-		surf.set(GUID_maker::instance().guid(), m_id, m_name+"_"+std::to_string(m_id), false);
+		surf.set(GUID_maker::instance().guid(), m_id, m_name + "_" + std::to_string(m_id), false);
 	}
 }
 
@@ -443,7 +443,7 @@ void BuildingElement::fetchGeometry(std::shared_ptr<ProductShapeData> productSha
 
 	// initialise surfaces
 	for(auto& surf : m_surfaces) {
-		surf.set(GUID_maker::instance().guid(), m_id, m_name+"_"+std::to_string(m_id), false);
+		surf.set(GUID_maker::instance().guid(), m_id, m_name + "_" + std::to_string(m_id), false);
 	}
 
 	findSurfacePairs(eps);
@@ -526,8 +526,8 @@ void BuildingElement::fetchOpenings(std::vector<Opening>& openings, double eps) 
 		if(fit == openings.end())
 			continue;
 
+		fit->createCSGSurfaces(*this, eps);
 		fit->checkSurfaceType(*this, eps);
-		fit->createCSGSurfaces(*this);
 	}
 }
 

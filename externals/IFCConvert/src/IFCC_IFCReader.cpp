@@ -46,7 +46,7 @@
 
 #include <tinyxml.h>
 
-#include "IFCC_MeshUtils.h"
+//#include "IFCC_MeshUtils.h"
 #include "IFCC_Logger.h"
 
 namespace IFCC {
@@ -65,7 +65,7 @@ struct ProgressCloser {
 };
 
 
-const std::string VERSION = "1.0";
+const std::string VICUS_VERSION = "1.5";
 
 IFCReader::IFCReader() :
 	m_hasError(false),
@@ -852,7 +852,7 @@ void IFCReader::writeXML(const IBK::Path & filename) const {
 	TiXmlElement * root = new TiXmlElement( "VicusProject" );
 	doc.LinkEndChild(root);
 
-	root->SetAttribute("fileVersion", VERSION);
+	root->SetAttribute("fileVersion", VICUS_VERSION);
 
 	TiXmlElement * e = new TiXmlElement("Project");
 	root->LinkEndChild(e);
@@ -898,7 +898,7 @@ void IFCReader::setVicusProjectText(QString& projectText) {
 	TiXmlElement * root = new TiXmlElement( "VicusProject" );
 	doc.LinkEndChild(root);
 
-	root->SetAttribute("fileVersion", VERSION);
+	root->SetAttribute("fileVersion", VICUS_VERSION);
 
 	TiXmlElement * e = new TiXmlElement("Project");
 	root->LinkEndChild(e);

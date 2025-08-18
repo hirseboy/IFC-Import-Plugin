@@ -12,6 +12,7 @@
 namespace IFCC {
 
 class SpaceBoundary;
+class Space;
 
 /*! Class represents a opening.
 	This mainly a geometric object which have connections to a construction element and an opening element.
@@ -39,7 +40,10 @@ public:
 	const std::vector<Surface>& surfaces() const;
 
 	/*! Return all surfaces created by CSG intersection with construction of this opening.*/
-	const std::vector<Surface>& surfacesCSG() const;
+	const std::vector<Surface>& surfacesCSGElement() const;
+
+	/*! Return all surfaces created by CSG intersection with space of this opening.*/
+	const std::vector<Surface> & surfacesCSGSpace() const;
 
 	/*! Return GUID of original IFC object.*/
 	std::string guid() const;
@@ -78,7 +82,12 @@ public:
 	/*! Create a 3D intersection with opening and given building element.
 	 *  Store the resulting surfaces in m_surfacesCSG.
 	*/
-	void createCSGSurfaces(const BuildingElement& element);
+	void createCSGSurfaces(const BuildingElement& element, double eps);
+
+	/*! Create a 3D intersection with opening and given building element.
+	 *  Store the resulting surfaces in m_surfacesCSG.
+	*/
+	void createCSGSurfaces(const Space& space, double eps);
 
 	/*! Map store the surface indices which are connected to a space given by ID.
 		Map key is id of space.
@@ -99,9 +108,19 @@ private:
 
 	std::string						m_guid;						///< GUID of original IFC object.
 
-	std::vector<Surface>			m_surfaces;
+	std::vector<Surface>			m_surfaces;					///< Surrfaces of the opening
 
-	std::vector<Surface>			m_surfacesCSG;
+	/*! Contains surface which are created by the following way:
+	 *  \li create a substraction body from opening and corresponding building element
+	 *  \li select only surfaces which are at the same plane as building element surfaces
+	*/
+	std::vector<Surface>			m_surfacesCSGElement;
+
+	/*! Contains surface which are created by the following way:
+	 *  \li create a substraction body from opening and corresponding space
+	 *  \li select only surfaces which are at the same plane as space surfaces
+	*/
+	std::vector<Surface>			m_surfacesCSGSpace;
 
 	/*! Vector of ids of opening elements (window or door) which are used from this opening (should only be one).*/
 	std::vector<int>				m_openingElementIds;

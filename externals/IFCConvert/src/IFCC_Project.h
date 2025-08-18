@@ -2,7 +2,7 @@
 #define IFCC_ProjectH
 
 
-#include <ifcpp/IFC4X3/include/IfcProject.h>>
+#include <ifcpp/IFC4X3/include/IfcProject.h>
 #include <ifcpp/IFC4X3/include/IfcBuilding.h>
 
 #include <tinyxml.h>

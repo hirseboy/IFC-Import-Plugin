@@ -638,8 +638,8 @@ static void searchOpeningSpaceBoundaries(Opening& currOp, const std::shared_ptr<
 								  const ConvertOptions& convertOptions, std::vector<std::shared_ptr<SpaceBoundary>>& openingSpaceBoundaries,
 								  const Space& space) {
 	std::vector<Surface> openingSurfaces;
-	const std::vector<Surface>& openingSurfces = convertOptions.m_useCSGForOpenings && !currOp.surfacesCSG().empty() ? currOp.surfacesCSG() :
-																													   currOp.surfaces();
+	const std::vector<Surface>& openingSurfces = convertOptions.m_useCSGForOpenings && !currOp.surfacesCSGElement().empty() ? currOp.surfacesCSGElement() :
+																													   currOp.surfaces();	
 	for(size_t cosi=0; cosi<openingSurfces.size(); ++cosi) {
 		const Surface& currentOpeningSurf = openingSurfces[cosi];
 		if(currentOpeningSurf.sideType() != Surface::ST_ProbableSide)
@@ -680,8 +680,6 @@ void Space::createSpaceBoundariesForOpeningsFromSpaceBoundaries(std::vector<std:
 		// openings can only be part of a construction space boundary
 		if(!spaceBoundary->isConstructionElement())
 			continue;
-
-
 
 		std::string elemGUID = spaceBoundary->guidRelatedElement();
 		const std::shared_ptr<BuildingElement> elem = buildingElements.fromGUID(elemGUID);
@@ -725,7 +723,6 @@ void Space::createSpaceBoundariesForOpeningsFromSpaceBoundaries(std::vector<std:
 			else {
 				errors.push_back(ConvertError{OT_Space, m_id, "An opening is connected to more than one building element"});
 			}
-
 			searchOpeningSpaceBoundaries(currOp, spaceBoundary, openingElem, convertOptions, openingSpaceBoundaries, *this);
 		}
 	}
@@ -757,6 +754,14 @@ void Space::createSpaceBoundariesForOpeningsFromSpaceBoundaries(std::vector<std:
 	if(!openingSpaceBoundaries.empty()) {
 		spaceBoundaries.insert(spaceBoundaries.end(), openingSpaceBoundaries.begin(), openingSpaceBoundaries.end());
 	}
+}
+
+std::vector<Surface> Space::surfacesOrg() const {
+	return m_surfacesOrg;
+}
+
+meshVector_t Space::meshSets() const {
+	return m_meshSets;
 }
 
 
@@ -1120,7 +1125,7 @@ bool Space::isIntersected(const Space& other, const ConvertOptions& convertOptio
 			const Surface & surf1 = p1->surface();
 			const Surface & surf2 = p2->surface().polygon();
 			if(surf1.isValid(convertOptions.m_polygonEps) && surf2.isValid(convertOptions.m_polygonEps)) {
-				if(IBKMK::polyIntersect(surf1.polygon(), surf2.polygon()))
+				if(IBKMK::polyIntersect3D(surf1.polygon(), surf2.polygon()))
 					return true;
 			}
 		}
@@ -1137,9 +1142,9 @@ TiXmlElement * Space::writeXML(TiXmlElement * parent, const ConvertOptions& conv
 
 	e->SetAttribute("id", IBK::val2string<unsigned int>(m_id));
 	if (!m_longName.empty())
-		e->SetAttribute("displayName", m_longName);
+		e->SetAttribute("displayName", m_longName + "_" + std::to_string(m_ifcId));
 	else if (!m_name.empty())
-		e->SetAttribute("displayName", m_name);
+		e->SetAttribute("displayName", m_name + "_" + std::to_string(m_ifcId));
 //	e->SetAttribute("visible", IBK::val2string<bool>(true));
 
 	bool sbsReady = false;
