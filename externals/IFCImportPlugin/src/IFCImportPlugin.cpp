@@ -10,6 +10,9 @@
 #include <QDir>
 #include <QFileDialog>
 
+#include <tinyxml.h>
+
+
 //#include "ImportWizard.h"
 #include "ImportIFCDialog.h"
 
