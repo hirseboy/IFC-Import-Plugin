@@ -155,8 +155,16 @@ void MainWindow::loadPlugins() {
 			}
 		}
 		else {
-			if(filename == "ImportIFCPlugin.dll") {
+			// for Linux
+			if(filename == "libImportIFCPlugin.so") {
 				QString errtxt = loader.errorString();
+				QMessageBox::information(this, tr("Loader failed"), filename + "\n" + loader.errorString());
+				ui->textEdit->setText(errtxt);
+			}
+			// for Windows
+			else if(filename == "ImportIFCPlugin.dll") {
+				QString errtxt = loader.errorString();
+				QMessageBox::information(this, tr("Loader failed"), filename + "\n" + loader.errorString());
 				ui->textEdit->setText(errtxt);
 			}
 		}
