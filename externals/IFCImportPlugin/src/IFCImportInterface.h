@@ -5,7 +5,7 @@
 #include <QIcon>
 
 
-#define IFCImportInterface_iid "de.dresden-tu.arch.ibk.IFCImportInterface/1.0"
+#define IFCImportInterface_iid "de.dresden-tu.arch.ibk.IFCImportInterface/1.1"
 
 namespace VICUS {
 	class Project;

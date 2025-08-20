@@ -4,7 +4,7 @@
 #include "SVImportPluginInterface.h"
 #include "ImportIFCMessageHandler.h"
 
-#define IFCImportPlugin_iid "de.dresden-tu.arch.ibk.IFCImportPlugin/1.0"
+#define IFCImportPlugin_iid "de.dresden-tu.arch.ibk.IFCImportPlugin/1.1"
 
 class IFCImportPlugin : public QObject, public SVImportPluginInterface
 {
