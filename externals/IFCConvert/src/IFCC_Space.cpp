@@ -1125,7 +1125,7 @@ bool Space::isIntersected(const Space& other, const ConvertOptions& convertOptio
 			const Surface & surf1 = p1->surface();
 			const Surface & surf2 = p2->surface().polygon();
 			if(surf1.isValid(convertOptions.m_polygonEps) && surf2.isValid(convertOptions.m_polygonEps)) {
-				if(IBKMK::polyIntersect3D(surf1.polygon(), surf2.polygon()))
+				if(IBKMK::polyIntersect(surf1.polygon(), surf2.polygon()))
 					return true;
 			}
 		}

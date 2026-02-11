@@ -459,7 +459,7 @@ std::vector<Surface> Surface::getSimplified() const {
 }
 
 static bool checkSimVicusValid(const std::vector<IBKMK::Vector3D>& polygon, double epsilon) {
-	IBKMK::Polygon3D ibkPoly(epsilon);
+	IBKMK::Polygon3D ibkPoly;
 	return ibkPoly.setVertexes(polygon, true);
 }
 
@@ -468,7 +468,7 @@ bool Surface::check(double epsilon) const {
 		return false;
 
 	try {
-		IBKMK::Polygon3D poly3D(m_polyVect, epsilon);
+		IBKMK::Polygon3D poly3D(m_polyVect);
 
 		if(poly3D.vertexes().empty())
 			return false;
@@ -540,7 +540,7 @@ TiXmlElement * Surface::writeXMLOld(TiXmlElement * parent, const ConvertOptions&
 TiXmlElement * Surface::writeXMLNew(TiXmlElement * parent, const ConvertOptions& options) const {
 	try {
 
-		IBKMK::Polygon3D poly3D(m_polyVect, options.m_polygonEps);
+		IBKMK::Polygon3D poly3D(m_polyVect);
 
 		TiXmlElement * e = new TiXmlElement("Surface");
 		parent->LinkEndChild(e);

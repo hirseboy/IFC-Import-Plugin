@@ -72,7 +72,7 @@ void Opening::checkSurfaceType(const BuildingElement &element, double eps) {
 			bool parallel = elemSurface.isParallelTo(opSurfaceNormal, eps);
 			bool intersected = false;
 			if(elemSurface.isValid(eps) && opSurfaceNormal.isValid(eps)) {
-				if(IBKMK::polyIntersect3D(elemSurface.polygon(), opSurfaceNormal.polygon()))
+				if(IBKMK::polyIntersect(elemSurface.polygon(), opSurfaceNormal.polygon()))
 					intersected = true;
 			}
 			if(intersected && !parallel) {
@@ -88,7 +88,7 @@ void Opening::checkSurfaceType(const BuildingElement &element, double eps) {
 			bool parallel = elemSurface.isParallelTo(opSurfaceCSG, eps);
 			bool intersected = false;
 			if(elemSurface.isValid(eps) && opSurfaceCSG.isValid(eps)) {
-				if(IBKMK::polyIntersect3D(elemSurface.polygon(), opSurfaceCSG.polygon()))
+				if(IBKMK::polyIntersect(elemSurface.polygon(), opSurfaceCSG.polygon()))
 					intersected = true;
 			}
 			if(intersected && !parallel) {

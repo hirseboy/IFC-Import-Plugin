@@ -5,8 +5,6 @@
 
 #include <tinyxml.h>
 
-#include <IBKMK_constants.h>
-
 #include <ifcpp/IFC4X3/include/IfcInternalOrExternalEnum.h>
 
 #include "IFCC_Types.h"
