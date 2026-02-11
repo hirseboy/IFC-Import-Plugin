@@ -5,6 +5,8 @@
 
 #include "IFCC_MeshUtils.h"
 #include "IFCC_Helper.h"
+#include <VICUS_Project.h>
+
 #include "IFCC_Site.h"
 #include "IFCC_Database.h"
 
@@ -272,14 +274,26 @@ std::vector<int> Instances::checkForWrongSurfaceIds(const Site& site) {
 }
 
 
-//void Instances::addToVicusProject(VICUS::Project* project, std::map<int,int>& idMap) {
-//	for(const auto& ci : m_componentInstances) {
-//		project->m_componentInstances.emplace_back(ci.second.getVicusComponentInstance(idMap));
-//	}
-//	for(const auto& sci : m_subSurfaceComponentInstances) {
-//		project->m_subSurfaceComponentInstances.emplace_back(sci.second.getVicusSubSurfaceComponentInstance(idMap));
-//	}
-//}
+void Instances::addToVicusProject(VICUS::Project* project, const Database& database, const std::map<int,int>& idMap) const {
+	// For normal component instances: map IFCC component → IFCC construction → VICUS construction
+	std::map<int,int> componentToConstructionMap;
+	for(const auto& comp : database.m_components) {
+		auto fit = idMap.find(comp.second.m_constructionId);
+		if(fit != idMap.end())
+			componentToConstructionMap[comp.first] = fit->second;
+	}
+
+	for(const auto& ci : m_componentInstances) {
+		VICUS::ComponentInstance vci = ci.second.getVicusComponentInstance(componentToConstructionMap);
+		project->m_componentInstances.push_back(vci);
+	}
+
+	// For sub-surface component instances: map IFCC subsurface component → VICUS subsurface component
+	for(const auto& sci : m_subSurfaceComponentInstances) {
+		VICUS::SubSurfaceComponentInstance vsci = sci.second.getVicusSubSurfaceComponentInstance(idMap);
+		project->m_subSurfaceComponentInstances.push_back(vsci);
+	}
+}
 
 
 } // namespace IFCC

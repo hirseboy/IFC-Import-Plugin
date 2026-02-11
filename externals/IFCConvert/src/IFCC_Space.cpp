@@ -1133,6 +1133,27 @@ bool Space::isIntersected(const Space& other, const ConvertOptions& convertOptio
 	return false;
 }
 
+VICUS::Room Space::getVicusObject(const ConvertOptions& options) const {
+	VICUS::Room vroom;
+	vroom.m_id = m_id;
+	if(!m_longName.empty())
+		vroom.m_displayName = QString::fromStdString(m_longName + "_" + std::to_string(m_ifcId));
+	else if(!m_name.empty())
+		vroom.m_displayName = QString::fromStdString(m_name + "_" + std::to_string(m_ifcId));
+	vroom.m_ifcGUID = m_guid;
+
+	std::vector<VICUS::Surface> surfaces;
+	for(const auto& sb : m_spaceBoundaries) {
+		VICUS::Surface vsurf = sb->getVicusSurface(options);
+		if(vsurf.m_id != INVALID_ID)
+			surfaces.push_back(vsurf);
+	}
+	if(!surfaces.empty())
+		vroom.setSurfaces(surfaces);
+
+	return vroom;
+}
+
 TiXmlElement * Space::writeXML(TiXmlElement * parent, const ConvertOptions& convertOptions) const {
 	if (m_id == -1)
 		return nullptr;

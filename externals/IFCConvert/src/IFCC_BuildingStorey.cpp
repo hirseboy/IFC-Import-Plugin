@@ -125,19 +125,20 @@ TiXmlElement * BuildingStorey::writeXML(TiXmlElement * parent, const ConvertOpti
 	return e;
 }
 
-//VICUS::BuildingLevel BuildingStorey::getVicusObject(std::map<int,int>& idMap, int& nextid) const {
-//	VICUS::BuildingLevel res;
-//	int newId = nextid++;
-//	res.m_displayName = QString::fromUtf8(m_name.c_str());
-//	res.m_id = newId;
-//	res.m_ifcGUID = m_guid;
-//	idMap[m_id] = newId;
-//	for(const auto& space : m_spaces) {
-//		res.m_rooms.emplace_back(space->getVicusObject(idMap, nextid));
-//	}
+VICUS::BuildingLevel BuildingStorey::getVicusObject(const ConvertOptions& options) const {
+	VICUS::BuildingLevel res;
+	res.m_id = m_id;
+	if(!m_name.empty())
+		res.m_displayName = QString::fromStdString(m_name + "_" + std::to_string(m_ifcId));
+	res.m_ifcGUID = m_guid;
+	res.m_elevation = 0;
+	res.m_height = 3;
+	for(const auto& space : m_spaces) {
+		res.m_rooms.emplace_back(space->getVicusObject(options));
+	}
 
-//	return res;
-//}
+	return res;
+}
 
 
 } // namespace IFCC

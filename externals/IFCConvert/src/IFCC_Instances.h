@@ -8,9 +8,9 @@
 #include "IFCC_BuildingElementsCollector.h"
 #include "IFCC_ConvertOptions.h"
 
-//namespace VICUS {
-//	class Project;
-//}
+namespace VICUS {
+	class Project;
+}
 
 namespace IFCC {
 
@@ -40,6 +40,14 @@ public:
 								  const Site& site, std::vector<ConvertError>& errors, const ConvertOptions& convertOptions);
 
 	std::vector<int> checkForWrongSurfaceIds(const Site& site);
+
+	/*! Add component instances and sub-surface component instances to the given VICUS project.
+		\param project VICUS project to populate
+		\param database Database for looking up component → construction mapping
+		\param idMap Map of IFCC IDs to VICUS IDs
+	*/
+	void addToVicusProject(VICUS::Project* project, const Database& database, const std::map<int,int>& idMap) const;
+
 private:
 
 	/*! Collect component and subsurface component instances from building elements and other databases.

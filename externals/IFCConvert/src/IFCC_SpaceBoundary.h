@@ -9,6 +9,8 @@
 
 #include <ifcpp/model/UnitConverter.h>
 
+#include <VICUS_Surface.h>
+
 #include "IFCC_BuildingElement.h"
 #include "IFCC_ConvertOptions.h"
 
@@ -195,6 +197,11 @@ public:
 
 	/*! Add a opening space boundarie to the vector of the contained space boundaries.*/
 	void addContainedOpeningSpaceBoundaries(const std::shared_ptr<SpaceBoundary>& newContainedOpeningSpaceBoundaries);
+
+	/*! Create a VICUS::Surface from this space boundary.
+		Returns an invalid surface (id=0) if this is an opening element or the surface is not valid.
+	*/
+	VICUS::Surface getVicusSurface(const ConvertOptions& options) const;
 
 	/*! Write the surface of the space boundary in vicus xml format.
 		\param parent Parent xml node

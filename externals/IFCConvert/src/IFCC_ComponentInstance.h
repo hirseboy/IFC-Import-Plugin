@@ -4,8 +4,8 @@
 #include <vector>
 #include <map>
 
-//#include <VICUS_ComponentInstance.h>
-//#include <VICUS_SubSurfaceComponentInstance.h>
+#include <VICUS_ComponentInstance.h>
+#include <VICUS_SubSurfaceComponentInstance.h>
 
 class TiXmlElement;
 
@@ -44,6 +44,20 @@ public:
 	void setSubSurface(bool newSubSurface);
 
 	int sideASurfaceId() const;
+
+	int componentId() const;
+
+	int sideBSurfaceId() const;
+
+	/*! Create a VICUS::ComponentInstance from this object.
+		\param idMap Map of IFCC component IDs to VICUS IDs.
+	*/
+	VICUS::ComponentInstance getVicusComponentInstance(const std::map<int,int>& idMap) const;
+
+	/*! Create a VICUS::SubSurfaceComponentInstance from this object.
+		\param idMap Map of IFCC component IDs to VICUS IDs.
+	*/
+	VICUS::SubSurfaceComponentInstance getVicusSubSurfaceComponentInstance(const std::map<int,int>& idMap) const;
 
 private:
 

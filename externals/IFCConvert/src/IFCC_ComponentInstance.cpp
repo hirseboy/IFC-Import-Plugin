@@ -56,4 +56,38 @@ int ComponentInstance::sideASurfaceId() const {
 	return m_sideASurfaceId;
 }
 
+int ComponentInstance::componentId() const {
+	return m_componentId;
+}
+
+int ComponentInstance::sideBSurfaceId() const {
+	return m_sideBSurfaceId;
+}
+
+VICUS::ComponentInstance ComponentInstance::getVicusComponentInstance(const std::map<int,int>& idMap) const {
+	VICUS::ComponentInstance vci;
+	vci.m_id = m_id;
+	auto fit = idMap.find(m_componentId);
+	if(fit != idMap.end())
+		vci.m_idConstruction = fit->second;
+	if(m_sideASurfaceId >= 0)
+		vci.m_sideA.m_idSurface = m_sideASurfaceId;
+	if(m_sideBSurfaceId >= 0)
+		vci.m_sideB.m_idSurface = m_sideBSurfaceId;
+	return vci;
+}
+
+VICUS::SubSurfaceComponentInstance ComponentInstance::getVicusSubSurfaceComponentInstance(const std::map<int,int>& idMap) const {
+	VICUS::SubSurfaceComponentInstance vsci;
+	vsci.m_id = m_id;
+	auto fit = idMap.find(m_componentId);
+	if(fit != idMap.end())
+		vsci.m_idSubSurfaceComponent = fit->second;
+	if(m_sideASurfaceId >= 0)
+		vsci.m_idSideASurface = m_sideASurfaceId;
+	if(m_sideBSurfaceId >= 0)
+		vsci.m_idSideBSurface = m_sideBSurfaceId;
+	return vsci;
+}
+
 } // namespace IFCC

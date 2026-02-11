@@ -17,6 +17,12 @@ include_directories(
 	${PROJECT_SOURCE_DIR}/../../../ifcplusplus/src/IfcPlusPlus/src/external/glm
 	${PROJECT_SOURCE_DIR}/../../../ifcplusplus/src/IfcPlusPlus/src/external/manifold/src/utilities/include
 	${PROJECT_SOURCE_DIR}/../../../ifcplusplus/src/IfcPlusPlus/src/external/Carve/src/common
+	${PROJECT_SOURCE_DIR}/../../../Vicus/src
+	${PROJECT_SOURCE_DIR}/../../../Nandrad/src
+	${PROJECT_SOURCE_DIR}/../../../CCM/src
+	${PROJECT_SOURCE_DIR}/../../../DataIO/src
+	${PROJECT_SOURCE_DIR}/../../../VicOSM/src
+	${PROJECT_SOURCE_DIR}/../../../ifcplusplus/src/IfcPlusPlus/src/external/glm/glm
 )
 
 find_package(Qt6 REQUIRED COMPONENTS Core Widgets)
@@ -47,7 +53,7 @@ else()
 	add_library( ${PROJECT_NAME} STATIC ${LIB_SRCS} )
 endif()
 
- target_link_libraries(IFCConvert PRIVATE Qt6::Core Qt6::Widgets)
+ target_link_libraries(IFCConvert PRIVATE Qt6::Core Qt6::Widgets Vicus Nandrad)
  if(TARGET IFCConvert_static)
-	target_link_libraries(IFCConvert_static PRIVATE Qt6::Core Qt6::Widgets)
+	target_link_libraries(IFCConvert_static PRIVATE Qt6::Core Qt6::Widgets Vicus Nandrad)
  endif()

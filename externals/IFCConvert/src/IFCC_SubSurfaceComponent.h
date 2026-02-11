@@ -7,7 +7,7 @@
 
 #include <tinyxml.h>
 
-//#include <VICUS_SubSurfaceComponent.h>
+#include <VICUS_SubSurfaceComponent.h>
 
 namespace IFCC {
 
@@ -64,6 +64,11 @@ public:
 
 	/*! Write the component in vicus xml format.*/
 	TiXmlElement * writeXML(TiXmlElement * parent) const;
+
+	/*! Create a VICUS sub-surface component object and return this.
+		The returned object contains all transferable data.
+	*/
+	VICUS::SubSurfaceComponent getVicusObject(std::map<int,int>& idMap, int idOffset) const;
 
 	/*! Comparison operator.*/
 	friend bool operator==(const SubSurfaceComponent& left, const SubSurfaceComponent& right) {

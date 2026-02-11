@@ -7,6 +7,8 @@
 
 #include <tinyxml.h>
 
+#include <VICUS_Project.h>
+
 #include "IFCC_GeometryInputData.h"
 #include "IFCC_Types.h"
 #include "IFCC_Surface.h"
@@ -71,6 +73,9 @@ public:
 
 //	/*! Return a vector of all space connection in project.*/
 //	std::vector<Space::SurfaceConnectionVectors> allSurfaceConnectionVectors() const;
+
+	/*! Add buildings to the given VICUS project.*/
+	void addToVicusProject(VICUS::Project* project, const ConvertOptions& options) const;
 
 	/*! Write the site in vicus xml format including buildings.*/
 	TiXmlElement * writeXML(TiXmlElement * parent, const ConvertOptions& convertOptions) const;

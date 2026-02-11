@@ -65,8 +65,6 @@ struct ProgressCloser {
 };
 
 
-const std::string VICUS_VERSION = "1.5";
-
 IFCReader::IFCReader() :
 	m_hasError(false),
 	m_hasWarning(false),
@@ -844,152 +842,24 @@ QString IFCReader::nameForId(int id, Name_Id_Type type) const {
 }
 
 
+VICUS::Project IFCReader::buildVicusProject() const {
+	VICUS::Project project;
+	std::map<int,int> idMap;
+	m_database.addToVicusProject(&project, idMap);
+	m_site.addToVicusProject(&project, m_convertOptions);
+	m_instances.addToVicusProject(&project, m_database, idMap);
+	return project;
+}
+
 void IFCReader::writeXML(const IBK::Path & filename) const {
-	TiXmlDocument doc;
-	TiXmlDeclaration * decl = new TiXmlDeclaration( "1.0", "UTF-8", "" );
-	doc.LinkEndChild( decl );
-
-	TiXmlElement * root = new TiXmlElement( "VicusProject" );
-	doc.LinkEndChild(root);
-
-	root->SetAttribute("fileVersion", VICUS_VERSION);
-
-	TiXmlElement * e = new TiXmlElement("Project");
-	root->LinkEndChild(e);
-
-	m_site.writeXML(e, m_convertOptions);
-
-	m_instances.writeXML(e);
-
-	m_database.writeXML(e);
-
-	if(m_convertOptions.m_writeBuildingElements) {
-		TiXmlElement * pg = new TiXmlElement("PlainGeometry");
-		e->LinkEndChild(pg);
-
-		TiXmlElement * child = new TiXmlElement("Surfaces");
-		for(const auto& elem : m_buildingElements.allConstructionElements()) {
-			bool hasSurface = false;
-			for(auto surf : elem->surfaces()) {
-				if(surf.check(m_convertOptions.m_polygonEps))
-					hasSurface = true;
-			}
-			if(!hasSurface)
-				continue;
-
-			for(auto surf : elem->surfaces()) {
-				surf.writeXML(child, m_convertOptions);
-			}
-
-		}
-	}
-
-	// other files
-
-	doc.SaveFile( filename.c_str() );
+	VICUS::Project project = buildVicusProject();
+	project.writeXML(filename);
 }
 
 
 void IFCReader::setVicusProjectText(QString& projectText) {
-	TiXmlDocument doc;
-	TiXmlDeclaration * decl = new TiXmlDeclaration( "1.0", "UTF-8", "" );
-	doc.LinkEndChild( decl );
-
-	TiXmlElement * root = new TiXmlElement( "VicusProject" );
-	doc.LinkEndChild(root);
-
-	root->SetAttribute("fileVersion", VICUS_VERSION);
-
-	TiXmlElement * e = new TiXmlElement("Project");
-	root->LinkEndChild(e);
-
-	m_site.writeXML(e, m_convertOptions);
-
-	m_instances.writeXML(e);
-
-	m_database.writeXML(e);
-
-	bool writePlainGeometry = m_convertOptions.m_writeConstructionElements;
-	writePlainGeometry = writePlainGeometry || m_convertOptions.m_writeBuildingElements;
-	writePlainGeometry = writePlainGeometry || m_convertOptions.m_writeOpeningElements;
-	writePlainGeometry = writePlainGeometry || m_convertOptions.m_writeOtherElements;
-	if(writePlainGeometry) {
-		TiXmlElement * pg = new TiXmlElement("PlainGeometry");
-		e->LinkEndChild(pg);
-
-		TiXmlElement * child = new TiXmlElement("Surfaces");
-		pg->LinkEndChild(child);
-		if(m_convertOptions.m_writeConstructionElements) {
-			for(const auto& elem : m_buildingElements.m_constructionElements) {
-				bool hasSurface = false;
-				for(auto surf : elem->surfaces()) {
-					if(surf.check(m_convertOptions.m_polygonEps))
-						hasSurface = true;
-				}
-				if(!hasSurface)
-					continue;
-				for(auto surf : elem->surfaces()) {
-					surf.writeXML(child, m_convertOptions);
-				}
-			}
-		}
-		if(m_convertOptions.m_writeBuildingElements) {
-			for(const auto& elem : m_buildingElements.m_constructionSimilarElements) {
-				bool hasSurface = false;
-				for(auto surf : elem->surfaces()) {
-					if(surf.check(m_convertOptions.m_polygonEps))
-						hasSurface = true;
-				}
-				if(!hasSurface)
-					continue;
-				for(auto surf : elem->surfaces()) {
-					surf.writeXML(child, m_convertOptions);
-				}
-			}
-		}
-
-		if(m_convertOptions.m_writeOpeningElements) {
-			for(const auto& elem : m_buildingElements.m_openingElements) {
-				bool hasSurface = false;
-				for(auto surf : elem->surfaces()) {
-					if(surf.check(m_convertOptions.m_polygonEps))
-						hasSurface = true;
-				}
-				if(!hasSurface)
-					continue;
-				for(auto surf : elem->surfaces()) {
-					surf.writeXML(child, m_convertOptions);
-				}
-			}
-		}
-
-		if(m_convertOptions.m_writeOtherElements) {
-			for(const auto& elem : m_buildingElements.m_otherElements) {
-				bool hasSurface = false;
-				for(auto surf : elem->surfaces()) {
-					if(surf.check(m_convertOptions.m_polygonEps))
-						hasSurface = true;
-				}
-				if(!hasSurface)
-					continue;
-				for(auto surf : elem->surfaces()) {
-					surf.writeXML(child, m_convertOptions);
-				}
-			}
-		}
-	}
-
-	// other files
-
-	// Declare a printer
-	TiXmlPrinter printer;
-
-	// attach it to the document you want to convert in to a std::string
-	doc.Accept(&printer);
-
-	// Create a std::string and copy your document data in to the string
-	std::string str = printer.CStr();
-	projectText = QString::fromStdString(str);
+	VICUS::Project project = buildVicusProject();
+	projectText = project.writeXMLText();
 }
 
 

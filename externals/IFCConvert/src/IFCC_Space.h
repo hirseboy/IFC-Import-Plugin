@@ -8,6 +8,8 @@
 
 #include <tinyxml.h>
 
+#include <VICUS_Room.h>
+
 #include <carve/poly.hpp>
 
 //#include "IFCC_BuildingElement.h"
@@ -158,6 +160,11 @@ public:
 
 	/*! Check if the current space is intersected to the other one.*/
 	bool isIntersected(const Space& other, const ConvertOptions& convertOptions) const;
+
+	/*! Create a VICUS::Room from this space.
+		The returned object contains all surfaces from space boundaries.
+	*/
+	VICUS::Room getVicusObject(const ConvertOptions& options) const;
 
 	/*! Write the space in vicus xml format including space boundaries.
 		\param parent Parent xml node

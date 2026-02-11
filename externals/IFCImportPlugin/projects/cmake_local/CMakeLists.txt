@@ -35,6 +35,13 @@ include_directories(
 	${PROJECT_SOURCE_DIR}/../../../ifcplusplus/src/IfcPlusPlus/src/external/manifold/src/utilities/include
 	${PROJECT_SOURCE_DIR}/../../../ifcplusplus/src/IfcPlusPlus/src/external/Carve/src/common
 	${PROJECT_SOURCE_DIR}/../../../IFCConvert/src
+	${PROJECT_SOURCE_DIR}/../../../Vicus/src
+	${PROJECT_SOURCE_DIR}/../../../Nandrad/src
+	${PROJECT_SOURCE_DIR}/../../../CCM/src
+	${PROJECT_SOURCE_DIR}/../../../DataIO/src
+	${PROJECT_SOURCE_DIR}/../../../VicOSM/src
+	${PROJECT_SOURCE_DIR}/../../../ifcplusplus/src/IfcPlusPlus/src/external/glm/glm
+	${PROJECT_SOURCE_DIR}/../../../clipper/src
 )
 
 # Qt Module
@@ -75,6 +82,8 @@ add_library(ImportIFCPlugin SHARED
 # Weitere statische Bibliotheken (analog zu LIBS += ...)
 target_link_libraries(ImportIFCPlugin PRIVATE
     IFCConvert_static
+    Vicus
+    Nandrad
     QtExt_static
     ifcplusplus_static
     clipper_static

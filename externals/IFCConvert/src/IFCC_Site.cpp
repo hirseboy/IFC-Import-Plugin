@@ -206,6 +206,12 @@ const SpaceBoundary* Site::spaceBoundaryWithId(int id) const {
 //}
 
 
+void Site::addToVicusProject(VICUS::Project* project, const ConvertOptions& options) const {
+	for(const auto& building : m_buildings) {
+		project->m_buildings.emplace_back(building->getVicusObject(options));
+	}
+}
+
 TiXmlElement * Site::writeXML(TiXmlElement * parent, const ConvertOptions& convertOptions) const {
 	if(m_buildings.empty())
 		return nullptr;

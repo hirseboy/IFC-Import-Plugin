@@ -6,6 +6,8 @@
 
 #include <tinyxml.h>
 
+#include <VICUS_Building.h>
+
 #include "IFCC_GeometryInputData.h"
 #include "IFCC_EntityBase.h"
 #include "IFCC_BuildingStorey.h"
@@ -48,6 +50,11 @@ public:
 					   bool useSpaceBoundaries,
 					   std::vector<ConvertError>& errors,
 					   const ConvertOptions& convertOptions);
+
+	/*! Create a VICUS building object and return this.
+		The returned object contains all transferable data.
+	*/
+	VICUS::Building getVicusObject(const ConvertOptions& options) const;
 
 	/*! Write the building in vicus xml format including storeys.*/
 	TiXmlElement * writeXML(TiXmlElement * parent, const ConvertOptions& convertOptions) const;

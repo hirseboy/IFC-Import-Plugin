@@ -360,6 +360,53 @@ void SpaceBoundary::addContainedOpeningSpaceBoundaries(const std::shared_ptr<Spa
 	m_containedOpeningSpaceBoundaries.push_back(containedOpeningSpaceBoundaries);
 }
 
+VICUS::Surface SpaceBoundary::getVicusSurface(const ConvertOptions& options) const {
+	VICUS::Surface vsurf;
+	if(isOpeningElement())
+		return vsurf;
+
+	Surface s = surfaceWithSubsurfaces();
+	if(!s.check(options.m_polygonEps))
+		return vsurf;
+
+	// Set id, displayName, ifcGUID
+	vsurf.m_id = s.id();
+	vsurf.m_displayName = QString::fromStdString(s.name());
+	vsurf.m_ifcGUID = m_guid;
+
+	// Create 3D polygon from the IFCC surface polygon
+	const std::vector<IBKMK::Vector3D>& polyVect = s.polygon();
+	if(polyVect.size() >= 3) {
+		IBKMK::Polygon3D poly3D(polyVect);
+		if(poly3D.isValid())
+			vsurf.setPolygon3D(poly3D);
+	}
+
+	// Convert subsurfaces
+	std::vector<VICUS::SubSurface> vicusSubSurfaces;
+	for(const auto& sub : s.subSurfaces()) {
+		if(!sub.isValid())
+			continue;
+		if(sub.isHole())
+			continue;
+
+		VICUS::SubSurface vsub;
+		vsub.m_id = sub.id();
+		vsub.m_displayName = QString::fromStdString(sub.name());
+
+		// Convert 2D polygon
+		const std::vector<IBKMK::Vector2D>& poly2D = sub.polygon();
+		if(!poly2D.empty()) {
+			vsub.m_polygon2D = VICUS::Polygon2D(poly2D);
+		}
+		vicusSubSurfaces.push_back(vsub);
+	}
+	if(!vicusSubSurfaces.empty())
+		vsurf.setSubSurfaces(vicusSubSurfaces);
+
+	return vsurf;
+}
+
 TiXmlElement *SpaceBoundary::writeXML(TiXmlElement *parent, const ConvertOptions& convertOptions) const {
 	if(!isOpeningElement()) {
 		Surface s = surfaceWithSubsurfaces();

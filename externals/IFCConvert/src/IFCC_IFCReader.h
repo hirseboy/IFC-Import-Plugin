@@ -13,6 +13,8 @@
 #include <QCoreApplication>
 #include <QStringList>
 
+#include <VICUS_Project.h>
+
 #include "IFCC_GeometryConverter.h"
 #include "IFCC_Types.h"
 // #include "IFCC_Space.h"
@@ -125,6 +127,9 @@ public:
 
 	/*! Search for object with given id and type and return its name.*/
 	QString nameForId(int id, Name_Id_Type) const;
+
+	/*! Build a VICUS::Project from the current converted data.*/
+	VICUS::Project buildVicusProject() const;
 
 	/*! Write converted data as vicus file.*/
 	void writeXML(const IBK::Path & filename) const;
