@@ -19,10 +19,12 @@ class ImportIFCDialog : public QDialog
 
 public:
 
-	enum MatchingMainType {
-		MMT_FullMatching,
-		MMT_MediumMatching,
-		MMT_NoMatching
+	/*! Predefined conversion scenarios that map to specific ConvertOptions settings. */
+	enum ConversionScenario {
+		CS_UseSpaceBoundaries,		///< Use space boundaries from the IFC file directly.
+		CS_FullMatching,			///< Check every construction element for matches with space surfaces.
+		CS_MediumMatching,			///< Check only the highest-priority construction for each space surface.
+		CS_NoMatching				///< Create space boundaries without construction matching.
 	};
 
 	explicit ImportIFCDialog(QWidget *parent, IFCC::IFCReader* reader);
@@ -49,11 +51,15 @@ private slots:
 
 	void on_radioButtonMatchingNo_clicked();
 
-	void on_checkBoxUseSpaceBoundaries_clicked();
+	void on_radioButtonScenarioSB_clicked();
+
+	void on_radioButtonScenarioFull_clicked();
+
+	void on_radioButtonScenarioMedium_clicked();
+
+	void on_radioButtonScenarioNone_clicked();
 
 	void on_checkBoxAdvanced_clicked();
-
-	void on_comboBoxMatchingType_currentIndexChanged(int index);
 
 private:
 	bool read();
@@ -63,7 +69,8 @@ private:
 
 	void initElements();
 
-	void setMatching(MatchingMainType type);
+	/*! Update the scenario description label and configure advanced tab defaults. */
+	void setScenario(ConversionScenario scenario);
 
 	QString elementTypeText(IFCC::BuildingElementTypes type) const;
 
@@ -72,7 +79,7 @@ private:
 	Ui::ImportIFCDialog *ui;
 
 	IFCC::IFCReader*	m_reader;
-	MatchingMainType	m_matchingType = MMT_MediumMatching;
+	ConversionScenario	m_scenario = CS_MediumMatching;
 	bool				m_convertSuccessfully = false;
 };
 

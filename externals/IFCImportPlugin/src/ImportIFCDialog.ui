@@ -6,95 +6,138 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1521</width>
-    <height>1020</height>
+    <width>900</width>
+    <height>600</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>IFC Import</string>
   </property>
-  <layout class="QGridLayout" name="gridLayout_2" rowstretch="0,0,0,1,0,0">
-   <item row="1" column="1">
-    <widget class="QToolButton" name="toolButtonOpenIFCFile">
-     <property name="text">
-      <string>...</string>
+  <layout class="QVBoxLayout" name="verticalLayoutMain">
+   <item>
+    <layout class="QHBoxLayout" name="horizontalLayoutFile">
+     <item>
+      <widget class="QLabel" name="label">
+       <property name="text">
+        <string>IFC file name</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLineEdit" name="lineEditIFCFile"/>
+     </item>
+     <item>
+      <widget class="QToolButton" name="toolButtonOpenIFCFile">
+       <property name="text">
+        <string>...</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item>
+    <widget class="QTextEdit" name="textEdit">
+     <property name="maximumSize">
+      <size>
+       <width>16777215</width>
+       <height>80</height>
+      </size>
+     </property>
+     <property name="readOnly">
+      <bool>true</bool>
      </property>
     </widget>
    </item>
-   <item row="0" column="0">
-    <widget class="QLabel" name="label">
-     <property name="text">
-      <string>IFC file name</string>
-     </property>
-    </widget>
-   </item>
-   <item row="3" column="0" colspan="2">
+   <item>
     <widget class="QWidget" name="widgetConvert" native="true">
-     <layout class="QGridLayout" name="gridLayout" columnstretch="0,1,0,0">
-      <item row="2" column="0">
-       <widget class="QCheckBox" name="checkBoxUseSpaceBoundaries">
-        <property name="text">
-         <string>Use space boundaries</string>
+     <layout class="QVBoxLayout" name="verticalLayoutConvert">
+      <item>
+       <widget class="QGroupBox" name="groupBoxScenario">
+        <property name="title">
+         <string>Conversion scenario</string>
         </property>
+        <layout class="QVBoxLayout" name="verticalLayoutScenario">
+         <item>
+          <widget class="QRadioButton" name="radioButtonScenarioSB">
+           <property name="text">
+            <string>Use IFC Space Boundaries</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QRadioButton" name="radioButtonScenarioFull">
+           <property name="text">
+            <string>Full matching</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QRadioButton" name="radioButtonScenarioMedium">
+           <property name="text">
+            <string>Medium matching (Recommended)</string>
+           </property>
+           <property name="checked">
+            <bool>true</bool>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QRadioButton" name="radioButtonScenarioNone">
+           <property name="text">
+            <string>No matching</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLabel" name="labelScenarioDescription">
+           <property name="text">
+            <string/>
+           </property>
+           <property name="wordWrap">
+            <bool>true</bool>
+           </property>
+          </widget>
+         </item>
+        </layout>
        </widget>
       </item>
-      <item row="3" column="1">
-       <widget class="QComboBox" name="comboBoxMatchingType"/>
+      <item>
+       <layout class="QHBoxLayout" name="horizontalLayoutConvertRow">
+        <item>
+         <widget class="QPushButton" name="pushButtonConvert">
+          <property name="font">
+           <font>
+            <bold>true</bold>
+           </font>
+          </property>
+          <property name="text">
+           <string>Convert</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <spacer name="horizontalSpacerConvert">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>40</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+        <item>
+         <widget class="QCheckBox" name="checkBoxAdvanced">
+          <property name="text">
+           <string>Show details</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
       </item>
-      <item row="6" column="0">
-       <spacer name="verticalSpacer_3">
-        <property name="orientation">
-         <enum>Qt::Vertical</enum>
-        </property>
-        <property name="sizeHint" stdset="0">
-         <size>
-          <width>20</width>
-          <height>40</height>
-         </size>
-        </property>
-       </spacer>
-      </item>
-      <item row="3" column="0">
-       <widget class="QLabel" name="label_7">
-        <property name="text">
-         <string>Space boundary matching</string>
-        </property>
-       </widget>
-      </item>
-      <item row="3" column="2">
-       <widget class="QCheckBox" name="checkBoxAdvanced">
-        <property name="text">
-         <string>Advanced options</string>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="1" colspan="3">
-       <spacer name="horizontalSpacer">
-        <property name="orientation">
-         <enum>Qt::Horizontal</enum>
-        </property>
-        <property name="sizeHint" stdset="0">
-         <size>
-          <width>1300</width>
-          <height>20</height>
-         </size>
-        </property>
-       </spacer>
-      </item>
-      <item row="3" column="3">
-       <spacer name="horizontalSpacer_8">
-        <property name="orientation">
-         <enum>Qt::Horizontal</enum>
-        </property>
-        <property name="sizeHint" stdset="0">
-         <size>
-          <width>40</width>
-          <height>20</height>
-         </size>
-        </property>
-       </spacer>
-      </item>
-      <item row="5" column="0" colspan="4">
+      <item>
        <widget class="QTabWidget" name="tabWidgetAdvanced">
         <property name="currentIndex">
          <number>0</number>
@@ -196,7 +239,7 @@
                </property>
                <property name="sizeHint" stdset="0">
                 <size>
-                 <width>947</width>
+                 <width>40</width>
                  <height>20</height>
                 </size>
                </property>
@@ -283,7 +326,7 @@
             <property name="sizeHint" stdset="0">
              <size>
               <width>20</width>
-              <height>110</height>
+              <height>40</height>
              </size>
             </property>
            </spacer>
@@ -395,7 +438,7 @@
             </property>
             <property name="sizeHint" stdset="0">
              <size>
-              <width>888</width>
+              <width>40</width>
               <height>20</height>
              </size>
             </property>
@@ -469,7 +512,7 @@
             </property>
             <property name="sizeHint" stdset="0">
              <size>
-              <width>1104</width>
+              <width>40</width>
               <height>20</height>
              </size>
             </property>
@@ -510,7 +553,7 @@
             <property name="sizeHint" stdset="0">
              <size>
               <width>20</width>
-              <height>303</height>
+              <height>40</height>
              </size>
             </property>
            </spacer>
@@ -529,7 +572,7 @@
             </property>
             <property name="sizeHint" stdset="0">
              <size>
-              <width>957</width>
+              <width>40</width>
               <height>20</height>
              </size>
             </property>
@@ -560,54 +603,15 @@
         </widget>
        </widget>
       </item>
-      <item row="1" column="0">
-       <widget class="QPushButton" name="pushButtonConvert">
-        <property name="font">
-         <font>
-          <bold>true</bold>
-         </font>
-        </property>
-        <property name="text">
-         <string>Convert</string>
-        </property>
-       </widget>
-      </item>
-      <item row="4" column="0">
-       <widget class="QLabel" name="labelMatchingDescription">
-        <property name="text">
-         <string>No matching</string>
-        </property>
-       </widget>
-      </item>
-      <item row="2" column="1">
-       <widget class="QLabel" name="labelSBDescription">
-        <property name="text">
-         <string>TextLabel</string>
-        </property>
-       </widget>
-      </item>
-      <item row="0" column="0" colspan="4">
-       <widget class="QLabel" name="label_15">
-        <property name="text">
-         <string>Pressing 'Convert' starts the conversion from already readed IFC file into VICUS format.</string>
-        </property>
-       </widget>
-      </item>
      </layout>
     </widget>
    </item>
-   <item row="5" column="0">
+   <item>
     <widget class="QDialogButtonBox" name="buttonBox">
      <property name="standardButtons">
       <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
      </property>
     </widget>
-   </item>
-   <item row="1" column="0">
-    <widget class="QLineEdit" name="lineEditIFCFile"/>
-   </item>
-   <item row="2" column="0" colspan="2">
-    <widget class="QTextEdit" name="textEdit"/>
    </item>
   </layout>
  </widget>
@@ -620,12 +624,12 @@
    <slot>accept()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1472</x>
-     <y>999</y>
+     <x>450</x>
+     <y>580</y>
     </hint>
     <hint type="destinationlabel">
-     <x>1506</x>
-     <y>989</y>
+     <x>450</x>
+     <y>300</y>
     </hint>
    </hints>
   </connection>
@@ -636,12 +640,12 @@
    <slot>reject()</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>1353</x>
-     <y>1000</y>
+     <x>450</x>
+     <y>580</y>
     </hint>
     <hint type="destinationlabel">
-     <x>1485</x>
-     <y>1008</y>
+     <x>450</x>
+     <y>300</y>
     </hint>
    </hints>
   </connection>

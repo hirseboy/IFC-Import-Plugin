@@ -14,7 +14,6 @@ ImportIFCDialog::ImportIFCDialog(QWidget *parent, IFCC::IFCReader* reader) :
 	ui->setupUi(this);
 	ui->widgetConvert->setVisible(false);
 	ui->pushButtonConvert->setEnabled(true);
-	ui->checkBoxUseSpaceBoundaries->setChecked(false);
 	ui->checkBoxWriteBuildingElements->setChecked(m_reader->convertOptions().m_writeBuildingElements);
 	ui->checkBoxWriteConstructions->setChecked(m_reader->convertOptions().m_writeConstructionElements);
 	ui->checkBoxWriteOpenings->setChecked(m_reader->convertOptions().m_writeOpeningElements);
@@ -44,11 +43,8 @@ ImportIFCDialog::ImportIFCDialog(QWidget *parent, IFCC::IFCReader* reader) :
 		ui->listWidgetOpeningSearchElements->addItem(item);
 	}
 
-	ui->comboBoxMatchingType->addItem(tr("Full matching"), MMT_FullMatching);
-	ui->comboBoxMatchingType->addItem(tr("Medium matching"), MMT_MediumMatching);
-	ui->comboBoxMatchingType->addItem(tr("No matching"), MMT_NoMatching);
-	ui->comboBoxMatchingType->setCurrentIndex(1);
-	setMatching(MMT_MediumMatching);
+	// Set default scenario
+	setScenario(CS_MediumMatching);
 
 	ui->doubleSpinBoxMinimumArea->setValue(m_reader->convertOptions().m_minimumSurfaceArea*10000);
 	ui->doubleSpinBoxMinimumDistance->setValue(m_reader->convertOptions().m_distanceEps*1000);
@@ -81,7 +77,6 @@ void ImportIFCDialog::on_toolButtonOpenIFCFile_clicked() {
 		ui->textEdit->setHtml(tr("No filename."));
 
 	}
-//	ui->textEdit->clear();
 }
 
 void ImportIFCDialog::on_lineEditIFCFile_textChanged(const QString &arg1) {
@@ -105,7 +100,8 @@ void ImportIFCDialog::on_pushButtonConvert_clicked() {
 	ui->textEdit->setText(tr("Converting ..."));
 
 	initElements();
-	m_convertSuccessfully = m_reader->convert(ui->checkBoxUseSpaceBoundaries->isChecked());
+	bool useSpaceBoundaries = (m_scenario == CS_UseSpaceBoundaries);
+	m_convertSuccessfully = m_reader->convert(useSpaceBoundaries);
 	setText();
 
 	if(ui->checkBoxIgnorErrors->isChecked())
@@ -143,22 +139,20 @@ void ImportIFCDialog::on_radioButtonMatchingNo_clicked() {
 }
 
 
-void ImportIFCDialog::on_checkBoxUseSpaceBoundaries_clicked() {
-	ui->tabWidgetAdvanced->setEnabled(!ui->checkBoxUseSpaceBoundaries->isChecked());
-	ui->comboBoxMatchingType->setEnabled(!ui->checkBoxUseSpaceBoundaries->isChecked());
-	ui->checkBoxAdvanced->setEnabled(!ui->checkBoxUseSpaceBoundaries->isChecked());
-	if(ui->checkBoxUseSpaceBoundaries->isChecked()) {
-		ui->labelMatchingDescription->setText(tr("No matching"));
-	}
-	else {
-		MatchingMainType type = static_cast<MatchingMainType>(ui->comboBoxMatchingType->currentData().toInt());
-		setMatching(type);
-	}
+void ImportIFCDialog::on_radioButtonScenarioSB_clicked() {
+	setScenario(CS_UseSpaceBoundaries);
 }
 
-void ImportIFCDialog::on_comboBoxMatchingType_currentIndexChanged(int index) {
-	MatchingMainType type = static_cast<MatchingMainType>(ui->comboBoxMatchingType->currentData().toInt());
-	setMatching(type);
+void ImportIFCDialog::on_radioButtonScenarioFull_clicked() {
+	setScenario(CS_FullMatching);
+}
+
+void ImportIFCDialog::on_radioButtonScenarioMedium_clicked() {
+	setScenario(CS_MediumMatching);
+}
+
+void ImportIFCDialog::on_radioButtonScenarioNone_clicked() {
+	setScenario(CS_NoMatching);
 }
 
 bool ImportIFCDialog::read() {
@@ -171,7 +165,7 @@ bool ImportIFCDialog::read() {
 	ui->textEdit->setText(tr("Reading ..."));
 	ui->textEdit->update();
 	IBK::Path ifcfilename(ui->lineEditIFCFile->text().toStdString());
-	bool ignoreError = true;
+	bool ignoreError = ui->checkBoxIgnorErrors->isChecked();
 	bool res = m_reader->read(ifcfilename, ignoreError);
 	int buildings = 0;
 	int spaces = 0;
@@ -232,7 +226,6 @@ void ImportIFCDialog::setText() {
 
 	// check for intersected spaces
 	std::set<std::pair<int,int>> intersectedSpaceIds;
-//	intersectedSpaceIds = m_reader->checkForIntersectedSpace();
 	std::map<int,size_t> instersectionCounts;
 	for(auto isId : intersectedSpaceIds) {
 		++instersectionCounts[isId.first];
@@ -246,7 +239,7 @@ void ImportIFCDialog::setText() {
 	for(auto isId : sharedSpaceBoundaries) {
 		++sharedSpaceBoundaryCounts[isId.first];
 	}
-	int sharedSpaceBoundaryCount = intersectedSpaceIds.size();
+	int sharedSpaceBoundaryCount = sharedSpaceBoundaries.size();
 
 	int notRelatedOpenings = m_reader->checkForNotRelatedOpenings();
 
@@ -267,7 +260,7 @@ void ImportIFCDialog::setText() {
 	if(!errors.empty()) {
 		text << tr("<font color=\"#FF0000\">Conversion errors:</font>");
 		for( const auto& err : errors) {
-			text << QString("%1 for object '%2' with id: %3").arg(QString::fromStdString(err.m_errorText))
+			text << tr("%1 for object '%2' with id: %3").arg(QString::fromStdString(err.m_errorText))
 					.arg(QString::fromStdString(IFCC::objectTypeToString(err.m_objectType))).arg(err.m_objectID);
 		}
 		text << "<br>";
@@ -283,9 +276,7 @@ void ImportIFCDialog::setText() {
 			text << "";
 		}
 		text << tr("File converted successfully.");
-//		text << m_reader->messages() << "";
 		text << "";
-//		text << m_reader->statistic();
 	}
 	else {
 		text << tr("<font color=\"#FF0000\">Error while converting IFC file.</font>");
@@ -346,14 +337,34 @@ void ImportIFCDialog::initElements() {
 	}
 	m_reader->addNoSearchForOpenings(noSearchForOpeningsInTypes);
 
-	if(ui->radioButtonMatchingFull->isChecked())
-		m_reader->setConvertMatchingType(IFCC::ConvertOptions::CM_MatchEachConstruction);
-	else if(ui->radioButtonMatchingFirst->isChecked())
-		m_reader->setConvertMatchingType(IFCC::ConvertOptions::CM_MatchOnlyFirstConstruction);
-	else if(ui->radioButtonMatchingNConstructions->isChecked())
-		m_reader->setConvertMatchingType(IFCC::ConvertOptions::CM_MatchFirstNConstructions);
-	else
-		m_reader->setConvertMatchingType(IFCC::ConvertOptions::CM_NoMatching);
+	// Map scenario to matching type
+	switch(m_scenario) {
+		case CS_UseSpaceBoundaries:
+			// Space boundaries mode - matching type is irrelevant
+			m_reader->setConvertMatchingType(IFCC::ConvertOptions::CM_NoMatching);
+			break;
+		case CS_FullMatching:
+			m_reader->setConvertMatchingType(IFCC::ConvertOptions::CM_MatchEachConstruction);
+			break;
+		case CS_MediumMatching:
+			m_reader->setConvertMatchingType(IFCC::ConvertOptions::CM_MatchOnlyFirstConstruction);
+			break;
+		case CS_NoMatching:
+			m_reader->setConvertMatchingType(IFCC::ConvertOptions::CM_NoMatching);
+			break;
+	}
+
+	// Allow advanced tab radio buttons to override if details are shown
+	if(ui->checkBoxAdvanced->isChecked() && m_scenario != CS_UseSpaceBoundaries) {
+		if(ui->radioButtonMatchingFull->isChecked())
+			m_reader->setConvertMatchingType(IFCC::ConvertOptions::CM_MatchEachConstruction);
+		else if(ui->radioButtonMatchingFirst->isChecked())
+			m_reader->setConvertMatchingType(IFCC::ConvertOptions::CM_MatchOnlyFirstConstruction);
+		else if(ui->radioButtonMatchingNConstructions->isChecked())
+			m_reader->setConvertMatchingType(IFCC::ConvertOptions::CM_MatchFirstNConstructions);
+		else
+			m_reader->setConvertMatchingType(IFCC::ConvertOptions::CM_NoMatching);
+	}
 
 	m_reader->setMatchingDistances(ui->doubleSpinBoxMatchConstructionFactor->value(),
 								   ui->doubleSpinBoxStandardWallThickness->value(),
@@ -370,38 +381,46 @@ void ImportIFCDialog::initElements() {
 	m_reader->setSurfaceWritingMode(ui->checkBoxSurfaceWritingMethod->isChecked());
 }
 
-void ImportIFCDialog::setMatching(MatchingMainType type) {
-	bool hasSBs = ui->checkBoxUseSpaceBoundaries->isChecked();
-	switch(type) {
-		case MMT_FullMatching: {
-				ui->radioButtonMatchingFull->setChecked(true);
-				break;
-			}
-		case MMT_MediumMatching: {
-				ui->radioButtonMatchingFirst->setChecked(true);
-				break;
-			}
-		case MMT_NoMatching: {
-				ui->radioButtonMatchingNo->setChecked(true);
-				break;
-			}
-	}
-	if(!hasSBs) {
-		switch(type) {
-			case MMT_FullMatching: {
-					ui->labelMatchingDescription->setText(tr("Check each construction for matches with space surfaces."));
-					break;
-				}
-			case MMT_MediumMatching: {
-					ui->labelMatchingDescription->setText(tr("Check only the most possible constructions for matching with space surfaces."));
-					break;
-				}
-			case MMT_NoMatching: {
-					ui->labelMatchingDescription->setText(tr("No matching test. All created space boundaries doesn't have constructions. No windows or doors possible."));
-					break;
-				}
-		}
+void ImportIFCDialog::setScenario(ConversionScenario scenario) {
+	m_scenario = scenario;
 
+	switch(scenario) {
+		case CS_UseSpaceBoundaries: {
+			ui->radioButtonScenarioSB->setChecked(true);
+			ui->labelScenarioDescription->setText(
+				tr("Use space boundaries from the IFC file directly. No construction matching needed."));
+			// Disable advanced tabs when using space boundaries
+			ui->tabWidgetAdvanced->setEnabled(false);
+			ui->checkBoxAdvanced->setEnabled(false);
+			break;
+		}
+		case CS_FullMatching: {
+			ui->radioButtonScenarioFull->setChecked(true);
+			ui->radioButtonMatchingFull->setChecked(true);
+			ui->labelScenarioDescription->setText(
+				tr("Check every construction element for matches with space surfaces. Most thorough but slowest."));
+			ui->tabWidgetAdvanced->setEnabled(true);
+			ui->checkBoxAdvanced->setEnabled(true);
+			break;
+		}
+		case CS_MediumMatching: {
+			ui->radioButtonScenarioMedium->setChecked(true);
+			ui->radioButtonMatchingFirst->setChecked(true);
+			ui->labelScenarioDescription->setText(
+				tr("Check only the highest-priority construction for each space surface. Good balance of speed and quality."));
+			ui->tabWidgetAdvanced->setEnabled(true);
+			ui->checkBoxAdvanced->setEnabled(true);
+			break;
+		}
+		case CS_NoMatching: {
+			ui->radioButtonScenarioNone->setChecked(true);
+			ui->radioButtonMatchingNo->setChecked(true);
+			ui->labelScenarioDescription->setText(
+				tr("Create space boundaries without construction matching. No windows or doors. Fastest."));
+			ui->tabWidgetAdvanced->setEnabled(true);
+			ui->checkBoxAdvanced->setEnabled(true);
+			break;
+		}
 	}
 }
 
@@ -437,23 +456,27 @@ QString ImportIFCDialog::elementTypeText(IFCC::BuildingElementTypes type) const 
 		case IFCC::BET_TransportElement: return tr("Transport Element");
 		case IFCC::BET_VirtualElement: return tr("VirtualElement");
 		case IFCC::BET_BuildingElementPart: return tr("Building Element Part");
-		default: return tr("");
+		case IFCC::BET_All: return tr("All");
+		case IFCC::BET_None: return tr("None");
 	}
+	return QString();
 }
 
 void ImportIFCDialog::initConvertOptions() {
 	ui->textEdit->clear();
 	int sbCount = m_reader->numberOfIFCSpaceBoundaries();
-	bool useSpaceBoundaries = sbCount > 0;
-	ui->checkBoxUseSpaceBoundaries->setEnabled(useSpaceBoundaries);
-	ui->checkBoxUseSpaceBoundaries->setChecked(useSpaceBoundaries);
-	ui->comboBoxMatchingType->setEnabled(!useSpaceBoundaries);
-	ui->checkBoxAdvanced->setEnabled(!useSpaceBoundaries);
-	if(!useSpaceBoundaries) {
-		ui->labelSBDescription->setText(tr("There are no space boundaries in the IFC file"));
+	bool hasSpaceBoundaries = sbCount > 0;
+
+	// Enable/disable space boundary radio button based on file content
+	ui->radioButtonScenarioSB->setEnabled(hasSpaceBoundaries);
+	if(hasSpaceBoundaries) {
+		ui->radioButtonScenarioSB->setText(tr("Use IFC Space Boundaries (%1 found)").arg(sbCount));
+		setScenario(CS_UseSpaceBoundaries);
 	}
 	else {
-		ui->labelSBDescription->setText(tr("There are %1 space boundaries in the IFC file").arg(sbCount));
+		ui->radioButtonScenarioSB->setText(tr("Use IFC Space Boundaries (not available)"));
+		ui->radioButtonScenarioSB->setToolTip(tr("No space boundaries found in the IFC file"));
+		setScenario(CS_MediumMatching);
 	}
 
 	ui->doubleSpinBoxMatchConstructionFactor->setValue(m_reader->convertOptions().m_distanceFactor);
@@ -469,5 +492,3 @@ void ImportIFCDialog::initConvertOptions() {
 void ImportIFCDialog::on_checkBoxAdvanced_clicked() {
 	ui->tabWidgetAdvanced->setVisible(ui->checkBoxAdvanced->isChecked());
 }
-
-
