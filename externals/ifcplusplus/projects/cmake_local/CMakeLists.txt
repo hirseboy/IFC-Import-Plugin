@@ -9,7 +9,7 @@ include_directories(
 	${PROJECT_SOURCE_DIR}/../../src/IfcPlusPlus/src/external/Carve/src/include
 	${PROJECT_SOURCE_DIR}/../../src/external
 	${PROJECT_SOURCE_DIR}/../../src/IfcPlusPlus/src/external
-	${PROJECT_SOURCE_DIR}/../../src/IfcPlusPlus/src/external/Carve/src/commons
+	${PROJECT_SOURCE_DIR}/../../src/IfcPlusPlus/src/external/Carve/src/common
 )
 
 if (MSVC)

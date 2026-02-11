@@ -38,7 +38,7 @@ include_directories(
 )
 
 # Qt Module
-find_package(Qt5 REQUIRED COMPONENTS Core Widgets Gui)
+find_package(Qt6 REQUIRED COMPONENTS Core Widgets Gui)
 
 # Quellen, Header, Forms
 set(SRC_FILES
@@ -61,19 +61,14 @@ set(LIB_UIS
 
 set(METADATA_JSON_FILE ${PROJECT_SOURCE_DIR}/../../src/metadata.json)
 
-qt5_wrap_ui( LIB_UI_SRCS ${LIB_UIS} )
-qt5_wrap_cpp( LIB_MOC_SRCS ${LIB_HDRS} )
-
-# Übersetzungen
-# set(TS_FILES resources/translations/ImportIFCPlugin_de.ts)
-# qt5_create_translation(QM_FILES ${CMAKE_SOURCE_DIR} ${TS_FILES})
+qt6_wrap_ui( LIB_UI_SRCS ${LIB_UIS} )
+qt6_wrap_cpp( LIB_MOC_SRCS ${LIB_HDRS} )
 
 # Plugin-Bibliothek
 add_library(ImportIFCPlugin SHARED
     ${SRC_FILES}
     ${LIB_MOC_SRCS}
     ${LIB_UI_SRCS}
-#    ${QM_FILES}
 	${METADATA_JSON_FILE}
 )
 
@@ -87,21 +82,15 @@ target_link_libraries(ImportIFCPlugin PRIVATE
     TiCPP_static
     IBKMK_static
     IBK_static
-    Qt5::Core
-    Qt5::Gui
-    Qt5::Widgets
-    Qt5::Xml
-    Qt5::Svg
-    Qt5::PrintSupport
+    Qt6::Core
+    Qt6::Gui
+    Qt6::Widgets
+    Qt6::Xml
+    Qt6::Svg
+    Qt6::PrintSupport
 )
 
 # Optional: Windows-spezifische Libraries
 if(WIN32)
     target_link_libraries(ImportIFCPlugin PRIVATE iphlpapi shell32)
 endif()
-
-# Export-Ziel (analog zu INSTALLS += target)
-#  install(TARGETS ImportIFCPlugin
-#      RUNTIME DESTINATION PLUGIN_OUTPUT_DIR
-#      LIBRARY DESTINATION PLUGIN_OUTPUT_DIR
-#  )

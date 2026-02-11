@@ -19,7 +19,7 @@ include_directories(
 	${PROJECT_SOURCE_DIR}/../../../ifcplusplus/src/IfcPlusPlus/src/external/Carve/src/common
 )
 
-find_package(Qt5 REQUIRED COMPONENTS Core Widgets)
+find_package(Qt6 REQUIRED COMPONENTS Core Widgets)
 
 # collect a list of all source files of the IFCConvert library
 file( GLOB LIB_SRCS 
@@ -30,7 +30,7 @@ file( GLOB LIB_SRCS
 file( GLOB LIB_HDRS ${PROJECT_SOURCE_DIR}/../../src/*.h )
 
 # and finally this will run moc:
-qt5_wrap_cpp( LIB_MOC_SRCS ${LIB_HDRS} )
+qt6_wrap_cpp( LIB_MOC_SRCS ${LIB_HDRS} )
     
 if (MSVC)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /bigobj ")
@@ -47,6 +47,7 @@ else()
 	add_library( ${PROJECT_NAME} STATIC ${LIB_SRCS} )
 endif()
 
- target_link_libraries(IFCConvert PRIVATE Qt5::Core Qt5::Widgets)
- target_link_libraries(IFCConvert_static PRIVATE Qt5::Core Qt5::Widgets)
-# target_link_libraries(IFCConvert_static PRIVATE Qt5::Core Qt5::Widgets)
+ target_link_libraries(IFCConvert PRIVATE Qt6::Core Qt6::Widgets)
+ if(TARGET IFCConvert_static)
+	target_link_libraries(IFCConvert_static PRIVATE Qt6::Core Qt6::Widgets)
+ endif()

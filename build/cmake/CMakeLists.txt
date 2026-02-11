@@ -64,12 +64,12 @@ else (MSVC)
 	if (APPLE)
 		#message( STATUS "Mac compiler ID = ${CMAKE_C_COMPILER_ID}" )
 		if ( CMAKE_C_COMPILER_ID MATCHES "GNU")
-			set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11" )
+			set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17" )
 		else ( CMAKE_C_COMPILER_ID MATCHES "GNU")
-			set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -stdlib=libc++" )
+			set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17 -stdlib=libc++" )
 		endif ( CMAKE_C_COMPILER_ID MATCHES "GNU")
 	else (APPLE)
-		set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -std=gnu++11" )
+		set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17 -std=gnu++17" )
 	endif (APPLE)
 
 endif (MSVC)
@@ -82,23 +82,33 @@ endif (MSVC)
 # automatically add CMAKE_CURRENT_SOURCE_DIR and CMAKE_CURRENT_BINARY_DIR to the include directories in every processed CMakeLists.txt
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
-find_package(Qt5 COMPONENTS Core REQUIRED)
-find_package(Qt5Widgets REQUIRED)
-find_package(Qt5Xml REQUIRED)
-find_package(Qt5Svg REQUIRED)
-find_package(Qt5PrintSupport REQUIRED)
-find_package(Qt5Network REQUIRED)
-find_package(Qt5Concurrent REQUIRED)
+# Set Qt version for QtExt compatibility (from SIM-VICUS)
+set(VICUS_QT_VERSION 6 CACHE INTERNAL "Qt version in use")
 
+find_package(Qt6 COMPONENTS Core REQUIRED)
+find_package(Qt6 COMPONENTS Widgets REQUIRED)
+find_package(Qt6 COMPONENTS Xml REQUIRED)
+find_package(Qt6 COMPONENTS Svg REQUIRED)
+find_package(Qt6 COMPONENTS PrintSupport REQUIRED)
+find_package(Qt6 COMPONENTS Network REQUIRED)
+find_package(Qt6 COMPONENTS Concurrent REQUIRED)
 
-message("*** Building with Qt5, Version ${Qt5Widgets_VERSION} ***")
+# Populate Qt6 include dir variables for compatibility with libraries that use them
+get_target_property(Qt6Core_INCLUDE_DIRS Qt6::Core INTERFACE_INCLUDE_DIRECTORIES)
+get_target_property(Qt6Gui_INCLUDE_DIRS Qt6::Gui INTERFACE_INCLUDE_DIRECTORIES)
+get_target_property(Qt6Widgets_INCLUDE_DIRS Qt6::Widgets INTERFACE_INCLUDE_DIRECTORIES)
+get_target_property(Qt6PrintSupport_INCLUDE_DIRS Qt6::PrintSupport INTERFACE_INCLUDE_DIRECTORIES)
+get_target_property(Qt6Network_INCLUDE_DIRS Qt6::Network INTERFACE_INCLUDE_DIRECTORIES)
+get_target_property(Qt6Svg_INCLUDE_DIRS Qt6::Svg INTERFACE_INCLUDE_DIRECTORIES)
+
+message("*** Building with Qt6, Version ${Qt6_VERSION} ***")
 
 # when building with gcc/icc add compile flag
 if (NOT MSVC)
 	if (APPLE)
-	  set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -stdlib=libc++" )
+	  set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17 -stdlib=libc++" )
 	else (APPLE)
-	  set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -std=gnu++11" )
+	  set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17 -std=gnu++17" )
 	endif (APPLE)
 endif (NOT MSVC)
 
@@ -117,33 +127,51 @@ if( APPLE )
 endif( APPLE )
 
 # -------------------------------------------------------------
-# Support for build flags
-# -------------------------------------------------------------
-include( ../../externals/IBK/projects/cmake_local/cmake_pri/CMakeLists.txt  )
-
-# -------------------------------------------------------------
 # subdirectories and subprojects
 # -------------------------------------------------------------
 
 # add subdirectories for all builds
-add_subdirectory( ../../externals/IBK/projects/cmake_local IBK )
-add_subdirectory( ../../externals/IBKMK/projects/cmake_local IBKMK )
+add_subdirectory( ../../externals/IBK IBK )
+add_subdirectory( ../../externals/IBKMK IBKMK )
 add_subdirectory( ../../externals/ifcplusplus/projects/cmake_local ifcplusplus )
 add_subdirectory( ../../externals/IFCConvert/projects/cmake_local IFCConvert )
 add_subdirectory( ../../externals/ifcplusplus/src/IfcPlusPlus/src/external/Carve/projects/cmake_local Carve )
-add_subdirectory( ../../externals/clipper/projects/cmake_local Clipper )
-add_subdirectory( ../../externals/QtExt/projects/cmake_local QtExt )
-add_subdirectory( ../../externals/CCM/projects/cmake_local CCM )
-add_subdirectory( ../../externals/DataIO/projects/cmake_local DataIO )
-add_subdirectory( ../../externals/TiCPP/projects/cmake_local TiCPP )
+add_subdirectory( ../../externals/clipper Clipper )
+add_subdirectory( ../../externals/QtExt QtExt )
+add_subdirectory( ../../externals/CCM CCM )
+add_subdirectory( ../../externals/DataIO DataIO )
+add_subdirectory( ../../externals/TiCPP TiCPP )
 add_subdirectory( ../../externals/IFCImportPlugin/projects/cmake_local ImportIFCPlugin )
 
-
-# target_link_libraries(IFCConvert PRIVATE Qt5::Core)
+# Create _static aliases for libraries that only create non-suffixed targets
+# (ImportIFCPlugin links against _static variants)
+if(NOT TARGET IBK_static)
+	add_library(IBK_static ALIAS IBK)
+endif()
+if(NOT TARGET IBKMK_static)
+	add_library(IBKMK_static ALIAS IBKMK)
+endif()
+if(NOT TARGET TiCPP_static)
+	add_library(TiCPP_static ALIAS TiCPP)
+endif()
+if(NOT TARGET QtExt_static)
+	add_library(QtExt_static ALIAS QtExt)
+endif()
+if(NOT TARGET clipper_static)
+	add_library(clipper_static ALIAS clipper)
+endif()
+if(NOT TARGET Carve_static)
+	add_library(Carve_static ALIAS Carve)
+endif()
+if(NOT TARGET ifcplusplus_static)
+	add_library(ifcplusplus_static ALIAS ifcplusplus)
+endif()
+if(NOT TARGET IFCConvert_static)
+	add_library(IFCConvert_static ALIAS IFCConvert)
+endif()
 
 # -------------------------------------------------------------
 # applications
 # -------------------------------------------------------------
 
 add_subdirectory( ../../IFC2BESTest/projects/cmake_local IFC2BESTest)
-
