@@ -3,7 +3,6 @@
 #include "IFCC_Helper.h"
 
 #include <QDebug>
-#include <QApplication>
 
 
 #include <ifcpp/IFC4X3/include/IfcRelSpaceBoundary.h>
@@ -48,22 +47,21 @@
 
 //#include "IFCC_MeshUtils.h"
 #include "IFCC_Logger.h"
+#include "IFCC_ProgressHandler.h"
 
 namespace IFCC {
 
-struct ProgressCloser {
-	ProgressCloser(IFCReader* reader, QString endText) :
-		m_reader(reader),
-		m_endText(endText)
-	{}
-	~ProgressCloser() {
-		emit m_reader->progress(100, m_endText);
-	}
-
-	IFCReader*	m_reader;
-	QString		m_endText;
-};
-
+/*! Creates a ProgressHandler that maps local [0,1] progress to [rangeStart, rangeEnd]
+	of the given parent IBK::NotificationHandler.
+*/
+static ProgressHandler makeSubRange(IBK::NotificationHandler* parent, double rangeStart, double rangeEnd) {
+	return ProgressHandler([parent](int v, QString t) {
+		if(parent) {
+			const char* text = t.isEmpty() ? nullptr : t.toUtf8().constData();
+			parent->notify(double(v) / 100.0, text);
+		}
+	}, rangeStart, rangeEnd);
+}
 
 IFCReader::IFCReader() :
 	m_hasError(false),
@@ -81,14 +79,6 @@ IFCReader::IFCReader() :
 	m_geometryConverter.getGeomSettings()->setMinNumVerticesPerArc(4);
 
 	Logger::instance().set("/home/fechner/Programming/IFC-Import-Plugin/IFC_Log.txt");
-	m_progressDialog.reset(new QProgressDialog("IFC Reader...", "Abort read", 0, 100));
-	m_progressDialog->setWindowModality(Qt::WindowModal);
-	m_progressDialog->setMinimum(0);
-	m_progressDialog->setMaximum(0);
-	m_progressDialog->setValue(0);
-//	m_progressDialog->setMinimumDuration(0);
-
-	connect(this, &IFCReader::progress, this, &IFCReader::setProgress);
 }
 
 IFCReader::~IFCReader() {
@@ -133,17 +123,6 @@ void IFCReader::clearConvertData() {
 	m_instances.clear();
 }
 
-void IFCReader::setProgress(int val, QString text) {
-	if(m_progressDialog) {
-		m_progressDialog->setLabelText(text);
-//		m_progressDialog->setValue(val);
-		m_progressDialog->update();
-		if(val == 100)
-			m_progressDialog->reset();
-		QApplication::processEvents();
-	}
-}
-
 bool IFCReader::loadModelFromSTEPFile( const IBK::Path& filePath, shared_ptr<BuildingModel>& targetModel ) {
 	m_hasError = false;
 	// if file content needs to be loaded into a plain model, call resetModel() before loadModelFromFile
@@ -180,13 +159,12 @@ bool IFCReader::loadModelFromSTEPFile( const IBK::Path& filePath, shared_ptr<Bui
 }
 
 
-bool IFCReader::read(const IBK::Path& filename, bool ignoreReadError) {
+bool IFCReader::read(const IBK::Path& filename, bool ignoreReadError, IBK::NotificationHandler* notify) {
 	clear();
 
-	ProgressCloser progressCloser(this, tr("End of read"));
-	m_progressDialog->show();
+	if(notify)
+		notify->notify(0.01, "Read IFC file");
 
-	emit progress(1,tr("Read IFC file"));
 	m_filename = filename;
 	m_readCompletedSuccessfully = true;
 	try {
@@ -195,6 +173,8 @@ bool IFCReader::read(const IBK::Path& filename, bool ignoreReadError) {
 			m_readCompletedSuccessfully = false;
 		}
 
+		if(notify)
+			notify->notify(1.0, "Read complete");
 		return !m_hasError;
 	}
 	catch (std::exception& e) {
@@ -204,6 +184,8 @@ bool IFCReader::read(const IBK::Path& filename, bool ignoreReadError) {
 			m_hasError = true;
 		}
 
+		if(notify)
+			notify->notify(1.0, "Read failed");
 		return false;
 	}
 	return true;
@@ -351,7 +333,7 @@ void IFCReader::splitShapeData() {
 	}
 }
 
-void IFCReader::updateBuildingElements() {
+void IFCReader::updateBuildingElements(IBK::NotificationHandler* notify) {
 	Logger::instance() << "IFCReader::updateBuildingElements start";
 	size_t elemCount = 0;
 	for(auto& elems : m_elementEntitesShape) {
@@ -359,12 +341,12 @@ void IFCReader::updateBuildingElements() {
 	}
 	size_t currCount = 0;
 
-	emit progress(0, tr("Update building elements"));
-
 	m_buildingElements.clear();
 	for(auto& elems : m_elementEntitesShape) {
 		for(auto& elem : elems.second) {
 			++currCount;
+			if(notify != nullptr && elemCount > 0)
+				notify->notify(double(currCount) / double(elemCount));
 			if(elem.get() == nullptr)
 				continue;
 
@@ -487,18 +469,15 @@ void IFCReader::setSurfaceWritingMode(bool oldStyle) {
 }
 
 
-bool IFCReader::convert(bool useSpaceBoundaries) {
-
-	ProgressCloser progressCloser(this, tr("End converting"));
-
-	m_progressDialog->show();
+bool IFCReader::convert(bool useSpaceBoundaries, IBK::NotificationHandler* notify) {
 
 	if(!m_readCompletedSuccessfully) {
 		m_errorText = "Cannot convert data because file not readed";
 		return false;
 	}
 
-	emit progress(0, tr("Start converting"));
+	if(notify)
+		notify->notify(0.0, "Start converting");
 
 	Logger::instance() << "start convert";
 
@@ -527,35 +506,49 @@ bool IFCReader::convert(bool useSpaceBoundaries) {
 
 	try {
 
-		emit progress(20, tr("Convert geometry"));
+		if(notify)
+			notify->notify(0.05, "Convert geometry");
 		// convert IFC geometric representations into Carve geometry
 		const double length_in_meter = m_geometryConverter.getBuildingModel()->getUnitConverter()->getLengthInMeterFactor();
 		m_geometryConverter.getGeomSettings()->setMinimumSurfaceArea(m_convertOptions.m_minimumSurfaceArea);
 		m_geometryConverter.setCsgEps(1.5e-08 * length_in_meter);
 		m_geometryConverter.convertGeometry(subtractOpenings, m_convertErrors);
 
+		if(notify)
+			notify->notify(0.20, "Split shape data");
+
 		splitShapeData();
 
-		emit progress(50, tr("Split shape data"));
+		if(notify)
+			notify->notify(0.25, "Create openings");
 
 		m_openings.clear();
-		for(auto& openShape : m_openingsShape) {
-			std::shared_ptr<IfcOpeningElement> o = dynamic_pointer_cast<IfcOpeningElement>(openShape.second->m_ifc_object_definition.lock());
-			if(o == nullptr)
-				continue;
+		{
+			ProgressHandler openingsProgress = makeSubRange(notify, 0.25, 0.35);
+			size_t totalOpeningShapes = m_openingsShape.size();
+			size_t currOpeningShape = 0;
+			for(auto& openShape : m_openingsShape) {
+				++currOpeningShape;
+				if(notify && totalOpeningShapes > 0)
+					openingsProgress.notify(double(currOpeningShape) / double(totalOpeningShapes));
 
-			Opening opening(GUID_maker::instance().guid());
-			if(opening.set(o)) {
-				m_openings.push_back(opening);
-				m_openings.back().update(openShape.second, m_convertErrors);
+				std::shared_ptr<IfcOpeningElement> o = dynamic_pointer_cast<IfcOpeningElement>(openShape.second->m_ifc_object_definition.lock());
+				if(o == nullptr)
+					continue;
+
+				Opening opening(GUID_maker::instance().guid());
+				if(opening.set(o)) {
+					m_openings.push_back(opening);
+					m_openings.back().update(openShape.second, m_convertErrors);
+				}
 			}
 		}
 
-		emit progress(60, tr("Update openings"));
-
 		try {
-			emit progress(65, tr("Update building elements"));
-			updateBuildingElements();
+			if(notify)
+				notify->notify(0.35, "Update building elements");
+			ProgressHandler buildElemProgress = makeSubRange(notify, 0.35, 0.55);
+			updateBuildingElements(&buildElemProgress);
 
 			Logger::instance() << "updateBuildingElements";
 		}
@@ -578,11 +571,20 @@ bool IFCReader::convert(bool useSpaceBoundaries) {
 			return false;
 		}
 
-		emit progress(70, tr("Set containing elements"));
-		for(std::shared_ptr<BuildingElement>& openingElement : m_buildingElements.m_openingElements) {
-			openingElement->setContainingElements(m_openings);
-			openingElement->setContainedConstructionThickesses(m_buildingElements.m_constructionElements);
-			openingElement->setContainedConstructionThickesses(m_buildingElements.m_constructionSimilarElements);
+		if(notify)
+			notify->notify(0.55, "Set containing elements");
+		{
+			ProgressHandler containProgress = makeSubRange(notify, 0.55, 0.60);
+			size_t totalOpeningElems = m_buildingElements.m_openingElements.size();
+			size_t currOpeningElem = 0;
+			for(std::shared_ptr<BuildingElement>& openingElement : m_buildingElements.m_openingElements) {
+				++currOpeningElem;
+				if(notify && totalOpeningElems > 0)
+					containProgress.notify(double(currOpeningElem) / double(totalOpeningElems));
+				openingElement->setContainingElements(m_openings);
+				openingElement->setContainedConstructionThickesses(m_buildingElements.m_constructionElements);
+				openingElement->setContainedConstructionThickesses(m_buildingElements.m_constructionSimilarElements);
+			}
 		}
 
 		Logger::instance() << "setContainingElements";
@@ -591,17 +593,23 @@ bool IFCReader::convert(bool useSpaceBoundaries) {
 			m_convertErrors.push_back({OT_BuildingElement, elem->m_id, "Building element has no surface"});
 		}
 
-		emit progress(80, tr("Match openings"));
-		checkAndMatchOpeningsToConstructions();
+		if(notify)
+			notify->notify(0.60, "Match openings");
+		{
+			ProgressHandler matchProgress = makeSubRange(notify, 0.60, 0.70);
+			checkAndMatchOpeningsToConstructions(&matchProgress);
+		}
 
 		Logger::instance() << "collect data start";
 
-		emit progress(90, tr("Collect data"));
+		if(notify)
+			notify->notify(0.70, "Collect data");
 		m_database.collectData(m_buildingElements);
 
 		Logger::instance() << "collectData";
 
-		emit progress(95, tr("Update storeys"));
+		if(notify)
+			notify->notify(0.72, "Update storeys");
 
 		bool siteExist = m_siteShape != nullptr;
 		if(m_siteShape == nullptr) {
@@ -625,11 +633,11 @@ bool IFCReader::convert(bool useSpaceBoundaries) {
 		}
 
 		if(siteExist) {
-
+			ProgressHandler storeyProgress = makeSubRange(notify, 0.72, 0.97);
 			for(auto& building : m_site.m_buildings) {
 				building->fetchStoreys(m_storeysShape, m_spaceEntitesShape, m_site.m_buildings.size() == 1);
 				bool res = building->updateStoreys(m_elementEntitesShape, m_spaceEntitesShape, m_geometryConverter.getBuildingModel()->getUnitConverter(),
-									   m_buildingElements, m_openings, m_useSpaceBoundaries, m_convertErrors, m_convertOptions);
+									   m_buildingElements, m_openings, m_useSpaceBoundaries, m_convertErrors, m_convertOptions, &storeyProgress);
 				if( !res) {
 					m_convertErrors.push_back({OT_Building, -1, "No connection between building and storeys"});
 					m_errorText = "No connection between building and storeys";
@@ -657,7 +665,8 @@ bool IFCReader::convert(bool useSpaceBoundaries) {
 			}
 		}
 
-		emit progress(98, tr("Collect component instances"));
+		if(notify)
+			notify->notify(0.97, "Collect component instances");
 		m_instances.collectComponentInstances(m_buildingElements, m_database, m_site, m_convertErrors, m_convertOptions);
 
 		Logger::instance() << "collectComponentInstances";
@@ -669,7 +678,8 @@ bool IFCReader::convert(bool useSpaceBoundaries) {
 
 		m_convertCompletedSuccessfully = true;
 
-		emit progress(100, tr("Convert completed successfully"));
+		if(notify)
+			notify->notify(1.0, "Convert completed successfully");
 		Logger::instance() << "m_convertCompletedSuccessfully";
 
 		return true;
@@ -1041,10 +1051,15 @@ bool IFCReader::typeByGuid(const std::string& guid, std::pair<BuildingElementTyp
 	return false;
 }
 
-void IFCReader::checkAndMatchOpeningsToConstructions() {
+void IFCReader::checkAndMatchOpeningsToConstructions(IBK::NotificationHandler* notify) {
 	Logger::instance() << "checkAndMatchOpeningsToConstructions";
 
+	size_t totalOpenings = m_openings.size();
+	size_t currOpening = 0;
 	for(Opening& opening : m_openings) {
+		++currOpening;
+		if(notify != nullptr && totalOpenings > 0)
+			notify->notify(double(currOpening) / double(totalOpenings));
 		if(opening.isConnectedToOpeningElement())
 			continue;
 

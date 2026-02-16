@@ -86,10 +86,63 @@ void BuildingStorey::updateSpaces(const objectShapeTypeVector_t& shapes,
 								  std::vector<Opening>& openings,
 								  bool useSpaceBoundaries,
 								  std::vector<ConvertError>& errors,
-								  const ConvertOptions& convertOptions) {
+								  const ConvertOptions& convertOptions,
+								  IBK::NotificationHandler* notify) {
 
-	for(auto& space : m_spaces) {
-		space->updateSpaceBoundaries(shapes, unit_converter, buildingElements, openings, useSpaceBoundaries, errors, convertOptions);
+	// Classify spaces by processing path
+	std::vector<size_t> ifcIndices, constructionIndices;
+	for(size_t i = 0; i < m_spaces.size(); ++i) {
+		if(useSpaceBoundaries && !m_spaces[i]->spaceBoundaries().empty())
+			ifcIndices.push_back(i);
+		else
+			constructionIndices.push_back(i);
+	}
+
+	size_t totalSpaces = ifcIndices.size() + constructionIndices.size();
+	size_t completed = 0;
+
+	// IFC path: sequential (already fast, no heavy geometry matching)
+	for(size_t i : ifcIndices) {
+		m_spaces[i]->updateSpaceBoundaries(shapes, unit_converter, buildingElements,
+										   openings, useSpaceBoundaries, errors, convertOptions);
+		++completed;
+		if(notify && totalSpaces > 0)
+			notify->notify(double(completed) / double(totalSpaces));
+	}
+
+	// Construction path: parallel Phase 1, sequential Phase 2
+	if(!constructionIndices.empty()) {
+		size_t nSpaces = constructionIndices.size();
+
+		// Per-space results for Phase 1
+		std::vector<std::vector<std::shared_ptr<SpaceBoundary>>> perSpaceSBs(nSpaces);
+		std::vector<std::vector<ConvertError>> perSpaceErrors(nSpaces);
+
+		// Phase 1: parallel construction space boundary creation
+		// NO notify() calls inside OMP parallel region (triggers processEvents)
+		#pragma omp parallel for schedule(dynamic)
+		for(int j = 0; j < (int)nSpaces; ++j) {
+			perSpaceSBs[j] = m_spaces[constructionIndices[j]]->createConstructionSpaceBoundaries(
+				buildingElements, perSpaceErrors[j], convertOptions);
+		}
+
+		// Report Phase 1 completion (half credit for construction spaces)
+		completed += nSpaces / 2;
+		if(notify && totalSpaces > 0)
+			notify->notify(double(completed) / double(totalSpaces), "Matching openings");
+
+		// Merge Phase 1 errors
+		for(auto& errs : perSpaceErrors)
+			errors.insert(errors.end(), errs.begin(), errs.end());
+
+		// Phase 2: sequential opening matching and finalization - per-space notify
+		for(size_t j = 0; j < nSpaces; ++j) {
+			m_spaces[constructionIndices[j]]->finalizeConstructionSpaceBoundaries(
+				perSpaceSBs[j], buildingElements, openings, errors, convertOptions);
+			++completed;
+			if(notify && totalSpaces > 0)
+				notify->notify(double(completed) / double(totalSpaces));
+		}
 	}
 }
 

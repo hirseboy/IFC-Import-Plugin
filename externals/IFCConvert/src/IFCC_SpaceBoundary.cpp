@@ -14,10 +14,13 @@
 #include <ifcpp/IFC4X3/include/IfcRelSpaceBoundary2ndLevel.h>
 
 
+#include <sstream>
+
 #include "IFCC_Helper.h"
 #include "IFCC_Types.h"
 #include "IFCC_RepresentationConverter.h"
 #include "IFCC_Database.h"
+#include "IFCC_Logger.h"
 #include "IFCC_Space.h"
 
 
@@ -369,18 +372,75 @@ VICUS::Surface SpaceBoundary::getVicusSurface(const ConvertOptions& options) con
 	if(!s.check(options.m_polygonEps))
 		return vsurf;
 
+	// Create 3D polygon from the IFCC surface polygon - validate before proceeding
+	const std::vector<IBKMK::Vector3D>& polyVect = s.polygon();
+	if(polyVect.size() < 3) {
+		Logger::instance() << "Warning: Surface '" << s.name() << "' (id " << s.id()
+			<< ") has less than 3 vertices - skipping";
+		return vsurf;
+	}
+
+	IBKMK::Polygon3D poly3D(polyVect);
+	if(!poly3D.isValid()) {
+		Logger::instance() << "Warning: Surface '" << s.name() << "' (id " << s.id()
+			<< ") has invalid 3D polygon - skipping";
+		return vsurf;
+	}
+
+	// Simulate the complete VICUS XML round-trip to detect precision-related issues.
+	// writeXML uses default ostream precision (~6 significant digits) for 2D polyline
+	// vertices and offset/normal/localX vectors. readXML reconstructs a Polygon2D from
+	// the deserialized values, which runs eliminateCollinearPoints() and can change vertex
+	// count or remove the (0,0) origin. It also reconstructs Polygon3D which validates
+	// unit-length normals, orthogonality, and that first vertex is (0,0).
+	// Any failure that would occur in readXML is detected here and the surface is skipped.
+	{
+		// Round-trip offset/normal/localX through toString()/fromString()
+		IBKMK::Vector3D rtOffset, rtNormal, rtLocalX;
+		try {
+			rtOffset = IBKMK::Vector3D::fromString(poly3D.offset().toString());
+			rtNormal = IBKMK::Vector3D::fromString(poly3D.normal().toString());
+			rtLocalX = IBKMK::Vector3D::fromString(poly3D.localX().toString());
+		}
+		catch (...) {
+			Logger::instance() << "Warning: Surface '" << s.name() << "' (id " << s.id()
+				<< ") offset/normal/localX vectors fail serialization round-trip - skipping";
+			return vsurf;
+		}
+
+		// Round-trip 2D polyline vertices through ostream/istream (matching writeXML precision)
+		const std::vector<IBKMK::Vector2D>& polylineVerts = poly3D.polyline().vertexes();
+		std::vector<IBKMK::Vector2D> rtVerts(polylineVerts.size());
+		for(size_t i = 0; i < polylineVerts.size(); ++i) {
+			std::stringstream ss;
+			ss << polylineVerts[i].m_x << " " << polylineVerts[i].m_y;
+			ss >> rtVerts[i].m_x >> rtVerts[i].m_y;
+		}
+
+		// Replicate the exact readXML validation sequence:
+		// 1) Polygon2D(verts) + isValid check
+		IBKMK::Polygon2D rtPoly2D(rtVerts);
+		if(!rtPoly2D.isValid()) {
+			Logger::instance() << "Warning: Surface '" << s.name() << "' (id " << s.id()
+				<< ") polygon will not survive XML round-trip (invalid polyline) - skipping";
+			return vsurf;
+		}
+
+		// 2) Polygon3D(Polygon2D(verts), offset, normal, localX) + isValid check
+		//    This checks first vertex == (0,0), unit normals, orthogonality, and setRotation.
+		IBKMK::Polygon3D rtPoly3D(rtPoly2D, rtOffset, rtNormal, rtLocalX);
+		if(!rtPoly3D.isValid()) {
+			Logger::instance() << "Warning: Surface '" << s.name() << "' (id " << s.id()
+				<< ") polygon will not survive XML round-trip (invalid polygon3D) - skipping";
+			return vsurf;
+		}
+	}
+
 	// Set id, displayName, ifcGUID
 	vsurf.m_id = s.id();
 	vsurf.m_displayName = QString::fromStdString(s.name());
 	vsurf.m_ifcGUID = m_guid;
-
-	// Create 3D polygon from the IFCC surface polygon
-	const std::vector<IBKMK::Vector3D>& polyVect = s.polygon();
-	if(polyVect.size() >= 3) {
-		IBKMK::Polygon3D poly3D(polyVect);
-		if(poly3D.isValid())
-			vsurf.setPolygon3D(poly3D);
-	}
+	vsurf.setPolygon3D(poly3D);
 
 	// Convert subsurfaces
 	std::vector<VICUS::SubSurface> vicusSubSurfaces;
@@ -390,15 +450,25 @@ VICUS::Surface SpaceBoundary::getVicusSurface(const ConvertOptions& options) con
 		if(sub.isHole())
 			continue;
 
+		// Validate 2D polygon before creating VICUS subsurface
+		const std::vector<IBKMK::Vector2D>& poly2D = sub.polygon();
+		if(poly2D.size() < 3) {
+			Logger::instance() << "Warning: SubSurface '" << sub.name() << "' (id " << sub.id()
+				<< ") has less than 3 vertices - skipping";
+			continue;
+		}
+
+		VICUS::Polygon2D vicusPoly2D(poly2D);
+		if(!vicusPoly2D.isValid()) {
+			Logger::instance() << "Warning: SubSurface '" << sub.name() << "' (id " << sub.id()
+				<< ") has invalid 2D polygon - skipping";
+			continue;
+		}
+
 		VICUS::SubSurface vsub;
 		vsub.m_id = sub.id();
 		vsub.m_displayName = QString::fromStdString(sub.name());
-
-		// Convert 2D polygon
-		const std::vector<IBKMK::Vector2D>& poly2D = sub.polygon();
-		if(!poly2D.empty()) {
-			vsub.m_polygon2D = VICUS::Polygon2D(poly2D);
-		}
+		vsub.m_polygon2D = vicusPoly2D;
 		vicusSubSurfaces.push_back(vsub);
 	}
 	if(!vicusSubSurfaces.empty())

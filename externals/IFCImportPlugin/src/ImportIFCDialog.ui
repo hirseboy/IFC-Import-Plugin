@@ -17,9 +17,9 @@
    <item>
     <layout class="QHBoxLayout" name="horizontalLayoutFile">
      <item>
-      <widget class="QLabel" name="label">
+      <widget class="QLabel" name="labelIFCFileName">
        <property name="text">
-        <string>IFC file name</string>
+        <string>IFC File Name:</string>
        </property>
       </widget>
      </item>
@@ -37,12 +37,6 @@
    </item>
    <item>
     <widget class="QTextEdit" name="textEdit">
-     <property name="maximumSize">
-      <size>
-       <width>16777215</width>
-       <height>80</height>
-      </size>
-     </property>
      <property name="readOnly">
       <bool>true</bool>
      </property>
@@ -52,53 +46,76 @@
     <widget class="QWidget" name="widgetConvert" native="true">
      <layout class="QVBoxLayout" name="verticalLayoutConvert">
       <item>
-       <widget class="QGroupBox" name="groupBoxScenario">
-        <property name="title">
-         <string>Conversion scenario</string>
+       <widget class="QLabel" name="labelSectionScenario">
+        <property name="font">
+         <font>
+          <bold>true</bold>
+         </font>
         </property>
-        <layout class="QVBoxLayout" name="verticalLayoutScenario">
-         <item>
-          <widget class="QRadioButton" name="radioButtonScenarioSB">
-           <property name="text">
-            <string>Use IFC Space Boundaries</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QRadioButton" name="radioButtonScenarioFull">
-           <property name="text">
-            <string>Full matching</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QRadioButton" name="radioButtonScenarioMedium">
-           <property name="text">
-            <string>Medium matching (Recommended)</string>
-           </property>
-           <property name="checked">
-            <bool>true</bool>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QRadioButton" name="radioButtonScenarioNone">
-           <property name="text">
-            <string>No matching</string>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QLabel" name="labelScenarioDescription">
-           <property name="text">
-            <string/>
-           </property>
-           <property name="wordWrap">
-            <bool>true</bool>
-           </property>
-          </widget>
-         </item>
-        </layout>
+        <property name="text">
+         <string>Conversion Scenario</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QFrame" name="lineScenario">
+        <property name="frameShape">
+         <enum>QFrame::Shape::HLine</enum>
+        </property>
+        <property name="frameShadow">
+         <enum>QFrame::Shadow::Sunken</enum>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QRadioButton" name="radioButtonScenarioSB">
+        <property name="text">
+         <string>Use IFC Space Boundaries</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QRadioButton" name="radioButtonScenarioFull">
+        <property name="text">
+         <string>Full matching</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QRadioButton" name="radioButtonScenarioMedium">
+        <property name="text">
+         <string>Medium matching (Recommended)</string>
+        </property>
+        <property name="checked">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QRadioButton" name="radioButtonScenarioNone">
+        <property name="text">
+         <string>No matching</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="labelScenarioDescription">
+        <property name="text">
+         <string/>
+        </property>
+        <property name="wordWrap">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QFrame" name="lineBeforeConvert">
+        <property name="frameShape">
+         <enum>QFrame::Shape::HLine</enum>
+        </property>
+        <property name="frameShadow">
+         <enum>QFrame::Shadow::Sunken</enum>
+        </property>
        </widget>
       </item>
       <item>
@@ -118,7 +135,7 @@
         <item>
          <spacer name="horizontalSpacerConvert">
           <property name="orientation">
-           <enum>Qt::Horizontal</enum>
+           <enum>Qt::Orientation::Horizontal</enum>
           </property>
           <property name="sizeHint" stdset="0">
            <size>
@@ -146,182 +163,234 @@
          <attribute name="title">
           <string>General</string>
          </attribute>
-         <layout class="QVBoxLayout" name="verticalLayout" stretch="0,0,0,1">
+         <layout class="QVBoxLayout" name="verticalLayoutGeneral" stretch="0,0,0,0,0,0,0,0,0,1">
           <item>
-           <widget class="QGroupBox" name="groupBox">
-            <property name="title">
-             <string>Minimum values</string>
+           <widget class="QLabel" name="labelSectionMinimumValues">
+            <property name="font">
+             <font>
+              <bold>true</bold>
+             </font>
             </property>
-            <layout class="QHBoxLayout" name="horizontalLayout_2">
-             <item>
-              <widget class="QLabel" name="label_9">
-               <property name="text">
-                <string>Minimum distance</string>
-               </property>
-              </widget>
-             </item>
-             <item>
-              <widget class="QDoubleSpinBox" name="doubleSpinBoxMinimumDistance">
-               <property name="value">
-                <double>1.000000000000000</double>
-               </property>
-              </widget>
-             </item>
-             <item>
-              <widget class="QLabel" name="label_11">
-               <property name="text">
-                <string>mm</string>
-               </property>
-              </widget>
-             </item>
-             <item>
-              <spacer name="horizontalSpacer_7">
-               <property name="orientation">
-                <enum>Qt::Horizontal</enum>
-               </property>
-               <property name="sizeType">
-                <enum>QSizePolicy::Fixed</enum>
-               </property>
-               <property name="sizeHint" stdset="0">
-                <size>
-                 <width>40</width>
-                 <height>20</height>
-                </size>
-               </property>
-              </spacer>
-             </item>
-             <item>
-              <widget class="QLabel" name="label_10">
-               <property name="text">
-                <string>Minimum area</string>
-               </property>
-              </widget>
-             </item>
-             <item>
-              <widget class="QDoubleSpinBox" name="doubleSpinBoxMinimumArea">
-               <property name="value">
-                <double>1.000000000000000</double>
-               </property>
-              </widget>
-             </item>
-             <item>
-              <widget class="QLabel" name="label_12">
-               <property name="text">
-                <string>cm2</string>
-               </property>
-              </widget>
-             </item>
-             <item>
-              <widget class="QLabel" name="label_18">
-               <property name="text">
-                <string>Epsilon for polygon operations</string>
-               </property>
-              </widget>
-             </item>
-             <item>
-              <widget class="QDoubleSpinBox" name="doubleSpinBoxPolygonEpsilon">
-               <property name="value">
-                <double>1.000000000000000</double>
-               </property>
-              </widget>
-             </item>
-             <item>
-              <widget class="QLabel" name="label_19">
-               <property name="text">
-                <string>mm</string>
-               </property>
-              </widget>
-             </item>
-             <item>
-              <spacer name="horizontalSpacer_6">
-               <property name="orientation">
-                <enum>Qt::Horizontal</enum>
-               </property>
-               <property name="sizeHint" stdset="0">
-                <size>
-                 <width>40</width>
-                 <height>20</height>
-                </size>
-               </property>
-              </spacer>
-             </item>
-            </layout>
+            <property name="text">
+             <string>Minimum Values</string>
+            </property>
            </widget>
           </item>
           <item>
-           <widget class="QGroupBox" name="groupBoxRepaiFlags">
-            <property name="sizePolicy">
-             <sizepolicy hsizetype="MinimumExpanding" vsizetype="Preferred">
-              <horstretch>0</horstretch>
-              <verstretch>0</verstretch>
-             </sizepolicy>
+           <widget class="QFrame" name="lineMinimumValues">
+            <property name="frameShape">
+             <enum>QFrame::Shape::HLine</enum>
             </property>
-            <property name="title">
-             <string>Repair flags</string>
+            <property name="frameShadow">
+             <enum>QFrame::Shadow::Sunken</enum>
             </property>
-            <layout class="QGridLayout" name="gridLayout_3">
-             <item row="0" column="1">
-              <widget class="QCheckBox" name="checkBoxRemoveDoubleSBs">
-               <property name="text">
-                <string>Remove doubled space boundaries</string>
-               </property>
-              </widget>
-             </item>
-             <item row="0" column="0">
-              <widget class="QCheckBox" name="checkBoxIgnorErrors">
-               <property name="toolTip">
-                <string>If checked all errors will be ignored and the finish button will be enabled</string>
-               </property>
-               <property name="text">
-                <string>Ignore convert errors</string>
-               </property>
-               <property name="checked">
-                <bool>true</bool>
-               </property>
-              </widget>
-             </item>
-            </layout>
            </widget>
           </item>
           <item>
-           <widget class="QGroupBox" name="groupBoxDetails">
-            <property name="sizePolicy">
-             <sizepolicy hsizetype="Preferred" vsizetype="MinimumExpanding">
-              <horstretch>0</horstretch>
-              <verstretch>0</verstretch>
-             </sizepolicy>
+           <layout class="QHBoxLayout" name="horizontalLayoutMinimumValues">
+            <item>
+             <widget class="QLabel" name="labelMinimumDistance">
+              <property name="text">
+               <string>Minimum Distance:</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QDoubleSpinBox" name="doubleSpinBoxMinimumDistance">
+              <property name="value">
+               <double>1.000000000000000</double>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QLabel" name="labelMinimumDistanceUnit">
+              <property name="text">
+               <string>mm</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <spacer name="horizontalSpacerMinDist">
+              <property name="orientation">
+               <enum>Qt::Orientation::Horizontal</enum>
+              </property>
+              <property name="sizeType">
+               <enum>QSizePolicy::Policy::Fixed</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>40</width>
+                <height>20</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+            <item>
+             <widget class="QLabel" name="labelMinimumArea">
+              <property name="text">
+               <string>Minimum Area:</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QDoubleSpinBox" name="doubleSpinBoxMinimumArea">
+              <property name="value">
+               <double>1.000000000000000</double>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QLabel" name="labelMinimumAreaUnit">
+              <property name="text">
+               <string>cm2</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QLabel" name="labelPolygonEpsilon">
+              <property name="text">
+               <string>Epsilon for Polygon Operations:</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QDoubleSpinBox" name="doubleSpinBoxPolygonEpsilon">
+              <property name="value">
+               <double>1.000000000000000</double>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QLabel" name="labelPolygonEpsilonUnit">
+              <property name="text">
+               <string>mm</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <spacer name="horizontalSpacerMinValues">
+              <property name="orientation">
+               <enum>Qt::Orientation::Horizontal</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>40</width>
+                <height>20</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+           </layout>
+          </item>
+          <item>
+           <widget class="QLabel" name="labelSectionRepairFlags">
+            <property name="font">
+             <font>
+              <bold>true</bold>
+             </font>
             </property>
-            <property name="title">
+            <property name="text">
+             <string>Repair Flags</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QFrame" name="lineRepairFlags">
+            <property name="frameShape">
+             <enum>QFrame::Shape::HLine</enum>
+            </property>
+            <property name="frameShadow">
+             <enum>QFrame::Shadow::Sunken</enum>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <layout class="QHBoxLayout" name="horizontalLayoutRepairFlags">
+            <item>
+             <widget class="QCheckBox" name="checkBoxIgnorErrors">
+              <property name="toolTip">
+               <string>If checked all errors will be ignored and the finish button will be enabled</string>
+              </property>
+              <property name="text">
+               <string>Ignore convert errors</string>
+              </property>
+              <property name="checked">
+               <bool>true</bool>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QCheckBox" name="checkBoxRemoveDoubleSBs">
+              <property name="text">
+               <string>Remove doubled space boundaries</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <spacer name="horizontalSpacerRepairFlags">
+              <property name="orientation">
+               <enum>Qt::Orientation::Horizontal</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>40</width>
+                <height>20</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+           </layout>
+          </item>
+          <item>
+           <widget class="QLabel" name="labelSectionDetails">
+            <property name="font">
+             <font>
+              <bold>true</bold>
+             </font>
+            </property>
+            <property name="text">
              <string>Details</string>
             </property>
-            <layout class="QGridLayout" name="gridLayout_7">
-             <item row="0" column="1">
-              <spacer name="horizontalSpacer_5">
-               <property name="orientation">
-                <enum>Qt::Horizontal</enum>
-               </property>
-               <property name="sizeHint" stdset="0">
-                <size>
-                 <width>389</width>
-                 <height>20</height>
-                </size>
-               </property>
-              </spacer>
-             </item>
-             <item row="0" column="0">
-              <widget class="QCheckBox" name="checkBoxSpaceIntersectionDetails">
-               <property name="text">
-                <string>More space intersection details</string>
-               </property>
-              </widget>
-             </item>
-            </layout>
            </widget>
           </item>
           <item>
-           <spacer name="verticalSpacer_2">
+           <widget class="QFrame" name="lineDetails">
+            <property name="frameShape">
+             <enum>QFrame::Shape::HLine</enum>
+            </property>
+            <property name="frameShadow">
+             <enum>QFrame::Shadow::Sunken</enum>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <layout class="QHBoxLayout" name="horizontalLayoutDetails">
+            <item>
+             <widget class="QCheckBox" name="checkBoxSpaceIntersectionDetails">
+              <property name="text">
+               <string>More space intersection details</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <spacer name="horizontalSpacerDetails">
+              <property name="orientation">
+               <enum>Qt::Orientation::Horizontal</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>40</width>
+                <height>20</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+           </layout>
+          </item>
+          <item>
+           <spacer name="verticalSpacerGeneral">
             <property name="orientation">
-             <enum>Qt::Vertical</enum>
+             <enum>Qt::Orientation::Vertical</enum>
             </property>
             <property name="sizeHint" stdset="0">
              <size>
@@ -335,64 +404,13 @@
         </widget>
         <widget class="QWidget" name="tabConstructionMatching">
          <attribute name="title">
-          <string>Construction matching</string>
+          <string>Construction Matching</string>
          </attribute>
-         <layout class="QGridLayout" name="gridLayout_4">
-          <item row="1" column="4">
-           <widget class="QRadioButton" name="radioButtonMatchingNo">
-            <property name="text">
-             <string>No matching</string>
-            </property>
-           </widget>
-          </item>
-          <item row="6" column="2">
-           <widget class="QDoubleSpinBox" name="doubleSpinBoxMatchConstructionFactor">
-            <property name="decimals">
-             <number>1</number>
-            </property>
-            <property name="minimum">
-             <double>1.000000000000000</double>
-            </property>
-           </widget>
-          </item>
-          <item row="4" column="0" colspan="6">
-           <widget class="QListWidget" name="listWidgetConstructionTypes"/>
-          </item>
-          <item row="6" column="0" colspan="2">
-           <widget class="QLabel" name="label_13">
-            <property name="text">
-             <string>Construction match factor</string>
-            </property>
-           </widget>
-          </item>
-          <item row="1" column="2" colspan="2">
-           <widget class="QRadioButton" name="radioButtonMatchingNConstructions">
-            <property name="text">
-             <string>N constructions</string>
-            </property>
-           </widget>
-          </item>
-          <item row="3" column="0" colspan="4">
-           <widget class="QLabel" name="label_4">
-            <property name="text">
-             <string>Construction types used for creating space boundaries</string>
-            </property>
-           </widget>
-          </item>
+         <layout class="QGridLayout" name="gridLayoutConstructionMatching">
           <item row="0" column="0" colspan="2">
-           <widget class="QLabel" name="label_2">
+           <widget class="QLabel" name="labelConstructionMatchingType">
             <property name="text">
-             <string>Construction matching type</string>
-            </property>
-           </widget>
-          </item>
-          <item row="1" column="1">
-           <widget class="QRadioButton" name="radioButtonMatchingFirst">
-            <property name="text">
-             <string>Highest priority</string>
-            </property>
-            <property name="checked">
-             <bool>true</bool>
+             <string>Construction Matching Type:</string>
             </property>
            </widget>
           </item>
@@ -406,19 +424,49 @@
             </property>
            </widget>
           </item>
-          <item row="6" column="3" colspan="3">
-           <widget class="QLabel" name="label_14">
+          <item row="1" column="1">
+           <widget class="QRadioButton" name="radioButtonMatchingFirst">
             <property name="text">
-             <string>Factor will be multiplied with wall thickness in order to get search distance</string>
+             <string>Highest priority</string>
+            </property>
+            <property name="checked">
+             <bool>true</bool>
             </property>
            </widget>
           </item>
+          <item row="1" column="2" colspan="2">
+           <widget class="QRadioButton" name="radioButtonMatchingNConstructions">
+            <property name="text">
+             <string>N constructions</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="4">
+           <widget class="QRadioButton" name="radioButtonMatchingNo">
+            <property name="text">
+             <string>No matching</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="5">
+           <spacer name="horizontalSpacerMatching">
+            <property name="orientation">
+             <enum>Qt::Orientation::Horizontal</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>40</width>
+              <height>20</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
           <item row="2" column="2" colspan="2">
-           <layout class="QHBoxLayout" name="horizontalLayout">
+           <layout class="QHBoxLayout" name="horizontalLayoutNConstructions">
             <item>
-             <widget class="QLabel" name="label_3">
+             <widget class="QLabel" name="labelFirstNConstructionMatching">
               <property name="text">
-               <string>First N construction matching</string>
+               <string>First N Construction Matching:</string>
               </property>
              </widget>
             </item>
@@ -431,23 +479,20 @@
             </item>
            </layout>
           </item>
-          <item row="1" column="5">
-           <spacer name="horizontalSpacer_2">
-            <property name="orientation">
-             <enum>Qt::Horizontal</enum>
+          <item row="3" column="0" colspan="4">
+           <widget class="QLabel" name="labelConstructionTypesForSB">
+            <property name="text">
+             <string>Construction types used for creating space boundaries</string>
             </property>
-            <property name="sizeHint" stdset="0">
-             <size>
-              <width>40</width>
-              <height>20</height>
-             </size>
-            </property>
-           </spacer>
+           </widget>
+          </item>
+          <item row="4" column="0" colspan="6">
+           <widget class="QListWidget" name="listWidgetConstructionTypes"/>
           </item>
           <item row="5" column="0" colspan="2">
-           <widget class="QLabel" name="label_16">
+           <widget class="QLabel" name="labelStandardWallThickness">
             <property name="text">
-             <string>Standard wall thickness in m</string>
+             <string>Standard Wall Thickness in m:</string>
             </property>
            </widget>
           </item>
@@ -468,9 +513,33 @@
            </widget>
           </item>
           <item row="5" column="3" colspan="3">
-           <widget class="QLabel" name="label_17">
+           <widget class="QLabel" name="labelStandardWallThicknessHint">
             <property name="text">
              <string>Will be used in case no construction exist.</string>
+            </property>
+           </widget>
+          </item>
+          <item row="6" column="0" colspan="2">
+           <widget class="QLabel" name="labelConstructionMatchFactor">
+            <property name="text">
+             <string>Construction Match Factor:</string>
+            </property>
+           </widget>
+          </item>
+          <item row="6" column="2">
+           <widget class="QDoubleSpinBox" name="doubleSpinBoxMatchConstructionFactor">
+            <property name="decimals">
+             <number>1</number>
+            </property>
+            <property name="minimum">
+             <double>1.000000000000000</double>
+            </property>
+           </widget>
+          </item>
+          <item row="6" column="3" colspan="3">
+           <widget class="QLabel" name="labelConstructionMatchFactorHint">
+            <property name="text">
+             <string>Factor will be multiplied with wall thickness in order to get search distance</string>
             </property>
            </widget>
           </item>
@@ -478,37 +547,30 @@
         </widget>
         <widget class="QWidget" name="tabOpeningMatching">
          <attribute name="title">
-          <string>Opening matching</string>
+          <string>Opening Matching</string>
          </attribute>
-         <layout class="QGridLayout" name="gridLayout_5">
+         <layout class="QGridLayout" name="gridLayoutOpeningMatching">
           <item row="0" column="0">
-           <widget class="QLabel" name="label_5">
+           <widget class="QLabel" name="labelOpeningSearchDistance">
             <property name="text">
-             <string>Opening search distance</string>
-            </property>
-           </widget>
-          </item>
-          <item row="0" column="2">
-           <widget class="QLabel" name="label_6">
-            <property name="text">
-             <string>m</string>
+             <string>Opening Search Distance:</string>
             </property>
            </widget>
           </item>
           <item row="0" column="1">
            <widget class="QDoubleSpinBox" name="doubleSpinBoxMatchOpeningDistance"/>
           </item>
-          <item row="2" column="0">
-           <widget class="QLabel" name="label_8">
+          <item row="0" column="2">
+           <widget class="QLabel" name="labelOpeningDistanceUnit">
             <property name="text">
-             <string>Construction types for opening search</string>
+             <string>m</string>
             </property>
            </widget>
           </item>
           <item row="0" column="3">
-           <spacer name="horizontalSpacer_3">
+           <spacer name="horizontalSpacerOpening">
             <property name="orientation">
-             <enum>Qt::Horizontal</enum>
+             <enum>Qt::Orientation::Horizontal</enum>
             </property>
             <property name="sizeHint" stdset="0">
              <size>
@@ -517,9 +579,6 @@
              </size>
             </property>
            </spacer>
-          </item>
-          <item row="3" column="0" colspan="4">
-           <widget class="QListWidget" name="listWidgetOpeningSearchElements"/>
           </item>
           <item row="1" column="0">
            <widget class="QCheckBox" name="checkBoxOpeningCSGSearch">
@@ -531,44 +590,55 @@
             </property>
            </widget>
           </item>
+          <item row="2" column="0">
+           <widget class="QLabel" name="labelConstructionTypesForOpening">
+            <property name="text">
+             <string>Construction types for opening search</string>
+            </property>
+           </widget>
+          </item>
+          <item row="3" column="0" colspan="4">
+           <widget class="QListWidget" name="listWidgetOpeningSearchElements"/>
+          </item>
          </layout>
         </widget>
         <widget class="QWidget" name="tabConstructionOutput">
          <attribute name="title">
-          <string>Construction output</string>
+          <string>Construction Output</string>
          </attribute>
-         <layout class="QGridLayout" name="gridLayout_6">
-          <item row="0" column="4">
-           <widget class="QCheckBox" name="checkBoxWriteOpenings">
+         <layout class="QGridLayout" name="gridLayoutConstructionOutput">
+          <item row="0" column="0">
+           <widget class="QCheckBox" name="checkBoxWriteAllOthers">
             <property name="text">
-             <string>Openings</string>
+             <string>All others</string>
             </property>
            </widget>
           </item>
-          <item row="2" column="1">
-           <spacer name="verticalSpacer">
-            <property name="orientation">
-             <enum>Qt::Vertical</enum>
+          <item row="0" column="1">
+           <widget class="QCheckBox" name="checkBoxWriteConstructions">
+            <property name="text">
+             <string>Constructions</string>
             </property>
-            <property name="sizeHint" stdset="0">
-             <size>
-              <width>20</width>
-              <height>40</height>
-             </size>
-            </property>
-           </spacer>
+           </widget>
           </item>
-          <item row="0" column="3">
+          <item row="0" column="2">
            <widget class="QCheckBox" name="checkBoxWriteBuildingElements">
             <property name="text">
              <string>Building elements</string>
             </property>
            </widget>
           </item>
-          <item row="0" column="5">
-           <spacer name="horizontalSpacer_4">
+          <item row="0" column="3">
+           <widget class="QCheckBox" name="checkBoxWriteOpenings">
+            <property name="text">
+             <string>Openings</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="4">
+           <spacer name="horizontalSpacerOutput">
             <property name="orientation">
-             <enum>Qt::Horizontal</enum>
+             <enum>Qt::Orientation::Horizontal</enum>
             </property>
             <property name="sizeHint" stdset="0">
              <size>
@@ -578,26 +648,25 @@
             </property>
            </spacer>
           </item>
-          <item row="0" column="0">
-           <widget class="QCheckBox" name="checkBoxWriteAllOthers">
-            <property name="text">
-             <string>All others</string>
-            </property>
-           </widget>
-          </item>
-          <item row="0" column="2">
-           <widget class="QCheckBox" name="checkBoxWriteConstructions">
-            <property name="text">
-             <string>Constructions</string>
-            </property>
-           </widget>
-          </item>
           <item row="1" column="0" colspan="3">
            <widget class="QCheckBox" name="checkBoxSurfaceWritingMethod">
             <property name="text">
              <string>Write surface polygons in old style</string>
             </property>
            </widget>
+          </item>
+          <item row="2" column="1">
+           <spacer name="verticalSpacerOutput">
+            <property name="orientation">
+             <enum>Qt::Orientation::Vertical</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>20</width>
+              <height>40</height>
+             </size>
+            </property>
+           </spacer>
           </item>
          </layout>
         </widget>
@@ -609,7 +678,7 @@
    <item>
     <widget class="QDialogButtonBox" name="buttonBox">
      <property name="standardButtons">
-      <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
+      <set>QDialogButtonBox::StandardButton::Cancel|QDialogButtonBox::StandardButton::Ok</set>
      </property>
     </widget>
    </item>
@@ -617,22 +686,6 @@
  </widget>
  <resources/>
  <connections>
-  <connection>
-   <sender>buttonBox</sender>
-   <signal>accepted()</signal>
-   <receiver>ImportIFCDialog</receiver>
-   <slot>accept()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>450</x>
-     <y>580</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>450</x>
-     <y>300</y>
-    </hint>
-   </hints>
-  </connection>
   <connection>
    <sender>buttonBox</sender>
    <signal>rejected()</signal>

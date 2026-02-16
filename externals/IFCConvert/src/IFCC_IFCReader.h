@@ -13,23 +13,17 @@
 #include <QCoreApplication>
 #include <QStringList>
 
+#include <IBK_NotificationHandler.h>
+
 #include <VICUS_Project.h>
 
 #include "IFCC_GeometryConverter.h"
 #include "IFCC_Types.h"
-// #include "IFCC_Space.h"
-// #include "IFCC_BuildingElement.h"
-// #include "IFCC_Building.h"
-// #include "IFCC_BuildingStorey.h"
 #include "IFCC_Project.h"
 #include "IFCC_Site.h"
-// #include "IFCC_Material.h"
-// #include "IFCC_Construction.h"
 #include "IFCC_Database.h"
 #include "IFCC_Instances.h"
 #include "IFCC_BuildingElementsCollector.h"
-
-#include <QProgressDialog>
 
 namespace IFCC {
 
@@ -63,16 +57,21 @@ public:
 	/*! Clear all data sets filled by convert function.*/
 	void clearConvertData();
 
-	/*! Read the IFC file.*/
-	bool read(const IBK::Path& filename, bool ignoreReadError);
+	/*! Read the IFC file.
+		\param filename Path to the IFC file.
+		\param ignoreReadError If true, continue even if read errors occur.
+		\param notify Optional notification handler for progress reporting.
+	*/
+	bool read(const IBK::Path& filename, bool ignoreReadError, IBK::NotificationHandler* notify = nullptr);
 
 	/*! Convert IFC data into internal format similar to SimVicus.
 		It needs calling of read before. splitShapeData is called internally.
 		When space boundaries exist they are used in order to create component instances.
 		Otherwise space boundaries will be created by using a matching algorithm from building components to spaces.
 		\param useSpaceBoundaries When true space boundaries will be used if the exist.
+		\param notify Optional notification handler for progress reporting.
 	*/
-	bool convert(bool useSpaceBoundaries);
+	bool convert(bool useSpaceBoundaries, IBK::NotificationHandler* notify = nullptr);
 
 	/*! Return the total number of IFC entities. Call read before use.*/
 	int totalNumberOfIFCEntities() const;
@@ -211,19 +210,14 @@ public:
 	bool							m_readCompletedSuccessfully;
 	bool							m_convertCompletedSuccessfully;
 
-signals:
-	void progress(int val, QString text);
-
-private slots:
-	void setProgress(int val, QString text);
-
 private:
 	/*! Create a building model from the given STEP file.*/
 	bool loadModelFromSTEPFile( const IBK::Path& filePath, shared_ptr<BuildingModel>& targetModel );
 
 	/*! Helper function for updateing all building elements and collect them according type.
+		\param notify Optional notification handler for per-element progress.
 	*/
-	void updateBuildingElements();
+	void updateBuildingElements(IBK::NotificationHandler* notify = nullptr);
 
 	IBK::Path						m_filename;				///< IFC file
 	std::shared_ptr<BuildingModel>	m_model;				///< IFC model created from file
@@ -287,11 +281,13 @@ private:
 	*/
 	bool typeByGuid(const std::string& guid, std::pair<BuildingElementTypes,std::shared_ptr<ProductShapeData>>& res);
 
-	void checkAndMatchOpeningsToConstructions();
+	/*! Check openings not connected to an opening element and try to match them.
+		\param notify Optional notification handler for per-opening progress.
+	*/
+	void checkAndMatchOpeningsToConstructions(IBK::NotificationHandler* notify = nullptr);
 
 	bool		m_useSpaceBoundaries = true;
 
-	std::unique_ptr<QProgressDialog> m_progressDialog;
 };
 
 } // end namespace

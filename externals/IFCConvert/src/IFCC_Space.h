@@ -141,6 +141,34 @@ public:
 							   std::vector<ConvertError>& errors,
 							   const ConvertOptions& convertOptions);
 
+	/*! Phase 1: Create construction space boundaries (thread-safe, no shared mutable state).
+		Can be called in parallel for different spaces.
+		\param buildingElements Collector of all building elements (read-only).
+		\param errors Vector of errors while conversion (per-thread, merge afterwards).
+		\param convertOptions Options for conversion (read-only).
+		\return Vector of created space boundaries for this space.
+	*/
+	std::vector<std::shared_ptr<SpaceBoundary>> createConstructionSpaceBoundaries(
+		const BuildingElementsCollector& buildingElements,
+		std::vector<ConvertError>& errors,
+		const ConvertOptions& convertOptions);
+
+	/*! Phase 2: Match openings to space boundaries and finalize (requires sequential access).
+		Must be called sequentially since openings vector is shared across spaces.
+		\param spaceBoundaries Space boundaries from Phase 1 to finalize.
+		\param buildingElements Collector of all building elements.
+		\param openings Vector of all openings (shared mutable state).
+		\param errors Vector of errors while conversion.
+		\param convertOptions Options for conversion.
+		\return False if no space boundaries could be found.
+	*/
+	bool finalizeConstructionSpaceBoundaries(
+		std::vector<std::shared_ptr<SpaceBoundary>>& spaceBoundaries,
+		const BuildingElementsCollector& buildingElements,
+		std::vector<Opening>& openings,
+		std::vector<ConvertError>& errors,
+		const ConvertOptions& convertOptions);
+
 	/*! Return all space boundaries of this space.*/
 	const std::vector<std::shared_ptr<SpaceBoundary>>& spaceBoundaries() const;
 

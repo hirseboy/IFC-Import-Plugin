@@ -10,6 +10,7 @@
 
 #include "IFCC_MeshUtils.h"
 #include "IFCC_Helper.h"
+#include "IFCC_ProgressHandler.h"
 
 namespace IFCC {
 
@@ -97,15 +98,37 @@ bool Building::updateStoreys(const objectShapeTypeVector_t& elementShapes,
 							 std::vector<Opening>& openings,
 							 bool useSpaceBoundaries,
 							 std::vector<ConvertError>& errors,
-							 const ConvertOptions& convertOptions) {
+							 const ConvertOptions& convertOptions,
+							 IBK::NotificationHandler* notify) {
 
 	if(m_storeys.empty()) {
 		errors.push_back(ConvertError{OT_Building, m_id, "Building id '" + std::to_string(m_ifcId) + "' has no storeys"});
 		return false;
 	}
-	for(auto& storey : m_storeys) {
-		storey->fetchSpaces(spaceShapes, unit_converter, errors);
-		storey->updateSpaces(elementShapes, unit_converter, buildingElements, openings, useSpaceBoundaries, errors, convertOptions);
+	size_t n = m_storeys.size();
+	for(size_t si = 0; si < n; ++si) {
+		// Give each storey its own sub-range so progress never jumps backwards
+		double rangeStart = double(si) / double(n);
+		double rangeEnd   = double(si + 1) / double(n);
+		std::string label = "Storey " + std::to_string(si+1) + "/" + std::to_string(n);
+
+		if(notify)
+			notify->notify(rangeStart, label.c_str());
+
+		m_storeys[si]->fetchSpaces(spaceShapes, unit_converter, errors);
+
+		if(notify) {
+			ProgressHandler storeyHandler([notify](int v, QString t) {
+				const char* text = t.isEmpty() ? nullptr : t.toUtf8().constData();
+				notify->notify(double(v) / 100.0, text);
+			}, rangeStart, rangeEnd);
+			m_storeys[si]->updateSpaces(elementShapes, unit_converter, buildingElements,
+										openings, useSpaceBoundaries, errors, convertOptions, &storeyHandler);
+		}
+		else {
+			m_storeys[si]->updateSpaces(elementShapes, unit_converter, buildingElements,
+										openings, useSpaceBoundaries, errors, convertOptions, nullptr);
+		}
 	}
 	return true;
 }

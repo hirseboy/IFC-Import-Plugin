@@ -2,6 +2,7 @@
 #define IFCC_HelperH
 
 #include <vector>
+#include <atomic>
 
 #include <IBKMK_Polygon3D.h>
 
@@ -39,7 +40,7 @@ public:
 	}
 
 private:
-	static int m_guid;	///< Current guid
+	static std::atomic<int> m_guid;	///< Current guid (atomic for thread-safety)
 };
 
 // check functions

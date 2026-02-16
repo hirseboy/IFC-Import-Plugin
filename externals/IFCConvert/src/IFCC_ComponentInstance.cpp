@@ -36,7 +36,6 @@ TiXmlElement * ComponentInstance::writeXML(TiXmlElement * parent) const {
 	if (m_sideBSurfaceId != -1)
 		e->SetAttribute("idSideBSurface", IBK::val2string<unsigned int>(m_sideBSurfaceId));
 
-
 	return e;
 }
 

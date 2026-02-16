@@ -2,8 +2,11 @@
 #define ImportIFCDialogH
 
 #include <QDialog>
+#include <QTimer>
+#include <QProgressDialog>
 
 #include <IFCC_Types.h>
+#include <IFCC_ProgressHandler.h>
 
 namespace IFCC {
 	class IFCReader;
@@ -61,6 +64,11 @@ private slots:
 
 	void on_checkBoxAdvanced_clicked();
 
+	/*! Validates state before accepting the dialog. */
+	void onAccepted();
+
+	void onUpdateUi();
+
 private:
 	bool read();
 
@@ -76,11 +84,16 @@ private:
 
 	void initConvertOptions();
 
+	/*! Slot called by the ProgressHandler callback to update the progress dialog. */
+	void setProgress(int val, QString text);
+
 	Ui::ImportIFCDialog *ui;
 
-	IFCC::IFCReader*	m_reader;
-	ConversionScenario	m_scenario = CS_MediumMatching;
-	bool				m_convertSuccessfully = false;
+	IFCC::IFCReader*		m_reader;
+	ConversionScenario		m_scenario = CS_MediumMatching;
+	bool					m_convertSuccessfully = false;
+	QTimer					*m_timer = nullptr;
+	QProgressDialog			*m_progressDialog = nullptr;
 };
 
 #endif // ImportIFCDialogH

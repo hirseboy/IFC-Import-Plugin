@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Array mit den Ordnernamen
-folders=("IBK" "IBKMK" "QtExt" "TiCPP" "clipper" "lib_x64" "Vicus" "Nandrad" "CCM" "DataIO" "glm" "VicOSM")
+folders=("IBK" "IBKMK" "QtExt" "TiCPP" "clipper" "lib_x64" "Vicus" "Nandrad" "CCM" "DataIO" "glm" "VicOSM" "QuaZIP" "HiGHS" "NandradFMUGenerator")
 
 # Zielordner festlegen, in dem der Symlink erstellt werden soll
 target_folder="../externals"
@@ -32,6 +32,10 @@ do
 
     # Symlink erstellen
     ln -s "$source_path" "$target_folder"
+    echo "Der Symlink für den Ordner $folder wurde erfolgreich erstellt."
+    
+        # Symlink erstellen
+    ln -s "../NandradCodeGenerator" "../SIM-VICUS/NandradCodeGenerator"
     echo "Der Symlink für den Ordner $folder wurde erfolgreich erstellt."
   fi
 done

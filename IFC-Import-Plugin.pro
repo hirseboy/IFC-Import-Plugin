@@ -15,11 +15,14 @@ SUBDIRS += ImportIFCPlugin \
 	IBK \
 	IBKMK \
 	ifcplusplus \
-#	Nandrad \
-#	Vicus \
+	Nandrad \
+	Vicus \
+	VicOSM \
 	CCM \
-#	glm \
+	glm \
 	DataIO \
+	QuaZIP \
+	NandradFMUGenerator \
 	TiCPP
 
 # where to find the sub projects
@@ -30,8 +33,10 @@ ImportIFCPlugin.file = externals/IFCImportPlugin/ImportIFCPlugin.pro
 IFCConvert.file = externals/IFCConvert/IFCConvert.pro
 CCM.file = externals/CCM/CCM.pro
 DataIO.file = externals/DataIO/DataIO.pro
-#Nandrad.file = externals/Nandrad/Nandrad.pro
-#Vicus.file = externals/Vicus/Vicus.pro
+Nandrad.file = externals/Nandrad/Nandrad.pro
+NandradFMUGenerator.file = externals/NandradFMUGenerator/NandradFMUGenerator.pro
+Vicus.file = externals/Vicus/Vicus.pro
+VicOSM.file = externals/VicOSM/VicOSM.pro
 Carve.file = externals/ifcplusplus/src/IfcPlusPlus/src/external/Carve/projects/Qt/Carve.pro
 Clipper.file = externals/clipper/clipper.pro
 IBK.file = externals/IBK/IBK.pro
@@ -39,7 +44,8 @@ IBKMK.file = externals/IBKMK/IBKMK.pro
 TiCPP.file = externals/TiCPP/TiCPP.pro
 QtExt.file = externals/QtExt/QtExt.pro
 ifcplusplus.file = externals/ifcplusplus/ifcplusplus.pro
-#glm.file = externals/glm/glm.pro
+QuaZIP.file = externals/QuaZIP/QuaZIP.pro
+glm.file = externals/glm/glm.pro
 
 # dependencies
 IFC2BESTest.depends = ImportIFCPlugin  IBK IBKMK TiCPP #GEGExportPlugin
@@ -47,11 +53,12 @@ IFC2BESTest.depends = ImportIFCPlugin  IBK IBKMK TiCPP #GEGExportPlugin
 CCM.depends = IBK TiCPP
 DataIO.depends = IBK
 QtExt.depends = IBK
-#Nandrad.depends = IBK TiCPP IBKMK
-#Vicus.depends = IBK TiCPP Nandrad IBKMK CCM glm
+Nandrad.depends = IBK TiCPP IBKMK
+Vicus.depends = IBK TiCPP Nandrad IBKMK CCM glm VicOSM Clipper QuaZIP NandradFMUGenerator
+VicOSM.depends = IBK Clipper TiCPP IBKMK Nandrad
 ImportIFCPlugin.depends = IBK IBKMK TiCPP QtExt Carve Clipper IFCConvert
 #GEGExportPlugin.depends = IBK IBKMK TiCPP QtExt Nandrad Vicus CCM DataIO
-IFCConvert.depends = IBK IBKMK TiCPP Carve Clipper
+IFCConvert.depends = IBK IBKMK TiCPP Carve Clipper Vicus
 IBKMK.depends = IBK
 
 linux-g++ | linux-g++-64 | linux-g++-32 {

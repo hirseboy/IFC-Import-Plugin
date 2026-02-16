@@ -62,7 +62,7 @@
 
 namespace IFCC {
 
-int GUID_maker::m_guid = 1;
+std::atomic<int> GUID_maker::m_guid{1};
 
 
 std::string ws2s(const std::wstring& wstr) {

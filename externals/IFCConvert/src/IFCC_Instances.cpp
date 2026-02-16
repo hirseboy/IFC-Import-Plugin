@@ -1,5 +1,6 @@
 #include "IFCC_Instances.h"
 
+#include <set>
 
 #include <Carve/src/include/carve/carve.hpp>
 
@@ -9,6 +10,7 @@
 
 #include "IFCC_Site.h"
 #include "IFCC_Database.h"
+#include "IFCC_Logger.h"
 
 namespace IFCC {
 
@@ -275,6 +277,23 @@ std::vector<int> Instances::checkForWrongSurfaceIds(const Site& site) {
 
 
 void Instances::addToVicusProject(VICUS::Project* project, const Database& database, const std::map<int,int>& idMap) const {
+	// Collect all valid surface and subsurface IDs from the VICUS project.
+	// Surfaces may have been skipped during validation in getVicusSurface(),
+	// so component instances referencing those surfaces must also be skipped.
+	std::set<unsigned int> validSurfaceIds;
+	std::set<unsigned int> validSubSurfaceIds;
+	for(const auto& building : project->m_buildings) {
+		for(const auto& level : building.m_buildingLevels) {
+			for(const auto& room : level.m_rooms) {
+				for(const auto& surf : room.surfaces()) {
+					validSurfaceIds.insert(surf.m_id);
+					for(const auto& sub : surf.subSurfaces())
+						validSubSurfaceIds.insert(sub.m_id);
+				}
+			}
+		}
+	}
+
 	// For normal component instances: map IFCC component → IFCC construction → VICUS construction
 	std::map<int,int> componentToConstructionMap;
 	for(const auto& comp : database.m_components) {
@@ -283,15 +302,42 @@ void Instances::addToVicusProject(VICUS::Project* project, const Database& datab
 			componentToConstructionMap[comp.first] = fit->second;
 	}
 
+	int skippedNormal = 0;
 	for(const auto& ci : m_componentInstances) {
+		int sideA = ci.second.sideASurfaceId();
+		int sideB = ci.second.sideBSurfaceId();
+		if(sideA >= 0 && validSurfaceIds.find((unsigned int)sideA) == validSurfaceIds.end()) {
+			++skippedNormal;
+			continue;
+		}
+		if(sideB >= 0 && validSurfaceIds.find((unsigned int)sideB) == validSurfaceIds.end()) {
+			++skippedNormal;
+			continue;
+		}
 		VICUS::ComponentInstance vci = ci.second.getVicusComponentInstance(componentToConstructionMap);
 		project->m_componentInstances.push_back(vci);
 	}
 
 	// For sub-surface component instances: map IFCC subsurface component → VICUS subsurface component
+	int skippedSub = 0;
 	for(const auto& sci : m_subSurfaceComponentInstances) {
+		int sideA = sci.second.sideASurfaceId();
+		int sideB = sci.second.sideBSurfaceId();
+		if(sideA >= 0 && validSubSurfaceIds.find((unsigned int)sideA) == validSubSurfaceIds.end()) {
+			++skippedSub;
+			continue;
+		}
+		if(sideB >= 0 && validSubSurfaceIds.find((unsigned int)sideB) == validSubSurfaceIds.end()) {
+			++skippedSub;
+			continue;
+		}
 		VICUS::SubSurfaceComponentInstance vsci = sci.second.getVicusSubSurfaceComponentInstance(idMap);
 		project->m_subSurfaceComponentInstances.push_back(vsci);
+	}
+
+	if(skippedNormal > 0 || skippedSub > 0) {
+		Logger::instance() << "Warning: Skipped " << skippedNormal << " component instances and "
+			<< skippedSub << " sub-surface component instances referencing non-existing surfaces";
 	}
 }
 

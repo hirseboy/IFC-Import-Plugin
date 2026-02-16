@@ -8,6 +8,8 @@
 
 #include <VICUS_Building.h>
 
+#include <IBK_NotificationHandler.h>
+
 #include "IFCC_GeometryInputData.h"
 #include "IFCC_EntityBase.h"
 #include "IFCC_BuildingStorey.h"
@@ -49,7 +51,8 @@ public:
 					   std::vector<Opening>& openings,
 					   bool useSpaceBoundaries,
 					   std::vector<ConvertError>& errors,
-					   const ConvertOptions& convertOptions);
+					   const ConvertOptions& convertOptions,
+					   IBK::NotificationHandler* notify = nullptr);
 
 	/*! Create a VICUS building object and return this.
 		The returned object contains all transferable data.

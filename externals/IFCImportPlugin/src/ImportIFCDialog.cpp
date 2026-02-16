@@ -2,6 +2,8 @@
 #include "ui_ImportIFCDialog.h"
 
 #include <QFileDialog>
+#include <QMessageBox>
+#include <QApplication>
 
 #include <IFCC_IFCReader.h>
 #include <IFCC_Helper.h>
@@ -55,11 +57,24 @@ ImportIFCDialog::ImportIFCDialog(QWidget *parent, IFCC::IFCReader* reader) :
 	ui->checkBoxAdvanced->setChecked(false);
 	ui->tabWidgetAdvanced->setVisible(false);
 
+	ui->buttonBox->button(QDialogButtonBox::Ok)->setText(tr("Import"));
 	ui->buttonBox->button(QDialogButtonBox::Ok)->setEnabled(false);
+
+	connect(ui->buttonBox, &QDialogButtonBox::accepted, this, &ImportIFCDialog::onAccepted);
+
+	m_timer = new QTimer(this);
+	// Connect to timer
+	connect(m_timer, &QTimer::timeout, this, &ImportIFCDialog::onUpdateUi);
+
+	m_timer->setInterval(100);
+	m_timer->start();
+
+	m_progressDialog = new QProgressDialog(tr("IFC Reader..."), tr("Abort"), 0, 100, this);
+	m_progressDialog->setWindowModality(Qt::WindowModal);
+	m_progressDialog->reset();
 }
 
-ImportIFCDialog::~ImportIFCDialog()
-{
+ImportIFCDialog::~ImportIFCDialog() {
 	delete ui;
 }
 
@@ -101,7 +116,11 @@ void ImportIFCDialog::on_pushButtonConvert_clicked() {
 
 	initElements();
 	bool useSpaceBoundaries = (m_scenario == CS_UseSpaceBoundaries);
-	m_convertSuccessfully = m_reader->convert(useSpaceBoundaries);
+
+	IFCC::ProgressHandler convertHandler([this](int v, QString t) { setProgress(v, t); }, 0.0, 1.0);
+	m_progressDialog->show();
+	m_convertSuccessfully = m_reader->convert(useSpaceBoundaries, &convertHandler);
+	m_progressDialog->reset();
 	setText();
 
 	if(ui->checkBoxIgnorErrors->isChecked())
@@ -166,7 +185,11 @@ bool ImportIFCDialog::read() {
 	ui->textEdit->update();
 	IBK::Path ifcfilename(ui->lineEditIFCFile->text().toStdString());
 	bool ignoreError = ui->checkBoxIgnorErrors->isChecked();
-	bool res = m_reader->read(ifcfilename, ignoreError);
+
+	IFCC::ProgressHandler readHandler([this](int v, QString t) { setProgress(v, t); }, 0.0, 1.0);
+	m_progressDialog->show();
+	bool res = m_reader->read(ifcfilename, ignoreError, &readHandler);
+	m_progressDialog->reset();
 	int buildings = 0;
 	int spaces = 0;
 	QString fatalError;
@@ -252,14 +275,20 @@ void ImportIFCDialog::setText() {
 	if(!wrongInstances.empty())
 		m_convertSuccessfully = false;
 
+	// Determine if the result is still importable (conversion ok or errors ignored)
+	bool importable = m_convertSuccessfully || ui->checkBoxIgnorErrors->isChecked();
+
 	ui->textEdit->clear();
 	QStringList text;
 
-	// print out convert errors
+	// Print out convert errors/warnings
 	const std::vector<IFCC::ConvertError>& errors = m_reader->convertErrors();
 	if(!errors.empty()) {
-		text << tr("<font color=\"#FF0000\">Conversion errors:</font>");
-		for( const auto& err : errors) {
+		if(importable)
+			text << tr("<font color=\"#CC7700\">Conversion warnings:</font>");
+		else
+			text << tr("<font color=\"#FF0000\">Conversion errors:</font>");
+		for(const auto& err : errors) {
 			text << tr("%1 for object '%2' with id: %3").arg(QString::fromStdString(err.m_errorText))
 					.arg(QString::fromStdString(IFCC::objectTypeToString(err.m_objectType))).arg(err.m_objectID);
 		}
@@ -267,9 +296,9 @@ void ImportIFCDialog::setText() {
 	}
 
 	if(m_convertSuccessfully) {
-		text << tr("Converting was successful");
+		text << tr("Converting was successful.");
 		if(!m_reader->m_errorText.empty()) {
-			text << tr("<font color=\"#FF0000\">Errors while converting:</font>");
+			text << tr("<font color=\"#CC7700\">Warnings while converting:</font>");
 			QString errTxt = QString::fromStdString(m_reader->m_errorText);
 			errTxt.replace("\n","<br>");
 			text << errTxt;
@@ -279,7 +308,10 @@ void ImportIFCDialog::setText() {
 		text << "";
 	}
 	else {
-		text << tr("<font color=\"#FF0000\">Error while converting IFC file.</font>");
+		if(importable)
+			text << tr("<font color=\"#CC7700\">Warnings while converting IFC file:</font>");
+		else
+			text << tr("<font color=\"#FF0000\">Error while converting IFC file.</font>");
 		if(spaceIntersectCount > 0) {
 			text << tr("%1 spaces intersections found.").arg(spaceIntersectCount);
 			if(ui->checkBoxSpaceIntersectionDetails->isChecked()) {
@@ -491,4 +523,28 @@ void ImportIFCDialog::initConvertOptions() {
 
 void ImportIFCDialog::on_checkBoxAdvanced_clicked() {
 	ui->tabWidgetAdvanced->setVisible(ui->checkBoxAdvanced->isChecked());
+}
+
+void ImportIFCDialog::onAccepted() {
+	if(!m_convertSuccessfully) {
+		QMessageBox::critical(this, QString(), tr("Conversion has not been completed successfully!"));
+		return;
+	}
+	accept();
+}
+
+void ImportIFCDialog::onUpdateUi() {
+	qApp->processEvents();
+	m_timer->start();
+}
+
+void ImportIFCDialog::setProgress(int val, QString text) {
+	if(m_progressDialog) {
+		if(!text.isEmpty())
+			m_progressDialog->setLabelText(text);
+		m_progressDialog->setValue(val);
+		if(val >= 100)
+			m_progressDialog->reset();
+		QApplication::processEvents();
+	}
 }
