@@ -1,11 +1,15 @@
 @echo off
 
-set QTDIR=C:\Qt\Qt5.11.3\5.15.2\msvc2019_64
-set PATH=C:\Qt\Qt5.11.3\5.15.2\msvc2019_64\bin;%PATH%
+:: setup VC 2022 environment variables
+:: Use vswhere to find VS 2022 installation automatically
+for /f "usebackq tokens=*" %%i in (`"%ProgramFiles(x86)%\Microsoft Visual Studio\Installer\vswhere.exe" -version [17.0^,18.0^) -latest -products * -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath`) do set VSINSTALLDIR=%%i
 
-:: setup VC environment variables
-set VCVARSALL_PATH="C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\VC\Auxiliary\Build\vcvarsall.bat" x64
-call %VCVARSALL_PATH%
+if not defined VSINSTALLDIR (
+	echo ** Could not find Visual Studio 2022 installation **
+	exit /b 1
+)
+echo Using Visual Studio at: %VSINSTALLDIR%
+call "%VSINSTALLDIR%\VC\Auxiliary\Build\vcvarsall.bat" x64
 
 :: For different Qt installations, please set the environment variables JOM_PATH and CMAKE_PREFIX_PATH
 :: for the current Windows user. Also, make sure cmake is in the PATH variable.
@@ -16,10 +20,10 @@ call %VCVARSALL_PATH%
 
 :: These environment variables can also be set externally
 if not defined JOM_PATH (
-	set JOM_PATH=c:\Qt\Tools\QtCreator\bin
+	set JOM_PATH=c:\Qt\Tools\QtCreator\bin\jom
 )
 if not defined CMAKE_PREFIX_PATH (
-	set CMAKE_PREFIX_PATH=c:\Qt\5.11.3\msvc2015_64
+	set CMAKE_PREFIX_PATH=c:\Qt\6.9.3\msvc2022_64
 )
 
 :: add search path for jom.exe
@@ -40,13 +44,9 @@ popd
 xcopy /Y .\bb_VC_x64\IFC2BESTest\IFC2BESTest.exe ..\..\bin\release_x64
 xcopy /Y .\bb_VC_x64\ifcplusplus\ifcplusplus.dll ..\..\bin\release_x64
 
-pause
-
 exit /b 0
 
 
 :fail
-pause
 echo ** Build Failed **
 exit /b 1
-
