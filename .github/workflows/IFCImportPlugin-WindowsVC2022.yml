@@ -22,7 +22,7 @@ jobs:
     - name: install jom
       run: choco install jom -y
    
-   - name: Install aqtinstall
+    - name: Install aqtinstall
       run: python -m pip install --upgrade aqtinstall
 
     - name: Install Qt ${{ env.QT_DETAILED_VERSION }} on Windows
