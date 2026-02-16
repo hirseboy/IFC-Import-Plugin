@@ -77,7 +77,12 @@ jobs:
       working-directory: externals
       shell: cmd
       run: createWindowsSoftlinks.bat
-      
+
+    - name: download highs-lib
+      working-directory: externals/HiGHS
+      shell: cmd
+      run: download-highs_VC19_x64.bat
+
     - name: build
       working-directory: build/cmake/
       shell: cmd
