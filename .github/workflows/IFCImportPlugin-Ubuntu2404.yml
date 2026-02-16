@@ -1,0 +1,37 @@
+name: Ubuntu 24.04 DXFImportPlugin
+
+on:
+  # run nightly at 2:00 am
+
+  # allow to be triggered on github webpage manually
+  workflow_dispatch:
+  # run whenever someone pushes data
+  # WARNING: this may give excessive build times which need to be paid!
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build:
+
+    # Test suite results are created on Ubuntu 22.04, hence we need to use this for testing
+    runs-on: ubuntu-24.04
+
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        submodules: 'true'
+    - name: install qt5
+      run: sudo apt install qtbase5-dev qt5-qmake libqt5svg5-dev libqt5sql5 libqt5sql5-psql
+    - name: link submodule libraries
+      working-directory: externals
+      run: ./createLinuxSymlinks.sh
+    - name: build
+      working-directory: build/cmake
+      run: ./build.sh release
+    - name: Upload Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: DXFImportPlugin_Ubuntu2204
+        path: bin/release/*.so
