@@ -70,6 +70,7 @@ jobs:
    
     - uses: actions/checkout@v4
       with:
+        token: ${{ secrets.SUBMODULE_PAT }}
         submodules: 'true'
         
     - name: create symlinks of submodules

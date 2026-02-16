@@ -21,6 +21,7 @@ jobs:
     steps:
     - uses: actions/checkout@v4
       with:
+        token: ${{ secrets.SUBMODULE_PAT }}
         submodules: 'true'
     - name: install qt6
       run: sudo apt install libgdal-dev qt6-base-dev qt6-base-dev-tools qt6-declarative-dev qt6-svg-dev libqt6opengl6t64 libqt6positioning6 qt6-positioning-dev libqt6positioningquick6 qml6-module-qtpositioning qml6-module-qt-labs-lottieqt zlib1g-dev
