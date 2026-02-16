@@ -17,6 +17,7 @@ on:
 env:
   QT_VERSION: qt6
   QT_DETAILED_VERSION: '6.9.3'
+  VC_VERSION: '2022'
 
 jobs:
   build:
