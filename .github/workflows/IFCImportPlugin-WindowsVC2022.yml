@@ -9,9 +9,9 @@ on:
   # run whenever someone pushes data
   # WARNING: this may give excessive build times which need to be paid!
   push:
-    branches: [ "main" ]
+    branches: [ "main", "master" ]
   pull_request:
-    branches: [ "main" ]
+    branches: [ "main", "master" ]
     
     
 env:
