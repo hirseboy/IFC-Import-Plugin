@@ -1,5 +1,12 @@
 @echo off
 
+:: Check if VC environment is already set (e.g. from CI or Developer Command Prompt)
+where cl >nul 2>nul
+if %ERRORLEVEL% equ 0 (
+	echo VC environment already active, skipping vcvarsall.bat
+	goto :vc_ready
+)
+
 :: setup VC 2022 environment variables
 :: Use vswhere to find VS 2022 installation automatically
 for /f "usebackq tokens=*" %%i in (`"%ProgramFiles(x86)%\Microsoft Visual Studio\Installer\vswhere.exe" -version [17.0^,18.0^) -latest -products * -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath`) do set VSINSTALLDIR=%%i
@@ -10,6 +17,8 @@ if not defined VSINSTALLDIR (
 )
 echo Using Visual Studio at: %VSINSTALLDIR%
 call "%VSINSTALLDIR%\VC\Auxiliary\Build\vcvarsall.bat" x64
+
+:vc_ready
 
 :: For different Qt installations, please set the environment variables JOM_PATH and CMAKE_PREFIX_PATH
 :: for the current Windows user. Also, make sure cmake is in the PATH variable.
