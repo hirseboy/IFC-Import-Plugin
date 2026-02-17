@@ -31,7 +31,10 @@ call "%VSINSTALLDIR%\VC\Auxiliary\Build\vcvarsall.bat" x64
 if not defined JOM_PATH (
 	set JOM_PATH=c:\Qt\Tools\QtCreator\bin\jom
 )
-if not defined CMAKE_PREFIX_PATH (
+:: Qt6_DIR (set by CI) takes priority over CMAKE_PREFIX_PATH
+if defined Qt6_DIR (
+	for %%d in ("%Qt6_DIR%\..\..\..") do set CMAKE_PREFIX_PATH=%%~fd
+) else if not defined CMAKE_PREFIX_PATH (
 	set CMAKE_PREFIX_PATH=c:\Qt\6.9.3\msvc2022_64
 )
 
