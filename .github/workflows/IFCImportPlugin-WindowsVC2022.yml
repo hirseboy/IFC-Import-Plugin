@@ -25,9 +25,14 @@ jobs:
     runs-on: windows-latest
 
     steps:
+    - name: Setup MSVC
+      uses: ilammy/msvc-dev-cmd@v1
+      with:
+        arch: x64
+
     - name: install jom
       run: choco install jom -y
-   
+
     - name: Install aqtinstall
       run: python -m pip install --upgrade aqtinstall
 
@@ -72,11 +77,6 @@ jobs:
       working-directory: externals/HiGHS
       shell: cmd
       run: download-highs_VC19_x64.bat
-
-    - name: Setup MSVC
-      uses: ilammy/msvc-dev-cmd@v1
-      with:
-        arch: x64
 
     - name: build
       working-directory: build/cmake/
