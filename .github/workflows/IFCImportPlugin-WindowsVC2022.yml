@@ -12,8 +12,8 @@ on:
     branches: [ "main", "master" ]
   pull_request:
     branches: [ "main", "master" ]
-    
-    
+
+
 env:
   QT_VERSION: qt6
   QT_DETAILED_VERSION: '6.9.3'
@@ -25,11 +25,6 @@ jobs:
     runs-on: windows-latest
 
     steps:
-    - name: Setup MSVC
-      uses: ilammy/msvc-dev-cmd@v1
-      with:
-        arch: x64
-
     - name: install jom
       run: choco install jom -y
 
@@ -44,22 +39,33 @@ jobs:
             Write-Host "Removing existing qt folder..."
             Remove-Item -Recurse -Force "qt" -ErrorAction SilentlyContinue
         }
-    
+
         # Install Qt
         python -m aqt install-qt windows desktop ${{ env.QT_DETAILED_VERSION }} win64_msvc${{ env.VC_VERSION }}_64 `
             --archives qtbase qtsvg qtdeclarative `
             --modules qtpositioning `
             --outputdir qt
-    
+
         # Set Qt bin to PATH
         $qt_bin = "$PWD\qt\${{ env.QT_DETAILED_VERSION }}\msvc${{ env.VC_VERSION }}_64\bin"
         echo "PATH=$qt_bin;$env:PATH" | Out-File -FilePath $env:GITHUB_ENV -Append -Encoding utf8
-    
+
         # Set Qt6_DIR for CMake
         $qt_cmake = "$PWD\qt\${{ env.QT_DETAILED_VERSION }}\msvc${{ env.VC_VERSION }}_64\lib\cmake\Qt6"
         echo "Qt6_DIR=$qt_cmake" | Out-File -FilePath $env:GITHUB_ENV -Append -Encoding utf8
-    
+
         # Set CMAKE_PREFIX_PATH for multi-module safety
+        $qt_root = "$PWD\qt\${{ env.QT_DETAILED_VERSION }}\msvc${{ env.VC_VERSION }}_64"
+        echo "CMAKE_PREFIX_PATH=$qt_root" | Out-File -FilePath $env:GITHUB_ENV -Append -Encoding utf8
+
+    # ---------------- VS Build Tools ----------------
+    - name: Install Visual Studio ${{ env.VC_VERSION }} Build Tools
+      run: choco install visualstudio2022buildtools --package-parameters "--add Microsoft.VisualStudio.Component.VC.Tools.x86.x64 --includeRecommended --includeOptional --passive --locale en-US" -y
+
+    # ---------------- CMake environment ----------------
+    - name: Set CMAKE_PREFIX_PATH for ${{ env.QT_VERSION }}
+      shell: pwsh
+      run: |
         $qt_root = "$PWD\qt\${{ env.QT_DETAILED_VERSION }}\msvc${{ env.VC_VERSION }}_64"
         echo "CMAKE_PREFIX_PATH=$qt_root" | Out-File -FilePath $env:GITHUB_ENV -Append -Encoding utf8
 
@@ -67,7 +73,7 @@ jobs:
       with:
         token: ${{ secrets.SUBMODULE_PAT }}
         submodules: 'true'
-        
+
     - name: create symlinks of submodules
       working-directory: externals
       shell: cmd
@@ -82,7 +88,7 @@ jobs:
       working-directory: build/cmake/
       shell: cmd
       run: build_VC_x64.bat release
-      
+
     - name: 'Upload Artifact'
       uses: actions/upload-artifact@v4
       with:
