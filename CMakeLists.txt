@@ -135,6 +135,34 @@ if( APPLE )
 endif( APPLE )
 
 # -------------------------------------------------------------
+# HiGHS Linear Programming Solver (pre-built, required by Vicus)
+# -------------------------------------------------------------
+set(HIGHS_DIR "${CMAKE_SOURCE_DIR}/externals/HiGHS")
+
+if (NOT EXISTS "${HIGHS_DIR}/src/Highs.h")
+	message(FATAL_ERROR "HiGHS not found in externals/HiGHS/. Run externals/HiGHS/download-highs_VC19_x64.bat first.")
+endif()
+
+set(HIGHS_INCLUDE_DIRS "${HIGHS_DIR}/src")
+
+find_library(HIGHS_LIBRARY_RELEASE NAMES highs
+	PATHS "${HIGHS_DIR}/lib_x64"
+	NO_DEFAULT_PATH)
+
+find_library(HIGHS_LIBRARY_DEBUG NAMES highsd highs
+	PATHS "${HIGHS_DIR}/lib_x64"
+	NO_DEFAULT_PATH)
+
+if (NOT HIGHS_LIBRARY_RELEASE)
+	message(FATAL_ERROR "HiGHS library not found in externals/HiGHS/lib_x64/. Run externals/HiGHS/download-highs_VC19_x64.bat first.")
+endif()
+
+set(HIGHS_LIBRARIES
+	$<$<CONFIG:Debug>:${HIGHS_LIBRARY_DEBUG}>
+	$<$<NOT:$<CONFIG:Debug>>:${HIGHS_LIBRARY_RELEASE}>
+)
+
+# -------------------------------------------------------------
 # Tools of the build chain
 # -------------------------------------------------------------
 
@@ -146,6 +174,7 @@ add_subdirectory( externals/IBK IBK )
 add_subdirectory( externals/IBKMK IBKMK )
 add_subdirectory( externals/ifcplusplus ifcplusplus )
 add_subdirectory( externals/Nandrad Nandrad )
+add_subdirectory( externals/VicOSM VicOSM )
 add_subdirectory( externals/Vicus Vicus )
 add_subdirectory( externals/IFCConvert IFCConvert )
 add_subdirectory( externals/ifcplusplus/src/IfcPlusPlus/src/external/Carve Carve )
@@ -187,6 +216,9 @@ if(NOT TARGET Vicus_static)
 endif()
 if(NOT TARGET IFCConvert_static)
 	add_library(IFCConvert_static ALIAS IFCConvert)
+endif()
+if(NOT TARGET VicOSM_static)
+	add_library(VicOSM_static ALIAS VicOSM)
 endif()
 
 # -------------------------------------------------------------

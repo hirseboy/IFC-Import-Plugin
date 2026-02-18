@@ -83,6 +83,7 @@ add_library(ImportIFCPlugin SHARED
 target_link_libraries(ImportIFCPlugin PRIVATE
     IFCConvert_static
     Vicus
+    VicOSM_static
     Nandrad
     QtExt_static
     ifcplusplus_static
@@ -91,6 +92,7 @@ target_link_libraries(ImportIFCPlugin PRIVATE
     TiCPP_static
     IBKMK_static
     IBK_static
+    ${HIGHS_LIBRARIES}
     Qt6::Core
     Qt6::Gui
     Qt6::Widgets

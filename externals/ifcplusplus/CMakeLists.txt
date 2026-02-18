@@ -14,13 +14,15 @@ include_directories(
 
 if (MSVC)
 # collect a list of all source files of the IBK library
-file( GLOB LIB_SRCS 
-  ${PROJECT_SOURCE_DIR}/src/IfcPlusPlus/src/ifcpp/IFC4X3/*.cpp 
-  ${PROJECT_SOURCE_DIR}/src/IfcPlusPlus/src/ifcpp/IFC4X3/lib/*.cpp 
-  ${PROJECT_SOURCE_DIR}/src/IfcPlusPlus/src/ifcpp/model/*.cpp 
-  ${PROJECT_SOURCE_DIR}/src/IfcPlusPlus/src/ifcpp/reader/*.cpp 
-  ${PROJECT_SOURCE_DIR}/src/IfcPlusPlus/src/ifcpp/writer/*.cpp 
-  ${PROJECT_SOURCE_DIR}/src/IfcPlusPlus/src/external/XUnzip.cpp 
+# Note: IFC4X3/*.cpp includes EntityFactory.cpp and TypeFactory.cpp which
+# #include all lib/*.cpp files (unity build), so lib/*.cpp must NOT be listed
+# separately to avoid duplicate symbol errors (LNK2005).
+file( GLOB LIB_SRCS
+  ${PROJECT_SOURCE_DIR}/src/IfcPlusPlus/src/ifcpp/IFC4X3/*.cpp
+  ${PROJECT_SOURCE_DIR}/src/IfcPlusPlus/src/ifcpp/model/*.cpp
+  ${PROJECT_SOURCE_DIR}/src/IfcPlusPlus/src/ifcpp/reader/*.cpp
+  ${PROJECT_SOURCE_DIR}/src/IfcPlusPlus/src/ifcpp/writer/*.cpp
+  ${PROJECT_SOURCE_DIR}/src/IfcPlusPlus/src/external/XUnzip.cpp
 )
 else (MSVC)
 # collect a list of all source files of the IBK library

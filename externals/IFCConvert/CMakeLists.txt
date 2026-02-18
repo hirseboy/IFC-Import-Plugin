@@ -50,7 +50,7 @@ if (NOT MSVC)
 	add_library( ${PROJECT_NAME} SHARED ${LIB_SRCS} ${LIB_MOC_SRCS} )
 	add_library( ${PROJECT_NAME}_static STATIC ${LIB_SRCS} ${LIB_MOC_SRCS} )
 else()
-	add_library( ${PROJECT_NAME} STATIC ${LIB_SRCS} )
+	add_library( ${PROJECT_NAME} STATIC ${LIB_SRCS} ${LIB_MOC_SRCS} )
 endif()
 
  target_link_libraries(IFCConvert PRIVATE Qt6::Core Qt6::Widgets Vicus Nandrad)
