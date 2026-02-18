@@ -25,8 +25,21 @@ jobs:
     runs-on: windows-latest
 
     steps:
-    - name: install jom
+    - uses: actions/checkout@v4
+      with:
+        token: ${{ secrets.SUBMODULE_PAT }}
+        submodules: 'true'
+    
+   - name: Setup Python 3.11
+      uses: actions/setup-python@v4
+      with:
+        python-version: 3.11
+
+    - name: Install jom
       run: choco install jom -y
+
+    - name: Install Inno Setup and 7zip
+      run: choco install innosetup 7zip.install 7zip -y
 
     - name: Install aqtinstall
       run: python -m pip install --upgrade aqtinstall
@@ -39,40 +52,49 @@ jobs:
             Write-Host "Removing existing qt folder..."
             Remove-Item -Recurse -Force "qt" -ErrorAction SilentlyContinue
         }
-
+    
         # Install Qt
         python -m aqt install-qt windows desktop ${{ env.QT_DETAILED_VERSION }} win64_msvc${{ env.VC_VERSION }}_64 `
-            --archives qtbase qtsvg qtdeclarative `
+            --archives qtbase qtsvg qtlocation qtdeclarative `
             --modules qtpositioning `
-            --outputdir qt
-
+            --outputdir qt `
+            --external 7z
+    
         # Set Qt bin to PATH
         $qt_bin = "$PWD\qt\${{ env.QT_DETAILED_VERSION }}\msvc${{ env.VC_VERSION }}_64\bin"
         echo "PATH=$qt_bin;$env:PATH" | Out-File -FilePath $env:GITHUB_ENV -Append -Encoding utf8
-
+    
         # Set Qt6_DIR for CMake
         $qt_cmake = "$PWD\qt\${{ env.QT_DETAILED_VERSION }}\msvc${{ env.VC_VERSION }}_64\lib\cmake\Qt6"
         echo "Qt6_DIR=$qt_cmake" | Out-File -FilePath $env:GITHUB_ENV -Append -Encoding utf8
-
+    
         # Set CMAKE_PREFIX_PATH for multi-module safety
         $qt_root = "$PWD\qt\${{ env.QT_DETAILED_VERSION }}\msvc${{ env.VC_VERSION }}_64"
         echo "CMAKE_PREFIX_PATH=$qt_root" | Out-File -FilePath $env:GITHUB_ENV -Append -Encoding utf8
 
     # ---------------- VS Build Tools ----------------
-    - name: Install Visual Studio ${{ env.VC_VERSION }} Build Tools
+    - name: Install Visual Studio ${{env.VC_VERSION}} Build Tools
       run: choco install visualstudio2022buildtools --package-parameters "--add Microsoft.VisualStudio.Component.VC.Tools.x86.x64 --includeRecommended --includeOptional --passive --locale en-US" -y
 
     # ---------------- CMake environment ----------------
     - name: Set CMAKE_PREFIX_PATH for ${{ env.QT_VERSION }}
       shell: pwsh
       run: |
-        $qt_root = "$PWD\qt\${{ env.QT_DETAILED_VERSION }}\msvc${{ env.VC_VERSION }}_64"
-        echo "CMAKE_PREFIX_PATH=$qt_root" | Out-File -FilePath $env:GITHUB_ENV -Append -Encoding utf8
+        "CMAKE_PREFIX_PATH=$PWD/qt/${{ env.QT_DETAILED_VERSION }}/msvc${{ env.VC_VERSION }}" | Out-File -FilePath $env:GITHUB_ENV -Append -Encoding utf8
 
-    - uses: actions/checkout@v4
-      with:
-        token: ${{ secrets.SUBMODULE_PAT }}
-        submodules: 'true'
+    # ---------------- Download GDAL ----------------
+    - name: Download GDAL
+      working-directory: build\cmake
+      shell: cmd
+      run: download_gdal.bat
+
+    # ---------------- Build ----------------
+    - name: Build
+      working-directory: releases\win
+      shell: cmd
+      run: |
+        for /f "usebackq tokens=*" %%i in (`vswhere -latest -products * -requires Microsoft.Component.MSBuild -find **\vcvars64.bat`) do call "%%i"
+        create_release_x64.bat --nightly --silent ${{env.QT_VERSION}}
 
     - name: create symlinks of submodules
       working-directory: externals
