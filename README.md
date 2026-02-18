@@ -1,4 +1,8 @@
 # SIM-VICUS IFC-IMPORT PLUGIN
+
+[![Ubuntu 24.04](https://github.com/hirseboy/IFC-Import-Plugin/actions/workflows/IFCImportPlugin-Ubuntu2404.yml/badge.svg)](https://github.com/hirseboy/IFC-Import-Plugin/actions/workflows/IFCImportPlugin-Ubuntu2404.yml)
+[![Windows VC2022](https://github.com/hirseboy/IFC-Import-Plugin/actions/workflows/IFCImportPlugin-WindowsVC2022.yml/badge.svg)](https://github.com/hirseboy/IFC-Import-Plugin/actions/workflows/IFCImportPlugin-WindowsVC2022.yml)
+
 IFC to building energy simulation (BES) support and conversion library, written in C++.
 
 Uses https://github.com/ifcquery/ifcplusplus to read IFC files. Then converts/extracts and provides data needed for Building Energy Performance Simulation tools in a convenient high-level interfaces.
