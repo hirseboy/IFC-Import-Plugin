@@ -75,7 +75,7 @@ popd
 
 :: copy executable to bin/release dir
 xcopy /Y .\bb_VC_x64\IFC2BESTest\IFC2BESTest.exe ..\..\bin\release_x64
-xcopy /Y .\bb_VC_x64\ifcplusplus\ifcplusplus.dll ..\..\bin\release_x64
+xcopy /Y .\bb_VC_x64\ImportIFCPlugin\ImportIFCPlugin.dll ..\..\bin\release_x64
 
 exit /b 0
 
