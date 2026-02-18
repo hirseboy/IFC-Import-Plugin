@@ -97,7 +97,7 @@ jobs:
       shell: cmd
       run: | 
         for /f "usebackq tokens=*" %%i in (`vswhere -latest -products * -requires Microsoft.Component.MSBuild -find **\vcvars64.bat`) do call "%%i"
-        build_VC_x64.bat release
+        build.bat
 
     - name: 'Upload Artifact'
       uses: actions/upload-artifact@v4

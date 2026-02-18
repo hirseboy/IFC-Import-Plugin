@@ -135,28 +135,26 @@ if( APPLE )
 endif( APPLE )
 
 # -------------------------------------------------------------
-# subdirectories and subprojects
+# Tools of the build chain
 # -------------------------------------------------------------
 
-# Nandrad and Vicus CMakeLists.txt have add_custom_command rules that depend on
-# NandradCodeGenerator for regenerating KeywordList files. Since the generated files
-# are already committed and we don't build the code generator, provide a no-op target.
-add_custom_target( NandradCodeGenerator )
+# NandradCodeGenerator
+add_subdirectory( NandradCodeGenerator NandradCodeGenerator )
 
 # add subdirectories for all builds
-add_subdirectory( ../../externals/IBK IBK )
-add_subdirectory( ../../externals/IBKMK IBKMK )
-add_subdirectory( ../../externals/ifcplusplus ifcplusplus )
-add_subdirectory( ../../externals/Nandrad Nandrad )
-add_subdirectory( ../../externals/Vicus Vicus )
-add_subdirectory( ../../externals/IFCConvert IFCConvert )
-add_subdirectory( ../../externals/ifcplusplus/src/IfcPlusPlus/src/external/Carve Carve )
-add_subdirectory( ../../externals/clipper Clipper )
-add_subdirectory( ../../externals/QtExt QtExt )
-add_subdirectory( ../../externals/CCM CCM )
-add_subdirectory( ../../externals/DataIO DataIO )
-add_subdirectory( ../../externals/TiCPP TiCPP )
-add_subdirectory( ../../externals/IFCImportPlugin ImportIFCPlugin )
+add_subdirectory( externals/IBK IBK )
+add_subdirectory( externals/IBKMK IBKMK )
+add_subdirectory( externals/ifcplusplus ifcplusplus )
+add_subdirectory( externals/Nandrad Nandrad )
+add_subdirectory( externals/Vicus Vicus )
+add_subdirectory( externals/IFCConvert IFCConvert )
+add_subdirectory( externals/ifcplusplus/src/IfcPlusPlus/src/external/Carve Carve )
+add_subdirectory( externals/clipper Clipper )
+add_subdirectory( externals/QtExt QtExt )
+add_subdirectory( externals/CCM CCM )
+add_subdirectory( externals/DataIO DataIO )
+add_subdirectory( externals/TiCPP TiCPP )
+add_subdirectory( externals/IFCImportPlugin ImportIFCPlugin )
 
 # Create _static aliases for libraries that only create non-suffixed targets
 # (ImportIFCPlugin links against _static variants)
@@ -195,4 +193,4 @@ endif()
 # applications
 # -------------------------------------------------------------
 
-add_subdirectory( ../../IFC2BESTest IFC2BESTest)
+add_subdirectory( IFC2BESTest IFC2BESTest)
