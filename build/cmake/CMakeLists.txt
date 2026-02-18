@@ -138,6 +138,11 @@ endif( APPLE )
 # subdirectories and subprojects
 # -------------------------------------------------------------
 
+# Nandrad and Vicus CMakeLists.txt have add_custom_command rules that depend on
+# NandradCodeGenerator for regenerating KeywordList files. Since the generated files
+# are already committed and we don't build the code generator, provide a no-op target.
+add_custom_target( NandradCodeGenerator )
+
 # add subdirectories for all builds
 add_subdirectory( ../../externals/IBK IBK )
 add_subdirectory( ../../externals/IBKMK IBKMK )
