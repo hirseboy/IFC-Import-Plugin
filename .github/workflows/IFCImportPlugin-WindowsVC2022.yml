@@ -82,12 +82,6 @@ jobs:
       run: |
         "CMAKE_PREFIX_PATH=$PWD/qt/${{ env.QT_DETAILED_VERSION }}/msvc${{ env.VC_VERSION }}" | Out-File -FilePath $env:GITHUB_ENV -Append -Encoding utf8
 
-    # ---------------- Download GDAL ----------------
-    - name: Download GDAL
-      working-directory: build\cmake
-      shell: cmd
-      run: download_gdal.bat
-
     # ---------------- Build ----------------
     - name: Build
       working-directory: releases\win
