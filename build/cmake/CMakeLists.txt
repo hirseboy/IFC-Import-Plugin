@@ -141,17 +141,17 @@ endif( APPLE )
 # add subdirectories for all builds
 add_subdirectory( ../../externals/IBK IBK )
 add_subdirectory( ../../externals/IBKMK IBKMK )
-add_subdirectory( ../../externals/ifcplusplus/projects/cmake_local ifcplusplus )
+add_subdirectory( ../../externals/ifcplusplus ifcplusplus )
 add_subdirectory( ../../externals/Nandrad/projects/cmake_local Nandrad )
 add_subdirectory( ../../externals/Vicus/projects/cmake_local Vicus )
-add_subdirectory( ../../externals/IFCConvert/projects/cmake_local IFCConvert )
-add_subdirectory( ../../externals/ifcplusplus/src/IfcPlusPlus/src/external/Carve/projects/cmake_local Carve )
+add_subdirectory( ../../externals/IFCConvert IFCConvert )
+add_subdirectory( ../../externals/ifcplusplus/src/IfcPlusPlus/src/external/Carve Carve )
 add_subdirectory( ../../externals/clipper Clipper )
 add_subdirectory( ../../externals/QtExt QtExt )
 add_subdirectory( ../../externals/CCM CCM )
 add_subdirectory( ../../externals/DataIO DataIO )
 add_subdirectory( ../../externals/TiCPP TiCPP )
-add_subdirectory( ../../externals/IFCImportPlugin/projects/cmake_local ImportIFCPlugin )
+add_subdirectory( ../../externals/IFCImportPlugin ImportIFCPlugin )
 
 # Create _static aliases for libraries that only create non-suffixed targets
 # (ImportIFCPlugin links against _static variants)
@@ -190,4 +190,4 @@ endif()
 # applications
 # -------------------------------------------------------------
 
-add_subdirectory( ../../IFC2BESTest/projects/cmake_local IFC2BESTest)
+add_subdirectory( ../../IFC2BESTest IFC2BESTest)
