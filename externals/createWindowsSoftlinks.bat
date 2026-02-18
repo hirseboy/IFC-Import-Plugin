@@ -19,6 +19,19 @@ goto check_permissions
 	   mklink /d %~dp0\%%a %~dp0..\SIM-VICUS\externals\%%a
 	))
 
+	:: NandradCodeGenerator symlink (lives at repo root, not in externals)
+	echo -----------------------------
+	IF NOT EXIST "%~dp0..\SIM-VICUS\NandradCodeGenerator" (
+		echo Verzeichnis '..\SIM-VICUS\NandradCodeGenerator' existiert nicht. Bitte submodules in git-repository pruefen.
+		exit /b 1
+	)
+	if exist %~dp0..\NandradCodeGenerator (
+		echo Loesche vorhandenen Symlink fuer NandradCodeGenerator
+		rmdir %~dp0..\NandradCodeGenerator
+	)
+	echo Erzeuge Symlink fuer NandradCodeGenerator
+	mklink /d %~dp0..\NandradCodeGenerator %~dp0..\SIM-VICUS\NandradCodeGenerator
+
 exit /b 0
 
 :check_permissions
