@@ -77,19 +77,19 @@ fi
 
 cd $BUILDDIR && cmake $CMAKE_OPTIONS $CMAKE_BUILD_TYPE $CMAKE_COMPILER_OPTIONS $CMAKELISTSDIR && make -j$MAKE_CPUCOUNT &&
 cd $CMAKELISTSDIR &&
-mkdir -p ../../bin/release &&
+mkdir -p bin/release &&
 echo "*** Copying IFC2BESTest to bin/release ***" &&
-if [ -d $BUILDDIR/IFC2BESTest/IFC2BESTest.app ]
+if [ -d build/cmake/$BUILDDIR/IFC2BESTest/IFC2BESTest.app ]
 then
 	# MacOS
-	rm -rf ../../bin/release/IFC2BESTest.app
-	cp -r $BUILDDIR/IFC2BESTest/IFC2BESTest.app ../../bin/release/IFC2BESTest.app &&
+	rm -rf bin/release/IFC2BESTest.app
+	cp -r build/cmake/$BUILDDIR/IFC2BESTest/IFC2BESTest.app bin/release/IFC2BESTest.app &&
     echo "All files copied successfully."
 else
-	if [ -e $BUILDDIR/IFC2BESTest/IFC2BESTest ]
+	if [ -e build/cmake/$BUILDDIR/IFC2BESTest/IFC2BESTest ]
 	then
-		cp $BUILDDIR/IFC2BESTest/IFC2BESTest ../../bin/release/IFC2BESTest
-		cp $BUILDDIR/ImportIFCPlugin/libImportIFCPlugin.so ../../bin/release/libImportIFCPlugin.so
+		cp build/cmake/$BUILDDIR/IFC2BESTest/IFC2BESTest bin/release/IFC2BESTest
+		cp build/cmake/$BUILDDIR/ImportIFCPlugin/libImportIFCPlugin.so bin/release/libImportIFCPlugin.so
 	fi
 fi
 
