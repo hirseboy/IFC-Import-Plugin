@@ -59,13 +59,6 @@ set QT_ROOT=C:\Qt\6.9.3\msvc2022_64
 set CMAKE_PREFIX_PATH=%QT_ROOT%;%VCPKG_ROOT%\installed\x64-windows
 set Qt6_DIR=%QT_ROOT%\lib\cmake\Qt6
 
-:: Select Qt version
-set QT_ROOT=C:\Qt\6.9.3\msvc2022_64
-
-:: Wichtig für find_package(Qt6 ...)
-set CMAKE_PREFIX_PATH=%QT_ROOT%;%VCPKG_ROOT%\installed\x64-windows
-set Qt6_DIR=%QT_ROOT%\lib\cmake\Qt6
-
 :: add search path for jom.exe
 set PATH=%PATH%;%JOM_PATH%
 
@@ -74,7 +67,7 @@ mkdir bb_VC_x64
 pushd bb_VC_x64
 
 :: configure makefiles and build
-cmake -G "NMake Makefiles JOM" .. -DCMAKE_BUILD_TYPE:String="Release"
+cmake -G "NMake Makefiles JOM" ../../.. -DCMAKE_BUILD_TYPE:String="Release"
 jom
 if ERRORLEVEL 1 GOTO fail
 
