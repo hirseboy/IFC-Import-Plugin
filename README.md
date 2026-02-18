@@ -3,12 +3,59 @@ IFC to building energy simulation (BES) support and conversion library, written 
 
 Uses https://github.com/ifcquery/ifcplusplus to read IFC files. Then converts/extracts and provides data needed for Building Energy Performance Simulation tools in a convenient high-level interfaces.
 
+Version 1.1, requires SIM-VICUS >= 1.5.
 
-## Building plugin
+## Prerequisites
 
-1) Clone repository
-2) Check that submodule is checking out master-branch (when using SmartGit: double-click on submodule and choose master-branch). Sometimes the head is pointing to a wrong commit.
-3) Go to externals and run _createLinuxSymlinks.sh_ on Linux or _createWindowsSoftlinks.bat_ on windows with admin priviliges. They create symlinks to the needed libraries from the SIM-VICUS repository. Please check afterwards if all symlinks are valid. Sometimes empty folders are beeing created, then just rerun the os specific script.
-4) take the project file from build/Qt/IFC-Import-Plugin.pro and open it in a QtCreator-Session
-5) Plugin should compile
-6) Copy the Ifc-Import-Plugin DLL inside the plugin-folder in SIM-VICUS from "externals/lib_x64"
+- CMake >= 2.8
+- Qt6 (Core, Gui, Widgets, Xml, Svg, PrintSupport, Network, Concurrent)
+- C++17 compiler
+
+## Building
+
+### 1. Clone repository and initialize submodules
+
+```bash
+git clone --recursive <repo-url>
+```
+
+Check that the SIM-VICUS submodule is on the master branch. Sometimes the head points to a wrong commit.
+
+### 2. Create symlinks to SIM-VICUS libraries
+
+```bash
+cd externals
+./_createLinuxSymlinks.sh     # Linux
+# createWindowsSoftlinks.bat  # Windows (requires admin privileges)
+```
+
+This creates symlinks to needed libraries (IBK, IBKMK, TiCPP, QtExt, etc.) from the SIM-VICUS submodule. Check afterwards that all symlinks are valid. If empty folders are created, rerun the script.
+
+### 3. Build with CMake
+
+**Linux/macOS:**
+
+```bash
+cd build/cmake
+./build.sh [cores] [debug|release|reldeb] [verbose]
+# Example:
+./build.sh 8 release
+```
+
+**Windows (Visual Studio 2022):**
+
+```bat
+cd build\cmake
+build_VC_x64.bat
+```
+
+### Build output
+
+| Platform | Executable | Plugin |
+|----------|-----------|--------|
+| Linux | `bin/release/IFC2BESTest` | `bin/release/libImportIFCPlugin.so` |
+| Windows | `bin/release_x64/IFC2BESTest.exe` | `bin/release_x64/ifcplusplus.dll` |
+
+### 4. Deploy plugin
+
+Copy `libImportIFCPlugin.so` (or `.dll`) to the SIM-VICUS plugin folder.
