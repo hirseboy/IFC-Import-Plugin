@@ -23,17 +23,22 @@ jobs:
       with:
         token: ${{ secrets.SUBMODULE_PAT }}
         submodules: 'true'
+        
     - name: install qt6
       run: sudo apt-get update && sudo apt-get install -y qt6-base-dev qt6-base-dev-tools qt6-svg-dev zlib1g-dev libgl-dev
-    - name: download highs-lib
-      working-directory: externals/HiGHS
-      run: ./download-highs_Ubuntu24.04.sh
+          
     - name: link submodule libraries
       working-directory: externals
       run: ./createLinuxSymlinks.sh
+      
+    - name: download highs-lib
+      working-directory: externals/HiGHS
+      run: ./download-highs_Ubuntu24.04.sh
+      
     - name: build
       working-directory: build/cmake
       run: ./build.sh release
+      
     - name: Upload Artifact
       uses: actions/upload-artifact@v4
       with:
