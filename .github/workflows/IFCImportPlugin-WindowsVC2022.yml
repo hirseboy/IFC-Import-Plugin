@@ -82,14 +82,6 @@ jobs:
       run: |
         "CMAKE_PREFIX_PATH=$PWD/qt/${{ env.QT_DETAILED_VERSION }}/msvc${{ env.VC_VERSION }}" | Out-File -FilePath $env:GITHUB_ENV -Append -Encoding utf8
 
-    # ---------------- Build ----------------
-    - name: Build
-      working-directory: releases\win
-      shell: cmd
-      run: |
-        for /f "usebackq tokens=*" %%i in (`vswhere -latest -products * -requires Microsoft.Component.MSBuild -find **\vcvars64.bat`) do call "%%i"
-        create_release_x64.bat --nightly --silent ${{env.QT_VERSION}}
-
     - name: create symlinks of submodules
       working-directory: externals
       shell: cmd
@@ -103,7 +95,9 @@ jobs:
     - name: build
       working-directory: build/cmake/
       shell: cmd
-      run: build_VC_x64.bat release
+      run: | 
+        for /f "usebackq tokens=*" %%i in (`vswhere -latest -products * -requires Microsoft.Component.MSBuild -find **\vcvars64.bat`) do call "%%i"
+        build_VC_x64.bat release
 
     - name: 'Upload Artifact'
       uses: actions/upload-artifact@v4
