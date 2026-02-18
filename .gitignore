@@ -13,6 +13,7 @@
 
 # Compiled Dynamic libraries
 *.so
+*.so.*
 *.dylib
 *.dll
 
@@ -41,6 +42,7 @@ moc_*.cpp
 .qmake.stash
 Makefile
 lib_x64
+qrc_*.cpp
 
 # SIM-VICUS
 /SIM-VICUS/*
