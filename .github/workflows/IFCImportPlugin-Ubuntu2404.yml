@@ -8,9 +8,9 @@ on:
   # run whenever someone pushes data
   # WARNING: this may give excessive build times which need to be paid!
   push:
-    branches: [ "main" ]
+    branches: [ "main", "master" ]
   pull_request:
-    branches: [ "main" ]
+    branches: [ "main", "master" ]
 
 jobs:
   build:
@@ -24,7 +24,7 @@ jobs:
         token: ${{ secrets.SUBMODULE_PAT }}
         submodules: 'true'
     - name: install qt6
-      run: sudo apt install libgdal-dev qt6-base-dev qt6-base-dev-tools qt6-declarative-dev qt6-svg-dev libqt6opengl6t64 libqt6positioning6 qt6-positioning-dev libqt6positioningquick6 qml6-module-qtpositioning qml6-module-qt-labs-lottieqt zlib1g-dev
+      run: sudo apt-get update && sudo apt-get install -y qt6-base-dev qt6-base-dev-tools qt6-svg-dev zlib1g-dev libgl-dev
     - name: download highs-lib
       working-directory: externals/HiGHS
       run: ./download-highs_Ubuntu24.04.sh
@@ -37,5 +37,5 @@ jobs:
     - name: Upload Artifact
       uses: actions/upload-artifact@v4
       with:
-        name: IfcImportPlugin_Ubuntu2204
+        name: IfcImportPlugin_Ubuntu2404
         path: bin/release/*.so
